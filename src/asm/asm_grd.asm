@@ -174,75 +174,11 @@ $L_605448 PROC
             mov EAX,OFFSET $L_605434
             ret 
 $L_605448 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 $L_60572c PROC
 
             push EBP
@@ -254,1171 +190,125 @@ $L_60572c PROC
             leave 
             ret 
 $L_60572c ENDP
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/marine_core.cpp, nmake ASM_MARINE_CORE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 _TEXT ENDS
 END

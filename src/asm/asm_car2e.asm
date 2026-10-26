@@ -118,464 +118,74 @@ $L_4ff764::
             add ESP,12
             ret 
 $L_4ff68f ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-ALIGN 16
-; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
 ALIGN 16
 ; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
 ALIGN 16
 ; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
+; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
+ALIGN 16
+; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
+ALIGN 16
+; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
+ALIGN 16
+; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
+ALIGN 16
+; engine and gearbox: src\truck\drivetrain.cpp, nmake ASM_DRIVETRAIN=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
 _TEXT ENDS
 END

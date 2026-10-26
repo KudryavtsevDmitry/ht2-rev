@@ -221,914 +221,127 @@ $L_5c0000           DWORD $L_5bff70
 $L_5bfe60 ENDP
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ; the row callback that shares the original's code stays in assembly
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
 ; src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 FUN_5c6170 PROC
 
@@ -1185,24 +398,7 @@ FUN_5c6170 PROC
             add ESP,16
             ret 80
 FUN_5c6170 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 $L_5c63bf PROC
 
             int 3
@@ -1224,722 +420,94 @@ $L_5c63d0::
 
             ret 
 $L_5c63bf ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 ALIGN 16
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 _TEXT ENDS
 END

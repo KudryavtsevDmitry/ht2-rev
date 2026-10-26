@@ -72,568 +72,104 @@ FUN_471780 PROC
             nop
             nop
 FUN_471780 ENDP
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 FUN_477b60 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -681,279 +217,48 @@ $L_477bac::
             add ESP,8
             ret 
 FUN_477b60 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 _TEXT ENDS
 END

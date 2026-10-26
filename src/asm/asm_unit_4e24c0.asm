@@ -110,9 +110,7 @@ $L_4e254c PROC
             ret 
 $L_4e254c ENDP
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 4
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
@@ -124,11 +122,8 @@ $L_4e281f::
             pop EBP
             ret 
 $L_4e281c ENDP
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 16
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 4
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
@@ -352,10 +347,6 @@ $L_4e352f::
             pop EBP
             ret 
 $L_4e3497 ENDP
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e4364 PROC
 
             push EBP
@@ -470,17 +461,12 @@ $L_4e4364 PROC
             ret 8
 $L_4e4364 ENDP
 ALIGN 8
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 16
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 4
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e4965 PROC
 
             add ESP,8
@@ -497,7 +483,6 @@ $L_4e4968::
             ret 
 $L_4e4965 ENDP
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e4a0a PROC
 
             push EBP
@@ -596,8 +581,6 @@ $L_4e4ab0::
 $L_4e4a0a ENDP
 ALIGN 4
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e4b3d PROC
 
             push EBP
@@ -680,7 +663,6 @@ $L_4e4c0a::
             pop EBP
             ret 
 $L_4e4b3d ENDP
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
 FUN_4e4d82 PROC
 
@@ -877,10 +859,7 @@ $L_4e4f74::
             ret 
 $L_4e4ece ENDP
 ALIGN 8
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 16
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 16
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e527f PROC
@@ -1060,7 +1039,6 @@ $L_4e556d ENDP
 ALIGN 2
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 8
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e574f PROC
 
@@ -1296,12 +1274,8 @@ $L_4e5a85 ENDP
 ALIGN 2
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 16
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 8
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e5f42 PROC
@@ -1344,13 +1318,10 @@ ALIGN 2
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 16
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 8
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
@@ -1609,7 +1580,6 @@ $L_4e6e60::
             pop EBP
             ret 
 $L_4e6ddc ENDP
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 8
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
@@ -1826,11 +1796,6 @@ $L_4e794b::
             pop EBP
             ret 
 $L_4e7910 ENDP
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 4
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4e9d13 PROC
@@ -1880,10 +1845,7 @@ $L_4e9e95::
             pop EBP
             ret 
 $L_4e9e64 ENDP
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 $L_4ea318 PROC
 
             push EBP
@@ -1921,16 +1883,11 @@ $L_4ea363::
             pop EBP
             ret 
 $L_4ea318 ENDP
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 8
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 2
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 ALIGN 8
-; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 _TEXT ENDS
 END

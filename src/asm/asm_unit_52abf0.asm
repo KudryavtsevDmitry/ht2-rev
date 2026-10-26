@@ -267,58 +267,17 @@ $L_52acfc::
             pop ESI
             ret 
 $L_52abff ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
 $L_52b590 PROC
 
             push ESI
@@ -368,434 +327,40 @@ $L_52b5dd::
             pop ESI
             ret 4
 $L_52b5b8 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_52e920 PROC
 
             push ESI
@@ -841,53 +406,10 @@ $L_52e963::
             pop ESI
             ret 4
 $L_52e948 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 $L_52f4bf PROC
 
             int 3
@@ -1053,15 +575,6 @@ $L_52f597::
             nop
             nop
 $L_52f4bf ENDP
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
 $L_52f680 PROC
 
             jmp $L_52f690
@@ -1088,8 +601,6 @@ $L_52f690::
             nop
             nop
 $L_52f680 ENDP
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
@@ -1100,72 +611,20 @@ ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 ALIGN 16
 ; vehicle: src\truck\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 _TEXT ENDS
 END

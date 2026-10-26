@@ -25,69 +25,20 @@ $L_5893c0::
             int 3
 $L_5893bf ENDP
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+ALIGN 16
 $L_58ae18 PROC
 
             mov EAX,ESI
@@ -98,425 +49,54 @@ $L_58ae18 PROC
             pop EBP
             ret 
 $L_58ae18 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+ALIGN 16
 $L_591b3e PROC
 
             pop EDI
@@ -527,72 +107,14 @@ $L_591b3e PROC
             add ESP,180
             ret 
 $L_591b3e ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 $L_592b4f PROC
 
             int 3
@@ -631,431 +153,54 @@ $L_592b70::
             fstp DWORD PTR [(_KingBss+441860)]
             ret 
 $L_592b4f ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; movingb: src\truck\moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 _TEXT ENDS
 END

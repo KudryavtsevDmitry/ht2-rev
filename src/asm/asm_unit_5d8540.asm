@@ -204,346 +204,44 @@ $L_5d9c11::
             add ESP,240
             ret 12
 $L_5d9bf0 ENDP
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 $L_5d9e40::
             mov EAX,DWORD PTR [ESP+4]
             mov ECX,DWORD PTR [ECX+20976]
             push EAX
             call @EventRing_Push@12
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 $L_5d9e50 PROC
 
             ret 4
 $L_5d9e50 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ; the ring push that shares the original's code stays in assembly
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_5dc430 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -577,88 +275,14 @@ $L_5dc466::
 
             ret 8
 $L_5dc463 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_5dd2d0 PROC
 
             mov DWORD PTR [ECX],OFFSET (_KingRdata+29668)
             jmp @FrameWnd_Destruct@4
 FUN_5dd2d0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_5dd380 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -669,119 +293,13 @@ $L_5dd380 PROC
 
             ret 8
 $L_5dd380 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; main loop: src\engine\main_loop.cpp, nmake ASM_MAIN_LOOP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 $L_5dd700 PROC
 
             jmp @Wnd_Default@4
 $L_5dd700 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_5dd8c0::
             sub ESP,8
             push EBX
@@ -1048,574 +566,56 @@ $L_5ddb1e::
             pop EBX
             ret 16
 $L_5dd94d ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; main loop: src\engine\main_loop.cpp, nmake ASM_MAIN_LOOP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-ALIGN 16
-; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; main loop: src\engine\main_loop.cpp, nmake ASM_MAIN_LOOP=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
 ALIGN 16
 ; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; main loop: src\engine\main_loop.cpp, nmake ASM_MAIN_LOOP=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
+ALIGN 16
+; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
+; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
+ALIGN 16
+; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
 $L_5e30f0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -1667,1469 +667,154 @@ $L_5e3145::
 $L_5e3116 ENDP
 ALIGN 16
 ; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; CGameApp: src\engine\game_app.cpp, nmake ASM_GAME_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 $L_5e557f PROC
 
             int 3
 $L_5e557f ENDP
 ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 _TEXT ENDS
 END

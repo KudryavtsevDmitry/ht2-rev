@@ -92,7 +92,6 @@ $L_4eb18e PROC
             int 3
 $L_4eb18e ENDP
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
@@ -114,17 +113,11 @@ $L_4eb20e PROC
             int 3
 $L_4eb20e ENDP
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 $L_4eb22f PROC
 
             int 3
 $L_4eb22f ENDP
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_4eb260 PROC
 
@@ -164,17 +157,6 @@ $L_4eb2b4 PROC
             add ESP,16
             ret 16
 $L_4eb2b4 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_4eb2f0 PROC
 
@@ -218,702 +200,15 @@ $L_4eb338::
             pop ECX
             ret 
 $L_4eb319 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
-; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
@@ -922,342 +217,169 @@ ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vehicle methods: src\truck\vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 _TEXT ENDS
 END

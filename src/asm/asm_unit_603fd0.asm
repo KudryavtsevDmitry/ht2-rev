@@ -217,39 +217,11 @@ $L_6049dc PROC
             ret 
 $L_6049dc ENDP
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 $L_604c4e PROC
 
             call _Mixer_ReleaseBuffers
@@ -276,32 +248,8 @@ $L_604c6a PROC
             ret 
 $L_604c6a ENDP
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_604de0 PROC
 
             mov EAX,ECX
@@ -328,194 +276,24 @@ $L_604e00::
 
             jmp @Wave_Free@8
 $L_604de0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 _TEXT ENDS
 END

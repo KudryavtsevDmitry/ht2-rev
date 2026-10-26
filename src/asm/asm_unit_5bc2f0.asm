@@ -16,163 +16,29 @@ $L_5bd55f PROC
             int 3
 $L_5bd55f ENDP
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_5be2b0 PROC
 
             push EBX
@@ -464,258 +330,27 @@ $L_5be488           BYTE ($L_5be478-$L_5be478)/4
             nop
             nop
 $L_5be2b0 ENDP
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 _TEXT ENDS
 END

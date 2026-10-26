@@ -218,7 +218,6 @@ $L_61cc0e::
             pop ESI
             ret 
 FUN_61cbcb ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61cc65 PROC
 
             push ESI
@@ -250,8 +249,6 @@ $L_61cc73::
             ret 
 FUN_61cc65 ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61ccfb PROC
 
             push ESI
@@ -305,7 +302,6 @@ $L_61cd70::
             pop ESI
             ret 
 FUN_61ccfb ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61cdfc PROC
 
             push EBP
@@ -340,7 +336,6 @@ $L_61ce24::
             leave 
             ret 8
 FUN_61cdfc ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61d0a0 PROC
 
             push EBP
@@ -443,9 +438,7 @@ $L_61d180::
             ret 4
 FUN_61d176 ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 8
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
 $L_61d2b1 PROC
 
@@ -1209,7 +1202,6 @@ __ftol PROC ;FUN_61d830 __int64 _ftol(void): ST(0) truncated to EDX:EAX
             leave 
             ret 
 __ftol ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 _strncat PROC ;FUN_61d9a0 char *strncat(char *dest, const char *src, size_t count)
 
             mov ECX,DWORD PTR [ESP+12]
@@ -1830,7 +1822,6 @@ $L_61de6f PROC
             int 3
 $L_61de6f ENDP
 ALIGN 16
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ??0exception@@QAE@XZ PROC ;FUN_61e0a0 exception::exception()
 
             mov EAX,ECX
@@ -2008,9 +1999,6 @@ $L_61e1b6::
             ret 4
 $L_61e1a0 ENDP
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
 FUN_61e23e PROC
 
@@ -2148,7 +2136,6 @@ $L_61e31a::
             jmp $L_61e30b
 FUN_61e23e ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61e355 PROC
 
             push EBP
@@ -2304,7 +2291,6 @@ $L_61e456::
             div DWORD PTR [EBP+12]
             jmp $L_61e446
 FUN_61e355 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 $L_61e5e2 PROC
 
             int 3
@@ -2312,14 +2298,9 @@ $L_61e5e2 PROC
             int 3
 $L_61e5e2 ENDP
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61e6cf PROC
 
             push ESI
@@ -2403,7 +2384,6 @@ $L_61e759::
             ret 
 FUN_61e6cf ENDP
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61e896 PROC
 
             mov EAX,DWORD PTR [(_KingData+107264)]
@@ -2424,9 +2404,7 @@ $L_61e8a1::
             add ESP,16
             ret 
 FUN_61e896 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61e99c PROC
 
             push ESI
@@ -2451,7 +2429,6 @@ $L_61e9b4::
             ret 
 FUN_61e99c ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_61e9cd PROC
 
             push EBP
@@ -2754,8 +2731,6 @@ $L_61ebcd::
             ret 
 FUN_61e9cd ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 8
 FUN_61ec58 PROC
 
@@ -2860,12 +2835,7 @@ $L_61ed21::
             ret 
 FUN_61ec58 ENDP
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 16
 __CIasin PROC ;FUN_61ee00 double _CIasin(void): asin(ST(0))
 
@@ -3481,7 +3451,6 @@ $L_61f44f::
             ret 
 _abs ENDP
 ALIGN 16
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 _memset PROC ;FUN_61f5c0 void *memset(void *dest, int c, size_t count)
 
             mov EDX,DWORD PTR [ESP+12]
@@ -3776,7 +3745,6 @@ $L_61f8ed::
             ret 
 FUN_61f85d ENDP
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
 __alldiv PROC ;FUN_61f9d0 __int64 _alldiv(__int64 dividend, __int64 divisor), callee pops
 
@@ -3880,8 +3848,6 @@ $L_61fa7f PROC
             int 3
 $L_61fa7f ENDP
 ALIGN 16
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
@@ -3927,13 +3893,8 @@ $L_61fc08::
             ret 
 $L_61fbf4 ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 8
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 16
 FUN_61fd40 PROC
 
@@ -3956,9 +3917,7 @@ $L_61fd58::
             xor EAX,EAX
             ret 
 FUN_61fd40 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 _ceil PROC ;FUN_61fd97 double ceil(double x)
 
             push EBP
@@ -4083,7 +4042,6 @@ $L_61fe62::
             ret 
 _ceil ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
 FUN_61ffd2 PROC
 
@@ -4116,16 +4074,13 @@ FUN_62001c PROC
             push EAX
             ret 
 FUN_62001c ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 $L_620162 PROC
 
             mov ESP,DWORD PTR [EBP-24]
             push DWORD PTR [EBP-28]
             call __exit
 $L_620162 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_6201a0 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -4618,7 +4573,6 @@ $L_62056c::
             leave
             ret
 _memcpy ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 4
 FUN_62061c PROC
 
@@ -4717,7 +4671,6 @@ $L_62069e::
             pop EBX
             ret 
 FUN_62061c ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 $L_6207e1 PROC
 
             test ESI,ESI
@@ -4751,7 +4704,6 @@ $L_620806::
             leave 
             ret 
 $L_6207e1 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_6208fa PROC
 
             push 9
@@ -4760,9 +4712,7 @@ FUN_6208fa PROC
             pop ECX
             ret 
 FUN_6208fa ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_620cf2 PROC
 
             cmp DWORD PTR [(_KingBss+1000144)],0
@@ -4778,7 +4728,6 @@ $L_620d0d::
             ret 
 FUN_620cf2 ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 16
 FUN_620d80 PROC
 
@@ -4839,9 +4788,7 @@ $L_620de6::
             pop ESI
             ret 
 FUN_620d80 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_62127f PROC
 
             push EDI
@@ -4869,7 +4816,6 @@ $L_6212a2::
             ret 
 FUN_62127f ENDP
 ALIGN 4
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_622b90 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -7444,7 +7390,6 @@ $L_62522d::
             ret 
 FUN_625156 ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_6254d5 PROC
 
             push EBP
@@ -9687,7 +9632,6 @@ $L_628e4f::
             and EAX,64
             ret 
 FUN_628e40 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 ALIGN 16
 FUN_62937d PROC
 
@@ -10165,7 +10109,6 @@ $L_6319af::
             ret 
 FUN_63190e ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_631c81 PROC
 
             push ESI
@@ -10251,7 +10194,6 @@ $L_631ced::
             pop ESI
             ret 
 FUN_631c81 ENDP
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 FUN_631d1d PROC
 
             push DWORD PTR [ESP+4]
@@ -10325,8 +10267,6 @@ $L_632179::
             pop EBP
             ret 
 FUN_632146 ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 FUN_6321e9 PROC
 
             push EBP
@@ -10339,45 +10279,21 @@ FUN_6321e9 PROC
             call __CxxThrowException@8
 FUN_6321e9 ENDP
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_63262e PROC
 
             xor EAX,EAX
             ret 
 $L_63262e ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ??2@YAPAXI@Z PROC ;FUN_632643 void *operator new(unsigned int size)
 
             push ESI
@@ -10419,12 +10335,7 @@ ALIGN 4
             pop ECX
             ret 
 ??3@YAXPAX@Z ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ; main loop: src\engine\main_loop.cpp, nmake ASM_MAIN_LOOP=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_632864 PROC
 
             mov EAX,OFFSET $L_64a304
@@ -10567,13 +10478,8 @@ $L_632961::
             ret 4
 $L_632915 ENDP
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_632b3d LABEL NEAR
 $L_632b4e PROC
 
@@ -10584,111 +10490,26 @@ $L_632b4e PROC
             ret 
 $L_632b4e ENDP
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_633c4b LABEL NEAR
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_633ed4 LABEL NEAR
 $L_633f66 PROC
 
@@ -10716,39 +10537,14 @@ $L_633f66 PROC
             mov EAX,OFFSET $L_633ed4
             ret 
 $L_633f66 ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_63492f PROC
 
             push 1
@@ -10759,62 +10555,16 @@ $L_63492f PROC
             push EBX
             call __CxxThrowException@8
 $L_63492f ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
 FUN_63613a PROC
 
@@ -10824,39 +10574,15 @@ FUN_63613a PROC
 
             ret 
 FUN_63613a ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ??0CString@@QAE@PBD@Z PROC ;FUN_6363cb CString::CString(LPCTSTR lpsz)
 
             mov EAX,DWORD PTR [(_KingData+106432)]
@@ -10906,27 +10632,13 @@ $L_636415::
             pop EBX
             ret 4
 ??0CString@@QAE@PBD@Z ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_63670b LABEL NEAR
 $L_63671d PROC
 
@@ -10936,17 +10648,10 @@ $L_63671d PROC
             mov EAX,OFFSET $L_63670b
             ret 
 $L_63671d ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_6369f6 PROC
 
             push DWORD PTR [EBP+8]
@@ -10956,53 +10661,14 @@ $L_6369f6 PROC
             push 0
             call __CxxThrowException@8
 $L_6369f6 ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 FUN_6371c5 PROC
 
             push EBP
@@ -11015,306 +10681,61 @@ FUN_6371c5 PROC
             call __CxxThrowException@8
 FUN_6371c5 ENDP
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_637409 PROC
 
             xor EAX,EAX
             pop ESI
             ret 
 $L_637409 ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_63ae3a PROC
 
             push 16
@@ -11325,46 +10746,13 @@ $L_63ae3a PROC
             push EDI
             call __CxxThrowException@8
 $L_63ae3a ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 16
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
 FUN_63b4a6 PROC
 
@@ -11384,11 +10772,7 @@ FUN_63b4a6 PROC
             leave 
             ret 
 FUN_63b4a6 ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH

@@ -87,13 +87,8 @@ $L_4a1d90::
             nop
 $L_4a1d0d ENDP
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
 $L_4a2038 PROC
 
             mov EBX,DWORD PTR [EBP-28]
@@ -143,84 +138,16 @@ $L_4a2080::
             nop
 $L_4a2038 ENDP
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
 $L_4a2a62 PROC
 
@@ -233,198 +160,28 @@ $L_4a2a62 PROC
             pop EBP
             ret 8
 $L_4a2a62 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-ALIGN 16
-; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
 ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+ALIGN 16
 _TEXT ENDS
 END

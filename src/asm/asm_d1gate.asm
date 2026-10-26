@@ -46,97 +46,15 @@ $L_601260::
             mov DWORD PTR [EAX+24],ECX
             ret 
 $L_601250 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_601630 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -211,114 +129,16 @@ $L_6016d8::
             add ESP,44
             ret 24
 $L_601630 ENDP
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 $L_6022c0 PROC
 
             lea EAX,DWORD PTR [ESP+4]
@@ -349,8 +169,6 @@ $L_6022c0 PROC
             nop
 $L_6022c0 ENDP
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
 ALIGN 16
 FUN_602320 PROC
 
@@ -431,30 +249,7 @@ $L_6023b6::
             pop ESI
             ret 
 FUN_602320 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_602410 PROC
 
             push -1
@@ -528,75 +323,13 @@ $L_6024a0::
             add ESP,16
             ret 
 $L_602410 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 FUN_602ad0 PROC
 
             push EBP
@@ -669,633 +402,72 @@ $L_602b4b PROC
             pop EBP
             ret 
 $L_602b4b ENDP
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-ALIGN 16
-; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 _TEXT ENDS
 END

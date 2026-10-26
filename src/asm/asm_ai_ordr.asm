@@ -58,7 +58,6 @@ $L_46e69a::
             nop
 $L_46e654 ENDP
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 $L_46e99f PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -109,45 +108,10 @@ $L_46e9eb::
             nop
 $L_46e99f ENDP
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 $L_46edb8 PROC
 
             mov ESI,DWORD PTR [EBP-20]
@@ -175,281 +139,57 @@ $L_46edb8 PROC
             nop
 $L_46edb8 ENDP
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+ALIGN 16
+; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 _TEXT ENDS

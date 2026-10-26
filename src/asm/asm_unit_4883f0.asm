@@ -38,7 +38,6 @@ $L_4898d3 PROC
             nop
 $L_4898d3 ENDP
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 $L_489bd0 PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -88,7 +87,6 @@ $L_489c1c::
             nop
 $L_489bd0 ENDP
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 $L_489fab PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -126,7 +124,6 @@ $L_489ff7::
             call __CxxThrowException@8
 $L_489fab ENDP
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 $L_48a260 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -178,7 +175,6 @@ $L_48a2a9::
             nop
 $L_48a260 ENDP
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 $L_48a520 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -230,622 +226,104 @@ $L_48a569::
             nop
 $L_48a520 ENDP
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
 $L_48fa1e PROC
 
             mov EDI,DWORD PTR [EBP-28]
@@ -900,410 +378,50 @@ $L_48fa86::
             nop
 $L_48fa1e ENDP
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_491420 PROC
 
@@ -1354,59 +472,12 @@ $L_49148a::
             add ESP,12
             ret 
 FUN_491420 ENDP
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 FUN_491750 PROC
 
@@ -1482,261 +553,35 @@ $L_4917f9::
             add ESP,20
             ret 4
 FUN_491750 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
 _TEXT ENDS
 END

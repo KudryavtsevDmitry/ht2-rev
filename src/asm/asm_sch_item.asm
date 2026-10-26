@@ -107,657 +107,88 @@ $L_4b136b::
             add ESP,24
             ret 
 $L_4b12b0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
+ALIGN 16
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
+ALIGN 16
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
+ALIGN 16
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
+ALIGN 16
+; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
+ALIGN 16
+ALIGN 16
 $L_4b6930 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -865,2860 +296,346 @@ $L_4b6a03::
             add ESP,24
             ret 
 $L_4b6930 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI script items: src\script\values.cpp, nmake ASM_VALUES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 _TEXT ENDS
 END

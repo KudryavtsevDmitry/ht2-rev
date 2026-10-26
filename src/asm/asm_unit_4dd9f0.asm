@@ -20,55 +20,6 @@ $L_4e0900 PROC
             mov DWORD PTR [(_KingBss+441852)],0
             jmp @View_Draw@4
 $L_4e0900 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_4e0be0 PROC
 
             push ESI
@@ -250,121 +201,20 @@ $L_4e0c74           BYTE ($L_4e0c60-$L_4e0c60)/4
             nop
             nop
 $L_4e0be0 ENDP
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; CKingApp: src\truck\king_app.cpp, nmake ASM_KING_APP=1 assembles the original
 ; CKingApp: src\truck\king_app.cpp, nmake ASM_KING_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
 ALIGN 16
 ; engine: src\truck\startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; CKingApp: src\truck\king_app.cpp, nmake ASM_KING_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; CKingApp: src\truck\king_app.cpp, nmake ASM_KING_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_4e1ee0 PROC
 
             push ESI
@@ -383,28 +233,9 @@ $L_4e1ee9 PROC
             pop ESI
             ret 
 $L_4e1ee9 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; CKingApp: src\truck\king_app.cpp, nmake ASM_KING_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
 ALIGN 16
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
 ALIGN 2
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
 _TEXT ENDS
 END

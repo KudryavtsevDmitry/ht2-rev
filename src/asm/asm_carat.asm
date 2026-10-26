@@ -78,162 +78,20 @@ $L_507ce0::
             pop ESI
             ret 
 $L_507ccf ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
@@ -242,55 +100,24 @@ ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
 $L_50bb00 PROC
 
             jmp $L_50bb10
@@ -388,1464 +215,162 @@ $L_50bb5e::
             pop EBP
             ret 
 $L_50bb00 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
 $L_51f760 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -2437,192 +962,13 @@ $L_51fd12::
             add ESP,632
             ret 4
 $L_51fce1 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_523170 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -2695,393 +1041,37 @@ $L_523201::
 $L_5231e7 ENDP
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
+; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+ALIGN 16
 _TEXT ENDS
 END

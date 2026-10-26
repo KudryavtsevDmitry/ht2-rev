@@ -64,266 +64,51 @@ $L_560f00::
 
             jmp $L_55fad0
 $L_560ef0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_563600 PROC
 
@@ -3220,1249 +3005,150 @@ $L_565fc8::
 $L_56364a ENDP
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; main loop: src\engine\main_loop.cpp, nmake ASM_MAIN_LOOP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_56f6c0 PROC
 
             jmp @World_Frame@4
 $L_56f6c0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; CKingApp: src\truck\king_app.cpp, nmake ASM_KING_APP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/king_app.cpp, nmake ASM_KING_APP=1 assembles the original
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 $L_576c2f PROC
 
             int 3
@@ -4592,32 +3278,9 @@ $L_576cbc::
 
             ret 
 $L_576c2f ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 _TEXT ENDS
 END

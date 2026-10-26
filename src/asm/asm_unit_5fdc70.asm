@@ -2252,190 +2252,20 @@ $L_5ff0c7::
             pop EBX
             ret 
 $L_5ff05f ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
 ALIGN 16
 ; src\engine\sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
 $L_600045 PROC
 
             mov EDI,DWORD PTR [EBP-20]
@@ -2500,128 +2330,18 @@ $L_6000ab::
             nop
 $L_600045 ENDP
 ALIGN 16
-; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
 $L_6004f7 LABEL NEAR
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; src\engine\sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 _TEXT ENDS
 END

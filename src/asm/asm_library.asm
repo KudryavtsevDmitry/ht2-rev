@@ -789,6 +789,5 @@ FUN_6317ca PROC
             jmp DWORD PTR __imp__OpenPrinterA@12
 FUN_6317ca ENDP
 ALIGN 16
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 _TEXT ENDS
 END

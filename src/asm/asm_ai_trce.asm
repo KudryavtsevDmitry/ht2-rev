@@ -47,77 +47,15 @@ FUN_487290 PROC
             ret 
 FUN_487290 ENDP
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 $L_487c5c PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -171,366 +109,70 @@ $L_487ca8::
             nop
 $L_487c5c ENDP
 ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 ALIGN 16
-; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+ALIGN 16
 _TEXT ENDS
 END

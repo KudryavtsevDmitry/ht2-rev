@@ -24,40 +24,12 @@ $L_61c73d PROC
             mov DWORD PTR [EAX+196],ECX
             ret 
 $L_61c73d ENDP
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 4
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 8
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 $L_61cb08 PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -70,7 +42,6 @@ $L_61cb08 PROC
             call __CxxThrowException@8
 $L_61cb08 ENDP
 ALIGN 2
-; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 ALIGN 2
 FUN_61cb62 PROC
 
@@ -84,6 +55,5 @@ FUN_61cb62 PROC
             ret 
 FUN_61cb62 ENDP
 ALIGN 2
-; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
 _TEXT ENDS
 END

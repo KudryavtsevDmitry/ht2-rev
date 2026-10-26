@@ -118,28 +118,7 @@ $L_4013f0 PROC
 
             jmp $L_401420
 $L_4013f0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_401420 PROC
 
             push OFFSET $L_401430
@@ -164,62 +143,13 @@ $L_401430::
             nop
             nop
 $L_401420 ENDP
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 $L_401990 PROC
 
             mov ECX,OFFSET (_KingBss+4472)
@@ -334,12 +264,8 @@ $L_401a61::
             add ESP,16
             ret 
 $L_401990 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 $L_401b90 PROC
 
             push -1
@@ -414,88 +340,9 @@ $L_401c23::
             add ESP,16
             ret 
 $L_401b90 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_401e30::
             mov ECX,OFFSET (_KingBss+9368)
             jmp @Vec104_Destroy@4
@@ -510,19 +357,7 @@ $L_401e40::
             call _AI_Init68cc08
 
             jmp _Static401e70_AtExit
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_401e80::
             mov ECX,OFFSET (_KingBss+9192)
             jmp @Vec24Rec_Destroy@4
@@ -537,278 +372,14 @@ $L_401e90::
             call _AI_Init68cf00
 
             jmp _Static401ec0_AtExit
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_402100::
             mov ECX,OFFSET (_KingBss+9336)
             jmp @Vec4_FreeStorage@8
@@ -823,138 +394,10 @@ $L_402110::
             call _AI_Init68cbe8
 
             jmp _Static402140_AtExit
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_402240::
             mov ECX,OFFSET (_KingBss+9208)
             jmp @Vec4_FreeStorage@8
@@ -969,186 +412,12 @@ $L_402250::
             call _AI_Init68ceb0
 
             jmp _AiStatic68ceb0_AtExit
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_402430::
             mov ECX,OFFSET (_KingBss+9352)
             jmp @Vec4_FreeStorageB@8
@@ -1163,200 +432,12 @@ $L_402440::
             call _AI_Init68a830
 
             jmp _Static402480_AtExit
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_402730::
             mov ECX,OFFSET (_KingBss+9320)
             jmp @Vec4_FreeStorageB@8
@@ -1368,2156 +449,352 @@ $L_402730::
             nop
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
 $L_41d32b PROC
 
             fld QWORD PTR [(_KingRdata+1656)]
             ret 4
 $L_41d32b ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_41ecdb PROC
 
             fld QWORD PTR [(_KingRdata+1656)]
             ret 4
 $L_41ecdb ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_41ed0b PROC
 
             fld QWORD PTR [(_KingRdata+1656)]
             ret 4
 $L_41ed0b ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_41ed3b PROC
 
             fld QWORD PTR [(_KingRdata+1656)]
             ret 4
 $L_41ed3b ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_41f930 PROC
 
             jmp DWORD PTR [ECX+40]
 $L_41f930 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_41f940 PROC
 
             mov EDX,DWORD PTR [ECX+48]
@@ -3541,613 +818,100 @@ $L_41f968::
 
             ret 
 $L_41f940 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_427020 PROC
 
             push ESI
@@ -4200,233 +964,31 @@ $L_427084::
             pop ESI
             ret 
 $L_427020 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
@@ -4434,666 +996,109 @@ ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 $L_430000 LABEL NEAR
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
 $L_434e64 PROC
 
             xor ESI,ESI
@@ -5783,968 +1788,147 @@ $L_435633::
             add ESP,20
             ret 
 $L_434e64 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_440000 LABEL NEAR    ; a data table holds this address
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_443a10 PROC
 
             push -1
@@ -6818,424 +2002,64 @@ $L_443aa9::
             add ESP,16
             ret 
 $L_443a10 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
 $L_448570 PROC
 
             sub ESP,12
@@ -7253,450 +2077,85 @@ $L_448570 PROC
             nop
             nop
 $L_448570 ENDP
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 $L_44b46a PROC
 
             mov ECX,OFFSET (_KingBss+10724)
@@ -7722,62 +2181,18 @@ $L_44b46a PROC
             nop
 $L_44b46a ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44bbad PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -7913,30 +2328,9 @@ $L_44bcd6::
             inc EDI
             jmp $L_44bc7e
 $L_44bbad ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44c111 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -7972,11 +2366,7 @@ $L_44c157::
             call __CxxThrowException@8
 $L_44c111 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44c414 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8026,7 +2416,6 @@ $L_44c45a::
             nop
 $L_44c414 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44c6bd PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8065,7 +2454,6 @@ $L_44c706::
             nop
 $L_44c6bd ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44c9bb PROC
 
             mov EBX,DWORD PTR [EBP-20]
@@ -8113,37 +2501,10 @@ $L_44c9ec::
             nop
 $L_44c9bb ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44ce50 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8195,7 +2556,6 @@ $L_44ce99::
             nop
 $L_44ce50 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44d110 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8247,7 +2607,6 @@ $L_44d159::
             nop
 $L_44d110 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44d484 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8295,7 +2654,6 @@ $L_44d4cd::
             nop
 $L_44d484 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44d740 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8347,7 +2705,6 @@ $L_44d789::
             nop
 $L_44d740 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44da00 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8399,7 +2756,6 @@ $L_44da49::
             nop
 $L_44da00 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44dd45 PROC
 
             mov EBX,DWORD PTR [EBP-20]
@@ -8451,12 +2807,7 @@ $L_44dd79::
             nop
 $L_44dd45 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44e0d0 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8508,7 +2859,6 @@ $L_44e119::
             nop
 $L_44e0d0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44e390 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8560,7 +2910,6 @@ $L_44e3d9::
             nop
 $L_44e390 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44e650 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8612,7 +2961,6 @@ $L_44e699::
             nop
 $L_44e650 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44e910 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8664,7 +3012,6 @@ $L_44e959::
             nop
 $L_44e910 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44ebd0 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8716,7 +3063,6 @@ $L_44ec19::
             nop
 $L_44ebd0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44ee90 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8768,7 +3114,6 @@ $L_44eed9::
             nop
 $L_44ee90 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44f150 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8820,11 +3165,8 @@ $L_44f199::
             nop
 $L_44f150 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44f5bb PROC
 
             mov ESI,DWORD PTR [EBP+8]
@@ -8905,19 +3247,7 @@ $L_44f640           DWORD $L_44f601
           DWORD $L_44f622
           DWORD $L_44f617
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44f98b PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -8958,24 +3288,7 @@ $L_44f9d4::
             nop
 $L_44f98b ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_44fc62 PROC
 
             mov ECX,DWORD PTR [EBP-40]
@@ -9028,36 +3341,11 @@ $L_44fcc6::
             nop
 $L_44fc62 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_4500f0 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9109,10 +3397,7 @@ $L_450139::
             nop
 $L_4500f0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_450535 PROC
 
             mov EDI,DWORD PTR [EBP-20]
@@ -9165,7 +3450,6 @@ $L_450596::
             nop
 $L_450535 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_4507e0 PROC
 
             mov EDI,DWORD PTR [EBP-20]
@@ -9224,16 +3508,7 @@ $L_450840::
             nop
 $L_4507e0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_450ca0 PROC
 
             mov EBX,DWORD PTR [EBP-28]
@@ -9272,32 +3547,11 @@ $L_450cd5::
             nop
 $L_450ca0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_4511d0 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9349,7 +3603,6 @@ $L_451219::
             nop
 $L_4511d0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_451476 PROC
 
             mov EBX,DWORD PTR [EBP-20]
@@ -9385,7 +3638,6 @@ $L_4514a7::
             call __CxxThrowException@8
 $L_451476 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_4516eb PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9426,7 +3678,6 @@ $L_451734::
             nop
 $L_4516eb ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_451a1f PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -9479,7 +3730,6 @@ $L_451a68::
             nop
 $L_451a1f ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_451ce0 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9531,7 +3781,6 @@ $L_451d29::
             nop
 $L_451ce0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_451fa0 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9583,7 +3832,6 @@ $L_451fe9::
             nop
 $L_451fa0 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_45223b PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9624,13 +3872,7 @@ $L_452284::
             nop
 $L_45223b ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_4525b6 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9676,7 +3918,6 @@ $L_4525ff::
             nop
 $L_4525b6 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_4528b9 PROC
 
             mov EBX,DWORD PTR [EBP-24]
@@ -9726,7 +3967,6 @@ $L_4528ea::
             nop
 $L_4528b9 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_452b60 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9778,7 +4018,6 @@ $L_452ba9::
             nop
 $L_452b60 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_452e38 PROC
 
             mov EBX,DWORD PTR [EBP-20]
@@ -9823,7 +4062,6 @@ $L_452e70::
             nop
 $L_452e38 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_453098 PROC
 
             mov EDI,DWORD PTR [EBP-28]
@@ -9887,43 +4125,10 @@ $L_4530fb::
             nop
 $L_453098 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_453b00 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -9975,87 +4180,16 @@ $L_453b49::
             nop
 $L_453b00 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_4548bf PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -10106,298 +4240,29 @@ $L_45490b::
             nop
 $L_4548bf ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
 $L_456400 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -10449,60 +4314,16 @@ $L_456449::
             nop
 $L_456400 ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_45714b PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -10543,341 +4364,53 @@ $L_457194::
             nop
 $L_45714b ENDP
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
+; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+ALIGN 16
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 _TEXT ENDS
 END

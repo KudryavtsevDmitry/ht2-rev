@@ -50,7 +50,6 @@ $L_47902f PROC
             nop
 $L_47902f ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47931a PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -90,10 +89,7 @@ $L_479366::
             nop
 $L_47931a ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_4796f3 PROC
 
             mov EDI,DWORD PTR [EBP-20]
@@ -150,7 +146,6 @@ $L_479751::
             nop
 $L_4796f3 ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_4799de PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -187,125 +182,22 @@ $L_479a27::
             call __CxxThrowException@8
 $L_4799de ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47ade9 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -442,44 +334,9 @@ $L_47af15::
             inc EDI
             jmp $L_47aebd
 $L_47ade9 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47b146 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -615,9 +472,7 @@ $L_47b26f::
             inc EDI
             jmp $L_47b217
 $L_47b146 ENDP
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47b399 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -754,30 +609,8 @@ $L_47b4c5::
             inc EDI
             jmp $L_47b46d
 $L_47b399 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47b64d PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -913,18 +746,7 @@ $L_47b776::
             inc EDI
             jmp $L_47b71e
 $L_47b64d ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47ba7f PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -975,7 +797,6 @@ $L_47bacb::
             nop
 $L_47ba7f ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47bdbf PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -1028,51 +849,13 @@ $L_47be08::
             nop
 $L_47bdbf ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47c54e PROC
 
             mov ESI,DWORD PTR [EBP-20]
@@ -1094,7 +877,6 @@ $L_47c54e PROC
             nop
 $L_47c54e ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47c629 PROC
 
             mov ESI,DWORD PTR [EBP-20]
@@ -1121,55 +903,13 @@ $L_47c629 PROC
             nop
 $L_47c629 ENDP
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
@@ -1292,447 +1032,65 @@ $L_47d443 PROC
             pop EBP
             ret 
 $L_47d443 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 $L_47e39e LABEL NEAR
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
@@ -1741,668 +1099,107 @@ ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+ALIGN 16
+; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+ALIGN 16
+; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI orders: src\ai\ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
 ALIGN 16
 ; AI orders: src\ai\ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI game interface: src\ai\ai_task.cpp, nmake ASM_AI_TASK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/route_search.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
 ALIGN 16
-; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+ALIGN 16
+; AI geometry, CRC and filters: src\ai\route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 _TEXT ENDS
 END

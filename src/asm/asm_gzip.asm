@@ -87,11 +87,6 @@ $L_62a927::
             or EAX,4294967295
             ret 
 FUN_62a910 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62a930 PROC
 
@@ -112,9 +107,6 @@ $L_62a948::
             mov EAX,DWORD PTR [ESP+12]
             ret 
 FUN_62a930 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62a950 PROC
 
@@ -163,18 +155,6 @@ FUN_62a980 PROC
             mov DWORD PTR [EAX+8],EDX
             ret 8
 FUN_62a980 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62a9b0 PROC
 
             mov EDX,ECX
@@ -265,8 +245,6 @@ $L_62aa37::
             pop EDI
             ret 8
 $L_62aa00 ENDP
-          BYTE 090H
-          BYTE 090H
 $L_62aa40 PROC
 
             mov EAX,DWORD PTR [ECX+12]
@@ -306,13 +284,6 @@ $L_62aa83::
             or EAX,4294967295
             ret 8
 $L_62aa40 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62aa90 PROC
 
             mov EDX,DWORD PTR [ECX+12]
@@ -321,11 +292,6 @@ $L_62aa90 PROC
             sete AL
             ret 
 $L_62aa90 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62aaa0 PROC
 
@@ -349,19 +315,6 @@ $L_62aac0::
             xor EAX,EAX
             ret 
 FUN_62aaa0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62aad0 PROC
 
@@ -386,10 +339,6 @@ FUN_62aad0 PROC
             mov DWORD PTR [(_KingBss+985064)],EAX
             ret 
 FUN_62aad0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62ab40 PROC
 
@@ -402,18 +351,6 @@ $L_62ab53::
 
             ret 
 FUN_62ab40 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62ab60 PROC
 
@@ -447,16 +384,6 @@ $L_62abb3::
             xor EAX,EAX
             ret 
 FUN_62ab60 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62abc0 PROC
 
@@ -1300,16 +1227,6 @@ $L_62b3b1::
             pop ECX
             ret 
 $L_62b2f8 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62b3c0 PROC
 
@@ -1374,13 +1291,6 @@ $L_62b447 PROC
             pop ECX
             ret 
 $L_62b447 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62b450 PROC
 
@@ -1659,21 +1569,6 @@ $L_62b74f::
             add ESP,8
             ret 
 FUN_62b450 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62b770 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -1710,16 +1605,6 @@ $L_62b7b1::
             pop ESI
             ret 
 $L_62b770 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62b7c0 PROC
 
             push ESI
@@ -1792,19 +1677,6 @@ $L_62b854::
             pop ESI
             ret 
 $L_62b7c0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62b870 PROC
 
@@ -1848,11 +1720,6 @@ $L_62b8b2::
             not EAX
             ret 
 FUN_62b870 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62b8c0 PROC
 
@@ -1864,10 +1731,6 @@ FUN_62b8c0 PROC
             mov DWORD PTR [(_KingBss+919416)],EAX
             ret 
 FUN_62b8c0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62b8e0 PROC
 
@@ -1942,15 +1805,6 @@ $L_62b979::
             mov AL,BYTE PTR [(_KingBss+671252)]
             ret 
 $L_62b973 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62b9a0 PROC
 
@@ -1974,12 +1828,6 @@ $L_62b9d9::
 
             ret 
 FUN_62b9a0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62b9e0 PROC
 
@@ -2015,15 +1863,6 @@ $L_62ba36::
 
             ret 
 FUN_62b9e0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62ba40 PROC
 
@@ -2070,17 +1909,6 @@ $L_62ba80::
             pop EBX
             ret 
 FUN_62ba40 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62ba90 PROC
 
@@ -2125,7 +1953,6 @@ $L_62bacb::
             pop ESI
             ret 
 FUN_62ba90 ENDP
-          BYTE 090H
 ALIGN 16
 FUN_62bad0 PROC
 
@@ -2141,14 +1968,6 @@ FUN_62bad0 PROC
             add ESP,20
             jmp $L_62b420
 FUN_62bad0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bb00 PROC
 
@@ -2181,13 +2000,6 @@ $L_62bb44::
 
             jmp $L_62b420
 FUN_62bb00 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bb50 PROC
 
@@ -2203,15 +2015,6 @@ FUN_62bb50 PROC
             add ESP,16
             jmp $L_62b420
 FUN_62bb50 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62bb80 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -2255,8 +2058,6 @@ $L_62bbda::
             pop ESI
             ret 
 $L_62bb80 ENDP
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bbe0 PROC
 
@@ -2303,11 +2104,6 @@ FUN_62bc10 PROC
             pop ECX
             ret 
 FUN_62bc10 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bc30 PROC
 
@@ -2367,19 +2163,6 @@ $L_62bcb0::
             or WORD PTR [(_KingBss+985152)],AX
             ret 
 FUN_62bc30 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bcd0 PROC
 
@@ -2477,17 +2260,6 @@ $L_62bdaf::
             pop EBX
             ret 
 FUN_62bcd0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bdc0 PROC
 
@@ -2566,9 +2338,6 @@ $L_62be58::
             pop ESI
             ret 
 FUN_62bdc0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62be70 PROC
 
@@ -2587,18 +2356,6 @@ FUN_62be70 PROC
             pop ESI
             ret 
 FUN_62be70 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bea0 PROC
 
@@ -2756,16 +2513,6 @@ $L_62bf9d::
             pop EBP
             ret 
 FUN_62bea0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62bfc0 PROC
 
@@ -3185,15 +2932,6 @@ $L_62c30a::
             pop EBP
             ret 
 FUN_62c1d0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62c330 PROC
 
@@ -3254,10 +2992,6 @@ $L_62c3a8::
             pop ESI
             ret 
 FUN_62c330 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62c3b0 PROC
 
             mov EAX,DWORD PTR [(_KingBss+704100)]
@@ -3785,18 +3519,6 @@ $L_62c90a::
             add ESP,56
             ret 
 $L_62c6af ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62c920 PROC
 
             push ECX
@@ -4166,9 +3888,6 @@ $L_62ccaa::
             pop EBP
             ret 
 $L_62cc17 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62ccc0 PROC
 
@@ -4254,20 +3973,6 @@ $L_62cd61::
 
             ret 
 FUN_62ccc0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62cd70 PROC
 
@@ -4365,17 +4070,6 @@ $L_62ce69::
             pop ESI
             ret 
 FUN_62cd70 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 $L_62ce90 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -4789,20 +4483,6 @@ $L_62d297::
             add ESP,20
             ret 
 $L_62d1f0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62d2e0 PROC
 
@@ -4922,12 +4602,7 @@ $L_62d3e6::
             nop
 $L_62d2fa ENDP
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62d650 PROC
 
@@ -5222,17 +4897,6 @@ $L_62d942::
             pop ECX
             ret 
 FUN_62d650 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 FUN_62d960 PROC
 
@@ -5444,250 +5108,29 @@ $L_62db8a::
             add ESP,12
             ret 
 FUN_62d960 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
 _TEXT ENDS
 END

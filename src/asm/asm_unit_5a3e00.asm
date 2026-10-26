@@ -232,295 +232,36 @@ $L_5a6a55::
             add ESP,80
             ret 36
 $L_5a6a52 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
+ALIGN 16
+; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
+ALIGN 16
+ALIGN 16
 $L_5ab0a0 PROC
 
             ret 
@@ -543,22 +284,6 @@ $L_5ab0b0::
 
             ret 
 $L_5ab0a0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 $L_5ab0cf PROC
 
             int 3
@@ -589,625 +314,117 @@ $L_5ab0e0::
             int 3
 $L_5ab0cf ENDP
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
+ALIGN 16
+; vector math: src\engine\vecmath.cpp, nmake ASM_VECMATH=1 assembles the original
 ALIGN 16
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ; input queue: src\engine\input.cpp, nmake ASM_INPUT=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 _TEXT ENDS
 END

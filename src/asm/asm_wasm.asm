@@ -29,1525 +29,152 @@ $L_594dc0::
 
             jmp _Static594de0_AtExit
 $L_594dbf ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
+ALIGN 16
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 $L_59eaa0 PROC
 
             jmp @Puff_CircleStep@8
 $L_59eaa0 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 $L_5a3d4f PROC
 
             int 3
@@ -1705,274 +332,40 @@ $L_5a3dfe::
 
             ret 
 $L_5a3d4f ENDP
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; engine: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 _TEXT ENDS
 END

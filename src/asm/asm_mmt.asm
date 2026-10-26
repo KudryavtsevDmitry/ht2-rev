@@ -603,1007 +603,149 @@ $L_577315::
             add ESP,632
             ret 8
 FUN_576d70 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
 
 
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
 ; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
 ALIGN 16
 ; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-ALIGN 16
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
 ALIGN 16
 ; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+ALIGN 16
+; engine: src\truck\moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
 _TEXT ENDS
 END

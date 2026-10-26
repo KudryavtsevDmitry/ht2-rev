@@ -148,18 +148,6 @@ $L_46e445::
             inc EDI
             jmp $L_46e3ed
 $L_46e319 ENDP
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
 ALIGN 16
-; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 _TEXT ENDS
 END
