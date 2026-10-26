@@ -18,7 +18,7 @@ extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // t
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")    // vector<44 bytes>::insert_aux
-ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
+ASM_FUNC(FUN_4ace70, _Deque_CopyCharsTag)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")
 extern "C" void FUN_4abd20(); KING_ALIAS("_FUN_4abd20", "_Items44_UninitCopy")
@@ -4232,8 +4232,36 @@ extern "C" void __fastcall Deque_AllocPages512(BYTE* self, void*, char** first, 
 
 // [FUN_4ac0b0] deque<char>::insert (pos, first, last): at the front or the
 // back after reserving room, elsewhere through insert_aux (4ac3d0)
-extern "C" void Dq_ReserveFront(); KING_ALIAS("_Dq_ReserveFront", "FUN_4ac930")
-extern "C" void Dq_ReserveBack(); KING_ALIAS("_Dq_ReserveBack", "FUN_4aca10")
+extern "C" void __fastcall Deque_ReallocMap(int* d, void*, unsigned add, char front);
+
+// [FUN_4ac930] deque<char>: pages for k more characters at the front
+// (the map at +0, its size +4, the start node +20)
+extern "C" void __fastcall Dq_ReserveFrontPages(BYTE* self, void*, unsigned k)
+{
+    unsigned n = (k + 511) >> 9;
+    if (n > (unsigned)((F(BYTE*, self, 20) - F(BYTE*, self, 0)) >> 2))
+        Deque_ReallocMap((int*)self, 0, n, 1);
+    for (unsigned i = 1; i <= n; i++) {
+        void* page = malloc(512);
+        if (!page)
+            page = Ai_OperatorNew(512);
+        F(void**, self, 20)[-(int)i] = page;
+    }
+}
+
+// [FUN_4aca10] the same at the back (the finish node +36)
+extern "C" void __fastcall Dq_ReserveBackPages(BYTE* self, void*, unsigned k)
+{
+    unsigned n = (k + 511) >> 9;
+    if (n + 1 > F(unsigned, self, 4) - (unsigned)((F(BYTE*, self, 36) - F(BYTE*, self, 0)) >> 2))
+        Deque_ReallocMap((int*)self, 0, n, 0);
+    for (unsigned i = 1; i <= n; i++) {
+        void* page = malloc(512);
+        if (!page)
+            page = Ai_OperatorNew(512);
+        F(void**, self, 36)[i] = page;
+    }
+}
 extern "C" void Dq_InsertAux(); KING_ALIAS("_Dq_InsertAux", "FUN_4ac3d0")
 extern "C" void __fastcall Deque_InsertRange(BYTE* self, void*, DequeIt pos, const char* first, const char* last)
 {
@@ -4244,7 +4272,7 @@ extern "C" void __fastcall Deque_InsertRange(BYTE* self, void*, DequeIt pos, con
     if (pos.cur == start.cur) {
         unsigned room = (unsigned)(start.cur - start.first);
         if (n > room)
-            CallThis(Dq_ReserveFront, self, n - room);
+            Dq_ReserveFrontPages(self, 0, n - room);
         DequeIt t = start;
         DequeIt ns = *DequeIt_Advance(&t, 0, -(int)n);
         Deque_CopyChars(&junk, first, last, ns);
@@ -4252,12 +4280,57 @@ extern "C" void __fastcall Deque_InsertRange(BYTE* self, void*, DequeIt pos, con
     } else if (pos.cur == finish.cur) {
         unsigned room = (unsigned)(finish.last - finish.cur - 1);
         if (n > room)
-            CallThis(Dq_ReserveBack, self, n - room);
+            Dq_ReserveBackPages(self, 0, n - room);
         DequeIt t = finish;
         DequeIt nf = *DequeIt_Advance(&t, 0, (int)n);
         Deque_CopyChars(&junk, first, last, finish);
         finish = nf;
     } else {
         CallThis(Dq_InsertAux, self, pos, first, last, n);
+    }
+}
+
+// [FUN_4ace70] copy (first, last, deque iterator dest, tag) into out
+extern "C" DequeIt* __cdecl Deque_CopyCharsTag(DequeIt* out, const char* first, const char* last, DequeIt dest, int)
+{
+    Deque_CopyChars4ad0f0(out, first, last, dest);
+    return out;
+}
+
+// [$L_4a8ae0] quote's step (virtual): takes a copy of the quoted value from
+// the frame (value at +20, flags +28 of the frame's object), pops the frame
+// (44 bytes, its virtual +4 with 0), appends the value to the new top frame
+// and drops the copy
+extern "C" void __fastcall Quote_Step(BYTE* self, void*, BYTE* p)
+{
+    BYTE* v = F(BYTE*, F(BYTE*, p, 112), -40);
+    DWORD h[3];
+    DWORD fl = F(DWORD, v, 28);
+    if (fl & 65536) {
+        h[2] = fl;
+        h[0] = F(DWORD, v, 20);
+        h[1] = F(DWORD, v, 24);
+    } else {
+        h[1] = 0;
+        BYTE* o = F(BYTE*, v, 20);
+        if (o) {
+            h[0] = (DWORD)o;
+            h[2] = F(DWORD, v, 28);
+            F(int, o, 4)++;
+        } else {
+            h[0] = 0;
+            h[2] = 0;
+        }
+    }
+    BYTE* fr = F(BYTE*, p, 112) - 44;
+    F(BYTE*, p, 112) = fr;
+    CallVirt(fr, 4, 0);
+    Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, h);
+    BYTE* o = (BYTE*)h[0];
+    if (!(h[2] & 65536) && o) {
+        F(int, o, 4)--;
+        o = (BYTE*)h[0];
+        if (!F(int, o, 4) && o)
+            CallVirt(o, 12, 1);
     }
 }

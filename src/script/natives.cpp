@@ -17,7 +17,7 @@ extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // t
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")    // vector<44 bytes>::insert_aux
-ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
+ASM_FUNC(FUN_4ace70, _Deque_CopyCharsTag)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 
 KING_VAR(int, g_69224c, 69224c)
