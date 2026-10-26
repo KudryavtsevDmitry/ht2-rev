@@ -2295,6 +2295,8 @@ PUBLIC $L_6534a8, $L_653570, $L_654284, $L_65428c, $L_654294, $L_65429c
 PUBLIC $L_6546d4, $L_6546dc, $L_72c160, $L_72c164, $L_72db78, $L_72dd08
 PUBLIC $L_72dd0c
 PUBLIC $L_639df5
+PUBLIC $L_653708, $L_6539f8, $L_653b00, $L_653bb8, $L_72c170, $L_72d998
+PUBLIC $L_72d9d8, $L_72da18, $L_72e0d4, $L_72e0e4
 
 ;===================================
 _TEXT SEGMENT
@@ -483061,7 +483063,7 @@ $L_515e20::
             push ECX
             mov ECX,DWORD PTR [$L_6968d0]
             push OFFSET $L_72da58
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             push 12
             call ??2@YAPAXI@Z
@@ -800549,7 +800551,7 @@ FUN_5dd0d0 PROC
             push 0
             push OFFSET $L_72da58
             mov ECX,ESI
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             push 0
             call DWORD PTR __imp__SetCursor@4
@@ -800647,7 +800649,7 @@ $L_5dd24f::
             push OFFSET $L_72da58
             mov ECX,ESI
             and EBX,1
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             mov EAX,DWORD PTR [$L_721750]
             mov BYTE PTR [ESP+32],0
@@ -800784,7 +800786,7 @@ $L_5dd330 PROC
 $L_5dd372::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             pop ESI
             ret 8
@@ -801263,7 +801265,7 @@ $L_5dd650 PROC
             ret 4
 $L_5dd6dc::
 
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             ret 4
           BYTE 090H
@@ -801306,7 +801308,7 @@ $L_5dd6f0 TEXTEQU <@Fw_One4@12>
 ENDIF
 $L_5dd700 PROC
 
-            jmp ?Default@CWnd@@IAEJXZ
+            jmp FUN_633cc9
 $L_5dd700 ENDP
           BYTE 090H
           BYTE 090H
@@ -801585,7 +801587,7 @@ $L_5dd9a0::
             mov ECX,DWORD PTR [EDX+384]
             push ESI
             push OFFSET $L_72da58
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             mov EAX,DWORD PTR [ESP+20]
             test EAX,EAX
@@ -801606,7 +801608,7 @@ $L_5dd9a0::
             push EDI
             push ESI
             push OFFSET $L_72da58
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 $L_5dda8f::
 
             mov EAX,DWORD PTR [$L_721750]
@@ -809972,7 +809974,7 @@ $L_5e2af3::
             sar EAX,1
             push EAX
             push OFFSET $L_72da58
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             mov DWORD PTR [ESP+28],ESI
             jmp $L_5e2b21
@@ -810262,7 +810264,7 @@ $L_5e2d79::
             mov ECX,DWORD PTR [EBP+384]
             push EBX
             push OFFSET $L_72da58
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             mov EAX,DWORD PTR [$L_721750]
             mov ECX,DWORD PTR [ESP+16]
@@ -968464,6 +968466,8 @@ ELSE
 EXTERN @WinThread_CreateThread@20:PROC
 FUN_632b5c TEXTEQU <@WinThread_CreateThread@20>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_632c3e PROC
 
             cmp DWORD PTR [ECX+36],0
@@ -968479,6 +968483,10 @@ $L_632c4f::
 
             ret 
 $L_632c3e ENDP
+ELSE
+EXTERN @WinThread_Delete@4:PROC
+$L_632c3e TEXTEQU <@WinThread_Delete@4>
+ENDIF
 ALIGN 16
 ?Run@CWinThread@@UAEHXZ PROC ;FUN_632c50 virtual int CWinThread::Run()
 
@@ -968572,6 +968580,8 @@ $L_632cc2::
             pop ECX
             ret 
 ?Run@CWinThread@@UAEHXZ ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_632ccf PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -968623,12 +968633,18 @@ $L_632d23::
             pop ESI
             ret 4
 $L_632ccf ENDP
+ELSE
+EXTERN @WinThread_IsIdleMessage@12:PROC
+$L_632ccf TEXTEQU <@WinThread_IsIdleMessage@12>
+ENDIF
 $L_632d28 PROC
 
             mov EAX,DWORD PTR [ECX+56]
             ret 
 $L_632d28 ENDP
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632d2c PROC
 
             push EBX
@@ -968766,6 +968782,12 @@ $L_632e27::
             setl AL
             ret 4
 FUN_632d2c ENDP
+ELSE
+EXTERN @WinThread_OnIdle@12:PROC
+FUN_632d2c TEXTEQU <@WinThread_OnIdle@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632e37 PROC
 
             push ECX
@@ -968851,6 +968873,12 @@ $L_632eaa::
             pop ECX
             ret 4
 FUN_632e37 ENDP
+ELSE
+EXTERN @WinThread_DispatchThreadMessageEx@12:PROC
+FUN_632e37 TEXTEQU <@WinThread_DispatchThreadMessageEx@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_632eb2 PROC
 
             push ESI
@@ -968915,6 +968943,10 @@ $L_632f0a::
             pop ESI
             ret 4
 $L_632eb2 ENDP
+ELSE
+EXTERN @WinThread_PreTranslateMessage@12:PROC
+$L_632eb2 TEXTEQU <@WinThread_PreTranslateMessage@12>
+ENDIF
 FUN_632f0f PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -969193,6 +969225,8 @@ $L_63311a::
             leave 
             ret 8
 $L_632fd7 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_633121 PROC
 
             mov EAX,DWORD PTR [ECX+32]
@@ -969211,6 +969245,12 @@ $L_63313b::
 
             ret 
 $L_633121 ENDP
+ELSE
+EXTERN @WinThread_GetMainWnd@4:PROC
+$L_633121 TEXTEQU <@WinThread_GetMainWnd@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63313c PROC
 
             push ESI
@@ -969253,6 +969293,10 @@ $L_633179::
             pop ESI
             ret 
 $L_63313c ENDP
+ELSE
+EXTERN @WinThread_PumpMessage@4:PROC
+$L_63313c TEXTEQU <@WinThread_PumpMessage@4>
+ENDIF
 ALIGN 4
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
@@ -970125,7 +970169,9 @@ $L_633734::
 
             ret 4
 FUN_633710 ENDP
-?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z PROC ;FUN_633737 BOOL CWnd::SetWindowPos(const CWnd *pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_633737 PROC ;?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z BOOL CWnd::SetWindowPos(const CWnd *pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags)
 
             push EBP
             mov EBP,ESP
@@ -970165,8 +970211,14 @@ $L_633782::
 
             pop EBP
             ret 24
-?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z ENDP
+FUN_633737 ENDP
+ELSE
+EXTERN @Wnd_SetWindowPos@32:PROC
+FUN_633737 TEXTEQU <@Wnd_SetWindowPos@32>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633786 PROC
 
             mov EAX,DWORD PTR [ECX+56]
@@ -970188,6 +970240,10 @@ $L_6337aa::
 
             ret 4
 FUN_633786 ENDP
+ELSE
+EXTERN @Wnd_ShowWindow@12:PROC
+FUN_633786 TEXTEQU <@Wnd_ShowWindow@12>
+ENDIF
 FUN_6337ad PROC
 
             mov EAX,DWORD PTR [ECX+56]
@@ -970246,6 +970302,8 @@ $L_633806::
             jmp DWORD PTR [EDX+172]
 FUN_6337ef ENDP
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633810 PROC
 
             push ESI
@@ -970280,6 +970338,10 @@ $L_633849::
             pop ESI
             ret 4
 FUN_633810 ENDP
+ELSE
+EXTERN @Wnd_AttachControlSite@12:PROC
+FUN_633810 TEXTEQU <@Wnd_AttachControlSite@12>
+ENDIF
 $L_63384d PROC
 
             jmp $L_633852
@@ -970427,6 +970489,8 @@ $L_63395a::
 
             ret 
 $L_633940 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63395b PROC
 
             push ESI
@@ -970445,6 +970509,10 @@ FUN_63395b PROC
             pop ESI
             ret 
 FUN_63395b ENDP
+ELSE
+EXTERN @Wnd_Construct@4:PROC
+FUN_63395b TEXTEQU <@Wnd_Construct@4>
+ENDIF
 $L_63397d PROC
 
             push ESI
@@ -970680,6 +970748,8 @@ $L_633b24::
             leave 
             ret 12
 FUN_633aca ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633b2b PROC
 
             push EBP
@@ -970743,6 +970813,12 @@ $L_633b9c::
             pop EBP
             ret 12
 FUN_633b2b ENDP
+ELSE
+EXTERN _Afx_HandleSetCursor@12:PROC
+FUN_633b2b TEXTEQU <_Afx_HandleSetCursor@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633ba1 PROC
 
             mov EAX,OFFSET $L_64a394
@@ -970860,7 +970936,14 @@ $L_633c75::
             leave 
             ret 20
 $L_633c72 ENDP
+ELSE
+EXTERN _Afx_CallWndProc@20:PROC
+FUN_633ba1 TEXTEQU <_Afx_CallWndProc@20>
+$L_633c4b LABEL NEAR
+ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633c94 PROC
 
             push ESI
@@ -970883,7 +970966,13 @@ FUN_633c94 PROC
             pop ESI
             ret 
 FUN_633c94 ENDP
-?Default@CWnd@@IAEJXZ PROC ;FUN_633cc9 protected: LRESULT CWnd::Default()
+ELSE
+EXTERN _Afx_GetCurrentMessage:PROC
+FUN_633c94 TEXTEQU <_Afx_GetCurrentMessage>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_633cc9 PROC ;?Default@CWnd@@IAEJXZ protected: LRESULT CWnd::Default()
 
             push ESI
             mov ESI,ECX
@@ -970900,8 +970989,14 @@ FUN_633c94 ENDP
 
             pop ESI
             ret 
-?Default@CWnd@@IAEJXZ ENDP
+FUN_633cc9 ENDP
+ELSE
+EXTERN @Wnd_Default@4:PROC
+FUN_633cc9 TEXTEQU <@Wnd_Default@4>
+ENDIF
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633cf0 PROC
 
             mov EAX,OFFSET $L_64a3aa
@@ -970958,7 +971053,13 @@ $L_633d50::
             leave 
             ret 4
 FUN_633cf0 ENDP
+ELSE
+EXTERN _Afx_MapHWND@4:PROC
+FUN_633cf0 TEXTEQU <_Afx_MapHWND@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633d62 PROC
 
             push ESI
@@ -970981,6 +971082,12 @@ FUN_633d62 PROC
             pop ESI
             ret 4
 FUN_633d62 ENDP
+ELSE
+EXTERN _Wnd_FromHandle@4:PROC
+FUN_633d62 TEXTEQU <_Wnd_FromHandle@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633d89 PROC
 
             push 0
@@ -970998,6 +971105,12 @@ $L_633da4::
 
             ret 4
 FUN_633d89 ENDP
+ELSE
+EXTERN _Wnd_FromHandlePermanent@4:PROC
+FUN_633d89 TEXTEQU <_Wnd_FromHandlePermanent@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633da7 PROC
 
             push EBX
@@ -971035,7 +971148,13 @@ $L_633ddb::
             pop EBX
             ret 4
 FUN_633da7 ENDP
+ELSE
+EXTERN @Wnd_Attach@12:PROC
+FUN_633da7 TEXTEQU <@Wnd_Attach@12>
+ENDIF
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633de0 PROC
 
             push ESI
@@ -971065,6 +971184,12 @@ $L_633e05::
             pop ESI
             ret 
 FUN_633de0 ENDP
+ELSE
+EXTERN @Wnd_Detach@4:PROC
+FUN_633de0 TEXTEQU <@Wnd_Detach@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_633e0e PROC
 
             push EBP
@@ -971091,11 +971216,23 @@ $L_633e39::
             pop EBP
             ret 16
 $L_633e0e ENDP
+ELSE
+EXTERN _Afx_WndProc@16:PROC
+$L_633e0e TEXTEQU <_Afx_WndProc@16>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633e3d PROC
 
             mov EAX,OFFSET $L_633e0e
             ret 
 FUN_633e3d ENDP
+ELSE
+EXTERN _Afx_GetAfxWndProc:PROC
+FUN_633e3d TEXTEQU <_Afx_GetAfxWndProc>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633e43 PROC
 
             mov EAX,OFFSET $L_64a3b4
@@ -971228,6 +971365,11 @@ $L_633f4b::
             mov DWORD PTR [EBP-20],EAX
             jmp $L_633ed4
 FUN_633e43 ENDP
+ELSE
+EXTERN _Afx_ActivationWndProc@16:PROC
+FUN_633e43 TEXTEQU <_Afx_ActivationWndProc@16>
+$L_633ed4 LABEL NEAR
+ENDIF
 $L_633f66 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -971313,6 +971455,8 @@ $L_634018::
             pop EBP
             ret 16
 $L_633fa2 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63401e PROC
 
             push EBP
@@ -971553,6 +971697,10 @@ $L_634210::
             leave 
             ret 12
 $L_63401e ENDP
+ELSE
+EXTERN _Afx_CbtFilterHook@12:PROC
+$L_63401e TEXTEQU <_Afx_CbtFilterHook@12>
+ENDIF
 ALIGN 4
 FUN_634214 PROC
 
@@ -971783,6 +971931,8 @@ $L_63439b::
             ret 28
 $L_634388 ENDP
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6343d4 PROC
 
             mov EAX,OFFSET $L_64a3c8
@@ -971841,7 +971991,13 @@ $L_634438::
             leave 
             ret 
 FUN_6343d4 ENDP
+ELSE
+EXTERN @Wnd_Destruct@4:PROC
+FUN_6343d4 TEXTEQU <@Wnd_Destruct@4>
+ENDIF
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_634450 PROC
 
             push ESI
@@ -971857,11 +972013,17 @@ $L_634461::
 
             and DWORD PTR [ESI+52],0
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             pop ESI
             ret 
 FUN_634450 ENDP
+ELSE
+EXTERN @Wnd_OnDestroy@4:PROC
+FUN_634450 TEXTEQU <@Wnd_OnDestroy@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63446e PROC
 
             push EBP
@@ -971971,7 +972133,7 @@ $L_63452d::
 
             mov ECX,ESI
             mov EBX,EAX
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             push -4
             push DWORD PTR [ESI+28]
@@ -972007,6 +972169,10 @@ $L_63456a::
             leave 
             ret 
 $L_63446e ENDP
+ELSE
+EXTERN @Wnd_OnNcDestroy@4:PROC
+$L_63446e TEXTEQU <@Wnd_OnNcDestroy@4>
+ENDIF
 $L_634580 PROC
 
             ret 
@@ -972023,6 +972189,8 @@ $L_63458c::
             jmp DWORD PTR [EAX+164]
 $L_634581 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_634592 PROC
 
             push ESI
@@ -972073,6 +972241,12 @@ $L_6345d9::
             pop ESI
             ret 
 FUN_634592 ENDP
+ELSE
+EXTERN @Wnd_DestroyWindow@4:PROC
+FUN_634592 TEXTEQU <@Wnd_DestroyWindow@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_6345df PROC
 
             push EBP
@@ -972111,12 +972285,18 @@ $L_634621::
             pop EBP
             ret 12
 $L_6345df ENDP
+ELSE
+EXTERN @Wnd_DefWindowProc@20:PROC
+$L_6345df TEXTEQU <@Wnd_DefWindowProc@20>
+ENDIF
 $L_634626 PROC
 
             lea EAX,DWORD PTR [ECX+40]
             ret 
 $L_634626 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63462a PROC
 
             push ESI
@@ -972136,6 +972316,10 @@ $L_634643::
             pop ESI
             ret 4
 FUN_63462a ENDP
+ELSE
+EXTERN @Wnd_ModuleHook@12:PROC
+FUN_63462a TEXTEQU <@Wnd_ModuleHook@12>
+ENDIF
 FUN_634649 PROC
 
             push ESI
@@ -972270,7 +972454,7 @@ $L_634734::
 $L_634742::
 
             mov ECX,EDI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_634749::
 
             pop EDI
@@ -972297,7 +972481,7 @@ $L_63474e PROC
 $L_63476c::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_634773::
 
             pop ESI
@@ -972317,7 +972501,7 @@ $L_634778 PROC
             jne $L_634794
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_634794::
 
             pop ESI
@@ -972345,7 +972529,7 @@ $L_634798 PROC
 $L_6347b7::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_6347be::
 
             pop ESI
@@ -972476,7 +972660,7 @@ $L_634873::
 $L_634892::
 
             mov ECX,EDI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_634899::
 
             pop EDI
@@ -972797,6 +972981,8 @@ $L_634b1b PROC
             mov EAX,OFFSET $L_653750
             ret 
 $L_634b1b ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_634b21 PROC
 
             push EBP
@@ -972841,6 +973027,12 @@ $L_634b59::
             pop EBP
             ret 16
 FUN_634b21 ENDP
+ELSE
+EXTERN _Afx_FindMessageEntry@16:PROC
+FUN_634b21 TEXTEQU <_Afx_FindMessageEntry@16>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_634b61 PROC
 
             push EBP
@@ -972876,6 +973068,12 @@ $L_634b9d::
             leave 
             ret 12
 $L_634b61 ENDP
+ELSE
+EXTERN @Wnd_WindowProc@20:PROC
+$L_634b61 TEXTEQU <@Wnd_WindowProc@20>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_634ba5 PROC
 
             mov EAX,OFFSET $L_64a40c
@@ -973526,7 +973724,6 @@ $L_63504b::
             push 1
             pop EAX
             jmp $L_634d30
-FUN_634ba5 ENDP
 $L_635053           DWORD $L_634d80
           DWORD $L_634d8e
           DWORD $L_634d96
@@ -973576,6 +973773,11 @@ $L_635053           DWORD $L_634d80
           DWORD $L_634fa7
           DWORD $L_634fce
           DWORD $L_634fdf
+FUN_634ba5 ENDP
+ELSE
+EXTERN @Wnd_OnWndMsg@24:PROC
+FUN_634ba5 TEXTEQU <@Wnd_OnWndMsg@24>
+ENDIF
 FUN_635117 PROC
 
             push ESI
@@ -973791,6 +973993,8 @@ $L_635285::
             ret 
 FUN_63524a ENDP
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_635288 PROC
 
             push ESI
@@ -973832,6 +974036,12 @@ $L_6352c9::
             pop ESI
             ret 4
 FUN_635288 ENDP
+ELSE
+EXTERN _Afx_GetParentOwner@4:PROC
+FUN_635288 TEXTEQU <_Afx_GetParentOwner@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6352cd PROC
 
             test ECX,ECX
@@ -973867,6 +974077,10 @@ $L_6352ed::
             pop ESI
             ret 
 FUN_6352cd ENDP
+ELSE
+EXTERN @Wnd_GetTopLevelParent@4:PROC
+FUN_6352cd TEXTEQU <@Wnd_GetTopLevelParent@4>
+ENDIF
 FUN_6352f5 PROC
 
             push ESI
@@ -973993,6 +974207,8 @@ $L_6353a9::
             pop EBP
             ret 12
 FUN_635336 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6353af PROC
 
             push EBP
@@ -974064,6 +974280,10 @@ $L_635426::
             pop EBP
             ret 24
 FUN_6353af ENDP
+ELSE
+EXTERN _Wnd_SendMessageToDescendants@24:PROC
+FUN_6353af TEXTEQU <_Wnd_SendMessageToDescendants@24>
+ENDIF
 ALIGN 4
 FUN_63542c PROC
 
@@ -974347,6 +974567,8 @@ $L_635612::
             pop ESI
             ret 8
 $L_635600 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63562b PROC
 
             push ESI
@@ -974395,6 +974617,10 @@ $L_635668::
             pop ESI
             ret 8
 FUN_63562b ENDP
+ELSE
+EXTERN _Wnd_WalkPreTranslateTree@8:PROC
+FUN_63562b TEXTEQU <_Wnd_WalkPreTranslateTree@8>
+ENDIF
 FUN_63566d PROC
 
             push ESI
@@ -974683,7 +974909,7 @@ $L_635894::
 $L_6358a3::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_6358aa::
 
             pop ESI
@@ -974766,7 +974992,7 @@ $L_635924::
 $L_635944::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             pop ESI
             ret 
@@ -974899,7 +975125,7 @@ $L_6359eb PROC
 $L_635a42::
 
             mov ECX,EBX
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_635a49::
 
             pop EDI
@@ -974938,7 +975164,7 @@ $L_635a65::
 $L_635a8d::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             pop ESI
             ret 8
@@ -974963,7 +975189,7 @@ $L_635a98 PROC
 $L_635ab6::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_635abd::
 
             pop ESI
@@ -974986,7 +975212,7 @@ $L_635ac2 PROC
 $L_635ad8::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_635adf::
 
             pop ESI
@@ -975030,7 +975256,7 @@ $L_635b03::
 $L_635b1f::
 
             mov ECX,EBX
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             pop EDI
             pop ESI
@@ -975057,7 +975283,7 @@ $L_635b2d PROC
 $L_635b48::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_635b4f::
 
             pop ESI
@@ -975358,7 +975584,7 @@ $L_635d65::
             push ECX
             mov ECX,DWORD PTR [EBP-8]
             push 0
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             pop EDI
             pop ESI
@@ -978680,7 +978906,7 @@ FUN_63740d PROC
             push EDI
             push EDI
             push OFFSET $L_72da18
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             pop EDI
             pop ESI
@@ -979598,7 +979824,7 @@ $L_637b07 PROC
 
             push ESI
             mov ESI,ECX
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             mov ECX,DWORD PTR [ESI+104]
             pop ESI
@@ -979633,7 +979859,7 @@ $L_637b23 PROC
 $L_637b3b::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             pop ESI
             ret 
@@ -979716,7 +979942,7 @@ $L_637b44 ENDP
 $L_637bce::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_637bd5::
 
             pop ESI
@@ -980586,7 +980812,7 @@ FUN_6381e6 PROC
 
             push ESI
             mov ESI,ECX
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             cmp EAX,-1
             je $L_638209
@@ -981214,7 +981440,7 @@ $L_63868a PROC
             push EBX
             push ESI
             mov EBX,ECX
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             mov ECX,EBX
             call FUN_6336ab
@@ -981434,7 +981660,7 @@ $L_6387e6::
 $L_63881e::
 
             mov ECX,EDI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_638825::
 
             pop EDI
@@ -981726,7 +981952,7 @@ $L_638a79 PROC
             jmp $L_638a91
 $L_638a8c::
 
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_638a91::
 
             ret 4
@@ -981784,7 +982010,7 @@ $L_638ad3::
             push EBX
             push EBX
             push EBX
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             mov EAX,DWORD PTR [EDI]
             push DWORD PTR [EBP+12]
@@ -981898,7 +982124,7 @@ $L_638b9f PROC
 $L_638bb2::
 
             mov ECX,ESI
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             pop ESI
             ret 4
@@ -983337,7 +983563,7 @@ $L_639699::
             push EDI
             push EDI
             push EDI
-            call ?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z
+            call FUN_633737
 
             jmp $L_63972f
 $L_639715::
@@ -983444,7 +983670,7 @@ $L_6397b6 PROC
 
             push ESI
             mov ESI,ECX
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 
             cmp DWORD PTR [ESP+8],1
             je $L_6397d1
@@ -983468,7 +983694,7 @@ $L_6397d5 PROC
             jmp $L_6397e8
 $L_6397e3::
 
-            call ?Default@CWnd@@IAEJXZ
+            call FUN_633cc9
 $L_6397e8::
 
             ret 4

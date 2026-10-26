@@ -371,3 +371,11 @@ AfxLockTempMaps/AfxUnlockTempMaps, AfxPostQuitMessage, AfxOleGetUserCtrl, AfxGlo
 library procs are renamed in king.masm to their FUN_ address (old name kept in the PROC comment) so that the
 usual wrapping works. Kept in asm: _AfxThreadEntry (try/catch), the state destructors (exit only). Drive test
 passes; the load test drifted (941.9..943.4, the part 1 build was exact) and is no longer used.
+
+MFC part 3: the window core (37 procs): afxMapHWND, CWnd::FromHandle/FromHandlePermanent/Attach/Detach,
+the CWnd constructor and destructor, DestroyWindow, ShowWindow, SetWindowPos, DefWindowProc, Default,
+OnNcDestroy, the message dispatch (OnWndMsg with its message cache and all AfxSig handler forms,
+AfxFindMessageEntry, WindowProc, AfxCallWndProc, AfxWndProc), the CBT creation hook and the activation
+subclass, SendMessageToDescendants, WalkPreTranslateTree, and CWinThread's PumpMessage, PreTranslateMessage,
+DispatchThreadMessageEx, IsIdleMessage, OnIdle, GetMainWnd and Delete. OnWndMsg's jump table moved inside
+its PROC so that it is wrapped with it. Drive test passes.
