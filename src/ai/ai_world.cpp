@@ -16831,11 +16831,11 @@ extern "C" void __cdecl Ai_NewPlayerAt(PositionId pos)
 // Batch: rope appends, hash table growth, order info copies, road object searches, the human's place
 
 extern "C" void FUN_459150(); KING_ALIAS("_FUN_459150", "_SchString_FromChars")    // a rope leaf with a copy of (s, len)
-ASM_PROC(FUN_45a2b0)    // rope::_S_concat_char_iter (r, s, len)
+ASM_FUNC(FUN_45a2b0, _Rope_ConcatCharIter)    // rope::_S_concat_char_iter (r, s, len)
 extern "C" void FUN_462700(); KING_ALIAS("_FUN_462700", "_SchString_Concat")    // rope::_S_leaf_concat_char_iter (leaf, s, len)
 extern "C" void FUN_45a0e0(); KING_ALIAS("_FUN_45a0e0", "_Str_Rounded")    // rope::_S_rounded_up_size (n)
 extern "C" void FUN_466560(); KING_ALIAS("_FUN_466560", "_CopyN")    // uninitialized_copy_n (out pair, s, n, dest, -)
-ASM_PROC(FUN_45a5e0)    // rope::_S_tree_concat (left, right)
+ASM_FUNC(FUN_45a5e0, _Rope_TreeConcat)    // rope::_S_tree_concat (left, right)
 extern "C" void FUN_44f1b0(); KING_ALIAS("_FUN_44f1b0", "@Rope_FreeTree@8")    // frees a rope node (thiscall)
 extern "C" void FUN_44fde0(); KING_ALIAS("_FUN_44fde0", "_LowerBound")    // lower_bound over the primes (first, last, &n)
 extern "C" void FUN_44a550(); KING_ALIAS("_FUN_44a550", "@Vec4_Reserve@16")    // vector<4 bytes> storage for n (thiscall: n, alloc)
@@ -24948,4 +24948,59 @@ KING_VAR(AsmLabel, aw_s66f544, 66f544)
 extern "C" void __fastcall Stl_LengthError(void*)
 {
     Sys_Fatal(aw_s66f544, 0);
+}
+
+// [FUN_45a5e0] rope::_S_tree_concat (left, right): a new concatenation node
+// (28 bytes: size, references 1, tag 1, depth = the deeper child + 1),
+// rebalanced (462850) when deeper than 20 and short (< 1000) or deeper than 45
+extern "C" void Rp_Balance(); KING_ALIAS("_Rp_Balance", "FUN_462850")
+extern "C" BYTE* __cdecl Rope_TreeConcat(BYTE* left, BYTE* right)
+{
+    BYTE* n = (BYTE*)Stl_Allocate(28);
+    if (n) {
+        BYTE depth = F(BYTE, left, 13) < F(BYTE, right, 13) ? F(BYTE, right, 13) : F(BYTE, left, 13);
+        F(int, n, 0) = F(int, left, 0) + F(int, right, 0);
+        F(int, n, 4) = 1;
+        F(BYTE, n, 8) = 1;
+        F(BYTE, n, 13) = (BYTE)(depth + 1);
+        F(BYTE, n, 12) = 0;
+        F(int, n, 16) = 0;
+        F(BYTE*, n, 20) = left;
+        F(BYTE*, n, 24) = right;
+    }
+    unsigned d = F(BYTE, n, 13);
+    if (d <= 20 || (F(unsigned, n, 0) >= 1000 && d <= 45))
+        return n;
+    BYTE* b = CallC<BYTE*>(Rp_Balance, n);
+    Rope_Unref(n, 0);
+    return b;
+}
+
+// [FUN_45a2b0] rope::_S_concat_char_iter (r, s, len): r with len characters
+// appended; short leaves (and a concatenation's short right leaf) are
+// extended in place of a new node
+extern "C" BYTE* __cdecl Rope_ConcatCharIter(BYTE* r, const char* s, unsigned len)
+{
+    if (!len) {
+        if (r)
+            InterlockedIncrement((LONG*)(r + 4));
+        return r;
+    }
+    if (!r)
+        return SchString_FromChars(s, len);
+    BYTE tag = F(BYTE, r, 8);
+    if (tag == 0 && F(unsigned, r, 0) + len <= 23)
+        return SchString_Concat(r, s, len);
+    if (tag == 1) {
+        BYTE* right = F(BYTE*, r, 24);
+        if (!F(BYTE, right, 8) && F(unsigned, right, 0) + len <= 23) {
+            BYTE* left = F(BYTE*, r, 20);
+            BYTE* nr = SchString_Concat(right, s, len);
+            InterlockedIncrement((LONG*)(left + 4));
+            return Rope_TreeConcat(left, nr);
+        }
+    }
+    BYTE* nr = SchString_FromChars(s, len);
+    InterlockedIncrement((LONG*)(r + 4));
+    return Rope_TreeConcat(r, nr);
 }
