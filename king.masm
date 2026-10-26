@@ -2289,6 +2289,8 @@ PUBLIC $L_683b58, $L_683b68
 PUBLIC $L_66c934, $L_67035c
 PUBLIC $L_64b59c
 PUBLIC $L_67e918
+PUBLIC $L_6545a8, $L_72db7c, $L_72de40, $L_72de44, $L_72de48, $L_72de7c
+PUBLIC $L_72dec0, $L_72ded8, $L_72e070, $L_72e074
 
 ;===================================
 _TEXT SEGMENT
@@ -984620,6 +984622,8 @@ $L_63a107::
             leave 
             ret 
 FUN_63a0a1 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a115 PROC
 
             push OFFSET $L_639dac
@@ -984628,6 +984632,10 @@ FUN_63a115 PROC
 
             ret 
 FUN_63a115 ENDP
+ELSE
+EXTERN _Afx_GetThreadState:PROC
+FUN_63a115 TEXTEQU <_Afx_GetThreadState>
+ENDIF
 $L_63a125 PROC
 
             call FUN_63a12f
@@ -984927,6 +984935,8 @@ $L_63a367::
             ret 
 ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ ENDP
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a368 PROC
 
             call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
@@ -984938,6 +984948,10 @@ FUN_63a368 PROC
 
             ret 
 FUN_63a368 ENDP
+ELSE
+EXTERN _Afx_GetModuleThreadState:PROC
+FUN_63a368 TEXTEQU <_Afx_GetModuleThreadState>
+ENDIF
 FUN_63a37f PROC
 
             push ESI
@@ -985690,6 +985704,8 @@ $L_63a898 PROC
             jmp FUN_61c97b
 $L_63a898 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a8a2 PROC
 
             mov EDX,DWORD PTR [ECX+4]
@@ -985701,6 +985717,12 @@ FUN_63a8a2 PROC
             pop ESI
             ret 4
 FUN_63a8a2 ENDP
+ELSE
+EXTERN @SimpleList_AddHead@12:PROC
+FUN_63a8a2 TEXTEQU <@SimpleList_AddHead@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a8b5 PROC
 
             mov EDX,DWORD PTR [ECX]
@@ -985756,6 +985778,12 @@ $L_63a8f8::
 
             ret 4
 FUN_63a8b5 ENDP
+ELSE
+EXTERN @SimpleList_Remove@12:PROC
+FUN_63a8b5 TEXTEQU <@SimpleList_Remove@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a8fb PROC
 
             push ESI
@@ -985774,6 +985802,12 @@ $L_63a913::
             pop ESI
             ret 4
 FUN_63a8fb ENDP
+ELSE
+EXTERN _NoTrack_New@4:PROC
+FUN_63a8fb TEXTEQU <_NoTrack_New@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a919 PROC
 
             cmp DWORD PTR [ESP+4],0
@@ -985785,6 +985819,12 @@ $L_63a92a::
 
             ret 4
 FUN_63a919 ENDP
+ELSE
+EXTERN _NoTrack_Delete@4:PROC
+FUN_63a919 TEXTEQU <_NoTrack_Delete@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a92d PROC
 
             push ESI
@@ -985814,6 +985854,12 @@ $L_63a961::
             pop ESI
             ret 
 FUN_63a92d ENDP
+ELSE
+EXTERN @SlotData_Construct@4:PROC
+FUN_63a92d TEXTEQU <@SlotData_Construct@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a96f PROC
 
             push ESI
@@ -985866,7 +985912,13 @@ $L_63a9b9::
             pop ESI
             ret 
 FUN_63a96f ENDP
+ELSE
+EXTERN @SlotData_Destruct@4:PROC
+FUN_63a96f TEXTEQU <@SlotData_Destruct@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a9c6 PROC
 
             push ECX
@@ -986003,7 +986055,13 @@ $L_63aab6::
             pop ECX
             ret 
 FUN_63a9c6 ENDP
+ELSE
+EXTERN @SlotData_AllocSlot@4:PROC
+FUN_63a9c6 TEXTEQU <@SlotData_AllocSlot@4>
+ENDIF
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63aad8 PROC
 
             push EBP
@@ -986058,6 +986116,12 @@ $L_63ab1b::
             leave 
             ret 4
 FUN_63aad8 ENDP
+ELSE
+EXTERN @SlotData_FreeSlot@12:PROC
+FUN_63aad8 TEXTEQU <@SlotData_FreeSlot@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63ab35 PROC
 
             push EBP
@@ -986174,6 +986238,10 @@ $L_63ac0c::
             leave 
             ret 8
 FUN_63ab35 ENDP
+ELSE
+EXTERN @SlotData_SetValue@16:PROC
+FUN_63ab35 TEXTEQU <@SlotData_SetValue@16>
+ENDIF
 $L_63ac1f PROC
 
             push ESI
@@ -986196,6 +986264,8 @@ FUN_63ac3a PROC
 
             ret 
 FUN_63ac3a ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63ac3b PROC
 
             push EBP
@@ -986285,7 +986355,13 @@ $L_63accd::
             leave 
             ret 8
 FUN_63ac3b ENDP
+ELSE
+EXTERN @SlotData_DeleteThreadValues@16:PROC
+FUN_63ac3b TEXTEQU <@SlotData_DeleteThreadValues@16>
+ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63acd4 PROC
 
             push EBX
@@ -986339,6 +986415,12 @@ $L_63ad21::
             pop EBX
             ret 8
 FUN_63acd4 ENDP
+ELSE
+EXTERN @SlotData_DeleteValues@16:PROC
+FUN_63acd4 TEXTEQU <@SlotData_DeleteValues@16>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63ad2d PROC
 
             push ESI
@@ -986409,7 +986491,13 @@ $L_63ad9d::
             pop ESI
             ret 4
 FUN_63ad2d ENDP
+ELSE
+EXTERN @ThreadLocal_GetData@12:PROC
+FUN_63ad2d TEXTEQU <@ThreadLocal_GetData@12>
+ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63ada4 PROC
 
             push ESI
@@ -986440,6 +986528,12 @@ $L_63adcd::
             pop ESI
             ret 
 FUN_63ada4 ENDP
+ELSE
+EXTERN @ThreadLocal_GetDataNA@4:PROC
+FUN_63ada4 TEXTEQU <@ThreadLocal_GetDataNA@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63add1 PROC
 
             push ESI
@@ -986460,6 +986554,12 @@ $L_63adea::
             pop ESI
             ret 
 FUN_63add1 ENDP
+ELSE
+EXTERN @ThreadLocal_Destruct@4:PROC
+FUN_63add1 TEXTEQU <@ThreadLocal_Destruct@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63adef PROC
 
             mov EAX,OFFSET $L_64a5f8
@@ -986502,6 +986602,10 @@ $L_63ae27::
             leave 
             ret 4
 FUN_63adef ENDP
+ELSE
+EXTERN @ProcessLocal_GetData@12:PROC
+FUN_63adef TEXTEQU <@ProcessLocal_GetData@12>
+ENDIF
 $L_63ae3a PROC
 
             push 16
@@ -986536,6 +986640,8 @@ $L_63ae6d::
             leave 
             ret 
 $L_63ae4a ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63ae6f PROC
 
             mov ECX,DWORD PTR [$L_72de44]
@@ -986549,6 +986655,12 @@ $L_63ae86::
 
             ret 8
 FUN_63ae6f ENDP
+ELSE
+EXTERN _Afx_TermLocalData@8:PROC
+FUN_63ae6f TEXTEQU <_Afx_TermLocalData@8>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63ae89 PROC
 
             cmp DWORD PTR [$L_72de40],0
@@ -986569,6 +986681,10 @@ $L_63aeb0::
 
             ret 
 $L_63ae89 ENDP
+ELSE
+EXTERN _Afx_TlsRelease:PROC
+$L_63ae89 TEXTEQU <_Afx_TlsRelease>
+ENDIF
 FUN_63aeb1 PROC
 
             push EBP
@@ -986693,6 +986809,8 @@ $L_63af85::
             leave 
             ret 4
 FUN_63af45 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63af8b PROC
 
             cmp DWORD PTR [$L_72e074],0
@@ -986723,7 +986841,13 @@ $L_63afc9::
             pop ESI
             ret 
 FUN_63af8b ENDP
+ELSE
+EXTERN _Afx_CriticalInit:PROC
+FUN_63af8b TEXTEQU <_Afx_CriticalInit>
+ENDIF
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63afd0 PROC
 
             cmp DWORD PTR [$L_72e074],0
@@ -986765,7 +986889,13 @@ $L_63b01d::
 
             ret 
 FUN_63afd0 ENDP
+ELSE
+EXTERN _Afx_CriticalTerm:PROC
+FUN_63afd0 TEXTEQU <_Afx_CriticalTerm>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63b01e PROC
 
             push EBX
@@ -986821,7 +986951,13 @@ $L_63b08a::
             pop EBX
             ret 4
 FUN_63b01e ENDP
+ELSE
+EXTERN _Afx_LockGlobals@4:PROC
+FUN_63b01e TEXTEQU <_Afx_LockGlobals@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63b08e PROC
 
             cmp DWORD PTR [$L_72e070],0
@@ -986836,6 +986972,10 @@ $L_63b0ac::
 
             ret 4
 FUN_63b08e ENDP
+ELSE
+EXTERN _Afx_UnlockGlobals@4:PROC
+FUN_63b08e TEXTEQU <_Afx_UnlockGlobals@4>
+ENDIF
 $L_63b0af PROC
 
             call FUN_63b0b9

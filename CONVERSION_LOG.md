@@ -354,3 +354,12 @@ VehicleObj_Attach, Flake_Step (its code between two PROCs wraps with them) and W
 matrix by value). Drive and load tests pass (load exact twice). Left on purpose: FUN_563600 copter step (10.6 KB,
 FPU values carried across branches, likely not reached by the tests), the adjustor thunks at $L_55fa7f (they
 forward unknown stack arguments), FUN_4ac3d0 deque insert, rope helpers that throw.
+
+MFC part 1 (src/engine/mfc.cpp, new switch ASM_MFC): king.exe links MFC 4.2 statically; the game classes
+derive from CWinApp and CFrameWnd, so MFC is being replaced by own code with the same object layouts and
+vtable slots. Of 954 MFC procs, 186 ran during the drive and load tests (cdb one-shot breakpoints).
+This part: MFC's thread local and process local storage (CThreadSlotData, CThreadLocalObject,
+CProcessLocalObject), AfxLockGlobals and the critical sections, CNoTrackObject new/delete, CSimpleList,
+AfxGetThreadState and AfxGetModuleThreadState (23 procs). Drive tests pass (one of three ended at
+Z 22.36, the reruns at 20.91/20.92), load test exact. The Makefile's CFLAGS had the same include
+directories repeated about 40 times; reduced to one.
