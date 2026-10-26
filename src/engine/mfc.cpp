@@ -690,8 +690,8 @@ ASM_PROC(FUN_620066)                            // _beginthreadex
 ASM_PROC(FUN_62016d)                            // _endthreadex
 ASM_VAR(int, g_ctl3dThreadState, $L_72dd08)     // CThreadLocal<_AFX_CTL3D_THREAD>
 ASM_VAR(void*, g_ctl3dState, $L_72dd0c)         // CProcessLocal<_AFX_CTL3D_STATE>
-ASM_PROC($L_639de0)                             // new _AFX_CTL3D_STATE
-ASM_PROC($L_639df5)                             // new _AFX_CTL3D_THREAD
+extern "C" void $L_639de0(); KING_ALIAS("_$L_639de0", "_Ctl3dState_New")                             // new _AFX_CTL3D_STATE
+extern "C" BYTE* __cdecl Ctl3dThread_New();       // [$L_639df5] new _AFX_CTL3D_THREAD
 extern "C" void $L_632f34(); KING_ALIAS("_$L_632f34", "_Afx_MsgFilterHook@12")                             // _AfxMsgFilterHook
 
 // [FUN_632b5c] CWinThread::CreateThread: starts the thread suspended and
@@ -787,7 +787,7 @@ extern "C" void __cdecl Afx_InitThread() {
     BYTE* ctl = (BYTE*)ProcessLocal_GetData(&g_ctl3dState, 0, (void* (__stdcall*)())$L_639de0);
     typedef BOOL (WINAPI* Ctl3dFn)(HINSTANCE);
     if (F(Ctl3dFn, ctl, 20)) F(Ctl3dFn, ctl, 20)(F(HINSTANCE, Afx_GetModuleState(), 8));
-    ThreadLocal_GetData(&g_ctl3dThreadState, 0, (void* (__stdcall*)())$L_639df5);
+    ThreadLocal_GetData(&g_ctl3dThreadState, 0, (void* (__stdcall*)())Ctl3dThread_New);
 }
 
 // ---------------------------------------------------------------------------
@@ -926,7 +926,7 @@ extern "C" void FUN_61c701(); KING_ALIAS("_FUN_61c701", "@Wnd_GetOwner@4")      
 extern "C" void FUN_61c4c1(); KING_ALIAS("_FUN_61c4c1", "_Afx_GetMainWnd")                            // AfxGetMainWnd
 extern "C" void FUN_636ade(); KING_ALIAS("_FUN_636ade", "_Menu_FromHandle@4")                            // CMenu::FromHandle
 extern "C" void FUN_639948(); KING_ALIAS("_FUN_639948", "_Afx_OleCanExitApp")                            // AfxOleCanExitApp
-ASM_PROC($L_633fa2)                             // _AfxActivationWndProc (CTL3D)
+extern "C" void $L_633fa2(); KING_ALIAS("_$L_633fa2", "_Afx_GrayBackgroundWndProc@16")                             // _AfxActivationWndProc (CTL3D)
 
 #define HWND_OF(w) F(HWND, w, 28)
 
@@ -2528,7 +2528,7 @@ extern "C" void __fastcall Wnd_NotifyFloatingWindows(BYTE* self, void*, DWORD fl
 
 ASM_VAR(char, g_ctl3dDll, $L_6544e4)           // "CTL3D32.DLL"
 ASM_VAR(void*, g_winState, $L_72c15c)          // CProcessLocal<_AFX_WIN_STATE>
-ASM_PROC($L_63a003)                            // new _AFX_WIN_STATE
+extern "C" void $L_63a003(); KING_ALIAS("_$L_63a003", "_WinState_New")                            // new _AFX_WIN_STATE
 ASM_PROC(FUN_6371c5)                           // AfxThrowResourceException
 
 // [FUN_63a662] CWinApp::Enable3dControls
@@ -3712,8 +3712,8 @@ extern "C" const char* __fastcall FrameWnd_GetIconWndClass(BYTE* self, void*, DW
 #include <shellapi.h>
 typedef void (WINAPI* VoidFn)();
 extern "C" void FUN_6332c8(); KING_ALIAS("_FUN_6332c8", "@CmdTarget_OnCmdMsg@24")                            // CCmdTarget::OnCmdMsg
-ASM_PROC(FUN_638fd9)                            // CFrameWnd::DestroyDockBars
-ASM_PROC(FUN_6327b7)                            // CWinApp::DevModeChange
+extern "C" void FUN_638fd9(); KING_ALIAS("_FUN_638fd9", "@FrameWnd_DestroyDockBars@4")                            // CFrameWnd::DestroyDockBars
+extern "C" void FUN_6327b7(); KING_ALIAS("_FUN_6327b7", "@WinApp_DevModeChange@12")                            // CWinApp::DevModeChange
 extern "C" void FUN_63566d(); KING_ALIAS("_FUN_63566d", "@Wnd_SendChildNotifyLastMsg@12")                            // CWnd::SendChildNotifyLastMsg
 ASM_PROC(FUN_6317b8)                            // UnpackDDElParam
 ASM_PROC(FUN_6317b2)                            // ReuseDDElParam
@@ -4605,7 +4605,7 @@ extern "C" void __fastcall Object_Set44Post(BYTE* self, void*, DWORD v) {
 // m_nIDLastMessage, +156 m_lpfnCloseProc, +172 m_strTitle, +176
 // m_bInRecalcLayout, +184 m_nIdleFlags.
 
-ASM_PROC(FUN_638aa4)                            // CFrameWnd::ShowControlBar
+extern "C" void FUN_638aa4(); KING_ALIAS("_FUN_638aa4", "@FrameWnd_ShowControlBar@20")                            // CFrameWnd::ShowControlBar
 ASM_VAR(char, g_fmtWindowNumber, $L_65427c)     // ":%d"
 ASM_VAR(char, g_titleSeparator, $L_654278)      // " - "
 ASM_VAR(BYTE*, g_staticDocManager, $L_72c160)   // CDocManager::pStaticDocManager
@@ -6118,4 +6118,237 @@ extern "C" BOOL __cdecl Afx_OleCanExitApp() { return F(int, Afx_GetModuleState()
 extern "C" BYTE* __fastcall Object_SetVtbl6534a0(BYTE* self) {
     F(void*, self, 0) = g_vtbl6534a0;
     return self;
+}
+
+// ---------------------------------------------------------------------------
+// CSimpleException's message, CWinApp::DevModeChange, the gray dialog
+// background, CFrameWnd::LoadFrame, the CTL3D and window state factories
+
+ASM_PROC(FUN_6317ca)                            // OpenPrinterA
+ASM_PROC(FUN_6317c4)                            // DocumentPropertiesA
+ASM_PROC(FUN_6317be)                            // ClosePrinter
+ASM_VAR(AsmLabel, g_processLocalWinState, $L_72c15c)   // CProcessLocal<_AFX_WIN_STATE>
+
+// [FUN_63217d] CSimpleException::InitString: loads the message of the
+// resource id (+148) into +20
+extern "C" void __fastcall SimpleException_InitString(BYTE* self) {
+    F(BOOL, self, 12) = TRUE;                                      // m_bInitialized
+    F(BOOL, self, 16) = Afx_LoadString(F(UINT, self, 148), (char*)self + 20, 128) != 0;   // m_bLoaded
+}
+
+// [$L_6321a6] CSimpleException::GetErrorMessage
+extern "C" BOOL __fastcall SimpleException_GetErrorMessage(BYTE* self, void*, char* error, UINT maxError, UINT* help) {
+    if (help) *help = 0;
+    if (!F(BOOL, self, 12)) SimpleException_InitString(self);
+    if (F(BOOL, self, 16)) lstrcpynA(error, (const char*)self + 20, maxError);
+    else *error = 0;
+    return F(BOOL, self, 16);
+}
+
+// [FUN_6327b7] CWinApp::DevModeChange: rereads the DEVMODE (+148) of the
+// selected printer (+152 its DEVNAMES)
+extern "C" void __fastcall WinApp_DevModeChange(BYTE* self, void*, char* device) {
+    if (!F(HGLOBAL, self, 152)) return;
+    BYTE* names = (BYTE*)GlobalLock(F(HGLOBAL, self, 152));
+    if (lstrcmpA((const char*)names + F(WORD, names, 2), device)) return;   // wDeviceOffset
+    HANDLE printer;
+    if (!CallStd<BOOL>(FUN_6317ca, device, &printer, (void*)0)) return;
+    if (F(HGLOBAL, self, 148)) Afx_GlobalFree(F(HGLOBAL, self, 148));
+    LONG size = CallStd<LONG>(FUN_6317c4, (HWND)0, printer, device, (void*)0, (void*)0, (DWORD)0);
+    F(HGLOBAL, self, 148) = GlobalAlloc(GHND, size);
+    void* mode = GlobalLock(F(HGLOBAL, self, 148));
+    if (CallStd<LONG>(FUN_6317c4, (HWND)0, printer, device, mode, (void*)0, (DWORD)2) != IDOK) {   // DM_OUT_BUFFER
+        Afx_GlobalFree(F(HGLOBAL, self, 148));
+        F(HGLOBAL, self, 148) = 0;
+    }
+    CallStd(FUN_6317be, printer);
+}
+
+// [$L_63a003] new _AFX_WIN_STATE
+extern "C" BYTE* __cdecl WinState_New() {
+    BYTE* p = (BYTE*)NoTrack_New(16);
+    return p ? Object_SetVtbl6534a0(p) : 0;
+}
+
+// [$L_633fa2] _AfxGrayBackgroundWndProc: the dialog brush behind gray
+// controls (SetDialogBkColor), the rest to the activation procedure
+extern "C" LRESULT __stdcall Afx_GrayBackgroundWndProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
+    BYTE* ws = (BYTE*)ProcessLocal_GetData((void**)&g_processLocalWinState, 0, (void* (__stdcall*)())WinState_New);
+    if (F(HBRUSH, ws, 4)
+        && (msg == WM_CTLCOLORBTN || msg == WM_CTLCOLORDLG || msg == WM_CTLCOLORSTATIC
+            || msg == WM_CTLCOLORSCROLLBAR || msg == WM_CTLCOLORLISTBOX)
+        && Afx_GrayCtlColor((HDC)w, (HWND)l, msg - WM_CTLCOLORMSGBOX, F(HBRUSH, ws, 4), F(COLORREF, ws, 8)))
+        return (LRESULT)F(HBRUSH, ws, 4);
+    return Afx_ActivationWndProc(h, msg, w, l);
+}
+
+// [$L_6382b8] CFrameWnd::LoadFrame: the title, icon class, menu and
+// accelerators of the resource id
+extern "C" BOOL __fastcall FrameWnd_LoadFrame(BYTE* self, void*, UINT id, DWORD style, BYTE* parent, void* context) {
+    F(UINT, self, 140) = id;                                       // m_nIDHelp
+    char* full = g_afxPchNil;
+    if (String_LoadString(&full, 0, id)) Afx_ExtractSubString(&F(char*, self, 172), full, 0, '\n');
+    Afx_EndDeferRegisterClass(8);                                  // AFX_WNDFRAMEORVIEW_REG
+    const char* cls = FrameWnd_GetIconWndClass(self, 0, style, id);
+    BOOL r = FALSE;
+    if (FrameWnd_Create(self, 0, cls, F(const char*, self, 172), style, &g_rectDefault, parent,
+                        MAKEINTRESOURCEA((WORD)id), 0, context)) {
+        F(HMENU, self, 68) = GetMenu(HWND_OF(self));               // m_hMenuDefault
+        FrameWnd_LoadAccelTable(self, 0, MAKEINTRESOURCEA((WORD)id));
+        if (!context) Wnd_SendMessageToDescendants(HWND_OF(self), 868, 0, 0, TRUE, TRUE);   // WM_INITIALUPDATE
+        r = TRUE;
+    }
+    String_Destruct(&full);
+    return r;
+}
+
+// [$L_639de0] new _AFX_CTL3D_STATE
+extern "C" BYTE* __cdecl Ctl3dState_New() {
+    BYTE* p = (BYTE*)NoTrack_New(48);
+    if (!p) return 0;
+    F(void*, p, 0) = g_ctl3dStateVtbl;
+    return p;
+}
+
+// new _AFX_CTL3D_THREAD ($L_639df5, inside the PROC of $L_639de0)
+extern "C" BYTE* __cdecl Ctl3dThread_New() {
+    BYTE* p = (BYTE*)NoTrack_New(4);
+    if (!p) return 0;
+    F(void*, p, 0) = g_ctl3dThreadVtbl;
+    return p;
+}
+
+// ---------------------------------------------------------------------------
+// CWnd::OnFinalRelease, control bars and the print preview mode of
+// CFrameWnd
+
+ASM_VAR(AsmLabel, g_class653630, $L_653630)
+ASM_VAR(AsmLabel, g_class653650, $L_653650)
+ASM_VAR(AsmLabel, g_class653680, $L_653680)
+ASM_VAR(AsmLabel, g_class653750, $L_653750)
+
+// [$L_63340f] GetRuntimeClass ($L_653630)
+extern "C" void* __fastcall Class653630_Get(BYTE* self) { return g_class653630; }
+
+// [$L_633415] GetRuntimeClass ($L_653650)
+extern "C" void* __fastcall Class653650_Get(BYTE* self) { return g_class653650; }
+
+// [$L_63341b] GetRuntimeClass ($L_653680)
+extern "C" void* __fastcall Class653680_Get(BYTE* self) { return g_class653680; }
+
+// [$L_634b1b] GetRuntimeClass ($L_653750)
+extern "C" void* __fastcall Class653750_Get(BYTE* self) { return g_class653750; }
+
+// [$L_634581] CWnd::OnFinalRelease
+extern "C" void __fastcall Wnd_OnFinalRelease(BYTE* self) {
+    if (HWND_OF(self)) CallVirt(self, 88);                         // DestroyWindow (calls PostNcDestroy)
+    else CallVirt(self, 164);                                      // PostNcDestroy
+}
+
+// [FUN_638fd9] CFrameWnd::DestroyDockBars: the dock bars, a floating one
+// with its frame
+extern "C" void __fastcall FrameWnd_DestroyDockBars(BYTE* self) {
+    BYTE list[28];
+    PtrList_Construct(list, 0, 10);
+    for (void** node = F(void**, self, 112); node; ) {
+        BYTE* bar = (BYTE*)node[2];
+        node = (void**)node[0];
+        if (CallVirt<BOOL>(bar, 208)) PtrList_AddTail(list, 0, bar);   // IsDockBar
+    }
+    for (void** node = F(void**, list, 4); node; ) {
+        BYTE* dock = (BYTE*)node[2];
+        node = (void**)node[0];
+        if (F(BOOL, dock, 120)) CallVirt(Wnd_GetParentFrame(dock), 88);   // m_bFloating: DestroyWindow
+        else CallVirt(dock, 88);
+    }
+    PtrList_Destruct(list);
+}
+
+// [FUN_638aa4] CFrameWnd::ShowControlBar(pBar, bShow, bDelay)
+extern "C" void __fastcall FrameWnd_ShowControlBar(BYTE* self, void*, BYTE* bar, BOOL show, BOOL delay) {
+    BYTE* frame = ControlBar_GetDockingFrame(bar);
+    if (delay) {
+        CallVirt(bar, 196, show);                                  // DelayShow
+        F(DWORD, frame, 184) |= 12;                                // DelayRecalcLayout
+    } else {
+        Wnd_SetWindowPos(bar, 0, 0, 0, 0, 0, 0,
+                         (show ? SWP_SHOWWINDOW : SWP_HIDEWINDOW) | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+        CallVirt(bar, 196, show);
+        if (show || !ControlBar_IsFloating(bar)) CallVirt(frame, 200, FALSE);   // RecalcLayout
+    }
+    if (!ControlBar_IsFloating(bar)) return;
+    BYTE* dock = F(BYTE*, bar, 112);
+    int visible = dock ? CallVirt<int>(dock, 224) : show != 0;     // GetDockedVisibleCount
+    if (visible == 1 && show) {
+        F(int, frame, 136) = -1;                                   // m_nShowDelay
+        if (delay) {
+            F(int, frame, 136) = SW_SHOWNA;
+            CallVirt(frame, 200, FALSE);
+        } else {
+            Wnd_ShowWindow(frame, 0, SW_SHOWNA);
+        }
+    } else if (visible == 0) {
+        F(int, frame, 136) = -1;
+        if (delay) F(int, frame, 136) = SW_HIDE;
+        else Wnd_ShowWindow(frame, 0, SW_HIDE);
+    } else if (!delay) {
+        CallVirt(frame, 200, FALSE);
+    }
+}
+
+// [$L_6393ae] CFrameWnd::OnSetPreviewMode: hides the control bars, main
+// pane, menu and accelerators for the print preview and brings them back.
+// CPrintPreviewState: +0 nIDMainPane, +4 hMenu, +8 dwStates, +16
+// lpfnCloseProc, +20 hAccelTable.
+extern "C" void __fastcall FrameWnd_OnSetPreviewMode(BYTE* self, void*, BOOL preview, BYTE* state) {
+    BYTE* active = CallVirt<BYTE*>(self, 192);                     // GetActiveFrame
+    if (preview && F(BYTE*, active, 104)) CallVirt(F(BYTE*, active, 104), 92, FALSE);   // OnDocActivate
+    DWORD visible = 0;
+    for (void** node = F(void**, self, 112); node; ) {
+        BYTE* bar = (BYTE*)node[2];
+        node = (void**)node[0];
+        UINT id = LOWORD(GetDlgCtrlID(HWND_OF(bar)));
+        if (id < 59392 || id > 59423) continue;                    // AFX_IDW_CONTROLBAR_FIRST..LAST
+        DWORD mask = 1u << (id - 59392);
+        if (CallVirt<BOOL>(bar, 200)) visible |= mask;             // IsVisible
+        if (!CallVirt<BOOL>(bar, 208) || id != 59423)              // IsDockBar
+            FrameWnd_ShowControlBar(self, 0, bar, F(DWORD, state, 8) & mask, TRUE);
+    }
+    F(DWORD, state, 8) = visible;
+    HWND pane;
+    if (preview) {
+        F(void*, self, 156) = F(void*, state, 16);                 // m_lpfnCloseProc
+        FrameWnd_ShowOwnedWindows(self, 0, FALSE);
+        pane = GetDlgItem(HWND_OF(self), F(int, state, 0));
+        ShowWindow(pane, SW_HIDE);
+        F(HMENU, state, 4) = GetMenu(HWND_OF(self));
+        if (F(HMENU, state, 4)) {
+            InvalidateRect(HWND_OF(self), 0, TRUE);
+            SetMenu(HWND_OF(self), 0);
+            F(DWORD, self, 184) &= ~1;                             // idleMenu
+        }
+        F(HACCEL, state, 20) = F(HACCEL, self, 72);
+        F(HACCEL, self, 72) = 0;
+        FrameWnd_LoadAccelTable(self, 0, MAKEINTRESOURCEA(30997)); // AFX_IDR_PREVIEW_ACCEL
+        HWND first = F(int, state, 0) != 59648 ? GetDlgItem(HWND_OF(self), 59648) : pane;   // AFX_IDW_PANE_FIRST
+        if (first) SetWindowLongA(first, GWL_ID, 59937);           // AFX_IDW_PANE_SAVE
+        return;
+    }
+    F(void*, self, 156) = 0;
+    pane = GetDlgItem(HWND_OF(self), 59937);
+    if (pane) {
+        HWND first = GetDlgItem(HWND_OF(self), 59648);
+        if (first) SetWindowLongA(first, GWL_ID, 59937);
+        SetWindowLongA(pane, GWL_ID, 59648);
+    }
+    if (F(HMENU, state, 4)) {
+        InvalidateRect(HWND_OF(self), 0, TRUE);
+        SetMenu(HWND_OF(self), F(HMENU, state, 4));
+    }
+    if (F(BYTE*, active, 104)) CallVirt(F(BYTE*, active, 104), 92, TRUE);
+    CallVirt(self, 200, TRUE);                                     // RecalcLayout
+    if (F(int, state, 0) != 59648) pane = GetDlgItem(HWND_OF(self), F(int, state, 0));
+    ShowWindow(pane, SW_SHOW);
+    F(HACCEL, self, 72) = F(HACCEL, state, 20);
+    FrameWnd_ShowOwnedWindows(self, 0, TRUE);
 }

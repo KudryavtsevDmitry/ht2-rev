@@ -449,3 +449,11 @@ CWnd::CenterWindow, AfxGrayCtlColor with _AfxIsComboBoxControl, _AfxInitCommonCo
 GetAppRegistryKey/GetSectionKey/WriteProfileInt and AfxOleCanExitApp. $L_61c180 is called by
 terrain_grid.cpp, which now calls its C++ version directly. The block at 0x6317e8-0x6321e0 (_stat,
 remove, the runtime error banner) is CRT and stays for the CRT switch. Drive test passes.
+
+MFC part 10 (21 procs): CSimpleException InitString/GetErrorMessage, CWinApp::DevModeChange,
+_AfxGrayBackgroundWndProc, CFrameWnd LoadFrame/DestroyDockBars/ShowControlBar/OnSetPreviewMode,
+CWnd::OnFinalRelease, the _AFX_WIN_STATE/_AFX_CTL3D_STATE/_AFX_CTL3D_THREAD factories and four runtime
+class getters. $L_639df5 (new _AFX_CTL3D_THREAD) is a second function inside the PROC of $L_639de0: its
+TEXTEQU was added by hand and its PUBLIC moved under IFDEF ASM_MFC. What is left of MFC in asm: the throw
+helpers (AfxThrowMemoryException, AfxThrowResourceException), _AfxThreadEntry (try/catch), and catch
+funclets/EH tables of procs that are C++ now. Drive test passes; the all-asm configuration still assembles.
