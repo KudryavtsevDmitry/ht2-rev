@@ -2285,7 +2285,7 @@ BYTE* __cdecl Media_VehicleEvent(BYTE* s, STA94_PARAMS)
 
 // === the game window's first draw: the info screens and the intro movie ($L_528820 with its pieces up to $L_528bd6)
 
-ASM_PROC($L_5dd8c0)    // window: set the video mode (w, h, cres, flags)
+ASM_FUNC($L_5dd8c0, @MainWnd_SetVideoMode@24)    // window: set the video mode (w, h, cres, flags)
 ASM_PROC($L_5d7c20)    // tries a video mode (w, h, cres, flags, 3 outs)
 extern "C" BYTE* __fastcall Is_InfoCtor(BYTE* s, void*, BYTE* parent, int mode); KING_ALIAS("@Is_InfoCtor@16", "@InfoScreen_Construct@16")
 extern "C" BYTE* __fastcall Is_ShellCtor(BYTE* s, void*, BYTE* parent); KING_ALIAS("@Is_ShellCtor@12", "@Shell528c20_Construct@12")
