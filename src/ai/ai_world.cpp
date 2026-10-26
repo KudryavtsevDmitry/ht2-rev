@@ -5896,7 +5896,7 @@ extern "C" void FUN_448cd0(); KING_ALIAS("_FUN_448cd0", "@Vec4b_Construct@20")
 extern "C" void FUN_449680(); KING_ALIAS("_FUN_449680", "@List64_Construct@12")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_4ad440(); KING_ALIAS("_FUN_4ad440", "@Sch_Construct@16")
-ASM_PROC($L_401b90)
+ASM_FUNC($L_401b90, @Ai_ListConstruct@4)
 extern "C" void $L_447d50(); KING_ALIAS("_$L_447d50", "@HashTable_Construct@8")
 KING_VAR(char, g_init68a830, 68a830)
 KING_VAR(char, g_init68a840, 68a840)
@@ -21992,8 +21992,8 @@ extern "C" void q197_FUN_415260(); KING_ALIAS("_q197_FUN_415260", "_AI_Init68a86
 extern "C" void q197_FUN_447570(); KING_ALIAS("_q197_FUN_447570", "@StrRefVec_Destroy@8")
 extern "C" void q197_FUN_447970(); KING_ALIAS("_q197_FUN_447970", "@Vec4_FreeStorage@8")
 extern "C" void q197_L_401390(); KING_ALIAS("_q197_L_401390", "_Static68cf28_Destroy")
-extern "C" void q197_L_4013e0(); KING_ALIAS("_q197_L_4013e0", "$L_4013e0")
-extern "C" void q197_L_401990(); KING_ALIAS("_q197_L_401990", "$L_401990")
+extern "C" void q197_L_4013e0(); KING_ALIAS("_q197_L_4013e0", "_Ai_Exit4013e0")
+extern "C" void q197_L_401990(); KING_ALIAS("_q197_L_401990", "_Ai_Exit401990")
 extern "C" void q197_L_401e30(); KING_ALIAS("_q197_L_401e30", "$L_401e30")
 extern "C" void q197_L_402100(); KING_ALIAS("_q197_L_402100", "$L_402100")
 extern "C" void q197_L_402240(); KING_ALIAS("_q197_L_402240", "$L_402240")
@@ -25067,3 +25067,78 @@ extern "C" BYTE* __cdecl Rope_Balance(BYTE* r)
         Sys_Fatal(aw_s66f534, 0);
     return result;
 }
+
+// [$L_41f930] calls the function pointer at +40 with the caller's arguments
+extern "C" __declspec(naked) void Ai_CallAt40() { __asm jmp dword ptr [ecx + 40] }
+
+// [$L_4013f0] [$L_401420] static initializer: the object at 68cf48, its
+// storage freed at exit ([$L_401430])
+KING_VAR(BYTE, g_ai68cf48, 68cf48)
+static void __cdecl Ai_Exit401430() { Vec4_FreeStorageB((BYTE**)&g_ai68cf48, 0); }
+extern "C" int __cdecl Ai_Init4013f0()
+{
+    AI_Init68cf48();
+    return atexit(Ai_Exit401430);
+}
+
+// [$L_4013e0] at exit: destroys the script values at 68a840
+KING_VAR(BYTE, g_ai68a840, 68a840)
+extern "C" void __cdecl Ai_Exit4013e0() { SchValues_Destroy((BYTE**)&g_ai68a840); }
+
+// [$L_448570] bad_alloc's raise: the original threw a copy; fatal here
+extern "C" void __fastcall Ai_BadAllocRaise(void*) { Sys_Fatal("bad allocation", 0); }
+
+// [$L_41f940] a player's present pick (virtual): when the player (+48) is
+// valid, picks the present +52 for it
+extern "C" void __fastcall Ai_PresentCheck(BYTE* self)
+{
+    if (F(int, F(BYTE*, self, 48), 88) == 305419896)
+        Ai_PickPresent(F(int, self, 48), F(int, self, 52));
+}
+
+// [$L_427020] a player's money check (virtual): flag 0x10000 at +96 when its
+// money (+136) is negative; a human player in debt gets event 12
+KING_VAR(double, g_ai64b678, 64b678)
+extern "C" void __fastcall Ai_DebtCheck(BYTE* self)
+{
+    BYTE* p = F(BYTE*, self, 48);
+    if (F(int, p, 88) != 305419896)
+        return;
+    if (F(double, p, 136) < g_ai64b678)
+        F(DWORD, p, 96) |= 65536;
+    else
+        F(DWORD, p, 96) &= ~65536u;
+    if ((F(DWORD, F(BYTE*, self, 48), 96) & 65536) && Player_IsHuman(F(BYTE*, self, 48)))
+        Ai_PlayerEvent(F(BYTE*, self, 48), 12, 0);
+}
+
+// [$L_401b90] constructs a list (flag +0 = 1, an empty 16-byte head at +4)
+extern "C" BYTE* __cdecl Stl_Alloc16();
+extern "C" BYTE* __fastcall Ai_ListConstruct(BYTE* self)
+{
+    self[0] = 1;
+    BYTE* n = Stl_Alloc16();
+    F(BYTE*, self, 4) = n;
+    F(BYTE*, n, 0) = n;
+    F(BYTE*, F(BYTE*, self, 4), 4) = F(BYTE*, self, 4);
+    return self;
+}
+
+// [$L_4019a0] destroys such a list: deletes the values, frees the nodes and the head
+extern "C" void __fastcall Ai_ListDestroy(BYTE* self)
+{
+    BYTE** head = (BYTE**)(self + 4);
+    for (BYTE* n = *(BYTE**)*head; n != *head; n = *(BYTE**)n)
+        operator delete(F(void*, n, 8));
+    for (BYTE* n = *(BYTE**)*head; n != *head;) {
+        BYTE* next = *(BYTE**)n;
+        Ai_PoolFree(n, 16);
+        n = next;
+    }
+    F(BYTE*, *head, 0) = *head;
+    F(BYTE*, *head, 4) = *head;
+    Ai_PoolFree(*head, 16);
+}
+
+// [$L_401990] at exit: destroys the list at 68b998
+extern "C" void __cdecl Ai_Exit401990() { Ai_ListDestroy((BYTE*)&g_init68b998); }
