@@ -4939,3 +4939,634 @@ extern "C" BOOL __fastcall WinApp_InitApplication(BYTE* self) {
 
 // [$L_639ada] returns TRUE
 extern "C" BOOL __fastcall Object_True(BYTE* self) { return TRUE; }
+
+// ---------------------------------------------------------------------------
+// static objects: the CFixedAlloc pools, the static exceptions, afxData,
+// process and thread locals; CreateObject and deleting destructors of the
+// temporary map classes; runtime class getters
+
+ASM_PROC(FUN_61ca2b)                            // CFixedAlloc::CFixedAlloc(nAllocSize, nBlockSize)
+ASM_PROC($L_61ca53)                             // CFixedAlloc::~CFixedAlloc
+ASM_PROC(FUN_61c749)                            // CResourceException::CResourceException
+ASM_PROC(FUN_61c78f)                            // ~CResourceException
+ASM_PROC(FUN_61c796)                            // CUserException::CUserException
+ASM_PROC(FUN_61c7dc)                            // ~CUserException
+ASM_PROC(FUN_61c8e8)                            // CMemoryException::CMemoryException
+ASM_PROC(FUN_61c92e)                            // ~CMemoryException
+ASM_PROC(FUN_61c935)                            // CNotSupportedException::CNotSupportedException
+ASM_PROC(FUN_61c97b)                            // ~CNotSupportedException
+ASM_VAR(AsmLabel, g_allocTempWnd, $L_72d970)
+ASM_VAR(AsmLabel, g_allocTempDc, $L_72dce0)
+ASM_VAR(AsmLabel, g_allocTempGdi, $L_72dcb8)
+ASM_VAR(AsmLabel, g_allocTempMenu, $L_72e0f0)
+ASM_VAR(BYTE, g_allocTempWndDone, $L_72c168)
+ASM_VAR(BYTE, g_allocTempDcGdiDone, $L_72db80)
+ASM_VAR(BYTE, g_allocTempMenuDone, $L_72e0e8)
+ASM_VAR(AsmLabel, g_resourceException, $L_72dc20)
+ASM_VAR(AsmLabel, g_userException, $L_72db88)
+ASM_VAR(AsmLabel, g_memoryException, $L_72dda8)
+ASM_VAR(AsmLabel, g_notSupportedException, $L_72dd10)
+ASM_VAR(AsmLabel, g_processLocal72c15c, $L_72c15c)
+ASM_VAR(AsmLabel, g_processLocal72db78, $L_72db78)
+ASM_VAR(AsmLabel, g_threadLocal72db7c, $L_72db7c)
+ASM_VAR(AsmLabel, g_threadLocal72dd08, $L_72dd08)
+ASM_VAR(AsmLabel, g_class6533f8, $L_6533f8)
+ASM_VAR(AsmLabel, g_class653548, $L_653548)
+ASM_VAR(AsmLabel, g_class653730, $L_653730)
+ASM_VAR(AsmLabel, g_class653708, $L_653708)
+ASM_VAR(AsmLabel, g_class653cd8, $L_653cd8)
+ASM_VAR(AsmLabel, g_class654378, $L_654378)
+ASM_VAR(AsmLabel, g_class654350, $L_654350)
+ASM_VAR(AsmLabel, g_class654330, $L_654330)
+ASM_VAR(AsmLabel, g_class654308, $L_654308)
+ASM_VAR(AsmLabel, g_class6542e8, $L_6542e8)
+ASM_VAR(AsmLabel, g_class6542c8, $L_6542c8)
+ASM_VAR(AsmLabel, g_class6542a0, $L_6542a0)
+ASM_VAR(AsmLabel, g_class654520, $L_654520)
+ASM_VAR(AsmLabel, g_class6544f0, $L_6544f0)
+ASM_VAR(AsmLabel, g_class6545f0, $L_6545f0)
+ASM_VAR(AsmLabel, g_class654650, $L_654650)
+ASM_VAR(AsmLabel, g_class654628, $L_654628)
+ASM_VAR(AsmLabel, g_class6546a0, $L_6546a0)
+
+// [$L_636118] returns 0
+extern "C" int __cdecl Afx_Zero() { return 0; }
+
+// [FUN_636153] constructs the CFixedAlloc of strings up to 64 characters
+extern "C" void __cdecl AllocString64_Construct() { CallThis(FUN_61ca2b, g_alloc64, 80, 64); }
+
+// [$L_63616e] destroys it at exit
+extern "C" void __cdecl AllocString64_Term() { CallThis($L_61ca53, g_alloc64); }
+
+// [$L_636162] registers its destruction
+extern "C" void __cdecl AllocString64_AtExit() { atexit(AllocString64_Term); }
+
+// [$L_636149] its static initializer
+extern "C" void __cdecl AllocString64_Init() { AllocString64_Construct(); AllocString64_AtExit(); }
+
+// [FUN_636182] constructs the CFixedAlloc of strings up to 128 characters
+extern "C" void __cdecl AllocString128_Construct() { CallThis(FUN_61ca2b, g_alloc128, 144, 64); }
+
+// [$L_6361a0] destroys it at exit
+extern "C" void __cdecl AllocString128_Term() { CallThis($L_61ca53, g_alloc128); }
+
+// [$L_636194] registers its destruction
+extern "C" void __cdecl AllocString128_AtExit() { atexit(AllocString128_Term); }
+
+// [$L_636178] its static initializer
+extern "C" void __cdecl AllocString128_Init() { AllocString128_Construct(); AllocString128_AtExit(); }
+
+// [FUN_6361b4] constructs the CFixedAlloc of strings up to 256 characters
+extern "C" void __cdecl AllocString256_Construct() { CallThis(FUN_61ca2b, g_alloc256, 272, 64); }
+
+// [$L_6361d2] destroys it at exit
+extern "C" void __cdecl AllocString256_Term() { CallThis($L_61ca53, g_alloc256); }
+
+// [$L_6361c6] registers its destruction
+extern "C" void __cdecl AllocString256_AtExit() { atexit(AllocString256_Term); }
+
+// [$L_6361aa] its static initializer
+extern "C" void __cdecl AllocString256_Init() { AllocString256_Construct(); AllocString256_AtExit(); }
+
+// [FUN_6361e6] constructs the CFixedAlloc of strings up to 512 characters
+extern "C" void __cdecl AllocString512_Construct() { CallThis(FUN_61ca2b, g_alloc512, 528, 64); }
+
+// [$L_636204] destroys it at exit
+extern "C" void __cdecl AllocString512_Term() { CallThis($L_61ca53, g_alloc512); }
+
+// [$L_6361f8] registers its destruction
+extern "C" void __cdecl AllocString512_AtExit() { atexit(AllocString512_Term); }
+
+// [$L_6361dc] its static initializer
+extern "C" void __cdecl AllocString512_Init() { AllocString512_Construct(); AllocString512_AtExit(); }
+
+// [FUN_639fcd] constructs the CFixedAlloc of the temporary Wnd objects
+extern "C" void __cdecl AllocTempWnd_Construct() { CallThis(FUN_61ca2b, g_allocTempWnd, 60, 64); }
+
+// [$L_639fe8] destroys it at exit
+extern "C" void __cdecl AllocTempWnd_Term() {
+    if (g_allocTempWndDone & 1) return;
+    g_allocTempWndDone |= 1;
+    CallThis($L_61ca53, g_allocTempWnd);
+}
+
+// [$L_639fdc] registers its destruction
+extern "C" void __cdecl AllocTempWnd_AtExit() { atexit(AllocTempWnd_Term); }
+
+// [$L_639fc3] its static initializer
+extern "C" void __cdecl AllocTempWnd_Init() { AllocTempWnd_Construct(); AllocTempWnd_AtExit(); }
+
+// [FUN_63a575] constructs the CFixedAlloc of the temporary Dc objects
+extern "C" void __cdecl AllocTempDc_Construct() { CallThis(FUN_61ca2b, g_allocTempDc, 16, 64); }
+
+// [$L_63a590] destroys it at exit
+extern "C" void __cdecl AllocTempDc_Term() {
+    if (g_allocTempDcGdiDone & 1) return;
+    g_allocTempDcGdiDone |= 1;
+    CallThis($L_61ca53, g_allocTempDc);
+}
+
+// [$L_63a584] registers its destruction
+extern "C" void __cdecl AllocTempDc_AtExit() { atexit(AllocTempDc_Term); }
+
+// [$L_63a56b] its static initializer
+extern "C" void __cdecl AllocTempDc_Init() { AllocTempDc_Construct(); AllocTempDc_AtExit(); }
+
+// [FUN_63a5b5] constructs the CFixedAlloc of the temporary Gdi objects
+extern "C" void __cdecl AllocTempGdi_Construct() { CallThis(FUN_61ca2b, g_allocTempGdi, 8, 64); }
+
+// [$L_63a5d0] destroys it at exit
+extern "C" void __cdecl AllocTempGdi_Term() {
+    if (g_allocTempDcGdiDone & 2) return;
+    g_allocTempDcGdiDone |= 2;
+    CallThis($L_61ca53, g_allocTempGdi);
+}
+
+// [$L_63a5c4] registers its destruction
+extern "C" void __cdecl AllocTempGdi_AtExit() { atexit(AllocTempGdi_Term); }
+
+// [$L_63a5ab] its static initializer
+extern "C" void __cdecl AllocTempGdi_Init() { AllocTempGdi_Construct(); AllocTempGdi_AtExit(); }
+
+// [FUN_63b294] constructs the CFixedAlloc of the temporary Menu objects
+extern "C" void __cdecl AllocTempMenu_Construct() { CallThis(FUN_61ca2b, g_allocTempMenu, 8, 64); }
+
+// [$L_63b2af] destroys it at exit
+extern "C" void __cdecl AllocTempMenu_Term() {
+    if (g_allocTempMenuDone & 1) return;
+    g_allocTempMenuDone |= 1;
+    CallThis($L_61ca53, g_allocTempMenu);
+}
+
+// [$L_63b2a3] registers its destruction
+extern "C" void __cdecl AllocTempMenu_AtExit() { atexit(AllocTempMenu_Term); }
+
+// [$L_63b28a] its static initializer
+extern "C" void __cdecl AllocTempMenu_Init() { AllocTempMenu_Construct(); AllocTempMenu_AtExit(); }
+
+// [FUN_63a40c] constructs the static CResourceException (not auto-deleted)
+extern "C" void __cdecl StaticResourceException_Construct() { CallThis(FUN_61c749, g_resourceException, FALSE, 61474); }
+
+// [$L_63a42a] destroys it at exit
+extern "C" void __cdecl StaticResourceException_Term() { CallThis(FUN_61c78f, g_resourceException); }
+
+// [$L_63a41e] registers its destruction
+extern "C" void __cdecl StaticResourceException_AtExit() { atexit(StaticResourceException_Term); }
+
+// [$L_63a402] its static initializer
+extern "C" void __cdecl StaticResourceException_Init() { StaticResourceException_Construct(); StaticResourceException_AtExit(); }
+
+// [FUN_63a444] constructs the static CUserException (not auto-deleted)
+extern "C" void __cdecl StaticUserException_Construct() { CallThis(FUN_61c796, g_userException, FALSE, 61476); }
+
+// [$L_63a462] destroys it at exit
+extern "C" void __cdecl StaticUserException_Term() { CallThis(FUN_61c7dc, g_userException); }
+
+// [$L_63a456] registers its destruction
+extern "C" void __cdecl StaticUserException_AtExit() { atexit(StaticUserException_Term); }
+
+// [$L_63a43a] its static initializer
+extern "C" void __cdecl StaticUserException_Init() { StaticUserException_Construct(); StaticUserException_AtExit(); }
+
+// [FUN_63a842] constructs the static CMemoryException (not auto-deleted)
+extern "C" void __cdecl StaticMemoryException_Construct() { CallThis(FUN_61c8e8, g_memoryException, FALSE, 61475); }
+
+// [$L_63a860] destroys it at exit
+extern "C" void __cdecl StaticMemoryException_Term() { CallThis(FUN_61c92e, g_memoryException); }
+
+// [$L_63a854] registers its destruction
+extern "C" void __cdecl StaticMemoryException_AtExit() { atexit(StaticMemoryException_Term); }
+
+// [$L_63a838] its static initializer
+extern "C" void __cdecl StaticMemoryException_Init() { StaticMemoryException_Construct(); StaticMemoryException_AtExit(); }
+
+// [FUN_63a87a] constructs the static CNotSupportedException (not auto-deleted)
+extern "C" void __cdecl StaticNotSupportedException_Construct() { CallThis(FUN_61c935, g_notSupportedException, FALSE, 61473); }
+
+// [$L_63a898] destroys it at exit
+extern "C" void __cdecl StaticNotSupportedException_Term() { CallThis(FUN_61c97b, g_notSupportedException); }
+
+// [$L_63a88c] registers its destruction
+extern "C" void __cdecl StaticNotSupportedException_AtExit() { atexit(StaticNotSupportedException_Term); }
+
+// [$L_63a870] its static initializer
+extern "C" void __cdecl StaticNotSupportedException_Init() { StaticNotSupportedException_Construct(); StaticNotSupportedException_AtExit(); }
+
+// [$L_63ae4a] CProcessLocalObject::~CProcessLocalObject
+extern "C" void __fastcall ProcessLocal_Destruct(void** self) {
+    if (*self) CallVirt(*self, 0, 1);                              // deleting destructor
+}
+
+// [$L_639ca1] CProcessLocal<>::~CProcessLocal
+extern "C" void __fastcall ProcessLocal_DestructT(void** self) { ProcessLocal_Destruct(self); }
+
+// [$L_63a795] CThreadLocal<>::~CThreadLocal
+extern "C" void __fastcall ThreadLocal_DestructT(int* self) { ThreadLocal_Destruct(self); }
+
+// [FUN_639c8a] constructs ProcessLocal72c15c (nothing to do)
+extern "C" void __cdecl LocalProcessLocal72c15c_Construct() {}
+
+// [$L_639c97] destroys it at exit
+extern "C" void __cdecl LocalProcessLocal72c15c_Term() { ProcessLocal_DestructT((void**)&g_processLocal72c15c); }
+
+// [$L_639c8b] registers its destruction
+extern "C" void __cdecl LocalProcessLocal72c15c_AtExit() { atexit(LocalProcessLocal72c15c_Term); }
+
+// [$L_639c80] its static initializer
+extern "C" void __cdecl LocalProcessLocal72c15c_Init() { LocalProcessLocal72c15c_Construct(); LocalProcessLocal72c15c_AtExit(); }
+
+// [FUN_63a12f] constructs ThreadState (nothing to do)
+extern "C" void __cdecl LocalThreadState_Construct() {}
+
+// [$L_63a13c] destroys it at exit
+extern "C" void __cdecl LocalThreadState_Term() { ThreadLocal_DestructT((int*)&g_threadLocal72db7c); }
+
+// [$L_63a130] registers its destruction
+extern "C" void __cdecl LocalThreadState_AtExit() { atexit(LocalThreadState_Term); }
+
+// [$L_63a125] its static initializer
+extern "C" void __cdecl LocalThreadState_Init() { LocalThreadState_Construct(); LocalThreadState_AtExit(); }
+
+// [FUN_63a32b] constructs ProcessLocal72db78 (nothing to do)
+extern "C" void __cdecl LocalProcessLocal72db78_Construct() {}
+
+// [$L_63a338] destroys it at exit
+extern "C" void __cdecl LocalProcessLocal72db78_Term() { ProcessLocal_DestructT((void**)&g_processLocal72db78); }
+
+// [$L_63a32c] registers its destruction
+extern "C" void __cdecl LocalProcessLocal72db78_AtExit() { atexit(LocalProcessLocal72db78_Term); }
+
+// [$L_63a321] its static initializer
+extern "C" void __cdecl LocalProcessLocal72db78_Init() { LocalProcessLocal72db78_Construct(); LocalProcessLocal72db78_AtExit(); }
+
+// [FUN_63a77e] constructs ThreadLocal72dd08 (nothing to do)
+extern "C" void __cdecl LocalThreadLocal72dd08_Construct() {}
+
+// [$L_63a78b] destroys it at exit
+extern "C" void __cdecl LocalThreadLocal72dd08_Term() { ThreadLocal_DestructT((int*)&g_threadLocal72dd08); }
+
+// [$L_63a77f] registers its destruction
+extern "C" void __cdecl LocalThreadLocal72dd08_AtExit() { atexit(LocalThreadLocal72dd08_Term); }
+
+// [$L_63a774] its static initializer
+extern "C" void __cdecl LocalThreadLocal72dd08_Init() { LocalThreadLocal72dd08_Construct(); LocalThreadLocal72dd08_AtExit(); }
+
+// [FUN_63a7a4] constructs Ctl3dState (nothing to do)
+extern "C" void __cdecl LocalCtl3dState_Construct() {}
+
+// [$L_63a7b1] destroys it at exit
+extern "C" void __cdecl LocalCtl3dState_Term() { ProcessLocal_DestructT((void**)&g_ctl3dState); }
+
+// [$L_63a7a5] registers its destruction
+extern "C" void __cdecl LocalCtl3dState_AtExit() { atexit(LocalCtl3dState_Term); }
+
+// [$L_63a79a] its static initializer
+extern "C" void __cdecl LocalCtl3dState_Init() { LocalCtl3dState_Construct(); LocalCtl3dState_AtExit(); }
+
+// [$L_639c7a] GetRuntimeClass ($L_6533f8)
+extern "C" void* __fastcall Class6533f8_Get(BYTE* self) { return g_class6533f8; }
+
+// [$L_639da6] GetRuntimeClass ($L_653548)
+extern "C" void* __fastcall Class653548_Get(BYTE* self) { return g_class653548; }
+
+// [$L_639f52] GetRuntimeClass ($L_653730)
+extern "C" void* __fastcall Class653730_Get(BYTE* self) { return g_class653730; }
+
+// [$L_639fbd] GetRuntimeClass ($L_653708)
+extern "C" void* __fastcall Class653708_Get(BYTE* self) { return g_class653708; }
+
+// [$L_63a069] GetRuntimeClass ($L_653cd8)
+extern "C" void* __fastcall Class653cd8_Get(BYTE* self) { return g_class653cd8; }
+
+// [$L_63a3fc] GetRuntimeClass ($L_654378)
+extern "C" void* __fastcall Class654378_Get(BYTE* self) { return g_class654378; }
+
+// [$L_63a434] GetRuntimeClass ($L_654350)
+extern "C" void* __fastcall Class654350_Get(BYTE* self) { return g_class654350; }
+
+// [$L_63a483] GetRuntimeClass ($L_654330)
+extern "C" void* __fastcall Class654330_Get(BYTE* self) { return g_class654330; }
+
+// [$L_63a4a3] GetRuntimeClass ($L_654308)
+extern "C" void* __fastcall Class654308_Get(BYTE* self) { return g_class654308; }
+
+// [$L_63a4a9] GetRuntimeClass ($L_6542e8)
+extern "C" void* __fastcall Class6542e8_Get(BYTE* self) { return g_class6542e8; }
+
+// [$L_63a4fa] GetRuntimeClass ($L_6542c8)
+extern "C" void* __fastcall Class6542c8_Get(BYTE* self) { return g_class6542c8; }
+
+// [$L_63a565] GetRuntimeClass ($L_6542a0)
+extern "C" void* __fastcall Class6542a0_Get(BYTE* self) { return g_class6542a0; }
+
+// [$L_63a832] GetRuntimeClass ($L_654520)
+extern "C" void* __fastcall Class654520_Get(BYTE* self) { return g_class654520; }
+
+// [$L_63a86a] GetRuntimeClass ($L_6544f0)
+extern "C" void* __fastcall Class6544f0_Get(BYTE* self) { return g_class6544f0; }
+
+// [$L_63b1c6] GetRuntimeClass ($L_6545f0)
+extern "C" void* __fastcall Class6545f0_Get(BYTE* self) { return g_class6545f0; }
+
+// [$L_63b219] GetRuntimeClass ($L_654650)
+extern "C" void* __fastcall Class654650_Get(BYTE* self) { return g_class654650; }
+
+// [$L_63b284] GetRuntimeClass ($L_654628)
+extern "C" void* __fastcall Class654628_Get(BYTE* self) { return g_class654628; }
+
+// [$L_63b2ca] GetRuntimeClass ($L_6546a0)
+extern "C" void* __fastcall Class6546a0_Get(BYTE* self) { return g_class6546a0; }
+
+ASM_VAR(AsmLabel, g_tempWndVtbl, $L_653c1c)
+ASM_VAR(AsmLabel, g_gdiObjectVtbl, $L_654420)
+ASM_VAR(AsmLabel, g_tempDcVtbl, $L_654430)
+ASM_VAR(AsmLabel, g_tempGdiVtbl, $L_6544a8)
+ASM_VAR(AsmLabel, g_menuVtbl, $L_654674)
+ASM_VAR(AsmLabel, g_tempMenuVtbl, $L_65468c)
+ASM_VAR(AsmLabel, g_ctl3dStateVtbl, $L_6535f0)
+ASM_VAR(AsmLabel, g_ctl3dThreadVtbl, $L_6535f8)
+ASM_VAR(AsmLabel, g_threadStateVtbl, $L_654284)
+ASM_VAR(AsmLabel, g_moduleStateVtbl, $L_65428c)
+ASM_VAR(AsmLabel, g_moduleThreadStateVtbl, $L_654294)
+
+// [$L_639d1b] CWinThread's deleting destructor
+extern "C" BYTE* __fastcall WinThread_DeletingDestruct(BYTE* self, void*, int flags) {
+    WinThread_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_63a5eb] _AFX_CTL3D_STATE::~_AFX_CTL3D_STATE: unregisters and frees
+// CTL3D32.DLL
+extern "C" void __fastcall Ctl3dState_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_ctl3dStateVtbl;
+    typedef BOOL (WINAPI* UnregisterFn)(HINSTANCE);
+    if (F(void*, self, 16)) F(UnregisterFn, self, 16)(0);          // Ctl3dUnregister
+    if (F(HMODULE, self, 8)) FreeLibrary(F(HMODULE, self, 8));
+}
+
+// [$L_639e0a] its deleting destructor
+extern "C" BYTE* __fastcall Ctl3dState_DeletingDestruct(BYTE* self, void*, int flags) {
+    Ctl3dState_Destruct(self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [FUN_63a62c] _AFX_CTL3D_THREAD::~_AFX_CTL3D_THREAD: ends the automatic
+// subclassing
+extern "C" void __fastcall Ctl3dThread_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_ctl3dThreadVtbl;
+    BYTE* state = (BYTE*)g_ctl3dState;                             // m_pObject of the process local
+    if (state && F(void*, state, 24)) F(VoidFn, state, 24)();     // Ctl3dUnAutoSubclass
+}
+
+// [$L_639e25] its deleting destructor
+extern "C" BYTE* __fastcall Ctl3dThread_DeletingDestruct(BYTE* self, void*, int flags) {
+    Ctl3dThread_Destruct(self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [$L_639f20] CWnd's CreateObject
+extern "C" BYTE* __cdecl Wnd_CreateObject() {
+    BYTE* p = (BYTE*)operator new(60);
+    return p ? Wnd_Construct(p) : 0;
+}
+
+// [$L_639f58] CTempWnd's CreateObject (from its CFixedAlloc)
+extern "C" BYTE* __cdecl TempWnd_CreateObject() {
+    BYTE* p = CallThis<BYTE*>(FUN_61ca8f, g_allocTempWnd);
+    if (!p) return 0;
+    Wnd_Construct(p);
+    F(void*, p, 0) = g_tempWndVtbl;
+    return p;
+}
+
+// [FUN_639fb8] CTempWnd::~CTempWnd
+extern "C" void __fastcall TempWnd_Destruct(BYTE* self) { Wnd_Destruct(self); }
+
+// [$L_639f98] CTempWnd's deleting destructor (back to its CFixedAlloc)
+extern "C" BYTE* __fastcall TempWnd_DeletingDestruct(BYTE* self, void*, int flags) {
+    TempWnd_Destruct(self);
+    if (flags & 1) CallThis(FUN_61cb1e, g_allocTempWnd, self);
+    return self;
+}
+
+// [$L_63a034] CFrameWnd's CreateObject
+extern "C" BYTE* __cdecl FrameWnd_CreateObject() {
+    BYTE* p = (BYTE*)operator new(188);
+    return p ? FrameWnd_Construct(p) : 0;
+}
+
+// [FUN_63a0a1] _AFX_THREAD_STATE::~_AFX_THREAD_STATE: the tool tip
+// window (+204), the message and CBT hooks (+48, +44), the safety pool (+12)
+extern "C" void __fastcall ThreadState_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_threadStateVtbl;
+    if (F(BYTE*, self, 204)) {
+        CallVirt(F(BYTE*, self, 204), 88);                         // DestroyWindow
+        if (F(BYTE*, self, 204)) CallVirt(F(BYTE*, self, 204), 4, 1);
+    }
+    if (F(HHOOK, self, 48)) UnhookWindowsHookEx(F(HHOOK, self, 48));
+    if (F(HHOOK, self, 44)) UnhookWindowsHookEx(F(HHOOK, self, 44));
+    if (F(void*, self, 12)) free(F(void*, self, 12));
+}
+
+// [$L_63a086] its deleting destructor
+extern "C" BYTE* __fastcall ThreadState_DeletingDestruct(BYTE* self, void*, int flags) {
+    ThreadState_Destruct(self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [FUN_63a1c4] AFX_MODULE_STATE::~AFX_MODULE_STATE
+extern "C" void __fastcall ModuleState_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_moduleStateVtbl;
+    if (F(BYTE*, self, 4164)) CallVirt(F(BYTE*, self, 4164), 0, 1);
+    if (F(BYTE*, self, 4204)) {
+        CallVirt(F(BYTE*, self, 4204), 12, self + 4168);
+        if (F(BYTE*, self, 4204)) CallVirt(F(BYTE*, self, 4204), 4, 1);
+    }
+    ThreadLocal_Destruct((int*)(self + 4208));                     // m_thread
+}
+
+// [$L_63a1a9] its deleting destructor
+extern "C" BYTE* __fastcall ModuleState_DeletingDestruct(BYTE* self, void*, int flags) {
+    ModuleState_Destruct(self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [FUN_63a3f7] _AFX_BASE_MODULE_STATE::~_AFX_BASE_MODULE_STATE
+extern "C" void __fastcall BaseModuleState_Destruct(BYTE* self) { ModuleState_Destruct(self); }
+
+// [$L_63a3dc] its deleting destructor
+extern "C" BYTE* __fastcall BaseModuleState_DeletingDestruct(BYTE* self, void*, int flags) {
+    BaseModuleState_Destruct(self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [FUN_63a273] AFX_MODULE_THREAD_STATE::~AFX_MODULE_THREAD_STATE: the handle
+// maps (+20..+36) and the three lists (+48, +52, +56; +56 owns its items)
+extern "C" void __fastcall ModuleThreadState_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_moduleThreadStateVtbl;
+    for (int off = 20; off <= 36; off += 4)
+        if (F(BYTE*, self, off)) CallVirt(F(BYTE*, self, off), 0, 1);
+    if (F(BYTE*, self, 56))
+        while (F(int, F(BYTE*, self, 56), 12)) operator delete(PtrList_RemoveHead(F(BYTE*, self, 56)));
+    if (F(BYTE*, self, 48)) CallVirt(F(BYTE*, self, 48), 4, 1);
+    if (F(BYTE*, self, 52)) CallVirt(F(BYTE*, self, 52), 4, 1);
+    if (F(BYTE*, self, 56)) CallVirt(F(BYTE*, self, 56), 4, 1);
+}
+
+// [$L_63a258] its deleting destructor
+extern "C" BYTE* __fastcall ModuleThreadState_DeletingDestruct(BYTE* self, void*, int flags) {
+    ModuleThreadState_Destruct(self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [FUN_63ac3a] a destructor with nothing to do
+extern "C" void __fastcall NoTrack_EmptyDestruct(BYTE* self) {}
+
+// [$L_63ac1f] its deleting destructor
+extern "C" BYTE* __fastcall NoTrack_EmptyDeletingDestruct(BYTE* self, void*, int flags) {
+    NoTrack_EmptyDestruct(self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [$L_63a46c] CDC's CreateObject
+extern "C" BYTE* __cdecl Dc_CreateObject() {
+    BYTE* p = (BYTE*)operator new(16);
+    return p ? Cdc_Construct(p) : 0;
+}
+
+// [$L_63a489] CGdiObject's CreateObject
+extern "C" BYTE* __cdecl GdiObject_CreateObject() {
+    BYTE* p = (BYTE*)operator new(8);
+    if (!p) return 0;
+    F(void*, p, 0) = g_gdiObjectVtbl;
+    F(HGDIOBJ, p, 4) = 0;
+    return p;
+}
+
+// [$L_63a4af] CTempDC's CreateObject
+extern "C" BYTE* __cdecl TempDc_CreateObject() {
+    BYTE* p = CallThis<BYTE*>(FUN_61ca8f, g_allocTempDc);
+    if (!p) return 0;
+    Cdc_Construct(p);
+    F(void*, p, 0) = g_tempDcVtbl;
+    return p;
+}
+
+// [FUN_63a4f5] CTempDC::~CTempDC
+extern "C" void __fastcall TempDc_Destruct(BYTE* self) { Cdc_Destruct(self); }
+
+// [$L_63a4d5] CTempDC's deleting destructor
+extern "C" BYTE* __fastcall TempDc_DeletingDestruct(BYTE* self, void*, int flags) {
+    TempDc_Destruct(self);
+    if (flags & 1) CallThis(FUN_61cb1e, g_allocTempDc, self);
+    return self;
+}
+
+// [$L_63a500] CTempGdiObject's CreateObject
+extern "C" BYTE* __cdecl TempGdi_CreateObject() {
+    BYTE* p = CallThis<BYTE*>(FUN_61ca8f, g_allocTempGdi);
+    if (!p) return 0;
+    F(HGDIOBJ, p, 4) = 0;
+    F(void*, p, 0) = g_tempGdiVtbl;
+    return p;
+}
+
+// [FUN_63a53c] CGdiObject::~CGdiObject
+extern "C" void __fastcall GdiObject_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_gdiObjectVtbl;
+    GdiObject_DeleteObject(self);
+}
+
+// [$L_63a51c] CTempGdiObject's deleting destructor
+extern "C" BYTE* __fastcall TempGdi_DeletingDestruct(BYTE* self, void*, int flags) {
+    GdiObject_Destruct(self);
+    if (flags & 1) CallThis(FUN_61cb1e, g_allocTempGdi, self);
+    return self;
+}
+
+// [$L_63b1ff] CMenu's CreateObject
+extern "C" BYTE* __cdecl Menu_CreateObject() {
+    BYTE* p = (BYTE*)operator new(8);
+    if (!p) return 0;
+    F(void*, p, 0) = g_menuVtbl;
+    F(HMENU, p, 4) = 0;
+    return p;
+}
+
+// [$L_63b21f] CTempMenu's CreateObject
+extern "C" BYTE* __cdecl TempMenu_CreateObject() {
+    BYTE* p = CallThis<BYTE*>(FUN_61ca8f, g_allocTempMenu);
+    if (!p) return 0;
+    F(HMENU, p, 4) = 0;
+    F(void*, p, 0) = g_tempMenuVtbl;
+    return p;
+}
+
+// [FUN_63b25b] CMenu::~CMenu
+extern "C" void __fastcall Menu_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_menuVtbl;
+    Menu_DestroyMenu(self);
+}
+
+// [$L_63b23b] CTempMenu's deleting destructor
+extern "C" BYTE* __fastcall TempMenu_DeletingDestruct(BYTE* self, void*, int flags) {
+    Menu_Destruct(self);
+    if (flags & 1) CallThis(FUN_61cb1e, g_allocTempMenu, self);
+    return self;
+}
+
+// [$L_63b12b] AUX_DATA::AUX_DATA (afxData): Windows version, metrics,
+// colours and cursors
+extern "C" BYTE* __fastcall AuxData_Construct(BYTE* self) {
+    DWORD v = GetVersion();
+    F(int, self, 84) = (LOBYTE(v) << 8) + HIBYTE(LOWORD(v));      // nWinVer
+    F(BOOL, self, 88) = v >> 31;                                   // bWin95
+    BOOL win4 = (BYTE)v >= 4;
+    F(BOOL, self, 92) = win4;                                      // bWin4
+    F(BOOL, self, 96) = 1 - win4;                                  // bNotWin4
+    F(BOOL, self, 100) = win4;                                     // bSmCaption
+    F(BOOL, self, 104) = FALSE;                                    // bMarked4
+    if (win4) F(BOOL, self, 104) = GetProcessVersion(0) >= 0x40000;
+    AuxData_UpdateSysMetrics(self);
+    F(HBRUSH, self, 36) = 0;
+    AuxData_UpdateSysColors(self);
+    F(HCURSOR, self, 60) = LoadCursorA(0, IDC_WAIT);
+    F(HCURSOR, self, 64) = LoadCursorA(0, IDC_ARROW);
+    F(HBITMAP, self, 80) = 0;
+    F(HCURSOR, self, 68) = 0;
+    F(int, self, 16) = F(int, self, 20) = F(BOOL, self, 92) ? 2 : 1;   // cxBorder2, cyBorder2
+    return self;
+}
+
+// [$L_63b545] AUX_DATA::~AUX_DATA
+extern "C" void __fastcall AuxData_Destruct(BYTE* self) { Afx_DeleteObject(&F(HGDIOBJ, self, 80)); }
+
+// [FUN_63b0b9] constructs afxData
+extern "C" void __cdecl AfxData_Construct() { AuxData_Construct((BYTE*)g_afxData); }
+
+// [$L_63b0cf] destroys afxData at exit
+extern "C" void __cdecl AfxData_Term() { AuxData_Destruct((BYTE*)g_afxData); }
+
+// [$L_63b0c3] registers its destruction
+extern "C" void __cdecl AfxData_AtExit() { atexit(AfxData_Term); }
+
+// [$L_63b0af] static initializer of afxData
+extern "C" void __cdecl AfxData_Init() { AfxData_Construct(); AfxData_AtExit(); }
+
+// [FUN_63b1cc] _AfxIsDBCS: the OEM code page has multibyte characters
+extern "C" BOOL __cdecl Afx_IsDBCS() {
+    CPINFO info;
+    GetCPInfo(GetOEMCP(), &info);
+    return info.MaxCharSize > 1;
+}
+
+// [$L_63b1ef] static initializer of _afxDBCS
+extern "C" void __cdecl Afx_InitDBCS() { g_afxDBCS = Afx_IsDBCS(); }
