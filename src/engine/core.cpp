@@ -1498,11 +1498,11 @@ extern "C" void __cdecl Poly_FillZ(int flags, int c, int, float k)
     }
 }
 
-ASM_PROC(FUN_5fe9b3)
-ASM_PROC(FUN_5feace)
-ASM_PROC(FUN_5fea6c)
-ASM_PROC(FUN_5feafa)
-ASM_PROC(FUN_5feb12)
+ASM_FUNC(FUN_5fe9b3, _Span_Shade8)
+ASM_FUNC(FUN_5feace, _Span_Fill16)
+ASM_FUNC(FUN_5fea6c, _Span_Shade16)
+ASM_FUNC(FUN_5feafa, _Span_Fill32)
+ASM_FUNC(FUN_5feb12, _Span_Blend32)
 KING_VAR(float, g_q223_64c458, 64c458)
 // [FUN_5d1430] fills the rows 71e7dc..71e7d8 of the walked polygon (edges in 70f3f0 and 31200 bytes on, from the
 // first pixel centre inside) with colour c; the mode is flags with the pixel size (2: 16 bits, 4: 32 bits) added:
