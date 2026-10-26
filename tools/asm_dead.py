@@ -40,7 +40,8 @@ def code_part(line):
     return line.split(';', 1)[0]
 
 
-ENDS = re.compile(r'^\s*(ret|retn|jmp|int\s+3)\b', re.I)
+# instructions after which execution can't go on (the throw helper never returns)
+ENDS = re.compile(r'^\s*(ret|retn|jmp|int\s+3|call\s+__CxxThrowException@8)\b', re.I)
 blocks = []           # (file, start, end, labels, refs, falls)
 label_block = {}
 for p, L in files.items():
@@ -70,7 +71,7 @@ for p, L in files.items():
             refs.update(tok.findall(c))
             refs.update('R:' + x for x in re.findall(r'_KingRdata\+(\d+)', c))
             st = c.strip()
-            if st and not re.match(r'^(ALIGN|EVEN|ENDP|\S+\s+ENDP)\b', st) and not re.match(r'^\S+\s+ENDP\b', L[i].strip()):
+            if st and not re.match(r'^(ALIGN|EVEN|ENDP|nop|\S+\s+ENDP)\b', st) and not re.match(r'^\S+\s+ENDP\b', L[i].strip()):
                 last = st
         falls = last is None or not (ENDS.match(last) or re.match(r'^(BYTE|WORD|DWORD|DD|DB|DW)\b', last, re.I))
         idx = len(blocks)
