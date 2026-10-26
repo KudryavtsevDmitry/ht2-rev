@@ -658,7 +658,7 @@ KING_VAR(AsmLabel, g_wea651548, 651548)
 KING_VAR(AsmLabel, g_wea651358, 651358)
 KING_VAR(AsmLabel, g_wea65130c, 65130c)
 KING_VAR(AsmLabel, g_wea6515dc, 6515dc)
-ASM_VAR(AsmLabel, g_wea5a3df0, $L_5a3df0)
+ASM_VAR(AsmLabel, g_wea5a3df0, @Wo_Free20@4)
 
 // [FUN_5a4e90] (vtables 651390, 6513b0 at +32)
 extern "C" void __fastcall Wea5a4e90_Destroy(BYTE* s)

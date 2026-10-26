@@ -535,7 +535,7 @@ BYTE* __fastcall StreamPlay_Construct(BYTE* self, void*, int idx, int a, int b, 
 
 typedef void (__cdecl* PlayDoneFn)(int);
 KING_VAR(PlayDoneFn, g_playDoneCb724178, 724178)
-ASM_PROC(FUN_605310)
+ASM_FUNC(FUN_605310, @Snd_CreateBuffer@8)
 
 // [FUN_6055e0] updates all sounds, deleting finished ones, then gives free buffers to waiting sounds
 extern "C" void __cdecl Play_UpdateAll()
@@ -692,7 +692,7 @@ extern "C" void __cdecl DirInit_605750() { g_dir7241ac = (float)((double)g_dir65
 
 extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
 extern "C" void FUN_6051b0(); KING_ALIAS("_FUN_6051b0", "_Streams_Collect")
-ASM_PROC(FUN_605310)
+ASM_FUNC(FUN_605310, @Snd_CreateBuffer@8)
 extern "C" void FUN_604a70(); KING_ALIAS("_FUN_604a70", "_Mixer_Unlock")
 extern "C" void FUN_6052c0(); KING_ALIAS("_FUN_6052c0", "@Play_UpdateVolume@8")
 extern "C" void FUN_6054f0(); KING_ALIAS("_FUN_6054f0", "@Play_Arbitrate@8")
@@ -1125,3 +1125,37 @@ int __cdecl Ds_Open()
 
 } // extern "C"
 
+// [FUN_605310] [$L_605448] creates the sound's DirectSound buffer, fills it
+// from the sample data (+4, +8 bytes), sets pan (+64) and volume (+68) and
+// plays it (looping when +40). On a failure the original threw and its catch
+// called the sound's virtual +24 and returned 0.
+KING_VAR(BYTE*, ds_724164, 724164)          // the formats, 24 bytes each
+KING_VAR(BYTE*, ds_724190, 724190)          // the DirectSound object
+typedef long (__stdcall* Ds_Lock)(void*, DWORD, DWORD, void**, DWORD*, void**, DWORD*, DWORD);
+typedef long (__stdcall* Ds_Unlock)(void*, void*, DWORD, void*, DWORD);
+typedef long (__stdcall* Ds_Set)(void*, long);
+typedef long (__stdcall* Ds_Play)(void*, DWORD, DWORD, DWORD);
+extern "C" int __fastcall Snd_CreateBuffer(BYTE* self, void*)
+{
+    if (Mixer_CreateBuffer(ds_724190, F(void*, ds_724164 + F(int, self, 52) * 24, 20), (BYTE**)(self + 56), F(DWORD, self, 8))) {
+        void* b = F(void*, self, 56);
+        void** vt = *(void***)b;
+        void *p1, *p2;
+        DWORD n1, n2;
+        if (((Ds_Lock)vt[11])(b, 0, F(DWORD, self, 8), &p1, &n1, &p2, &n2, 0) == 0) {
+            memcpy(p1, F(BYTE*, self, 4), n1);
+            if (n2)
+                memcpy(p2, F(BYTE*, self, 4) + n1, n2);
+            ((Ds_Unlock)vt[19])(b, p1, n1, p2, n2);
+            b = F(void*, self, 56);
+            ((Ds_Set)(*(void***)b)[16])(b, F(long, self, 64));
+            b = F(void*, self, 56);
+            ((Ds_Set)(*(void***)b)[15])(b, F(long, self, 68));
+            b = F(void*, self, 56);
+            ((Ds_Play)(*(void***)b)[12])(b, 0, 0, F(int, self, 40) != 0);
+            return 1;
+        }
+    }
+    CallVirt(self, 24);
+    return 0;
+}

@@ -2483,3 +2483,55 @@ void __fastcall MovieScreen_Frame(BYTE* s, void*)
 // [FUN_53fd30] calls virtual slot 17 of the object at 696cb0
 KING_VAR(BYTE*, su_696cb0, 696cb0)
 extern "C" void __cdecl Startup_Call53fd30() { CallVirt(su_696cb0, 68); }
+
+// [$L_4e0900] the view's draw after clearing three counters
+KING_VAR(int, su_6f65e0, 6f65e0)
+KING_VAR(int, su_6f65e4, 6f65e4)
+KING_VAR(int, su_6f661c, 6f661c)
+extern "C" void __fastcall View_Draw(BYTE* s);
+extern "C" void __fastcall Su_ViewDraw(BYTE* s)
+{
+    su_6f65e0 = 0;
+    su_6f65e4 = 0;
+    su_6f661c = 0;
+    View_Draw(s);
+}
+
+// [$L_4e0be0] the application's input handler: key events (type 256) for
+// the debug keys go to the debug handler, the movie keys may stop a movie,
+// everything goes to the game's input
+extern "C" void Su_GameInput(); KING_ALIAS("_Su_GameInput", "@Game_Input@12")
+extern "C" void Su_DbgInput(); KING_ALIAS("_Su_DbgInput", "@Dbg_OnInput@12")
+extern "C" int __cdecl Shell_StopMovieRequest();
+extern "C" void __cdecl Fw_Nop();
+KING_VAR(BYTE*, su_6d2078, 6d2078)          // the game
+KING_VAR(int, su_696c40, 696c40)            // debug keys enabled
+extern "C" int __fastcall Su_OnInput(BYTE* self, void*, short* ev)
+{
+    if (ev[0] == 256) {
+        int id = ev[3];
+        if (id == 19 || id == 27) {
+            if (id == 27)
+                Fw_Nop();
+            return CallThis<int>(Su_DbgInput, self, ev);
+        }
+        if (id >= 112 && id <= 114) {
+            int r = Shell_StopMovieRequest();
+            if (r)
+                return r;
+            return CallThis<int>(Su_GameInput, su_6d2078, ev);
+        }
+        if (id >= 116 && id <= 118 && su_696c40)
+            CallThis<int>(Su_DbgInput, self, ev);
+    }
+    return CallThis<int>(Su_GameInput, su_6d2078, ev);
+}
+
+// [$L_4e1ee0] [$L_4e1ee9] InitInstance, then a no-op hook
+extern "C" BOOL __fastcall App_InitInstance(BYTE* s, void*);
+extern "C" BOOL __fastcall Su_InitInstance(BYTE* s, void*)
+{
+    BOOL r = App_InitInstance(s, 0);
+    Fw_Nop();
+    return r;
+}
