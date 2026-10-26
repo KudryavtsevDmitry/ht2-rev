@@ -18295,7 +18295,6 @@ extern "C" int __cdecl Ai_GetObstacleInfo(int id, BYTE* out)
 ASM_VAR(AsmLabel, s_noNodes66e384, $L_66e384)
 ASM_VAR(AsmLabel, s_noRoads66e36c, $L_66e36c)
 ASM_VAR(void*, g_670b04, $L_670b04)
-ASM_VAR(BYTE, g_686360, $L_686360)
 extern "C" void $L_401310(); KING_ALIAS("_$L_401310", "_Ai_ReportUnless5")
 extern "C" void FUN_4a52d0(); KING_ALIAS("_FUN_4a52d0", "_Sch_Exchange69224c")    // registers a function (fn)
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // a string assigned from a vector<char> (thiscall: &v)
@@ -18326,7 +18325,7 @@ static void CharVec_Zeroed(VecMethods* v, unsigned n)
 // clock, then loading the world, its roads and the rest
 extern "C" int __cdecl Ai_Initialize(const char* dir, AiEventHook eventHook, PresentHook presentHook)
 {
-    g_670b04 = &g_686360;
+    g_670b04 = CRT_STREAM(1);                     // stdout
     CallC(FUN_4a52d0, $L_401310);
     g_presentHook68d11c = presentHook;
     g_aiEventHook68d118 = eventHook;

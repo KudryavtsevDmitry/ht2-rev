@@ -4458,7 +4458,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
             F(BYTE, F(BYTE*, t, 16), 25 + i * 3) = (BYTE)fgetc(f);
             F(BYTE, F(BYTE*, t, 16), 24 + i * 3) = (BYTE)fgetc(f);
         }
-        if (F(int, f, 12) & 16)
+        if FILE_EOF(f)
             return 0;
     }
     F(WORD, t, 20) = (WORD)width;
@@ -6464,7 +6464,7 @@ ASM_VAR(BYTE, g_rmNames, $L_71e820)            // the name hash
 typedef void(__cdecl* Rm_Callback)();
 extern "C" int __cdecl atoi(const char* s);
 
-#define RM_EOF(f) (F(BYTE, f, 12) & 16)
+#define RM_EOF(f) FILE_EOF(f)
 
 // a line of the file: from the mapped resource file (mode != 0) or by fgets
 static void Rm_ReadLine(int mode, void* f, int n)

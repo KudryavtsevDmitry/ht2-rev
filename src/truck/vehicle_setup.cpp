@@ -554,12 +554,17 @@ extern "C" void __fastcall Car_StartEngine(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 // Small setup procs: static vectors, a light array, the race start, a stream read.
 
-extern "C" void Is_ExtractText(); KING_ALIAS("_Is_ExtractText", "??5istream@@QAEAAV0@PAD@Z")
-// [FUN_507ab0] reads a word from the stream into buf: 1 unless the stream failed (state bits 2, 4)
-extern "C" int __cdecl Stream_ReadWord(BYTE* is, char* buf)
+// [FUN_507ab0] reads the next whitespace separated word from the line at
+// *cursor into buf (what istream::operator>>(char*) did on the original's
+// istrstream); 0 when only whitespace is left
+extern "C" int __cdecl Stream_ReadWord(BYTE* cursor, char* buf)
 {
-    BYTE* r = CallThis<BYTE*>(Is_ExtractText, is, buf);
-    return (F(int, r + F(int, F(BYTE*, r, 0), 4), 8) & 6) == 0;
+    const char*& p = *(const char**)cursor;
+    while (*p == ' ' || (*p >= 9 && *p <= 13)) p++;          // isspace
+    if (!*p) return 0;
+    while (*p && *p != ' ' && !(*p >= 9 && *p <= 13)) *buf++ = *p++;
+    *buf = 0;
+    return 1;
 }
 
 // ---------------------------------------------------------------------------

@@ -3752,7 +3752,7 @@ void __fastcall Lights_ReadSchedule(BYTE* s, void*, int a, int b, int c)
     if (!f)
         return;
     int obj = a;
-    while (!(F(BYTE, f, 12) & 16)) {
+    while (!FILE_EOF(f)) {
         char line[64];
         fgets(line, 60, f);
         char* ctx = line;

@@ -1958,7 +1958,7 @@ void __cdecl Messages_Load()
         char line[120], text[108];
         int q;
         for (;;) {
-            if (F(BYTE, f, 12) & 16)      // the end of file flag
+            if FILE_EOF(f)
                 goto next;
             fgets(line, 100, f);
             q = 0;

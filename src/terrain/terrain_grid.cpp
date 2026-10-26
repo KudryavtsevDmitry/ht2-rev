@@ -525,7 +525,6 @@ ASM_VAR(WORD, g_gzCpdist, $L_68a67c)
 ASM_VAR(WORD, g_gzCpdext, $L_68a6b8)
 ASM_VAR(int, g_gzLbits, $L_68a718)
 ASM_VAR(int, g_gzDbits, $L_68a71c)
-ASM_VAR(AsmLabel, g_gzStderr, $L_686380)
 ASM_VAR(char, g_gz68a73c, $L_68a73c)                // " incomplete literal tree\n"
 ASM_VAR(char, g_gz68a720, $L_68a720)                // " incomplete distance tree\n"
 extern "C" int __cdecl Gz_fprintf(void* f, const char* fmt, ...); KING_ALIAS("_Gz_fprintf", "_fprintf")
@@ -947,7 +946,7 @@ int __cdecl Gz_InflateDynamic()
     {
         if (i == 1)
         {
-            Gz_fprintf(&g_gzStderr, &g_gz68a73c);
+            Gz_fprintf(CRT_STREAM(2), &g_gz68a73c);
             Gz_HuftFree(tl);
         }
         return i;
@@ -957,7 +956,7 @@ int __cdecl Gz_InflateDynamic()
     {
         if (i == 1)
         {
-            Gz_fprintf(&g_gzStderr, &g_gz68a720);
+            Gz_fprintf(CRT_STREAM(2), &g_gz68a720);
             Gz_HuftFree(td);
         }
         Gz_HuftFree(tl);
