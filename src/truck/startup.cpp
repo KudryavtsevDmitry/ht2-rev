@@ -951,7 +951,7 @@ extern "C" BYTE* __fastcall Sta4e0200_Construct(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Media handlers of the startup windows.
 
-ASM_PROC(FUN_4d8350)
+extern "C" void FUN_4d8350(); KING_ALIAS("_FUN_4d8350", "_Media_VehicleEvent")
 extern "C" void FUN_4df540(); KING_ALIAS("_FUN_4df540", "_Net_CreateById")
 extern "C" void FUN_5c5440(); KING_ALIAS("_FUN_5c5440", "_Media_Zero19@76")
 #define STA94_ARGS a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19
@@ -1524,8 +1524,8 @@ extern "C" void Ai_Cluster(); KING_ALIAS("_Ai_Cluster", "@Cluster_Construct@8")
 extern "C" void Ai_ObjFind(); KING_ALIAS("_Ai_ObjFind", "_Objects_Find")
 extern "C" void Ai_Surface(); KING_ALIAS("_Ai_Surface", "@Window_SetSurface@12")
 ASM_FUNC(Ai_World, FUN_4e24e8)
-ASM_FUNC(Ai_ClusterLoad, FUN_5ec0f0)
-ASM_FUNC(Ai_Menu, FUN_527f30)
+extern "C" void Ai_ClusterLoad(); KING_ALIAS("_Ai_ClusterLoad", "@Image_ReadResources@24")
+extern "C" void Ai_Menu(); KING_ALIAS("_Ai_Menu", "@GameWindow_Construct@12")
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 ASM_VAR(char, g_aiNewLines, $L_673414)
 ASM_VAR(char, g_aiDot, $L_671204)
@@ -1800,6 +1800,686 @@ void __cdecl Bus_OnFare(void*, double amount)
     int t = (int)*m;
     memcpy(buf + 1, &t, 4);
     Bf_SendMsg(953, buf, 5);
+}
+
+} // extern "C"
+
+// === the game's main control window and its shell screens (FUN_527f30 with its tail $L_5280e2)
+
+extern "C" BYTE* __fastcall Mn_WindowCtor(BYTE* s, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8); KING_ALIAS("@Mn_WindowCtor@40", "@ControlWindow_Construct@40")
+extern "C" void* __cdecl Mn_LoadFonts(); KING_ALIAS("_Mn_LoadFonts", "_Carat_LoadFonts")
+extern "C" void __cdecl Mn_Set720080(const char* s); KING_ALIAS("_Mn_Set720080", "_Set720080")
+extern "C" BYTE* __fastcall Mn_OverlaysLoad(BYTE* s, void*, const char* path, BYTE* o, int size); KING_ALIAS("@Mn_OverlaysLoad@20", "@Overlays_Load@20")
+extern "C" BYTE* __cdecl Mn_Find(const char* name); KING_ALIAS("_Mn_Find", "_Objects_Find")
+extern "C" double __cdecl Mn_Now(); KING_ALIAS("_Mn_Now", "_Tsc_Now")
+extern "C" BYTE* __cdecl Mn_FontLoad(const char* name); KING_ALIAS("_Mn_FontLoad", "_Font_LoadFile")
+extern "C" void __cdecl Mn_Exit(const char* msg); KING_ALIAS("_Mn_Exit", "_Sys_Exit")
+extern "C" DWORD __fastcall Mn_StyleAssign(void* self, void*, const void* s); KING_ALIAS("@Mn_StyleAssign@12", "@Style_Assign@12")
+extern "C" BYTE* __fastcall Mn_ControlCtor(BYTE* s, void*, const char* name, int id); KING_ALIAS("@Mn_ControlCtor@16", "@Control_Construct@16")
+extern "C" BYTE* __cdecl Mn_Button(const char* name, int id, int x, int y); KING_ALIAS("_Mn_Button", "_Shell_MakeMaskButton")
+extern "C" void __fastcall Mn_AddChild(BYTE* self, void*, BYTE* child, BYTE* after); KING_ALIAS("@Mn_AddChild@16", "@Ctl_AddChild@16")
+extern "C" void __fastcall Mn_Select(BYTE* self, void*, BYTE* child); KING_ALIAS("@Mn_Select@12", "@Ctl_Select@12")
+extern "C" void __cdecl Mn_Nop(void* p); KING_ALIAS("_Mn_Nop", "_Fw_Nop")
+extern "C" void __fastcall Mn_ClearFlags(BYTE* s, void*); KING_ALIAS("@Mn_ClearFlags@8", "@Window_ClearFlags@8")
+extern "C" void __fastcall Mn_Activate(BYTE* s, void*); KING_ALIAS("@Mn_Activate@8", "@Win_Activate@8")
+extern "C" BYTE* __fastcall Mn_WindowsAdd(BYTE* self, void*, BYTE* w); KING_ALIAS("@Mn_WindowsAdd@12", "@Windows_Add2@12")
+typedef BYTE* (__fastcall* Mn_ScreenCtor)(BYTE* s, void*, BYTE* app);
+extern "C" BYTE* __fastcall Mn_Controls(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_Controls@12", "@ShellControls513b30_Construct@12")
+extern "C" BYTE* __fastcall Mn_Display(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_Display@12", "@ShellDisplay515ca0_Construct@12")
+extern "C" BYTE* __fastcall Mn_Keys(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_Keys@12", "@KeysScreen_Construct@12")
+extern "C" BYTE* __fastcall Mn_Arrows(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_Arrows@12", "@ShellArrows_Construct@12")
+extern "C" BYTE* __fastcall Mn_Join(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_Join@12", "@ShellJoin518d20_Construct@12")
+extern "C" BYTE* __fastcall Mn_Providers(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_Providers@12", "@ShellProviders51a580_Construct@12")
+extern "C" BYTE* __fastcall Mn_DisplayOpt(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_DisplayOpt@12", "@DisplayOptions_Construct@12")
+extern "C" BYTE* __fastcall Mn_Session(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_Session@12", "@ShellSession51b640_Construct@12")
+extern "C" BYTE* __fastcall Mn_VideoOpt(BYTE*, void*, BYTE*); KING_ALIAS("@Mn_VideoOpt@12", "@VideoOptions_Construct@12")
+extern "C" void Mn_SetView(); KING_ALIAS("_Mn_SetView", "_Carat_SetView")
+extern "C" void Mn_Leave(); KING_ALIAS("_Mn_Leave", "_Game_Leave")
+extern "C" void __cdecl srand(unsigned seed);
+extern "C" __declspec(dllimport) long __stdcall CoInitialize(void* reserved);
+
+ASM_VAR(int, g_mn720938, $L_720938)
+ASM_VAR(int, g_mn72093c, $L_72093c)
+ASM_VAR(int, g_mn720940, $L_720940)
+ASM_VAR(int, g_mn720944, $L_720944)
+ASM_VAR(BYTE, g_mn64eb10, $L_64eb10)
+ASM_VAR(BYTE, g_mn64ead0, $L_64ead0)
+ASM_VAR(BYTE, g_mn64dc50, $L_64dc50)
+ASM_VAR(char, g_mn678358, $L_678358)
+ASM_VAR(char, g_mn67834c, $L_67834c)
+ASM_VAR(char, g_mn678340, $L_678340)
+ASM_VAR(char, g_mn67833c, $L_67833c)
+ASM_VAR(char, g_mn6729a8, $L_6729a8)
+ASM_VAR(char, g_mn672998, $L_672998)
+ASM_VAR(char, g_mn672994, $L_672994)
+ASM_VAR(char, g_mn676220, $L_676220)
+ASM_VAR(char, g_mn676820, $L_676820)
+ASM_VAR(char, g_mn67832c, $L_67832c)
+ASM_VAR(char, g_mn678320, $L_678320)
+ASM_VAR(char, g_mn676c9c, $L_676c9c)
+ASM_VAR(char, g_mn678310, $L_678310)
+ASM_VAR(char, g_mn67663c, $L_67663c)
+ASM_VAR(char, g_mn678308, $L_678308)
+ASM_VAR(char, g_mn678300, $L_678300)
+ASM_VAR(char, g_mn6782f8, $L_6782f8)
+ASM_VAR(char, g_mn6782f0, $L_6782f0)
+ASM_VAR(char, g_mn6782e8, $L_6782e8)
+ASM_VAR(char, g_mn6782e0, $L_6782e0)
+ASM_VAR(char, g_mn6782d8, $L_6782d8)
+ASM_VAR(char, g_mn6782d0, $L_6782d0)
+ASM_VAR(char, g_mn6733c4, $L_6733c4)
+ASM_VAR(char, g_mn6733cc, $L_6733cc)
+ASM_VAR(char, g_mn6733d4, $L_6733d4)
+ASM_VAR(char, g_mn6733bc, $L_6733bc)
+ASM_VAR(char, g_mn6782c0, $L_6782c0)
+ASM_VAR(char, g_mn6782b0, $L_6782b0)
+ASM_VAR(char, g_mn6782a0, $L_6782a0)
+ASM_VAR(BYTE*, g_mnApp696ca0, $L_696ca0)
+ASM_VAR(const char*, g_mnIni696868, $L_696868)
+ASM_VAR(BYTE*, g_mn6cecf4, $L_6cecf4)
+ASM_VAR(void*, g_mn6ced90, $L_6ced90)
+ASM_VAR(void*, g_mn67fb7c, $L_67fb7c)
+ASM_VAR(int, g_mn6ced48, $L_6ced48)
+ASM_VAR(int, g_mn696d1c, $L_696d1c)
+ASM_VAR(int, g_mn6ce3ac, $L_6ce3ac)
+ASM_VAR(BYTE*, g_mn6ce958, $L_6ce958)
+ASM_VAR(BYTE, g_mn6ce938, $L_6ce938)
+ASM_VAR(BYTE**, g_mn6cec60, $L_6cec60)
+ASM_VAR(void*, g_mn702f4c, $L_702f4c)
+ASM_VAR(int, g_mn6ce408, $L_6ce408)
+ASM_VAR(int, g_mn6ce40c, $L_6ce40c)
+ASM_VAR(int, g_mn6ce410, $L_6ce410)
+ASM_VAR(int, g_mn6ce414, $L_6ce414)
+ASM_VAR(int, g_mn6ce3b8, $L_6ce3b8)
+ASM_VAR(int, g_mn6ce3bc, $L_6ce3bc)
+ASM_VAR(int, g_mn6ce988, $L_6ce988)
+ASM_VAR(int, g_mn6ce990, $L_6ce990)
+ASM_VAR(int, g_mn6ce994, $L_6ce994)
+ASM_VAR(int, g_mn6ceb38, $L_6ceb38)
+ASM_VAR(int, g_mn6ceb3c, $L_6ceb3c)
+ASM_VAR(int, g_mn6ce430, $L_6ce430)
+ASM_VAR(int, g_mn6ce434, $L_6ce434)
+ASM_VAR(float, g_mn6ce3f8, $L_6ce3f8)
+ASM_VAR(int, g_mn6ce3e0, $L_6ce3e0)
+ASM_VAR(int, g_mn6ce3e4, $L_6ce3e4)
+ASM_VAR(int, g_mn6ce3e8, $L_6ce3e8)
+ASM_VAR(int, g_mn6ce3ec, $L_6ce3ec)
+ASM_VAR(float, g_mn6ce978, $L_6ce978)
+ASM_VAR(int, g_mn6ce960, $L_6ce960)
+ASM_VAR(int, g_mn6ce964, $L_6ce964)
+ASM_VAR(int, g_mn6ce968, $L_6ce968)
+ASM_VAR(int, g_mn6ce96c, $L_6ce96c)
+ASM_VAR(BYTE*, g_mn6cec80, $L_6cec80)
+ASM_VAR(BYTE, g_mnWindows696750, $L_696750)
+ASM_VAR(BYTE*, g_mn6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_mn6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_mn6cec7c, $L_6cec7c)
+ASM_VAR(BYTE*, g_mn6cec8c, $L_6cec8c)
+ASM_VAR(BYTE*, g_mn6cec90, $L_6cec90)
+ASM_VAR(BYTE*, g_mn6cec94, $L_6cec94)
+ASM_VAR(BYTE*, g_mn6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_mn6cecd8, $L_6cecd8)
+ASM_VAR(BYTE*, g_mn6cec9c, $L_6cec9c)
+ASM_VAR(DWORD, g_mn696874, $L_696874)
+ASM_VAR(BYTE*, g_mn6f2ed0, $L_6f2ed0)
+ASM_VAR(BYTE*, g_mn6f2ed4, $L_6f2ed4)
+ASM_VAR(BYTE*, g_mn6f2ed8, $L_6f2ed8)
+ASM_VAR(BYTE*, g_mn6f2ee8, $L_6f2ee8)
+ASM_VAR(BYTE*, g_mn6f2eec, $L_6f2eec)
+ASM_VAR(BYTE*, g_mn6f2ef0, $L_6f2ef0)
+
+// a shell screen: built for app, added to the window list and shown once (vtable +32)
+static BYTE* Mn_Screen(unsigned size, Mn_ScreenCtor ctor, BYTE* app)
+{
+    BYTE* p = (BYTE*)operator new(size);
+    if (p)
+        p = ctor(p, 0, app);
+    return p;
+}
+
+static void Mn_AddScreen(BYTE*& g, BYTE* p)
+{
+    g = p;
+    Mn_WindowsAdd(&g_mnWindows696750, 0, p);
+    CallVirt(g, 32);
+}
+
+static BYTE** Mn_Holder(const char* name)
+{
+    BYTE** p = (BYTE**)operator new(12);
+    if (p)
+    {
+        p[0] = Mn_Find(name);
+        p[1] = 0;
+        p[2] = 0;
+    }
+    return p;
+}
+
+extern "C" {
+
+// [FUN_527f30..$L_5280e2] the game's control window s for app: its fonts, overlays and objects, the random seed,
+// the menu's styles and its eight buttons (101..108, 102 selected), the shell screens (controls, display, keys,
+// arrows, join, providers, display and video options, session) and the ini's choice for the controls screen (+1348)
+BYTE* __fastcall GameWindow_Construct(BYTE* s, void*, BYTE* app)
+{
+    char buf[136];
+    void* fonts = Mn_LoadFonts();
+    Mn_WindowCtor(s, 0, (int)app, g_mn720938, g_mn72093c, g_mn720940, g_mn720944, 8, (int)fonts, 0);
+    F(void*, s, 0) = &g_mn64eb10;
+    F(void*, s, 64) = &g_mn64ead0;
+    Mn_Set720080(&g_mn678358);
+    BYTE* ov = (BYTE*)operator new(20);
+    if (ov)
+        ov = Mn_OverlaysLoad(ov, 0, &g_mn67834c, F(BYTE*, g_mnApp696ca0, 9396), 0);
+    F(BYTE*, F(BYTE*, g_mnApp696ca0, 9396), 136) = ov;
+    g_mn6cecf4 = Mn_Find(&g_mn678340);
+    if (g_mn6cecf4)
+        CallVirt(g_mn6cecf4, 40);
+    F(int, s, 372) = 0;
+    g_mn6ced90 = g_mn67fb7c;
+    g_mn67fb7c = (void*)&Mn_Leave;
+    GetPrivateProfileStringA(&g_mn672998, &g_mn67833c, &g_mn6729a8, buf, 4, g_mnIni696868);
+    g_mn6ced48 = strcmp(buf, &g_mn672994) == 0;
+    srand((int)Mn_Now());
+    if (F(int, g_mnApp696ca0, 2864) == 0)
+    {
+        BYTE* font = Mn_FontLoad(&g_mn676220);
+        if (!font)
+            Mn_Exit(&g_mn676820);
+        F(BYTE*, g_mnApp696ca0, 2864) = font;
+    }
+    F(BYTE*, s, 368) = Mn_Find(&g_mn67832c);
+    BYTE* o = Mn_Find(&g_mn678320);
+    g_mn6ce3ac = g_mn696d1c;
+    g_mn6ce958 = o;
+    Mn_StyleAssign(s + 132, 0, &g_mn6ce938);
+    Mn_StyleAssign(s + 168, 0, &g_mn6ce938);
+    Mn_StyleAssign(s + 204, 0, &g_mn6ce938);
+    Mn_StyleAssign(s + 240, 0, &g_mn6ce938);
+    BYTE** h = Mn_Holder(&g_mn676c9c);
+    F(BYTE**, s, 52) = h;
+    F(BYTE**, s, 48) = h;
+    g_mn6cec60 = Mn_Holder(&g_mn678310);
+
+    g_mn702f4c = (void*)&Mn_SetView;
+    g_mn6ce40c = 6;
+    g_mn6ce408 = 2;
+    g_mn6ce414 = 0;
+    g_mn6ce410 = 4;
+    Mn_StyleAssign(&g_mn6ce3b8, 0, &g_mn6ce408);
+    g_mn6ce3bc = 7;
+    Mn_StyleAssign(&g_mn6ce988, 0, &g_mn6ce3b8);
+    g_mn6ce994 = 4;
+    g_mn6ce990 = 0;
+    Mn_StyleAssign(&g_mn6ceb38, 0, &g_mn6ce988);
+    g_mn6ceb3c = 6;
+    Mn_StyleAssign(&g_mn6ce430, 0, &g_mn6ceb38);
+    g_mn6ce434 = 3;
+    g_mn6ce3f8 = 0.5f;
+    g_mn6ce3e4 = 4;
+    g_mn6ce3e0 = 0;
+    g_mn6ce3ec = 0;
+    g_mn6ce3e8 = 3;
+    g_mn6ce978 = 0.5f;
+    g_mn6ce964 = 4;
+    g_mn6ce960 = 0;
+    g_mn6ce968 = 0;
+    g_mn6ce96c = 3;
+
+    BYTE* menu = (BYTE*)operator new(296);
+    if (menu)
+    {
+        Mn_ControlCtor(menu, 0, &g_mn67663c, 0);
+        F(int, menu, 288) = 0;
+        F(int, menu, 292) = 0;
+        F(void*, menu, 0) = &g_mn64dc50;
+    }
+    Mn_AddChild(menu, 0, Mn_Button(&g_mn678308, 108, 596, 452), 0);
+    Mn_AddChild(menu, 0, Mn_Button(&g_mn678300, 105, 648, 332), 0);
+    Mn_AddChild(menu, 0, Mn_Button(&g_mn6782f8, 104, 648, 202), 0);
+    BYTE* first = Mn_Button(&g_mn6782f0, 102, 596, 82);
+    Mn_AddChild(menu, 0, first, 0);
+    Mn_AddChild(menu, 0, Mn_Button(&g_mn6782e8, 101, 79, 452), 0);
+    Mn_AddChild(menu, 0, Mn_Button(&g_mn6782e0, 106, 27, 332), 0);
+    Mn_AddChild(menu, 0, Mn_Button(&g_mn6782d8, 103, 27, 202), 0);
+    Mn_AddChild(menu, 0, Mn_Button(&g_mn6782d0, 107, 79, 82), 0);
+    Mn_Select(menu, 0, first);
+    Mn_Nop(menu + 44);
+    Mn_AddChild(F(BYTE*, s, 56), 0, menu, 0);
+    g_mn6cec80 = s;
+    Mn_ClearFlags(s, 0);
+
+    Mn_AddScreen(g_mn6cec6c, Mn_Screen(1360, Mn_Controls, app));
+    Mn_AddScreen(g_mn6cec70, Mn_Screen(424, Mn_Display, app));
+    Mn_AddScreen(g_mn6cec7c, Mn_Screen(376, Mn_Keys, app));
+    Mn_AddScreen(g_mn6cec8c, Mn_Screen(368, Mn_Arrows, app));
+    Mn_AddScreen(g_mn6cec90, Mn_Screen(448, Mn_Join, app));
+    Mn_AddScreen(g_mn6cec94, Mn_Screen(816, Mn_Providers, app));
+    Mn_AddScreen(g_mn6cec98, Mn_Screen(400, Mn_DisplayOpt, app));
+    Mn_AddScreen(g_mn6cecd8, Mn_Screen(704, Mn_Session, app));
+    Mn_AddScreen(g_mn6cec9c, Mn_Screen(408, Mn_VideoOpt, app));
+
+    GetPrivateProfileStringA(&g_mn6733c4, &g_mn6733cc, &g_mn6733d4, buf, 30, g_mnIni696868);
+    if (strcmp(buf, &g_mn6733d4) == 0)
+        F(int, g_mn6cec6c, 1348) = 0;
+    else if (strcmp(buf, &g_mn6733bc) == 0)
+        F(int, g_mn6cec6c, 1348) = 1;
+    else
+        F(int, g_mn6cec6c, 1348) = 2;
+    g_mn696874 |= 64;
+    BYTE* a = Mn_Find(&g_mn6782c0);
+    g_mn6f2ee8 = a;
+    g_mn6f2ed0 = a;
+    a = Mn_Find(&g_mn6782b0);
+    g_mn6f2eec = a;
+    g_mn6f2ed4 = a;
+    a = Mn_Find(&g_mn6782a0);
+    g_mn6f2ef0 = a;
+    g_mn6f2ed8 = a;
+    Mn_Activate(s, 0);
+    CoInitialize(0);
+    return s;
+}
+
+} // extern "C"
+
+// === a media event for a vehicle resource (FUN_4d8350 with its pieces up to $L_4d88b9)
+
+extern "C" BYTE* __fastcall Vh_CarCtor(BYTE* s, void*, BYTE* a, int b); KING_ALIAS("@Vh_CarCtor@16", "@Car53e420_Construct@16")
+extern "C" void __fastcall Vh_OwnerAttach(BYTE* self, void*, BYTE* node); KING_ALIAS("@Vh_OwnerAttach@12", "@Owner_Attach@12")
+extern "C" void __fastcall Vh_Restart(BYTE* self, void*); KING_ALIAS("@Vh_Restart@8", "@Obj53e490_Restart@8")
+extern "C" BYTE* __fastcall Vh_ResFind(BYTE* self, void*, const char* name); KING_ALIAS("@Vh_ResFind@12", "@Resources_Find@12")
+extern "C" BYTE* __fastcall Vh_ResGet(BYTE* self, void*, int id); KING_ALIAS("@Vh_ResGet@12", "@Resources_Get@12")
+extern "C" void __fastcall Vh_ResLoad(BYTE* self, void*, BYTE* ctx); KING_ALIAS("@Vh_ResLoad@12", "@Resource_Load@12")
+extern "C" int __fastcall Vh_ResAddRecord(BYTE* self, void*, int a, BYTE* rec, int c); KING_ALIAS("@Vh_ResAddRecord@20", "@Resources_AddRecord@20")
+extern "C" int __fastcall Vh_ResDelete(BYTE* self, void*, int id); KING_ALIAS("@Vh_ResDelete@12", "@Resources_Delete@12")
+extern "C" int __fastcall Vh_ResCreate(BYTE* self, void*, int id, const char* name); KING_ALIAS("@Vh_ResCreate@16", "@Resources_Create@16")
+extern "C" int __fastcall Vh_ResSetData(BYTE* s, void*, int id, const char* name, unsigned size, const void* data); KING_ALIAS("@Vh_ResSetData@24", "@Resources_SetData@24")
+extern "C" void __fastcall Vh_Charge(BYTE* self, void*, BYTE* tab); KING_ALIAS("@Vh_Charge@12", "@ResTable_Charge@12")
+extern "C" void __fastcall Vh_RefRelease(BYTE* self, void*); KING_ALIAS("@Vh_RefRelease@8", "@ResRef_Release@8")
+extern "C" BYTE* __fastcall Vh_LoadRoom(BYTE* self, void*, const char* name, const char* module); KING_ALIAS("@Vh_LoadRoom@16", "@Fw_LoadRoom@16")
+extern "C" void __fastcall Vh_Players(void* out, void*); KING_ALIAS("@Vh_Players@8", "@Iter_Players@8")
+extern "C" BYTE* __fastcall Vh_ObjectInit(BYTE* s, void*, int a, int b, const char* name, const void* m, int c,
+                                          const void* data, int d, int e, int f); KING_ALIAS("@Vh_ObjectInit@44", "@Fx_ObjectInit@44")
+extern "C" void* __fastcall Vh_Self(void* self, void*); KING_ALIAS("@Vh_Self@8", "@Obj541960_Self@8")
+extern "C" void __cdecl Vh_Release(int id); KING_ALIAS("_Vh_Release", "_Vehicle_Release")
+extern "C" void __cdecl Vh_LoadResource(int id); KING_ALIAS("_Vh_LoadResource", "_Vehicle_LoadResource")
+extern "C" void __fastcall Vh_AttachViewer(BYTE* s, void*, BYTE* v); KING_ALIAS("@Vh_AttachViewer@12", "@Viewer_AttachVehicle@12")
+extern "C" void __fastcall Vh_WorldAttach(BYTE* self, int, BYTE* src); KING_ALIAS("@Vh_WorldAttach@12", "@WorldObj_Attach@12")
+extern "C" int __cdecl Vh_CarType(int n); KING_ALIAS("_Vh_CarType", "_CarType_FromNumber")
+extern "C" void __cdecl Vh_Fatal(const char* fmt, ...); KING_ALIAS("_Vh_Fatal", "_Sys_Fatal")
+extern "C" int __cdecl Vh_NetCreate(BYTE* res, DWORD a2, DWORD a3, DWORD a4, DWORD a5, DWORD a6, DWORD id, SuBlob48 state, DWORD a20); KING_ALIAS("_Vh_NetCreate", "_Net_CreateById")
+ASM_VAR(char, g_vhTrafficLight, $L_672bd0)     // "Traffic_Light"
+ASM_VAR(char, g_vhNoTruck, $L_672bb4)          // "Not found cluster for truck"
+ASM_VAR(char, g_vhNoTrailer, $L_672b90)        // "Not found cluster for semitrailer"
+ASM_VAR(BYTE*, g_vhWorld6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_vhApp696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_vh6cec6c, $L_6cec6c)
+ASM_VAR(int, g_vhPlayerId672984, $L_672984)
+ASM_VAR(BYTE*, g_vh675d38, $L_675d38)
+ASM_VAR(int, g_vhModels6ce32c, $L_6ce32c)
+ASM_VAR(char, g_vhModelNames69818e, $L_69818e)
+ASM_VAR(BYTE, g_vhClusters6d24bc, $L_6d24bc)
+ASM_VAR(BYTE*, g_vhCarTypes6ced98, $L_6ced98)
+ASM_VAR(BYTE*, g_vh6ef1f8, $L_6ef1f8)
+ASM_VAR(BYTE*, g_vh696340, $L_696340)
+ASM_VAR(BYTE, g_vh6f68b0, $L_6f68b0)
+
+// the vehicle model named name (2416-byte records), or the model count when none matches
+static int Vh_Model(const char* name)
+{
+    int i = 0;
+    for (; i < g_vhModels6ce32c; i++)
+        if (strcmp(name, &g_vhModelNames69818e + i * 2416) == 0)
+            break;
+    return i;
+}
+
+extern "C" {
+
+// [FUN_4d8350..$L_4d88b9] media event for app s: a traffic light (one per world, +1632), or resource a6 (named a1)
+// recreated in s +704: a truck (id/1000 = 100: the player's own when a6 is 672984 in multiplayer, its room loaded),
+// a semitrailer (101), or a networked car (id/100000 = 2 or 3); each gets its model's cluster and is charged
+// into the table. Returns the traffic light, else 0
+BYTE* __cdecl Media_VehicleEvent(BYTE* s, STA94_PARAMS)
+{
+    const char* name = (const char*)a1;
+    if (strcmp(name, &g_vhTrafficLight) == 0)
+    {
+        if (!g_vhWorld6d2078 || F(BYTE*, g_vhWorld6d2078, 1632))
+            return 0;
+        BYTE* p = (BYTE*)operator new(88);
+        if (p)
+            p = Vh_CarCtor(p, 0, s, a19);
+        F(BYTE*, g_vhWorld6d2078, 1632) = p;
+        Vh_OwnerAttach(s + 2992, 0, F(BYTE*, g_vhWorld6d2078, 1632));
+        if (s == g_vhApp696ca0)
+            F(int, F(BYTE*, g_vhWorld6d2078, 1632), 80) = 1;
+        Vh_Restart(F(BYTE*, g_vhWorld6d2078, 1632), 0);
+        return F(BYTE*, g_vhWorld6d2078, 1632);
+    }
+    BYTE* res = s + 704;
+    Vh_ResFind(res, 0, name);
+    int id = (int)a6;
+    BYTE* old = Vh_ResGet(res, 0, id);
+    if (old)
+    {
+        if (F(void*, old, 28))
+            Vh_ResLoad(old, 0, res);
+        Vh_ResAddRecord(res, 0, 0, old, 0);
+        Vh_ResDelete(res, 0, id);
+    }
+    Vh_ResCreate(res, 0, id, name);
+    BYTE* r = Vh_ResGet(res, 0, id);
+    if (!r)
+        return 0;
+    F(BYTE, r, 8) |= 1;
+    if (F(BYTE, F(BYTE*, r, 12), 4012) & 2)
+    {
+        BYTE* ref = F(BYTE*, g_vhApp696ca0, 484);
+        if (F(int, ref, 20))
+        {
+            if (!F(int, ref, 16))
+                do
+                    Sleep(10);
+                while (!F(int, F(BYTE*, g_vhApp696ca0, 484), 16));
+            Vh_RefRelease(F(BYTE*, g_vhApp696ca0, 484), 0);
+        }
+    }
+    SuBlob48 st = { { a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18 } };
+    const SuBlob48* state = &st;
+    int kind = F(int, r, 4) / 1000;
+    if (kind == 100)
+    {
+        const char* module = (const char*)a2;
+        int own = 0;
+        if (F(int, g_vh6cec6c, 1300) > 1)
+        {
+            if (id == g_vhPlayerId672984)
+            {
+                F(BYTE, r, 8) &= ~1;
+                own = 1;
+                if (F(int, F(BYTE*, r, 12), 4012) == 2)
+                {
+                    memcpy(s + 652, state, 48);
+                    strcpy(F(char*, s, 488) + 44, module);
+                    strcpy(F(char*, s, 488) + 12, name);
+                    Vh_LoadRoom(g_vhApp696ca0, 0, name, module);
+                    g_vh675d38 = F(BYTE*, g_vhApp696ca0, 2992);
+                }
+            }
+        }
+        else
+            own = 2;
+        int model = Vh_Model((const char*)a3);
+        BYTE obj[300];
+        DWORD players;
+        Vh_Players(&players, 0);
+        Vh_ObjectInit(obj, 0, model, 0, module, state, (int)players, 0, 0, (int)a19, own);
+        Vh_ResSetData(res, 0, id, name, 300, obj);
+        BYTE* cl = *(BYTE**)(&g_vhClusters6d24bc + model * 1488 + 12);
+        if (cl)
+            F(int, r, 16) = F(int, cl, 16);
+        else
+            Vh_Fatal(&g_vhNoTruck, 0);
+        Vh_Charge(r, 0, res);
+        if (F(int, g_vh6cec6c, 1300) > 1 && own == 1)
+        {
+            if (!F(void*, r, 28))
+            {
+                BYTE* o = g_vh6ef1f8 ? g_vh6ef1f8 - 4 : 0;
+                BYTE* self = (BYTE*)Vh_Self(o, 0);
+                if (self)
+                    Vh_Release(F(int, self, 360));
+                Vh_LoadResource(F(int, r, 4));
+            }
+            BYTE* v = F(BYTE*, r, 28);
+            if (v)
+            {
+                g_vh696340 = v;
+                if (g_vhWorld6d2078)
+                {
+                    Vh_AttachViewer(g_vhWorld6d2078, 0, v);
+                    Vh_WorldAttach(&g_vh6f68b0, 0, v);
+                }
+            }
+        }
+        return 0;
+    }
+    if (kind == 101)
+    {
+        int model = Vh_Model((const char*)a3);
+        BYTE obj[300];
+        DWORD players;
+        Vh_Players(&players, 0);
+        Vh_ObjectInit(obj, 0, model, 0, (const char*)a2, state, (int)players, 0, 0, (int)a19, 0);
+        Vh_ResSetData(res, 0, id, name, 300, obj);
+        BYTE* cl = *(BYTE**)(&g_vhClusters6d24bc + model * 1488 + 12);
+        if (cl)
+            F(int, r, 16) = F(int, cl, 16);
+        else
+            Vh_Fatal(&g_vhNoTrailer, 0);
+        Vh_Charge(r, 0, res);
+        return 0;
+    }
+    int net = F(int, r, 4) / 100000;
+    if (net == 2)
+    {
+        Vh_NetCreate(s, a1, a2, a3, a4, a5, a6, *state, a19);
+        int t = Vh_CarType(F(int, r, 4) / 1000 % 100);
+        BYTE* ct = (&g_vhCarTypes6ced98)[t * 11];
+        if (ct)
+            F(int, r, 16) = F(int, ct, 16);
+        if (F(int, g_vh6cec6c, 1300) > 1)
+            F(int, r, 0) = 2;
+        Vh_Charge(r, 0, res);
+    }
+    else if (net == 3)
+    {
+        Vh_NetCreate(s, a1, a2, a3, a4, a5, a6, *state, a19);
+        if (F(int, g_vh6cec6c, 1300) > 1)
+            F(int, r, 0) = 2;
+        Vh_Charge(r, 0, res);
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === the game window's first draw: the info screens and the intro movie ($L_528820 with its pieces up to $L_528bd6)
+
+ASM_PROC($L_5dd8c0)    // window: set the video mode (w, h, cres, flags)
+ASM_PROC($L_5d7c20)    // tries a video mode (w, h, cres, flags, 3 outs)
+extern "C" BYTE* __fastcall Is_InfoCtor(BYTE* s, void*, BYTE* parent, int mode); KING_ALIAS("@Is_InfoCtor@16", "@InfoScreen_Construct@16")
+extern "C" BYTE* __fastcall Is_ShellCtor(BYTE* s, void*, BYTE* parent); KING_ALIAS("@Is_ShellCtor@12", "@Shell528c20_Construct@12")
+extern "C" BYTE* __fastcall Is_WindowsAdd2(BYTE* self, void*, BYTE* w); KING_ALIAS("@Is_WindowsAdd2@12", "@Windows_Add2@12")
+extern "C" BYTE* __fastcall Is_WindowsAdd(BYTE* self, void*, BYTE* w); KING_ALIAS("@Is_WindowsAdd@12", "@Windows_Add@12")
+extern "C" int __fastcall Is_SetSurface(BYTE* self, void*, BYTE* s); KING_ALIAS("@Is_SetSurface@12", "@Window_SetSurface@12")
+extern "C" int __cdecl Is_MoviePlay(const char* name, int mode); KING_ALIAS("_Is_MoviePlay", "_Movie_Play")
+extern "C" DWORD __cdecl Is_ScreenFlags(); KING_ALIAS("_Is_ScreenFlags", "_Carat_ScreenFlags")
+extern "C" void __fastcall Is_PaletteApply(BYTE* self, void*); KING_ALIAS("@Is_PaletteApply@8", "@Palette_Apply@8")
+extern "C" void __fastcall Is_Refresh(BYTE* self, void*); KING_ALIAS("@Is_Refresh@8", "@Window_Refresh@8")
+extern "C" void __cdecl Is_CheckSave(); KING_ALIAS("_Is_CheckSave", "_Shell_CheckSave")
+extern "C" void __cdecl Is_BitmapDraw(BYTE* dst, int x, int y, BYTE* bmp); KING_ALIAS("_Is_BitmapDraw", "_Bitmap_Draw")
+extern "C" void __fastcall Is_Notify(BYTE* s, void*); KING_ALIAS("@Is_Notify@8", "@Wnd5d8b90_Notify@8")
+ASM_VAR(int, g_isFirst675d44, $L_675d44)
+ASM_VAR(int, g_isIntro675d40, $L_675d40)
+ASM_VAR(BYTE*, g_isParent69684c, $L_69684c)
+ASM_VAR(BYTE, g_isWindows696750, $L_696750)
+ASM_VAR(BYTE*, g_isApp696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_isInfo6cecc0, $L_6cecc0)
+ASM_VAR(BYTE*, g_isInfo6cecc4, $L_6cecc4)
+ASM_VAR(BYTE*, g_isInfo6cecc8, $L_6cecc8)
+ASM_VAR(BYTE*, g_isInfo6ceccc, $L_6ceccc)
+ASM_VAR(BYTE*, g_isInfo6cecd0, $L_6cecd0)
+ASM_VAR(BYTE*, g_isInfo6cecd4, $L_6cecd4)
+ASM_VAR(BYTE*, g_isShell6cec88, $L_6cec88)
+ASM_VAR(int, g_is696878, $L_696878)
+ASM_VAR(DWORD, g_isFlags69685c, $L_69685c)
+ASM_VAR(char, g_isKotrAvi, $L_678368)       // "\\Kotr.avi"
+
+static void Is_Info(BYTE*& g, int mode)
+{
+    BYTE* p = (BYTE*)operator new(480);
+    if (p)
+        p = Is_InfoCtor(p, 0, g_isParent69684c, mode);
+    g = p;
+    Is_WindowsAdd2(&g_isWindows696750, 0, p);
+    CallVirt(g, 32);
+}
+
+extern "C" {
+
+// [$L_528820..$L_528bd6] (game window vtable) window s drawn: the first time (675d44) the six info screens are
+// built and, with the intro on (675d40), the shell screen added and Kotr.avi played at 640x480 (a key leaves to
+// s's vtable +32), then the 800x600 mode restored; else the window's background (+368, unless +372) is drawn
+void __fastcall GameWindow_Draw(BYTE* s, void*)
+{
+    if (!g_isFirst675d44)
+    {
+        if (!F(int, s, 372))
+            Is_BitmapDraw(F(BYTE*, s, 12), 0, 0, F(BYTE*, s, 368));
+        Is_Notify(s, 0);
+        return;
+    }
+    Is_Info(g_isInfo6cecc0, 0);
+    Is_Info(g_isInfo6cecc4, 1);
+    Is_Info(g_isInfo6cecc8, 2);
+    Is_Info(g_isInfo6ceccc, 3);
+    Is_Info(g_isInfo6cecd0, 4);
+    Is_Info(g_isInfo6cecd4, 5);
+    Is_SetSurface(F(BYTE*, g_isParent69684c, 12), 0, *F(BYTE**, F(BYTE*, F(BYTE*, g_isApp696ca0, 9396), 100), 0));
+    if (g_isIntro675d40)
+    {
+        BYTE* p = (BYTE*)operator new(2312);
+        if (p)
+            p = Is_ShellCtor(p, 0, g_isParent69684c);
+        g_isShell6cec88 = p;
+        Is_WindowsAdd(&g_isWindows696750, 0, p);
+        g_is696878 = -1;
+        CallThis($L_5dd8c0, &g_isWindows696750, 640, 480, 2, 15872);
+        if (Is_MoviePlay(&g_isKotrAvi, 0))
+        {
+            CallVirt(s, 32);
+            g_isFirst675d44 = 0;
+            return;
+        }
+        int o0, o1, o2;
+        if (!CallC<int>($L_5d7c20, 800, 600, 1, 3584, &o2, &o1, &o0))
+            CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, ~(Is_ScreenFlags() | 0x4000) & g_isFlags69685c);
+        CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, 3584);
+        Is_PaletteApply(*F(BYTE**, F(BYTE*, F(BYTE*, g_isApp696ca0, 9396), 100), 0), 0);
+        Is_Refresh(g_isParent69684c, 0);
+        g_is696878 = 0;
+    }
+    else
+    {
+        CallVirt(g_isShell6cec88, 32);
+        CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, 3584);
+    }
+    Is_CheckSave();
+    g_isFirst675d44 = 0;
+}
+
+} // extern "C"
+
+// === the movie screen's frame ($L_528ca0 with its pieces up to $L_528de2)
+
+extern "C" void __cdecl Mv_FillRect(int x, int y, int w, int h, int c); KING_ALIAS("_Mv_FillRect", "_Dd_FillRect")
+extern "C" int __fastcall Mv_AviUpdate(BYTE* s, void*, int a, int x, int y, int w, int h); KING_ALIAS("@Mv_AviUpdate@28", "@Avi_Update@28")
+extern "C" void __fastcall Mv_Set2304(BYTE* s, void*, int v); KING_ALIAS("@Mv_Set2304@12", "@Screen_Set2304@12")
+extern "C" void __fastcall Mv_AviStart(BYTE* s, void*); KING_ALIAS("@Mv_AviStart@8", "@Avi_Start@8")
+extern "C" void __fastcall Mv_Close(BYTE* s, void*); KING_ALIAS("@Mv_Close@8", "@Media_Close@8")
+extern "C" void __fastcall Mv_Show(BYTE* s, void*, int v); KING_ALIAS("@Mv_Show@12", "@Window_Show@12")
+extern "C" void __fastcall Mv_SetMode(BYTE* s, void*, int m); KING_ALIAS("@Mv_SetMode@12", "@Shell_SetMode@12")
+extern "C" void __cdecl Mv_MusicStart(); KING_ALIAS("_Mv_MusicStart", "_Music_Start")
+extern "C" void __fastcall Mv_WordsReset(BYTE* s, void*); KING_ALIAS("@Mv_WordsReset@8", "@Words295_Reset@8")
+extern "C" void __fastcall Mv_Wasm(BYTE* s, void*); KING_ALIAS("@Mv_Wasm@8", "@Wasm_598d60@8")
+extern "C" void __cdecl Mv_EnterWorld(int a); KING_ALIAS("_Mv_EnterWorld", "_Shell_EnterWorld")
+extern "C" BYTE* __cdecl Mv_ClearMessages(); KING_ALIAS("_Mv_ClearMessages", "_Messages_Clear1276")
+extern "C" int __cdecl Mv_ForceFeedback(int on); KING_ALIAS("_Mv_ForceFeedback", "_Joy_ForceFeedback")
+ASM_VAR(BYTE*, g_mv6cec6c, $L_6cec6c)
+ASM_VAR(int, g_mv7208fc, $L_7208fc)
+ASM_VAR(int, g_mv696878, $L_696878)
+ASM_VAR(BYTE*, g_mv6cec80, $L_6cec80)
+ASM_VAR(BYTE*, g_mvShell6ceca8, $L_6ceca8)
+ASM_VAR(BYTE*, g_mv6cec78, $L_6cec78)
+ASM_VAR(BYTE, g_mvWords6d1948, $L_6d1948)
+ASM_VAR(BYTE*, g_mv696cb0, $L_696cb0)
+ASM_VAR(BYTE, g_mv6f68b0, $L_6f68b0)
+ASM_VAR(BYTE*, g_mvWorld6d2078, $L_6d2078)
+
+extern "C" {
+
+// [$L_528ca0..$L_528de2] (movie screen vtable) movie screen s's frame: while playing (+2304 < 7) the AVI drawn
+// centred at most 800x600 (the margins cleared), its end stepping +2304; at 7 the movie closed, the 800x600 mode
+// back (unless +2308 >= 2), and the screen left for what +2308 says: the game window, a shell mode (0, 2, 5), the
+// race start (5: music, words, messages, app vtable +36, the truck's lamp) or the world (6)
+void __fastcall MovieScreen_Frame(BYTE* s, void*)
+{
+    int st = F(int, s, 2304);
+    if (st < 7)
+    {
+        int x = 0, y = 0;
+        int w = CallVirt<int>(s, 20);
+        int h = CallVirt<int>(s, 24);
+        if (w > 800)
+        {
+            x = (w - 800) / 2;
+            w = 800;
+            y = (h - 600) / 2;
+            int fh = CallVirt<int>(s, 24);
+            int fw = CallVirt<int>(s, 20);
+            Mv_FillRect(0, 0, fw, fh, 0);
+            h = 600;
+        }
+        if (Mv_AviUpdate(s + 56, 0, g_mv7208fc, x, y, w, h))
+            Mv_Set2304(s, 0, 0);
+        return;
+    }
+    if (st != 7)
+        return;
+    Mv_AviStart(s + 56, 0);
+    Mv_Close(s + 56, 0);
+    if (F(int, s, 2308) < 2)
+    {
+        int o0, o1, o2;
+        if (!CallC<int>($L_5d7c20, 800, 600, 1, 3584, &o2, &o1, &o0))
+            CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, ~(Is_ScreenFlags() | 0x4000) & g_isFlags69685c);
+        CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, 3584);
+        Is_PaletteApply(*F(BYTE**, F(BYTE*, F(BYTE*, g_isApp696ca0, 9396), 100), 0), 0);
+    }
+    else
+        g_mv696878 = -1;
+    Mv_Show(g_isParent69684c, 0, 0);
+    Is_Refresh(g_isParent69684c, 0);
+    if (F(int, s, 2308) == 0)
+        Is_CheckSave();
+    int m = F(int, s, 2308);
+    if (m < 2)
+        CallVirt(g_mv6cec80, 36);
+    else if (m == 2)
+        Mv_SetMode(g_mvShell6ceca8, 0, 0);
+    else if (m == 3)
+        Mv_SetMode(g_mvShell6ceca8, 0, 2);
+    else if (m == 4)
+        Mv_SetMode(g_mvShell6ceca8, 0, 5);
+    else if (m == 5)
+    {
+        if (F(int, g_mv6cec6c, 1344) && F(short, g_mv6cec78, 384) > 5)
+            Mv_MusicStart();
+        Mv_WordsReset(&g_mvWords6d1948, 0);
+        Mv_ClearMessages();
+        CallVirt(g_isApp696ca0, 36);
+        F(DWORD, g_mv696cb0, 16) |= 3;
+        Mv_Wasm(&g_mv6f68b0, 0);
+        F(BYTE, F(BYTE*, F(BYTE*, g_mvWorld6d2078, 616), 21600), 9984) = 2;
+        Mv_ForceFeedback(1);
+    }
+    else if (m == 6)
+        Mv_EnterWorld(0);
+    CallVirt(s, 32);
 }
 
 } // extern "C"

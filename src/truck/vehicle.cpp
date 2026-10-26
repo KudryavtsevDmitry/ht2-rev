@@ -1559,7 +1559,7 @@ extern "C" void FUN_5455d0(); KING_ALIAS("_FUN_5455d0", "@Car_AddMass@16")
 extern "C" void FUN_4fc920(); KING_ALIAS("_FUN_4fc920", "@Body_SetMode@12")
 extern "C" void FUN_54e180(); KING_ALIAS("_FUN_54e180", "@Car_Step@12")
 extern "C" void FUN_54ef20(); KING_ALIAS("_FUN_54ef20", "@Car_54ef20@12")
-ASM_PROC(FUN_54ff80)
+extern "C" void FUN_54ff80(); KING_ALIAS("_FUN_54ff80", "@Car_AfterPhysics@4")
 extern "C" void FUN_581430(); KING_ALIAS("_FUN_581430", "@Item_SetSpin@16")
 extern "C" void FUN_5816d0(); KING_ALIAS("_FUN_5816d0", "@MovingItem_SetSpin@16")
 extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
@@ -11276,7 +11276,7 @@ extern "C" void Pv_Sparks(); KING_ALIAS("_Pv_Sparks", "_Car_SparkBurst")
 extern "C" void Pv_Sounds(); KING_ALIAS("_Pv_Sounds", "@Vehicle_Sounds@16")
 extern "C" void Pv_Log(); KING_ALIAS("_Pv_Log", "_VehLog_Value")
 extern "C" void Pv_Flush(); KING_ALIAS("_Pv_Flush", "_WarnLog_Flush")
-ASM_FUNC(Pv_533590, FUN_533590)
+extern "C" void Pv_533590(); KING_ALIAS("_Pv_533590", "@Car_PlaceOnRoad@12")
 ASM_FUNC(Pv_535a70, FUN_535a70)
 extern "C" void Pv_SetText(); KING_ALIAS("_Pv_SetText", "@History_Record@16")                        // a dashboard text line (value, name)
 ASM_FUNC(Pv_4de990, FUN_4de990)
@@ -12018,7 +12018,7 @@ extern "C" void Pc_557000(); KING_ALIAS("_Pc_557000", "@Car_557000@8")
 extern "C" void Pc_Working(); KING_ALIAS("_Pc_Working", "@Car_WorkingOrder@4")
 extern "C" void Pc_GameTime(); KING_ALIAS("_Pc_GameTime", "_Game_Time")
 extern "C" void __cdecl Cars_DumpHistory();
-ASM_FUNC(Pc_533590, FUN_533590)
+extern "C" void Pc_533590(); KING_ALIAS("_Pc_533590", "@Car_PlaceOnRoad@12")
 ASM_FUNC(Pc_5662f0, FUN_5662f0)
 extern "C" void Pc_SetText(); KING_ALIAS("_Pc_SetText", "@History_Record@16")
 extern "C" void g_pcFlashFn(); KING_ALIAS("_g_pcFlashFn", "_Car_FlasherKick")
@@ -14331,3 +14331,1096 @@ lamps:
 }
 
 } // extern "C"
+
+// === a car's frame after its physics: rocking, lights, rumble and the beacon (FUN_54ff80 with its tail $L_550358)
+
+extern "C" void Cf_Cargo(); KING_ALIAS("_Cf_Cargo", "@Car_UpdateCargo@8")
+extern "C" void Cf_Slip(); KING_ALIAS("_Cf_Slip", "_Veh_54ef90")
+extern "C" void Cf_Sign(); KING_ALIAS("_Cf_Sign", "@Car_LookAtSign@8")
+extern "C" void Cf_Hits(); KING_ALIAS("_Cf_Hits", "@Car_HitEvents@4")
+extern "C" void Cf_Rest(); KING_ALIAS("_Cf_Rest", "@Item_Rest@4")
+extern "C" void Cf_Place(); KING_ALIAS("_Cf_Place", "@Car_ApplyPlacement@8")
+extern "C" void Cf_Effects(); KING_ALIAS("_Cf_Effects", "@Car_Effects@8")
+extern "C" void Cf_Order(); KING_ALIAS("_Cf_Order", "@Car_WorkingOrder@4")
+extern "C" void Cf_GiveWay(); KING_ALIAS("_Cf_GiveWay", "@Car_GiveWay@8")
+extern "C" void Cf_Pack(); KING_ALIAS("_Cf_Pack", "@Vehicle_PackState@4")
+extern "C" void Cf_Node(); KING_ALIAS("_Cf_Node", "@Node_Construct@16")
+extern "C" void Cf_NodeN(); KING_ALIAS("_Cf_NodeN", "@NodeN_Construct@20")
+extern "C" void Cf_Apply(); KING_ALIAS("_Cf_Apply", "@Node_ApplyMatrix@16")
+extern "C" void Cf_Lamp(); KING_ALIAS("_Cf_Lamp", "@Obj551920_Construct@16")
+extern "C" void Cf_LampM(); KING_ALIAS("_Cf_LampM", "@Obj5518d0_Construct@8")
+extern "C" void Cf_Set(); KING_ALIAS("_Cf_Set", "@Vec3_SetThis@20")
+extern "C" void Cf_Zero(); KING_ALIAS("_Cf_Zero", "@Vec3_ZeroThis@8")
+extern "C" void Cf_FrameTime(); KING_ALIAS("_Cf_FrameTime", "_Game_FrameTime")
+ASM_VAR(int, g_cf6ef200, $L_6ef200)
+ASM_VAR(BYTE*, g_cfGame, $L_6d2078)
+ASM_VAR(BYTE*, g_cf6ef254, $L_6ef254)
+ASM_VAR(BYTE*, g_cf6ef258, $L_6ef258)
+ASM_VAR(BYTE*, g_cf6f33ac, $L_6f33ac)
+ASM_VAR(BYTE*, g_cf6ef1fc, $L_6ef1fc)
+ASM_VAR(BYTE*, g_cf69622c, $L_69622c)
+ASM_VAR(BYTE, g_cf6796b0, $L_6796b0)
+ASM_VAR(float, g_cf6796cc, $L_6796cc)
+ASM_VAR(float, g_cf6796d0, $L_6796d0)
+ASM_VAR(float, g_cf6796d4, $L_6796d4)
+ASM_VAR(float, g_cf6796d8, $L_6796d8)
+ASM_VAR(float, g_cf6796dc, $L_6796dc)
+ASM_VAR(float, g_cf6ef2a0, $L_6ef2a0)
+ASM_VAR(float, g_cf6ef2a4, $L_6ef2a4)
+ASM_VAR(Vec3, g_cf6974a8, $L_6974a8)
+ASM_VAR(BYTE, g_cf6d2510, $L_6d2510)
+ASM_VAR(BYTE, g_cf6d2524, $L_6d2524)
+ASM_VAR(char, g_cfLamp, $L_67334c)
+ASM_VAR(char, g_cfEmpty, $L_68d1c0)
+ASM_VAR(AsmLabel, g_cf64c7dc, $L_64c7dc)
+ASM_VAR(AsmLabel, g_cf64d7d0, $L_64d7d0)
+ASM_VAR(float, g_cf64c250, $L_64c250)
+ASM_VAR(float, g_cf64c264, $L_64c264)
+ASM_VAR(float, g_cf64c450, $L_64c450)
+ASM_VAR(float, g_cf64c33c, $L_64c33c)
+ASM_VAR(float, g_cf64da74, $L_64da74)
+ASM_VAR(float, g_cf64f778, $L_64f778)
+ASM_VAR(double, g_cf64d318, $L_64d318)
+ASM_VAR(double, g_cf64b6e0, $L_64b6e0)
+ASM_VAR(double, g_cf64b670, $L_64b670)
+ASM_VAR(double, g_cf64b918, $L_64b918)
+ASM_VAR(double, g_cf64b7a8, $L_64b7a8)
+ASM_VAR(double, g_cf64f790, $L_64f790)
+ASM_VAR(double, g_cf64ca78, $L_64ca78)
+ASM_VAR(double, g_cf64b930, $L_64b930)
+ASM_VAR(double, g_cf64b5b8, $L_64b5b8)
+ASM_VAR(double, g_cf64b828, $L_64b828)
+ASM_VAR(double, g_cf64b820, $L_64b820)
+ASM_VAR(double, g_cf64f788, $L_64f788)
+ASM_VAR(double, g_cf64f780, $L_64f780)
+ASM_VAR(double, g_cf64b840, $L_64b840)
+ASM_VAR(double, g_cf64f398, $L_64f398)
+ASM_VAR(double, g_cf64d668, $L_64d668)
+
+static void Cf_SetV(float* o, double x, double y, double z)
+{
+    CallThis(Cf_Set, o, (float)x, (float)y, (float)z);
+}
+
+// the lamp matrix: scale by k times the lamp colour scale (6974a8) at p, in frame W
+static void Cf_LampMatrix(Matrix* out, const float* p, const float* k, const Matrix* W)
+{
+    Matrix T, S, ST;
+    Matrix_Translation(&T, *(const Vec3*)p);
+    Matrix_Scale(&S, *(const Vec3*)k);
+    Matrix_Multiply(&ST, &S, &T);
+    Matrix_Multiply(out, &ST, W);
+}
+
+// a beacon lamp at angle h seen from the camera: how bright (b, the asm's two curves) and how far it leans (w)
+static bool Cf_LampView(double h, float c1, float c2, float k, double* v, float* sn)
+{
+    double ah = x87_fabs(h);
+    if (!(ah < g_cf64f788) && !(ah > g_cf64f780))
+        return false;
+    *sn = (float)x87_fabs(x87_sin(h));
+    double v0 = ah < g_cf64f788 ? x87_cos(h) - c1 : c2 - x87_cos(h);
+    *v = v0 * k;
+    return true;
+}
+
+// the three rotating lamp nodes added to the scene (matrices m[0..2]); the first group builds them inline
+static void Cf_AddLampsInline(const Matrix* m)
+{
+    for (int k = 0; k < 3; k++)
+    {
+        BYTE* n = (BYTE*)operator new(88);
+        if (n)
+        {
+            BYTE* src = g_cf6ef254;
+            CallThis(Cf_Node, n, &g_cfLamp, 17);
+            F(int, n, 48) = F(int, n, 52) = F(int, n, 56) = F(int, n, 60) = 0;
+            F(void*, n, 0) = &g_cf64c7dc;
+            F(BYTE*, n, 64) = src;
+            F(int, n, 68) = F(int, n, 72) = F(int, n, 76) = F(int, n, 80) = 0;
+            F(int, n, 84) = -1;
+            F(int, n, 36) = F(int, src, 36);
+        }
+        BYTE* mm = (BYTE*)operator new(112);
+        if (mm)
+        {
+            CallThis(Cf_NodeN, mm, &g_cfEmpty, 6, 1);
+            for (int i = 0; i < 4; i++)
+                CallThis(Cf_Zero, mm + 64 + 12 * i);
+            memcpy(mm + 64, &g_identity, 48);
+            F(void*, mm, 0) = &g_cf64d7d0;
+            F(int, mm, 56) = 0;
+            F(int, mm, 60) = 0;
+        }
+        F(BYTE*, n, 68) = mm;
+        CallThis(Cf_Apply, mm, m + k, 0);
+        CallVirt(g_cf69622c, 20, 0, n);
+    }
+}
+
+static void Cf_AddLamps(const Matrix* m)
+{
+    for (int k = 0; k < 3; k++)
+    {
+        BYTE* n = (BYTE*)operator new(88);
+        BYTE* node = n ? CallThis<BYTE*>(Cf_Lamp, n, &g_cfLamp, g_cf6ef258) : 0;
+        BYTE* mm = (BYTE*)operator new(112);
+        BYTE* mo = mm ? CallThis<BYTE*>(Cf_LampM, mm) : 0;
+        F(BYTE*, node, 68) = mo;
+        CallThis(Cf_Apply, mo, m + k, 0);
+        CallVirt(g_cf69622c, 20, 0, node);
+    }
+}
+
+extern "C" {
+
+// [FUN_54ff80..$L_550358] car s after its physics: its slip at a hit point (+10812), the body's rocking angles
+// (+20308, +20312) from its acceleration and spin, its light flags (+10164), night lights (+20916 by the clock),
+// the rumble of its wheels on rough ground (+10224), its effects, its beacon's three lamps (+20924, turning by the
+// clock, shown towards the camera) added to the scene, giving way, and its packed state
+void __fastcall Car_AfterPhysics(BYTE* s)
+{
+    F(int, s, 912) = (F(int, s, 912) || F(int, s, 908)) ? 1 : 0;
+    F(int, s, 916) = F(int, s, 908);
+    if (F(int, s, 908) && F(BYTE*, s, 21604))
+        F(int, F(BYTE*, s, 21604), 3488) = 1;
+    CallThis(Cf_Cargo, s);
+    const float* M = &F(float, s, 612);
+    if (F(int, s, 10808) && !g_cf6ef200)
+    {
+        float v[3];
+        memcpy(v, s + 10812, 12);
+        double px = (double)v[2] * M[6] + (double)v[1] * M[3] + (double)v[0] * M[0] + M[9];
+        float py = (float)((double)v[0] * M[1] + (double)v[2] * M[7] + (double)v[1] * M[4] + M[10]);
+        float pz = (float)((double)v[0] * M[2] + (double)v[2] * M[8] + (double)v[1] * M[5] + M[11]);
+        float cz = (float)((double)py * F(float, s, 444) - px * F(float, s, 448));
+        float cy = (float)(px * F(float, s, 452) - (double)pz * F(float, s, 444));
+        float cx = (float)((double)pz * F(float, s, 448) - (double)py * F(float, s, 452));
+        float u[3] = {(float)((double)cx + F(float, s, 432)), (float)((double)cy + F(float, s, 436)),
+                      (float)((double)cz + F(float, s, 440))};
+        Vec3 nv;
+        Vec3_Normalized(&nv, (const Vec3*)u);
+        if (F(int, s, 908) && !F(int, s, 1044))
+        {
+            double d = (double)F(float, s, 1000) * nv.z + (double)F(float, s, 996) * nv.y +
+                       (double)nv.x * F(float, s, 992);
+            if (x87_fabs(d) < g_cf64d318 && x87_fabs(F(float, s, 1000)) < g_cf64b6e0)
+                CallC(Cf_Slip, 0, v, u);
+        }
+    }
+    float dt = (float)CallC<double>(Cf_FrameTime);
+    {
+        double azd = (double)F(float, s, 440) - F(float, s, 476);
+        float ayf = (float)((double)F(float, s, 436) - F(float, s, 472));
+        float axf = (float)((double)F(float, s, 432) - F(float, s, 468));
+        double az = azd / dt, ay = ayf / (double)dt, ax = axf / (double)dt;
+        float l0 = (float)(ay * M[3] + az * M[6] + ax * M[0]);
+        float l1 = (float)(ax * M[1] + ay * M[4] + az * M[7]);
+        const float* g = &F(float, s, 480);
+        float gp[3] = {(float)((double)M[6] * g[2] + (double)M[3] * g[1] + (double)M[0] * g[0]),
+                       (float)((double)M[7] * g[2] + (double)M[4] * g[1] + (double)M[1] * g[0]),
+                       (float)((double)M[8] * g[2] + (double)M[5] * g[1] + (double)M[2] * g[0])};
+        Vec3 r;
+        Vec3_DivComponents(&r, (const Vec3*)gp, (const Vec3*)(s + 420));
+        float w0 = (float)((double)F(float, s, 444) - r.x);
+        float s28 = (float)(((double)F(float, s, 448) - r.y) / dt);
+        float s32 = (float)((double)w0 / dt);
+        double p = x87_pow(g_cf6796cc, (double)dt * g_cf64c450);
+        float e1 = (float)((double)l1 * g_cf6796d8 - (double)s32 * g_cf6ef2a0);
+        double e2 = (double)s28 * g_cf6ef2a4 - (double)l0 * g_cf6796dc;
+        if (!(e1 <= g_cf6796d0))
+            e1 = g_cf6796d0;
+        if (e1 < -g_cf6796d0)
+            e1 = -g_cf6796d0;
+        if (e2 > g_cf6796d4)
+            e2 = g_cf6796d4;
+        float lo = -g_cf6796d4;
+        if (e2 < lo)
+            e2 = lo;
+        double q = g_cf64c250 - p;
+        F(int, s, 10808) = 0;
+        F(float, s, 20308) = (float)(q * e1 + p * F(float, s, 20308));
+        F(float, s, 20312) = (float)(q * e2 + p * F(float, s, 20312));
+    }
+    memcpy(s + 10812, &g_zeroVec, 12);
+    F(BYTE, s, 10168) = F(BYTE, s, 3992);
+    {
+        DWORD f = F(DWORD, s, 10164);
+        int b = F(int, s, 20920);
+        if (b == 1)
+            f = (f & ~0x10u) | 4;
+        else if (b == 2)
+            f = (f & ~4u) | 16;
+        else
+            f &= ~0x14u;
+        f = F(int, s, 20916) ? f | 8 : f & ~8u;
+        f = F(int, s, 20860) ? f | 64 : f & ~64u;
+        f = F(int, s, 20856) ? f | 32 : f & ~32u;
+        f = F(int, s, 1220) ? f | 1 : f & ~1u;
+        f = F(int, s, 20896) ? f | 0x400 : f & ~0x400u;
+        f = F(int, s, 20928) ? f | 0x40000 : f & ~0x40000u;
+        F(DWORD, s, 10164) = f;
+    }
+    if (F(BYTE, s, 20900) & 1)
+        CallThis(Cf_Sign, s);
+    CallThis(Cf_Hits, s);
+    {
+        int h = (int)F(double, g_cf6f33ac, 88);
+        F(int, s, 20916) = (h > 22 || h < 5) ? 1 : 0;
+    }
+    CallThis(Cf_Rest, s + 16);
+    if (g_cf6796b0 & 8)
+        CallThis(Cf_Place, s);
+    memset(s + 10224, 0, 32);
+    BYTE* c = F(BYTE*, s, 21600);
+    if (c && F(int, s, 10924) == 1 && !F(int, c, 13124))
+    {
+        double sp = x87_fabs(F(float, c, 13100));
+        if (sp > g_cf64b670)
+        {
+            float rough = 1.0f;
+            if (sp < g_cf64b918)
+                rough = (float)(x87_fabs(sp - x87_fabs(F(float, c, 13104)) * g_cf64b7a8) * g_cf64f790);
+            double k = x87_sqrt(rough) * g_cf64ca78;
+            if (F(float, s, 412) < g_cf64da74)
+                k = x87_sqrt(F(float, s, 412) * g_cf64b930) * k;
+            for (int i = 0; i < F(int, s, 10428); i++)
+            {
+                BYTE* b = F(BYTE*, s, 21600);
+                BYTE* e = F(BYTE*, b, 11220 + 248 * i);
+                if (!F(WORD, b, 11112 + 248 * i) || F(int, b, 13380 + 4 * i) || !e || !F(int, b, 11228 + 248 * i))
+                    continue;
+                int t = F(int, e, 4);
+                if ((t == 6 || t == 10 || t == 11) && k > g_cf64b5b8)
+                    F(float, s, 10224 + 4 * i) = (float)k;
+            }
+        }
+    }
+    CallThis(Cf_Effects, s);
+    const BYTE* T = &g_cf6d2524 + F(int, s, 10420) * 1488;
+    if (F(int, s, 20924) && F(int, &g_cf6d2510, F(int, s, 10420) * 1488 + 8) && g_cf6ef254 && g_cf6ef258 &&
+        CallThis<double>(Cf_Order, s) > g_cf64ca78)
+    {
+        F(int, s, 20520) = 1;
+        double t = Game_Time() + F(float, s, 20508);
+        float a = (float)((t - (int)t) * 2 * g_cf64b828);
+        F(float, s, 20512) = a;
+        F(float, s, 20516) = a;
+        float k1 = (float)x87_cos(g_cf64f788), k2 = (float)x87_cos(g_cf64f780);
+        float kn = (float)(g_cf64c250 / ((double)g_cf64c250 - k1));
+        float am = (float)((double)a - g_cf64f778), ap = (float)((double)a + g_cf64f778);
+        double cm = x87_cos(am);
+        float c0 = (float)x87_cos(a), cp = (float)x87_cos(ap);
+        if (a > g_cf64b828)
+            F(float, s, 20516) = (float)(a - g_cf64b820);
+        float cm2 = (float)(cm * cm), c02 = (float)((double)c0 * c0), cp2 = (float)((double)cp * cp);
+        Matrix W, Wi;
+        Matrix_Multiply(&W, (const Matrix*)(s + 708), (const Matrix*)(s + 516));
+        Matrix_Inverse(&Wi, &W);
+        const float* w = W.m;
+        const float* iv = Wi.m;
+        const float* cam = &F(float, g_cfGame, 1460);
+        // the first group: the lamps around the table point +12
+        {
+            const float* tp = (const float*)(T + 12);
+            float lx = (float)((double)w[0] * tp[0] + (double)w[6] * tp[2] + (double)w[3] * tp[1] + w[9]);
+            float ly = (float)((double)w[7] * tp[2] + (double)w[4] * tp[1] + (double)w[1] * tp[0] + w[10]);
+            double lz = (double)w[8] * tp[2] + (double)w[5] * tp[1] + (double)w[2] * tp[0] + w[11];
+            float d[3] = {(float)((double)cam[0] - lx), (float)((double)cam[1] - ly), (float)(cam[2] - lz)};
+            Vec3 dn;
+            Vec3_Normalized(&dn, (const Vec3*)d);
+            float vx = (float)((double)iv[6] * dn.z + (double)iv[3] * dn.y + (double)iv[0] * dn.x);
+            float vy = (float)((double)iv[7] * dn.z + (double)iv[4] * dn.y + (double)dn.x * iv[1]);
+            float vz = (float)((double)iv[8] * dn.z + (double)iv[5] * dn.y + (double)dn.x * iv[2]);
+            double h = -x87_atan2(vx, vy);
+            double v;
+            float sn;
+            if (Cf_LampView(h, k1, k2, kn, &v, &sn))
+            {
+                float b1 = (float)(v * cm2), b0 = (float)(v * c02), b2 = (float)(v * cp2);
+                double sg = vy > g_cf64c264 ? g_cf64b840 : g_cf64f398;
+                float oz = (float)(sg * g_axisY.z), oy = (float)(sg * g_axisY.y);
+                double ox = sg * g_axisY.x;
+                double wv = ((double)sn + g_cf64c250) * g_cf64c33c;
+                float tz = (float)(vz * wv), ty = (float)(vy * wv), tx = (float)(vx * wv);
+                const float* b = (const float*)T;
+                float P[3][3];
+                double r = x87_sin(am) * g_cf64d668;
+                {
+                    float z1 = (float)((double)b[2] - (float)(r * g_axisX.z));
+                    float y1 = (float)((double)b[1] - (float)(r * g_axisX.y));
+                    double x1 = b[0] - r * g_axisX.x;
+                    z1 = (float)((double)z1 + oz);
+                    y1 = (float)((double)y1 + oy);
+                    float xf = (float)(x1 + ox);
+                    P[1][0] = (float)((double)xf + tx);
+                    P[1][1] = (float)((double)y1 + ty);
+                    P[1][2] = (float)((double)z1 + tz);
+                }
+                float uz = (float)(wv * vz), uy = (float)(wv * vy), ux = (float)(wv * vx);
+                r = x87_sin(a) * g_cf64d668;
+                {
+                    float z1 = (float)((double)b[5] - (float)(r * g_axisX.z));
+                    float y1 = (float)((double)b[4] - (float)(r * g_axisX.y));
+                    double x1 = b[3] - r * g_axisX.x;
+                    z1 = (float)((double)z1 + oz);
+                    y1 = (float)((double)y1 + oy);
+                    float xf = (float)(x1 + ox);
+                    P[0][0] = (float)((double)xf + ux);
+                    P[0][1] = (float)((double)y1 + uy);
+                    P[0][2] = (float)((double)z1 + uz);
+                }
+                uz = (float)(wv * vz);
+                uy = (float)(wv * vy);
+                ux = (float)(wv * vx);
+                r = x87_sin(ap) * g_cf64d668;
+                {
+                    float z1 = (float)((double)b[8] - (float)(r * g_axisX.z));
+                    float y1 = (float)((double)b[7] - (float)(r * g_axisX.y));
+                    double x1 = b[6] - r * g_axisX.x;
+                    z1 = (float)((double)z1 + oz);
+                    y1 = (float)((double)y1 + oy);
+                    float xf = (float)(x1 + ox);
+                    P[2][0] = (float)((double)xf + ux);
+                    P[2][1] = (float)((double)y1 + uy);
+                    P[2][2] = (float)((double)z1 + uz);
+                }
+                const float* g6 = &g_cf6974a8.x;
+                float K1[3] = {(float)((double)b1 * g6[0]), (float)((double)b1 * g6[1]), (float)((double)b1 * g6[2])};
+                float K0[3] = {(float)((double)b0 * g6[0]), (float)((double)b0 * g6[1]), (float)((double)b0 * g6[2])};
+                float K2[3] = {(float)((double)b2 * g6[0]), (float)((double)b2 * g6[1]), (float)((double)b2 * g6[2])};
+                Matrix L[3];
+                Cf_LampMatrix(&L[0], P[1], K1, &W);
+                Cf_LampMatrix(&L[1], P[0], K0, &W);
+                Cf_LampMatrix(&L[2], P[2], K2, &W);
+                Cf_AddLampsInline(L);
+            }
+        }
+        // the second group: the lamps around the table point +48
+        {
+            const float* tp = (const float*)(T + 48);
+            float lx = (float)((double)w[6] * tp[2] + (double)w[3] * tp[1] + (double)w[0] * tp[0] + w[9]);
+            float ly = (float)((double)w[7] * tp[2] + (double)w[4] * tp[1] + (double)w[1] * tp[0] + w[10]);
+            double lz = (double)w[8] * tp[2] + (double)w[5] * tp[1] + (double)w[2] * tp[0] + w[11];
+            float d[3] = {(float)((double)cam[0] - lx), (float)((double)cam[1] - ly), (float)(cam[2] - lz)};
+            Vec3 dn;
+            Vec3_Normalized(&dn, (const Vec3*)d);
+            double vx = (double)dn.x * iv[0] + (double)dn.z * iv[6] + (double)dn.y * iv[3];
+            float vy = (float)((double)dn.z * iv[7] + (double)dn.y * iv[4] + (double)dn.x * iv[1]);
+            float vz = (float)((double)dn.z * iv[8] + (double)dn.y * iv[5] + (double)dn.x * iv[2]);
+            double h = -x87_atan2(vx, vy);
+            double v;
+            float sn;
+            if (Cf_LampView(h, k1, k2, kn, &v, &sn))
+            {
+                float b1 = (float)(v * cm2), b0 = (float)(v * c02), b2 = (float)(v * cp2);
+                double sg = vy > g_cf64c264 ? g_cf64b840 : g_cf64f398;
+                float oz = (float)(sg * g_axisY.z), oy = (float)(sg * g_axisY.y), ox = (float)(sg * g_axisY.x);
+                double wv = (double)sn * g_cf64c33c;
+                float tz = (float)(vz * wv), ty = (float)(vy * wv), tx = (float)(vx * wv);
+                const float* b = (const float*)(T + 36);
+                float PA[3], PB[3], PC[3];
+                double r = x87_sin(am) * g_cf64d668;
+                {
+                    float z1 = (float)((double)(float)(r * g_axisX.z) + b[2]);
+                    float y1 = (float)((double)(float)(r * g_axisX.y) + b[1]);
+                    double x1 = r * g_axisX.x + b[0];
+                    z1 = (float)((double)z1 + oz);
+                    y1 = (float)((double)y1 + oy);
+                    float xf = (float)(x1 + ox);
+                    PA[0] = (float)((double)xf + tx);
+                    PA[1] = (float)((double)y1 + ty);
+                    PA[2] = (float)((double)z1 + tz);
+                }
+                tz = (float)(wv * vz);
+                ty = (float)(wv * vy);
+                tx = (float)(wv * vx);
+                r = x87_sin(a) * g_cf64d668;
+                {
+                    float z1 = (float)((double)(float)(r * g_axisX.z) + b[5]);
+                    float y1 = (float)((double)(float)(r * g_axisX.y) + b[4]);
+                    double x1 = r * g_axisX.x + b[3];
+                    z1 = (float)((double)oz + z1);
+                    y1 = (float)((double)oy + y1);
+                    float xf = (float)((double)ox + x1);
+                    PB[0] = (float)((double)xf + tx);
+                    PB[1] = (float)((double)y1 + ty);
+                    PB[2] = (float)((double)tz + z1);
+                }
+                float off[3];
+                Cf_SetV(off, wv * vx, wv * vy, wv * vz);
+                r = x87_sin(ap) * g_cf64d668;
+                {
+                    float q1[3], q2[3], q3[3];
+                    Cf_SetV(q1, r * g_axisX.x, r * g_axisX.y, r * g_axisX.z);
+                    Cf_SetV(q2, (double)q1[0] + b[6], (double)q1[1] + b[7], (double)q1[2] + b[8]);
+                    Cf_SetV(q3, (double)ox + q2[0], (double)oy + q2[1], (double)oz + q2[2]);
+                    Cf_SetV(PC, (double)q3[0] + off[0], (double)q3[1] + off[1], (double)q3[2] + off[2]);
+                }
+                const float* g6 = &g_cf6974a8.x;
+                float K1[3], K0[3];
+                Cf_SetV(K1, (double)b1 * g6[0], (double)b1 * g6[1], (double)b1 * g6[2]);
+                Matrix L[3];
+                Cf_LampMatrix(&L[0], PA, K1, &W);
+                Cf_SetV(K0, (double)b0 * g6[0], (double)b0 * g6[1], (double)b0 * g6[2]);
+                Cf_LampMatrix(&L[1], PB, K0, &W);
+                Vec3 k2v;
+                Vec3_Scaled(&k2v, &g_cf6974a8, b2);
+                Cf_LampMatrix(&L[2], PC, &k2v.x, &W);
+                Cf_AddLamps(L);
+            }
+        }
+        (void)c;
+    }
+    else
+        F(int, s, 20520) = 0;
+    CallThis(Cf_GiveWay, s);
+    if ((double)F(float, s, 20624) + F(float, s, 20620) < F(double, g_cf6ef1fc, 2968))
+        F(int, s, 20608) = 1;
+    CallThis(Cf_Pack, s + 10084);
+    F(int, s, 3572) = 0;
+}
+
+} // extern "C"
+
+// === placing the player's vehicle back on the road (FUN_533590 with its tails $L_534443 and $L_53549a)
+
+struct RqPos { int v[8]; };    // a road position (PositionId) passed by value
+
+extern "C" void Rq_EffGet(); KING_ALIAS("_Rq_EffGet", "@Obj549bf0_Get@8")
+extern "C" void Rq_EffEnd(); KING_ALIAS("_Rq_EffEnd", "@CarEffect_End@12")
+extern "C" void Rq_Matrix1(); KING_ALIAS("_Rq_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Rq_Get800(); KING_ALIAS("_Rq_Get800", "@SceneObj_Get800@8")
+extern "C" void Rq_SetThis(); KING_ALIAS("_Rq_SetThis", "@Vec3_SetThis@20")
+extern "C" void Rq_AddA(); KING_ALIAS("_Rq_AddA", "@Vec3_AddAssign@16")
+extern "C" void Rq_Zero(); KING_ALIAS("_Rq_Zero", "@Vec3_ZeroThis@8")
+extern "C" void Rq_NodeInit(); KING_ALIAS("_Rq_NodeInit", "@Node_Init@8")
+extern "C" void Rq_PtsNext(); KING_ALIAS("_Rq_PtsNext", "@Points_NextFirst@12")
+extern "C" void Rq_SetCam(); KING_ALIAS("_Rq_SetCam", "@View_SetCamera@16")
+extern "C" void Rq_ObjReset(); KING_ALIAS("_Rq_ObjReset", "@WorldObj_Reset@8")
+extern "C" BYTE* __cdecl Rq_FromPA(BYTE* out, Vec3 p, float rx, float ry, float rz); KING_ALIAS("_Rq_FromPA", "_Matrix_FromPosAngles")
+extern "C" BYTE* __cdecl Rq_Transl(BYTE* out, Vec3 t); KING_ALIAS("_Rq_Transl", "_Matrix_Translation")
+extern "C" BYTE* __cdecl Rq_Mul(BYTE* out, const BYTE* a, const BYTE* b); KING_ALIAS("_Rq_Mul", "_Matrix_Multiply")
+extern "C" BYTE* __cdecl Rq_Inv(BYTE* out, const BYTE* m); KING_ALIAS("_Rq_Inv", "_Matrix_Inverse")
+extern "C" float* __cdecl Rq_Norm(float* out, const float* v); KING_ALIAS("_Rq_Norm", "_Vec3_Normalized")
+extern "C" double __cdecl Rq_Len(const float* v); KING_ALIAS("_Rq_Len", "_Vec3_Length")
+extern "C" float* __cdecl Rq_Scaled(float* out, const void* v, float k); KING_ALIAS("_Rq_Scaled", "_Vec3_Scaled")
+extern "C" float* __cdecl Rq_Add(float* out, const float* a, const float* b); KING_ALIAS("_Rq_Add", "_Vec3_Add")
+extern "C" float* __cdecl Rq_Sub(float* out, const float* a, const float* b); KING_ALIAS("_Rq_Sub", "_Vec3_Sub")
+extern "C" BYTE* __cdecl Rq_Hit(BYTE* obj, const void* p, const void* d); KING_ALIAS("_Rq_Hit", "_Query_HitObject")
+extern "C" int __cdecl Rq_ObjAt(void* id, const void* v, void* obj, void* pos, int anywhere); KING_ALIAS("_Rq_ObjAt", "_Room_ObjectAt")
+extern "C" int __cdecl Rq_IsPlace(const void* pos); KING_ALIAS("_Rq_IsPlace", "_Road_IsPlace")
+extern "C" BYTE* __cdecl Rq_FindNamed(BYTE* scene, const char* name); KING_ALIAS("_Rq_FindNamed", "_Scene_FindObject")
+extern "C" void __cdecl Rq_Log(const char* text, int x); KING_ALIAS("_Rq_Log", "_Sys_Log")
+extern "C" RqPos* __cdecl Rq_Right(RqPos* out, BYTE* player, RqPos pos); KING_ALIAS("_Rq_Right", "_Ai_GetRightDirection")
+extern "C" float* __cdecl Rq_Coords(float* out, RqPos pos); KING_ALIAS("_Rq_Coords", "_Ai_GetCoordinatesPos")
+extern "C" float* __cdecl Rq_Tangent(float* out, RqPos pos); KING_ALIAS("_Rq_Tangent", "_Ai_GetTangent")
+extern "C" int __cdecl Rq_RoomInfo(RqPos pos, void* out); KING_ALIAS("_Rq_RoomInfo", "_Road_GetRoadParameters")
+extern "C" int __cdecl Rq_Ray(BYTE* a, const void* p, const void* d, void* point, void* normal); KING_ALIAS("_Rq_Ray", "_Query_4e6749")
+extern "C" int __cdecl Rq_WorldHit(BYTE* a, const void* p, const void* d, void* point, void* normal); KING_ALIAS("_Rq_WorldHit", "_World_Hit")
+extern "C" int __cdecl Rq_IdSame(BYTE* x); KING_ALIAS("_Rq_IdSame", "_Id_Same")
+extern "C" BYTE* __cdecl Rq_MovingOf(BYTE* o); KING_ALIAS("_Rq_MovingOf", "_Moving_Of")
+extern "C" int __cdecl Rq_Blocked(int skip, BYTE* obj, const void* p, const void* d, BYTE* q); KING_ALIAS("_Rq_Blocked", "_Query_4e5415")
+extern "C" int __cdecl Rq_Collide(BYTE* shape, const BYTE* m, const BYTE* inv, BYTE* object, void* out); KING_ALIAS("_Rq_Collide", "_SceneObj_CollideShape")
+ASM_FUNC(Rq_5330a0, FUN_5330a0)
+
+ASM_VAR(float, g_rq702620, $L_702620)
+ASM_VAR(float, g_rq702624, $L_702624)
+ASM_VAR(float, g_rq702628, $L_702628)
+ASM_VAR(float, g_rq702630, $L_702630)
+ASM_VAR(float, g_rq702634, $L_702634)
+ASM_VAR(float, g_rq702638, $L_702638)
+ASM_VAR(float, g_rq702640, $L_702640)
+ASM_VAR(float, g_rq702644, $L_702644)
+ASM_VAR(float, g_rq702648, $L_702648)
+ASM_VAR(int, g_rq702650, $L_702650)
+ASM_VAR(int, g_rq702654, $L_702654)
+ASM_VAR(int, g_rq702658, $L_702658)
+ASM_VAR(float, g_rq64d9c0, $L_64d9c0)
+ASM_VAR(float, g_rq64c350, $L_64c350)
+ASM_VAR(float, g_rq64c320, $L_64c320)
+ASM_VAR(float, g_rq64d2f8, $L_64d2f8)
+ASM_VAR(float, g_rq64c450, $L_64c450)
+ASM_VAR(double, g_rq64b678, $L_64b678)
+ASM_VAR(double, g_rq64b668, $L_64b668)
+ASM_VAR(double, g_rq64b6e0, $L_64b6e0)
+ASM_VAR(double, g_rq64b670, $L_64b670)
+ASM_VAR(double, g_rq64b660, $L_64b660)
+ASM_VAR(int, g_rq68b990, $L_68b990)
+ASM_VAR(char, g_rq6cf4b8, $L_6cf4b8)
+ASM_VAR(char, g_rq678b2c, $L_678b2c)
+ASM_VAR(char, g_rq678b64, $L_678b64)
+ASM_VAR(int, g_rq6cf428, $L_6cf428)
+ASM_VAR(int, g_rq6cf42c, $L_6cf42c)
+ASM_VAR(int, g_rq6cf430, $L_6cf430)
+ASM_VAR(int, g_rq6cf4ac, $L_6cf4ac)
+ASM_VAR(int, g_rq6cf4b0, $L_6cf4b0)
+ASM_VAR(int, g_rq6cf4b4, $L_6cf4b4)
+ASM_VAR(BYTE, g_rq697f9c, $L_697f9c)
+ASM_VAR(BYTE*, g_rq6f653c, $L_6f653c)
+ASM_VAR(BYTE, g_rq6f6968, $L_6f6968)
+ASM_VAR(BYTE, g_rq66d638, $L_66d638)
+ASM_VAR(BYTE, g_rq66d628, $L_66d628)
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+#define P(n) (*(BYTE**)(fr + (n)))
+
+static Vec3 Rq_V(BYTE* fr, int n) { return *(Vec3*)(fr + n); }
+static void Rq_Copy(BYTE* fr, int to, const void* from, int bytes) { memcpy(fr + to, from, bytes); }
+
+extern "C" {
+
+// [FUN_533590..$L_53549a] the vehicle put back at a free place (this +616 the car, +32 the view): up to 15 tries
+// along the car's line (+-5/2 steps), each a place from the room (a road position, a named start, the garage)
+// with its height from a ray down, then a few slides sideways until no other car's box (list 6f653c) and none of
+// the car's points hit the world; the car and the view are set there. Returns the place's code (+10 when the
+// ray met the ground, +100 / -100 after the last try, +20 when no ground was found). The asm's frame is kept
+// as fr (V float, I int, P pointer slots at the asm's ESP offsets)
+int __fastcall Car_PlaceOnRoad(BYTE* s, void*, int special)
+{
+    BYTE fr[3100];
+    I(36) = (int)s;
+    I(40) = 0;
+    I(72) = 0;
+    if (!F(BYTE*, s, 616))
+    {
+        CallThis(Rq_SetCam, F(BYTE*, s, 32), F(int, s, 100), s + 52);
+        CallThis(Rq_ObjReset, &g_rq6f6968);
+        return I(72) + I(40);
+    }
+    if (CallThis<int>(Rq_EffGet, F(BYTE*, s, 616) + 21568) == 1
+        || CallThis<int>(Rq_EffGet, F(BYTE*, s, 616) + 21568) == 2)
+        CallThis(Rq_EffEnd, F(BYTE*, s, 616), 1);
+    BYTE* fx = F(BYTE*, F(BYTE*, s, 616), 21600);
+    if (fx)
+        F(short, fx, 10056) = 1;
+    CallVirt(F(BYTE*, s, 616), 92, &g_rq702650);
+    CallVirt(F(BYTE*, s, 616), 96, &g_rq702650);
+    I(44) = g_rq702650; I(48) = g_rq702654; I(52) = g_rq702658;
+    I(24) = g_rq702650; I(28) = g_rq702654; I(32) = g_rq702658;
+    I(16) = 0;
+    I(240) = -1; I(244) = -1; I(248) = 0; I(252) = 0;
+    I(256) = 0; I(260) = 0; I(264) = 0; I(268) = -1;
+    BYTE* m = CallThis<BYTE*>(Rq_Matrix1, F(BYTE*, s, 616) + 16, fr + 1092);
+    Rq_Copy(fr, 152, m + 36, 12);
+    m = CallThis<BYTE*>(Rq_Matrix1, F(BYTE*, s, 616) + 16, fr + 1092);
+    {
+        double a = (g_rq702628 * F(float, m, 24) + g_rq702624 * F(float, m, 12)) + g_rq702620 * F(float, m, 0);
+        double b = (g_rq702628 * F(float, m, 28) + g_rq702624 * F(float, m, 16)) + g_rq702620 * F(float, m, 4);
+        double c = (g_rq702628 * F(float, m, 32) + g_rq702624 * F(float, m, 20)) + g_rq702620 * F(float, m, 8);
+        V(88) = (float)(c * g_rq702634 - b * g_rq702638);
+        V(92) = (float)(a * g_rq702638 - c * g_rq702630);
+        double n2 = b * g_rq702630 - a * g_rq702634;
+        V(100) = (float)(V(92) * g_rq702638 - n2 * g_rq702634);
+        I(164) = I(100);
+        V(104) = (float)(n2 * g_rq702630 - V(88) * g_rq702638);
+        I(168) = I(104);
+        V(112) = (float)(V(88) * g_rq702634 - V(92) * g_rq702630);
+        I(172) = I(112);
+        Rq_Norm(&V(1036), &V(164));
+        double ang = x87_atan2(V(1036), V(1040));
+        BYTE* r = Rq_FromPA(fr + 1324, Rq_V(fr, 152), (float)-ang, 0.0f, 0.0f);
+        Rq_Copy(fr, 432, r, 48);
+    }
+    P(124) = CallThis<BYTE*>(Rq_Get800, F(BYTE*, s, 616) + 16);
+    I(60) = 0;
+    for (;;)    // $L_53386f: the tries
+    {
+        I(16) = 0;
+        if (I(60) != 0)
+        {
+            V(508) = (float)(g_rq702620 * g_rq64d9c0);
+            V(512) = (float)(g_rq702624 * g_rq64d9c0);
+            V(516) = (float)(g_rq702628 * g_rq64d9c0);
+            BYTE* t = Rq_Transl(fr + 2280, Rq_V(fr, 508));
+            Rq_Mul(fr + 1144, t, fr + 432);
+            s = P(36);
+            if (F(int, F(BYTE*, s, 616), 20636) == g_rq68b990)
+            {
+                BYTE* r;
+                if (I(60) & 2)
+                {
+                    I(56) = I(60) * 5 / 2;
+                    double k = I(56);
+                    V(528) = (float)(k * g_rq702620);
+                    V(532) = (float)(k * g_rq702624);
+                    V(536) = (float)(k * g_rq702628);
+                    t = Rq_Transl(fr + 2520, Rq_V(fr, 528));
+                    r = Rq_Mul(fr + 2380, t, fr + 1324);
+                }
+                else
+                {
+                    I(56) = (-1 - I(60)) * 5 / 2;
+                    double k = I(56);
+                    V(392) = (float)(k * g_rq702620);
+                    V(396) = (float)(k * g_rq702624);
+                    V(400) = (float)(k * g_rq702628);
+                    t = Rq_Transl(fr + 1848, Rq_V(fr, 392));
+                    r = Rq_Mul(fr + 1996, t, fr + 1324);
+                }
+                Rq_Copy(fr, 1144, r, 48);
+            }
+            BYTE* h = Rq_Hit(P(124), fr + 468, fr + 1180);
+            Rq_Copy(fr, 468, fr + 1180, 12);
+            P(124) = h;
+        }
+        else
+            s = P(36);
+        Rq_Copy(fr, 152, fr + 468, 12);
+        int code;
+        if (F(int, F(BYTE*, s, 616), 20636) != g_rq68b990)
+        {
+            if (special)
+            {
+                code = Rq_ObjAt(F(void*, P(124), 12), fr + 152, fr + 16, fr + 240, 1);
+                I(40) = code;
+            }
+            else
+            {
+                code = Rq_ObjAt(s + 228, s + 204, fr + 16, fr + 240, 1);
+                if (code > 0)
+                {
+                    code += 2;
+                    I(40) = code;
+                }
+                else
+                {
+                    BYTE* o = CallThis<BYTE*>(Rq_Get800, F(BYTE*, s, 616) + 16);
+                    BYTE* mm = CallThis<BYTE*>(Rq_Matrix1, F(BYTE*, s, 616) + 16, fr + 2332);
+                    code = Rq_ObjAt(F(void*, o, 12), mm + 36, fr + 16, fr + 240, 1);
+                    I(40) = code;
+                }
+            }
+        }
+        else
+            code = I(40);
+
+        if (I(16) == 0)
+        {
+            P(16) = Rq_FindNamed(0, &g_rq6cf4b8);
+            if (P(16))
+            {
+                I(44) = g_rq6cf428; I(48) = g_rq6cf42c; I(52) = g_rq6cf430;
+                I(24) = g_rq6cf4ac; I(28) = g_rq6cf4b0; I(32) = g_rq6cf4b4;
+                I(40) = 5;
+                V(176) = 30.0f;
+            }
+            else
+            {
+                BYTE* car = F(BYTE*, s, 616);
+                if (I(60) == 0)
+                {
+                    P(16) = Rq_FindNamed(0, (const char*)car + 20260);
+                    if (!P(16))
+                    {
+                        BYTE* o = CallThis<BYTE*>(Rq_Get800, F(BYTE*, s, 616) + 16);
+                        P(16) = o;
+                        sprintf((char*)fr + 2572, &g_rq678b2c, &g_rq678b64, F(BYTE*, s, 616) + 20260, F(int, o, 12));
+                        Rq_Log((char*)fr + 2572, 0);
+                    }
+                    car = F(BYTE*, s, 616);
+                    Rq_Copy(fr, 44, car + 20248, 12);
+                    V(308) = (float)((g_rq702628 * F(float, car, 20236) + g_rq702624 * F(float, car, 20224))
+                                     + g_rq702620 * F(float, car, 20212));
+                    V(312) = (float)((g_rq702628 * F(float, car, 20240) + g_rq702624 * F(float, car, 20228))
+                                     + g_rq702620 * F(float, car, 20216));
+                    I(28) = I(312);
+                    I(24) = I(308);
+                    V(316) = (float)((g_rq702628 * F(float, car, 20244) + g_rq702624 * F(float, car, 20232))
+                                     + g_rq702620 * F(float, car, 20220));
+                    I(32) = I(316);
+                }
+                else
+                {
+                    BYTE* h = Rq_FindNamed(0, (const char*)car + 20260);
+                    Rq_Copy(fr, 44, fr + 468, 12);
+                    P(16) = h;
+                    P(16) = Rq_Hit(h, F(BYTE*, s, 616) + 20248, fr + 44);
+                }
+                I(40) = 6;
+                V(176) = 30.0f;
+            }
+        }
+        else
+        {
+            // a road place: its right side's coordinates and tangent, the room's width
+            BYTE* car = F(BYTE*, s, 616);
+            RqPos rp = *(RqPos*)(fr + 240);
+            RqPos* r = Rq_Right((RqPos*)(fr + 1612), F(BYTE*, car, 20636), rp);
+            *(RqPos*)(fr + 240) = *r;
+            float* cv = Rq_Coords((float*)(fr + 1204), *r);
+            Rq_Copy(fr, 44, cv, 12);
+            float* tg = Rq_Tangent((float*)(fr + 1252), *(RqPos*)(fr + 240));
+            float* nv = Rq_Norm((float*)(fr + 1264), tg);
+            Rq_Copy(fr, 24, nv, 12);
+            I(1084) = -1;
+            I(1088) = -1;
+            I(1048) = 0;
+            I(1056) = 0;
+            I(1060) = 0;
+            P(1064) = &g_rq66d638;
+            P(1068) = &g_rq66d628;
+            I(1072) = 0;
+            I(1076) = 0;
+            Rq_RoomInfo(*(RqPos*)(fr + 240), fr + 1048);
+            double w = *(double*)(fr + 1056);
+            V(20) = (float)(w * g_rq64b6e0 - g_rq64b668);
+            V(176) = (float)w;
+
+            bool back = false;
+            if ((code == 3 || code == 4)
+                && (F(float, s, 224) * V(32) + F(float, s, 220) * V(28)) + F(float, s, 216) * V(24) < g_rq64b678)
+                back = true;
+            if (!back && (code == 1 || code == 2))
+            {
+                BYTE* mm = CallThis<BYTE*>(Rq_Matrix1, F(BYTE*, s, 616) + 16, fr + 2092);
+                double a = (g_rq702628 * F(float, mm, 24) + g_rq702624 * F(float, mm, 12)) + g_rq702620 * F(float, mm, 0);
+                double b = (g_rq702628 * F(float, mm, 28) + g_rq702624 * F(float, mm, 16)) + g_rq702620 * F(float, mm, 4);
+                double c = (g_rq702628 * F(float, mm, 32) + g_rq702624 * F(float, mm, 20)) + g_rq702620 * F(float, mm, 8);
+                if ((c * V(32) + b * V(28)) + a * V(24) < g_rq64b678)
+                    back = true;
+            }
+            if (!back)
+            {
+                Rq_IsPlace(fr + 240);
+                double cx = V(28) * g_rq702638 - V(32) * g_rq702634;
+                V(932) = (float)(V(32) * g_rq702630 - V(24) * g_rq702638);
+                V(936) = (float)(V(24) * g_rq702634 - V(28) * g_rq702630);
+                V(916) = (float)(cx * V(20));
+                V(920) = (float)(V(932) * V(20));
+                V(924) = (float)(V(936) * V(20));
+                CallThis(Rq_AddA, fr + 44, fr + 1192, fr + 916);
+            }
+            else if (Rq_IsPlace(fr + 240))
+            {
+                double cx = V(28) * g_rq702638 - V(32) * g_rq702634;
+                V(884) = (float)(V(32) * g_rq702630 - V(24) * g_rq702638);
+                V(888) = (float)(V(24) * g_rq702634 - V(28) * g_rq702630);
+                V(580) = (float)(cx * V(20));
+                V(584) = (float)(V(884) * V(20));
+                V(588) = (float)(V(888) * V(20));
+                CallThis(Rq_AddA, fr + 44, fr + 1216, fr + 580);
+                V(348) = -V(24);
+                V(352) = -V(28);
+                V(356) = -V(32);
+                I(24) = I(348); I(28) = I(352); I(32) = I(356);
+            }
+            else
+            {
+                V(112) = -V(24);
+                V(116) = -V(28);
+                V(120) = -V(32);
+                I(24) = I(112); I(28) = I(116); I(32) = I(120);
+                double cx = V(116) * g_rq702638 - V(120) * g_rq702634;
+                V(800) = (float)(V(120) * g_rq702630 - V(112) * g_rq702638);
+                V(804) = (float)(V(112) * g_rq702634 - V(116) * g_rq702630);
+                V(604) = (float)(cx * V(20));
+                V(608) = (float)(V(800) * V(20));
+                V(612) = (float)(V(804) * V(20));
+                CallThis(Rq_AddA, fr + 44, fr + 1240, fr + 604);
+            }
+        }
+
+        // $L_534393: the car's pose at the place, its height from a ray down
+        {
+            double ang = x87_atan2(V(24), V(28));
+            BYTE* r = Rq_FromPA(fr + 2428, Rq_V(fr, 44), (float)-ang, 0.0f, 0.0f);
+            Rq_Copy(fr, 432, r, 48);
+        }
+        I(20) = I(16);
+        I(140) = 0; I(144) = 0; I(148) = 0;
+        I(128) = 0; I(132) = 0; I(136) = 0;
+        int j = 1;
+        I(56) = j;
+        for (;;)
+        {
+            double t = x87_pow(g_rq64b660, (double)I(56));
+            V(76) = (float)(t * g_rq702630);
+            V(80) = (float)(t * g_rq702634);
+            V(84) = (float)(t * g_rq702638);
+            V(808) = (float)(V(44) - V(76));
+            V(812) = (float)(V(48) - V(80));
+            V(816) = (float)(V(52) - V(84));
+            V(628) = (float)(V(44) + V(76));
+            V(632) = (float)(V(48) + V(80));
+            V(636) = (float)(V(52) + V(84));
+            if (Rq_Ray(P(20), fr + 628, fr + 808, fr + 140, fr + 128) & 1)
+            {
+                double n0 = V(128) * g_rq64c350;
+                V(836) = (float)(V(132) * g_rq64c350);
+                V(840) = (float)(V(136) * g_rq64c350);
+                V(100) = (float)(n0 + V(140));
+                V(104) = (float)(V(144) + V(836));
+                V(108) = (float)(V(148) + V(840));
+                P(20) = Rq_Hit(P(20), fr + 468, fr + 100);
+                Rq_Copy(fr, 468, fr + 100, 12);
+                break;
+            }
+            V(856) = (float)(V(44) - V(76));
+            V(860) = (float)(V(48) - V(80));
+            V(864) = (float)(V(52) - V(84));
+            V(652) = (float)(V(44) + V(76));
+            V(656) = (float)(V(48) + V(80));
+            V(660) = (float)(V(52) + V(84));
+            if (Rq_WorldHit(P(20), fr + 652, fr + 856, fr + 140, fr + 128) & 1)
+            {
+                double n0 = V(128) * g_rq64c350;
+                V(680) = (float)(V(132) * g_rq64c350);
+                V(684) = (float)(V(136) * g_rq64c350);
+                V(88) = (float)(n0 + V(140));
+                V(92) = (float)(V(144) + V(680));
+                V(96) = (float)(V(148) + V(684));
+                P(20) = Rq_Hit(P(20), fr + 468, fr + 88);
+                Rq_Copy(fr, 468, fr + 88, 12);
+                I(72) = 10;
+                break;
+            }
+            if (j == 15)
+            {
+                // $L_535439: no ground under any try
+                s = P(36);
+                CallC<int>(Rq_5330a0, F(BYTE*, s, 616), F(BYTE*, s, 32));
+                return I(40) + 20;
+            }
+            j++;
+            I(56) = j;
+        }
+
+        // $L_5347ee: slides sideways
+        int cnt = (int)((V(176) - g_rq64b668) * g_rq64b6e0 + g_rq64b670);
+        Rq_Copy(fr, 180, fr + 432, 48);
+        I(16) = I(20);
+        I(64) = cnt;
+        if (cnt < 1)
+        {
+            cnt = 1;
+            I(64) = 1;
+        }
+        bool placed = false;
+        for (I(68) = 0; I(68) < I(64); I(68)++)
+        {
+            {
+                double nx = -g_rq702640;
+                V(848) = -g_rq702644;
+                V(852) = -g_rq702648;
+                V(56) = (float)I(68);
+                double x = nx * V(56);
+                V(548) = (float)(V(56) * V(848));
+                V(552) = (float)(V(56) * V(852));
+                V(360) = (float)(x + x);
+                V(364) = (float)(V(548) + V(548));
+                V(368) = (float)(V(552) + V(552));
+                BYTE* t = Rq_Transl(fr + 2188, Rq_V(fr, 360));
+                BYTE* r = Rq_Mul(fr + 2476, t, fr + 432);
+                double ux = -g_rq702620;
+                V(896) = -g_rq702624;
+                V(900) = -g_rq702628;
+                Rq_Copy(fr, 180, r, 48);
+                V(384) = (float)(ux * g_rq64c320);
+                V(388) = (float)(V(896) * g_rq64c320);
+                V(392) = (float)(V(900) * g_rq64c320);
+                t = Rq_Transl(fr + 1900, Rq_V(fr, 384));
+                Rq_Mul(fr + 1096, t, fr + 180);
+            }
+            s = P(36);
+            BYTE* tow = 0;
+            if (CallVirt<int>(F(BYTE*, s, 616), 4) == 1)
+            {
+                BYTE* car = F(BYTE*, s, 616);
+                tow = F(BYTE*, car, 21880);
+                if (tow)
+                {
+                    // the trailer: its hitch point moved with the car
+                    Rq_Copy(fr, 988, car + 708, 48);
+                    BYTE* T = &g_rq697f9c + 2416 * F(int, car, 10420);
+                    Rq_Copy(fr, 940, tow + 708, 48);
+                    V(408) = (float)(((V(1012) * F(float, T, 164) + V(1000) * F(float, T, 160)) + V(988) * F(float, T, 156)) + V(1024));
+                    V(412) = (float)(((V(1016) * F(float, T, 164) + V(1004) * F(float, T, 160)) + V(992) * F(float, T, 156)) + V(1028));
+                    V(416) = (float)(((V(1020) * F(float, T, 164) + V(1008) * F(float, T, 160)) + V(996) * F(float, T, 156)) + V(1032));
+                    double h = F(float, T, 204);
+                    BYTE* T2 = &g_rq697f9c + 2416 * F(int, tow, 10420) + 168;
+                    V(724) = (float)(h * g_rq702620);
+                    V(728) = (float)(h * g_rq702624);
+                    double hz = h * g_rq702628;
+                    V(228) = (float)(V(724) + F(float, T2, 0));
+                    V(232) = (float)(V(728) + F(float, T2, 4));
+                    double e2 = hz + F(float, T2, 8);
+                    float wz = (float)(((V(228) * V(948) + e2 * V(972)) + V(232) * V(960)) + V(984));
+                    float wy = (float)(((V(228) * V(944) + e2 * V(968)) + V(232) * V(956)) + V(980));
+                    float wx = (float)(((V(940) * V(228) + e2 * V(964)) + V(232) * V(952)) + V(976));
+                    CallThis(Rq_SetThis, fr + 868, wx, wy, wz);
+                    float dz = (float)(V(416) - V(876));
+                    float dy = (float)(V(412) - V(872));
+                    float dx = (float)(V(408) - V(868));
+                    CallThis(Rq_SetThis, fr + 748, dx, dy, dz);
+                    BYTE* t = Rq_Transl(fr + 1948, Rq_V(fr, 748));
+                    BYTE* r = Rq_Mul(fr + 2044, t, fr + 180);
+                    Rq_Copy(fr, 1096, r, 48);
+                }
+            }
+
+            // $L_534c8e: other cars' boxes
+            BYTE* e = g_rq6f653c;
+            bool hit = false;
+            if (e)
+                e -= 4;
+            while (e)
+            {
+                BYTE* o = e - 376;
+                BYTE* car = F(BYTE*, P(36), 616);
+                if (o != (car ? car + 16 : 0) && o != (tow ? tow + 16 : 0))
+                {
+                    float z = (float)(F(float, o, 3380) - V(224));
+                    float y = (float)(F(float, o, 3376) - V(220));
+                    float x = (float)(F(float, o, 3372) - V(216));
+                    CallThis(Rq_SetThis, fr + 820, x, y, z);
+                    Rq_Copy(fr, 772, fr + 820, 12);
+                    car = F(BYTE*, P(36), 616);
+                    double len = Rq_Len(&V(772));
+                    if ((F(float, car, 3288) + F(float, o, 3272)) * g_rq64b668 > len)
+                    {
+                        I(332) = 0;
+                        BYTE* inv = Rq_Inv(fr + 2140, fr + 180);
+                        if (Rq_Collide(car ? car + 16 : 0, fr + 180, inv, o, fr + 332))
+                        {
+                            hit = true;
+                            break;
+                        }
+                    }
+                    if (tow)
+                    {
+                        z = (float)(F(float, o, 3380) - V(1140));
+                        y = (float)(F(float, o, 3376) - V(1136));
+                        x = (float)(F(float, o, 3372) - V(1132));
+                        CallThis(Rq_SetThis, fr + 556, x, y, z);
+                        Rq_Copy(fr, 568, fr + 556, 12);
+                        len = Rq_Len(&V(568));
+                        if ((F(float, tow, 3288) + F(float, o, 3272)) * g_rq64b668 > len)
+                        {
+                            I(492) = 0;
+                            BYTE* inv = Rq_Inv(fr + 2236, fr + 180);
+                            if (Rq_Collide(tow + 16, fr + 180, inv, o, fr + 492))
+                            {
+                                hit = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                e = F(BYTE*, e, 8);
+                if (!e)
+                    break;
+                e -= 4;
+            }
+            if (hit)
+                continue;
+
+            // $L_534ec8: the ground under the car and its points free
+            P(16) = Rq_Hit(P(20), fr + 468, fr + 216);
+            CallThis(Rq_NodeInit, fr + 1644);
+            {
+                float z = (float)(g_rq702638 + g_rq702638);
+                float y = (float)(g_rq702634 + g_rq702634);
+                float x = (float)(g_rq702630 + g_rq702630);
+                CallThis(Rq_SetThis, fr + 592, x, y, z);
+                z = (float)(V(600) + V(224));
+                y = (float)(V(596) + V(220));
+                x = (float)(V(592) + V(216));
+                CallThis(Rq_SetThis, fr + 616, x, y, z);
+                Rq_Copy(fr, 164, fr + 616, 12);
+                z = (float)(g_rq702638 * g_rq64d2f8);
+                y = (float)(g_rq702634 * g_rq64d2f8);
+                x = (float)(g_rq702630 * g_rq64d2f8);
+                CallThis(Rq_SetThis, fr + 640, x, y, z);
+                z = (float)(V(224) - V(648));
+                y = (float)(V(220) - V(644));
+                x = (float)(V(216) - V(640));
+                CallThis(Rq_SetThis, fr + 664, x, y, z);
+                Rq_Copy(fr, 688, fr + 664, 12);
+            }
+            BYTE* h3 = Rq_Hit(P(16), fr + 216, fr + 164);
+            BYTE* car = F(BYTE*, P(36), 616);
+            if (!(Rq_Blocked(Rq_IdSame(car ? car + 16 : 0), h3, fr + 164, fr + 688, fr + 1644) & 1))
+                continue;
+            if (Rq_MovingOf(P(1760)))
+                continue;
+            for (int k = 0; k < 20; k++)
+                CallThis(Rq_Zero, fr + 1372 + 12 * k);
+            for (int k = 0; k < 20; k++)
+                CallThis(Rq_Zero, fr + 2772 + 12 * k);
+            s = P(36);
+            int n = 0;
+            if (CallThis<int>(Rq_PtsNext, F(BYTE*, s, 616) + 16, fr + 1372))
+            {
+                do
+                {
+                    if (n != -1)
+                    {
+                        int o12 = 12 * n;
+                        float px = V(1372 + o12), py = V(1376 + o12), pz = V(1380 + o12);
+                        float z = (float)(((V(188) * px + V(212) * pz) + V(200) * py) + V(224));
+                        float y = (float)(((V(184) * px + V(208) * pz) + V(196) * py) + V(220));
+                        float x = (float)(((V(204) * pz + V(192) * py) + V(180) * px) + V(216));
+                        CallThis(Rq_SetThis, fr + 712, x, y, z);
+                        BYTE* pt = fr + 2772 + o12;
+                        z = (float)(g_rq702638 * g_rq64c450);
+                        I(2772 + o12) = I(712);
+                        I(2776 + o12) = I(716);
+                        y = (float)(g_rq702634 * g_rq64c450);
+                        I(2780 + o12) = I(720);
+                        x = (float)(g_rq702630 * g_rq64c450);
+                        CallThis(Rq_SetThis, fr + 736, x, y, z);
+                        z = (float)(V(744) + F(float, pt, 8));
+                        y = (float)(V(740) + F(float, pt, 4));
+                        x = (float)(V(736) + F(float, pt, 0));
+                        CallThis(Rq_SetThis, fr + 760, x, y, z);
+                        Rq_Copy(fr, 784, fr + 760, 12);
+                        BYTE* h4 = Rq_Hit(P(16), fr + 216, fr + 784);
+                        if (!h4)
+                            h4 = P(16);
+                        BYTE* car2 = F(BYTE*, s, 616);
+                        BYTE* sh = car2 ? car2 + 16 : 0;
+                        float* lo = Rq_Sub((float*)(fr + 1312), (float*)pt,
+                                           Rq_Scaled((float*)(fr + 1288), &g_rq702630, 10.0f));
+                        float* hi = Rq_Add((float*)(fr + 1228), (float*)pt,
+                                           Rq_Scaled((float*)(fr + 1300), &g_rq702630, 10.0f));
+                        if ((Rq_Blocked(Rq_IdSame(sh), h4, hi, lo, fr + 1644) & 1) && !Rq_MovingOf(P(1760)))
+                            n++;
+                        else
+                            n = -1;
+                        s = P(36);
+                    }
+                }
+                while (CallThis<int>(Rq_PtsNext, F(BYTE*, s, 616) + 16, fr + 1372 + 12 * n));
+                if (n == -1)
+                    continue;
+            }
+            // $L_5353af: placed
+            CallVirt(F(BYTE*, s, 616), 76, P(16), fr + 180, 0);
+            CallThis(Rq_SetCam, F(BYTE*, s, 32), P(16), fr + 180);
+            placed = true;
+            break;
+        }
+        if (placed)
+            break;
+        I(60)++;
+        if (I(60) >= 15)
+            break;
+    }
+    if (I(60) == 15)
+    {
+        s = P(36);
+        if (CallC<int>(Rq_5330a0, F(BYTE*, s, 616), F(BYTE*, s, 32)))
+            return I(72) + I(40) + 100;
+        return -100 - I(72) - I(40);
+    }
+    CallThis(Rq_ObjReset, &g_rq6f6968);
+    return I(72) + I(40);
+}
+
+} // extern "C"
+
+#undef V
+#undef I
+#undef P

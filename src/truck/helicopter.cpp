@@ -7781,3 +7781,114 @@ int __cdecl Copter_CircleTouch(const float* a, const float* n, const float* p, c
 }
 
 } // extern "C"
+
+// === the game's per-frame HUD (FUN_56ce40 with its tail $L_56ce61)
+
+extern "C" void __cdecl Hf_Overlays(); KING_ALIAS("_Hf_Overlays", "_Hud_DrawOverlays")
+extern "C" void __fastcall Hf_DashDraw(BYTE* d, void*); KING_ALIAS("@Hf_DashDraw@8", "@Dash_Draw@8")
+extern "C" void __fastcall Hf_NoticeDraw(BYTE* self, void*); KING_ALIAS("@Hf_NoticeDraw@8", "@Notice_Draw@8")
+extern "C" void __cdecl Hf_SaveState(BYTE* n); KING_ALIAS("_Hf_SaveState", "_Copter_SaveState")
+extern "C" double __cdecl Hf_Now(); KING_ALIAS("_Hf_Now", "_Tsc_Now")
+extern "C" const char* __cdecl Hf_Text(int i); KING_ALIAS("_Hf_Text", "_Table71e858_Get")
+extern "C" int __fastcall Hf_TextWidth(BYTE* self, void*, const char* s); KING_ALIAS("@Hf_TextWidth@12", "@Font_TextWidth@12")
+extern "C" void __cdecl Hf_DrawImage(BYTE* s, int x, int y, BYTE* img, int flags); KING_ALIAS("_Hf_DrawImage", "_Gfx_DrawImage")
+extern "C" void __cdecl Hf_TextDraw(BYTE* dst, int x, int y, BYTE* font, const char* s, int d, int e); KING_ALIAS("_Hf_TextDraw", "_Text_Draw")
+ASM_VAR(BYTE*, g_hfApp696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_hf696848, $L_696848)
+ASM_VAR(int, g_hf69689c, $L_69689c)
+ASM_VAR(BYTE*, g_hfDash6f3438, $L_6f3438)
+ASM_VAR(int, g_hf6f3428, $L_6f3428)
+ASM_VAR(BYTE*, g_hfNotice6f3430, $L_6f3430)
+ASM_VAR(BYTE*, g_hf6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_hf6cec90, $L_6cec90)
+ASM_VAR(BYTE*, g_hfHint6f3494, $L_6f3494)
+ASM_VAR(int, g_hfShown6f3490, $L_6f3490)
+ASM_VAR(double, g_hfHintTime6968c8, $L_6968c8)
+ASM_VAR(double, g_hf64b860, $L_64b860)
+ASM_VAR(BYTE*, g_hfParent69684c, $L_69684c)
+ASM_VAR(char, g_hfEmpty67ba20, $L_67ba20)
+ASM_VAR(BYTE*, g_hfFont696860, $L_696860)
+ASM_VAR(BYTE*, g_hfFont6ced30, $L_6ced30)
+ASM_VAR(BYTE*, g_hfLeft6f2ed0, $L_6f2ed0)
+ASM_VAR(BYTE*, g_hfMid6f2ed4, $L_6f2ed4)
+ASM_VAR(BYTE*, g_hfRight6f2ed8, $L_6f2ed8)
+ASM_VAR(int, g_hfX696880, $L_696880)
+ASM_VAR(int, g_hfY696884, $L_696884)
+ASM_VAR(int, g_hfW696850, $L_696850)
+
+extern "C" {
+
+// [FUN_56ce40..$L_56ce61] the HUD of a frame: the overlays (own view, 69689c off), the dashboard and notices (app
+// +16 bit 2), the copter state in its view, and the hint 6f3494 (text by its id +28) in a framed banner near the
+// mouse while its time (6968c8) is running
+void __cdecl Hud_Frame()
+{
+    if (g_hf696848 == g_hfApp696ca0 && !g_hf69689c)
+        Hf_Overlays();
+    BYTE* app = g_hfApp696ca0;
+    if (g_hfDash6f3438 && (F(BYTE, app, 16) & 2) && !g_hf6f3428 && !F(int, app, 3024))
+    {
+        Hf_DashDraw(g_hfDash6f3438, 0);
+        app = g_hfApp696ca0;
+    }
+    if (g_hfNotice6f3430 && (F(BYTE, app, 16) & 2))
+    {
+        Hf_NoticeDraw(g_hfNotice6f3430, 0);
+        app = g_hfApp696ca0;
+    }
+    if (F(int, g_hf6cec6c, 1300) == 1 && F(int, app, 2992) == 3)
+        Hf_SaveState(g_hf6cec90 + 384);
+    if (!g_hfHint6f3494)
+        return;
+    if (!(Hf_Now() - g_hfHintTime6968c8 > g_hf64b860))
+    {
+        if (g_hfShown6f3490)
+        {
+            g_hfShown6f3490 = 0;
+            g_hfHint6f3494 = 0;
+        }
+        return;
+    }
+    BYTE* parent = g_hfParent69684c;
+    int id = F(int, g_hfHint6f3494, 28);
+    const char* text = 0;
+    if (id >= 101 && id < 1000)
+        text = Hf_Text(id + 26);
+    else if (id == 2)
+        text = Hf_Text(126);
+    else if (id == 1)
+        return;
+    else if (id >= 1000)
+        text = Hf_Text(170);
+    if (!text || !*text)
+        text = &g_hfEmpty67ba20;
+    int w = Hf_TextWidth(g_hfFont696860, 0, text);
+    int cw = F(WORD, g_hfMid6f2ed4, 4);
+    int n = w / cw + 1;
+    int total = n * cw;
+    int cx = (total - w) / 2;
+    int y = g_hfY696884 - 30;
+    if (y < 0)
+        y += 40;
+    int x = g_hfX696880;
+    if (x + total + 20 >= g_hfW696850)
+        x = g_hfW696850 - (total + 20);
+    Hf_DrawImage(F(BYTE*, parent, 12), x - F(WORD, g_hfLeft6f2ed0, 4), y, g_hfLeft6f2ed0, -1);
+    int k = 0;
+    if (n > 0)
+    {
+        k = n;
+        int px = x;
+        for (int i = n; i; i--)
+        {
+            Hf_DrawImage(F(BYTE*, parent, 12), px, y, g_hfMid6f2ed4, -1);
+            px += cw;
+        }
+    }
+    Hf_DrawImage(F(BYTE*, parent, 12), k * cw + x, y, g_hfRight6f2ed8, -1);
+    BYTE* font = CallVirt<int>(g_hfApp696ca0, 28) == 1 ? g_hfFont696860 : g_hfFont6ced30;
+    Hf_TextDraw(F(BYTE*, parent, 12), x + cx, F(WORD, g_hfLeft6f2ed0, 6) + y - 5, font, text, 0, 0);
+    g_hfShown6f3490 = 1;
+}
+
+} // extern "C"
