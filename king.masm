@@ -2300,6 +2300,8 @@ PUBLIC $L_72d9d8, $L_72da18, $L_72e0d4, $L_72e0e4
 PUBLIC $L_653418, $L_653480, $L_653490, $L_654184, $L_6542a0, $L_6542c8
 PUBLIC $L_6543a8, $L_6545ec, $L_65461c, $L_6546c8, $L_685e30, $L_685fc4
 PUBLIC $L_72dab8, $L_72dae0, $L_72db08, $L_72db30
+PUBLIC $L_653a0c, $L_653a18, $L_653a2c, $L_653a3c, $L_653a50, $L_6544e4
+PUBLIC $L_72c15c, $L_72e0b8
 
 ;===================================
 _TEXT SEGMENT
@@ -800518,7 +800520,7 @@ FUN_5dd0d0 PROC
             mov ESI,ECX
             push EDI
             mov DWORD PTR [ESP+16],ESI
-            call ??0CFrameWnd@@QAE@XZ
+            call FUN_637894
 
             mov DWORD PTR [ESI],OFFSET $L_6523e4
             mov EAX,DWORD PTR [$L_721750]
@@ -800536,7 +800538,7 @@ FUN_5dd0d0 PROC
             push 0
             push 0
             mov ECX,ESI
-            call ?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z
+            call FUN_6380a5
 
             mov EAX,DWORD PTR [$L_721750]
             push 64
@@ -800575,7 +800577,7 @@ $L_5dd182::
             push 130
             lea ECX,DWORD PTR [ESP+20]
             mov BYTE PTR [ESP+36],1
-            call ?LoadStringA@CString@@QAEHI@Z
+            call FUN_63653d
 
             mov EDX,DWORD PTR [ESP+16]
             push 0
@@ -800587,7 +800589,7 @@ $L_5dd182::
             push EDX
             push 0
             mov ECX,ESI
-            call ?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z
+            call FUN_6380a5
 
             call FUN_63a342
 
@@ -809649,7 +809651,7 @@ $L_5e282e::
 
             push EAX
             lea ECX,DWORD PTR [ESP+28]
-            call ?Attach@CDC@@QAEHPAUHDC__@@@Z
+            call FUN_636c91
 
             mov EAX,DWORD PTR [ESI+188]
             test EAX,EAX
@@ -809661,7 +809663,7 @@ $L_5e284c::
             mov ECX,DWORD PTR [ESP+28]
             push EAX
             push ECX
-            call ?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z
+            call FUN_636dbc
 
             mov EDX,DWORD PTR [EDI+8]
             push EDX
@@ -809669,7 +809671,7 @@ $L_5e284c::
 
             push EAX
             lea ECX,DWORD PTR [ESP+28]
-            call ?SetMapMode@CDC@@UAEHH@Z
+            call FUN_636eb3
 
             mov ECX,DWORD PTR [ESI+28]
             lea EAX,DWORD PTR [ESP+40]
@@ -809867,7 +809869,7 @@ FUN_5e29b0 PROC
             je $L_5e2b1d
 
             mov ECX,ESI
-            call ??0CFrameWnd@@QAE@XZ
+            call FUN_637894
 
             mov EAX,100
             push EBX
@@ -809886,7 +809888,7 @@ FUN_5e29b0 PROC
             mov DWORD PTR [ESI],OFFSET $L_652570
             mov DWORD PTR [ESP+76],200
             mov DWORD PTR [ESP+80],300
-            call ?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z
+            call FUN_6380a5
 
             push 8
             call ??2@YAPAXI@Z
@@ -809932,7 +809934,7 @@ $L_5e2aa4::
 
             push EAX
             mov ECX,EDI
-            call ?Attach@CGdiObject@@QAEHPAX@Z
+            call FUN_637158
 
             mov EDI,DWORD PTR __imp__GetSystemMetrics@4
             push EBX
@@ -970196,6 +970198,8 @@ $L_633694 PROC
 
             ret 12
 $L_633694 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6336ab PROC
 
             mov EAX,DWORD PTR [ECX+56]
@@ -970213,6 +970217,10 @@ $L_6336be::
             mov ECX,EAX
             jmp DWORD PTR [EDX+112]
 FUN_6336ab ENDP
+ELSE
+EXTERN @Wnd_GetStyle@4:PROC
+FUN_6336ab TEXTEQU <@Wnd_GetStyle@4>
+ENDIF
 FUN_6336c5 PROC
 
             mov EAX,DWORD PTR [ECX+56]
@@ -970355,6 +970363,8 @@ ELSE
 EXTERN @Wnd_ShowWindow@12:PROC
 FUN_633786 TEXTEQU <@Wnd_ShowWindow@12>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6337ad PROC
 
             mov EAX,DWORD PTR [ECX+56]
@@ -970371,6 +970381,10 @@ $L_6337be::
             mov ECX,EAX
             jmp DWORD PTR [EDX+164]
 FUN_6337ad ENDP
+ELSE
+EXTERN @Wnd_IsWindowEnabled@4:PROC
+FUN_6337ad TEXTEQU <@Wnd_IsWindowEnabled@4>
+ENDIF
 ALIGN 8
 FUN_6337c8 PROC
 
@@ -970643,6 +970657,8 @@ $L_633993::
             pop ESI
             ret 4
 $L_63397d ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633999 PROC
 
             push ESI
@@ -970665,6 +970681,10 @@ FUN_633999 PROC
             pop ESI
             ret 4
 FUN_633999 ENDP
+ELSE
+EXTERN @Wnd_ConstructHwnd@12:PROC
+FUN_633999 TEXTEQU <@Wnd_ConstructHwnd@12>
+ENDIF
 FUN_6339c5 PROC
 
             push EBP
@@ -970805,6 +970825,8 @@ $L_633ac5::
             ret 12
 FUN_633a51 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633aca PROC
 
             push EBP
@@ -970859,6 +970881,10 @@ $L_633b24::
             leave 
             ret 12
 FUN_633aca ENDP
+ELSE
+EXTERN _Afx_HandleActivate@12:PROC
+FUN_633aca TEXTEQU <_Afx_HandleActivate@12>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 FUN_633b2b PROC
@@ -971813,6 +971839,8 @@ EXTERN _Afx_CbtFilterHook@12:PROC
 $L_63401e TEXTEQU <_Afx_CbtFilterHook@12>
 ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_634214 PROC
 
             push ESI
@@ -971851,7 +971879,13 @@ $L_63425b::
             pop ESI
             ret 4
 FUN_634214 ENDP
+ELSE
+EXTERN _Afx_HookWindowCreate@4:PROC
+FUN_634214 TEXTEQU <_Afx_HookWindowCreate@4>
+ENDIF
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_634260 PROC
 
             push ESI
@@ -971889,7 +971923,13 @@ $L_63429d::
             pop ESI
             ret 
 FUN_634260 ENDP
+ELSE
+EXTERN _Afx_UnhookWindowCreate:PROC
+FUN_634260 TEXTEQU <_Afx_UnhookWindowCreate>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6342a2 PROC
 
             push EBP
@@ -971979,6 +972019,10 @@ $L_634363::
             leave 
             ret 44
 FUN_6342a2 ENDP
+ELSE
+EXTERN @Wnd_CreateEx@52:PROC
+FUN_6342a2 TEXTEQU <@Wnd_CreateEx@52>
+ENDIF
 $L_634368 PROC
 
             push ESI
@@ -972431,6 +972475,8 @@ ELSE
 EXTERN @Wnd_ModuleHook@12:PROC
 FUN_63462a TEXTEQU <@Wnd_ModuleHook@12>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_634649 PROC
 
             push ESI
@@ -972474,6 +972520,10 @@ $L_63469c::
             pop ESI
             ret 4
 FUN_634649 ENDP
+ELSE
+EXTERN _Afx_CancelToolTips@4:PROC
+FUN_634649 TEXTEQU <_Afx_CancelToolTips@4>
+ENDIF
 $L_6346a0 PROC
 
             push EBP
@@ -972779,6 +972829,8 @@ $L_634899::
             ret 8
 $L_634826 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63489e PROC
 
             mov EAX,OFFSET $L_64a3d4
@@ -972851,6 +972903,10 @@ $L_63491e::
             leave 
             ret 4
 FUN_63489e ENDP
+ELSE
+EXTERN _Afx_RegisterClass@4:PROC
+FUN_63489e TEXTEQU <_Afx_RegisterClass@4>
+ENDIF
 $L_63492f PROC
 
             push 1
@@ -974057,6 +974113,8 @@ $L_635243::
             ret 12
 $L_6351d0 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63524a PROC
 
             push ESI
@@ -974103,6 +974161,10 @@ $L_635285::
             pop ESI
             ret 
 FUN_63524a ENDP
+ELSE
+EXTERN @Wnd_GetParentFrame@4:PROC
+FUN_63524a TEXTEQU <@Wnd_GetParentFrame@4>
+ENDIF
 ALIGN 8
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
@@ -974192,6 +974254,8 @@ ELSE
 EXTERN @Wnd_GetTopLevelParent@4:PROC
 FUN_6352cd TEXTEQU <@Wnd_GetTopLevelParent@4>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6352f5 PROC
 
             push ESI
@@ -974241,6 +974305,10 @@ $L_635332::
             pop ESI
             ret 
 FUN_6352f5 ENDP
+ELSE
+EXTERN @Wnd_GetTopLevelFrame@4:PROC
+FUN_6352f5 TEXTEQU <@Wnd_GetTopLevelFrame@4>
+ENDIF
 ALIGN 2
 FUN_635336 PROC
 
@@ -975729,6 +975797,8 @@ $L_635da6::
 
             ret 4
 $L_635d85 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_635da9 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -975763,6 +975833,10 @@ $L_635ddf::
             pop ESI
             ret 12
 FUN_635da9 ENDP
+ELSE
+EXTERN _Afx_RegisterWithIcon@12:PROC
+FUN_635da9 TEXTEQU <_Afx_RegisterWithIcon@12>
+ENDIF
 ALIGN 2
 FUN_635dea PROC
 
@@ -975827,6 +975901,8 @@ $L_635e5b::
             pop EBX
             ret 8
 FUN_635dea ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_635e61 PROC
 
             push EBP
@@ -976144,6 +976220,10 @@ $L_636114::
             leave 
             ret 4
 FUN_635e61 ENDP
+ELSE
+EXTERN _Afx_EndDeferRegisterClass@4:PROC
+FUN_635e61 TEXTEQU <_Afx_EndDeferRegisterClass@4>
+ENDIF
 $L_636118 PROC
 
             xor EAX,EAX
@@ -976294,6 +976374,8 @@ $L_636204 PROC
             jmp $L_61ca53
 $L_636204 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63620e PROC
 
             push EBX
@@ -976367,6 +976449,10 @@ $L_63628b::
             pop EBX
             ret 4
 FUN_63620e ENDP
+ELSE
+EXTERN @String_AllocBuffer@12:PROC
+FUN_63620e TEXTEQU <@String_AllocBuffer@12>
+ENDIF
 ALIGN 16
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
@@ -976419,6 +976505,8 @@ EXTERN @String_FreeData@4:PROC
 FUN_636290 TEXTEQU <@String_FreeData@4>
 ENDIF
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6362d8 PROC
 
             push ESI
@@ -976447,6 +976535,10 @@ $L_636307::
             pop ESI
             ret 
 FUN_6362d8 ENDP
+ELSE
+EXTERN @String_Release@4:PROC
+FUN_6362d8 TEXTEQU <@String_Release@4>
+ENDIF
 FUN_636309 PROC
 
             push ESI
@@ -976517,6 +976609,8 @@ $L_636375::
             ret 
 FUN_63634a ENDP
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_636378 PROC
 
             push ESI
@@ -976543,6 +976637,10 @@ $L_63639c::
             pop ESI
             ret 4
 FUN_636378 ENDP
+ELSE
+EXTERN @String_AllocBeforeWrite@12:PROC
+FUN_636378 TEXTEQU <@String_AllocBeforeWrite@12>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 FUN_6363a1 PROC ;??1CString@@QAE@XZ CString::~CString()
@@ -976592,7 +976690,7 @@ ENDIF
 
             movzx EAX,BX
             push EAX
-            call ?LoadStringA@CString@@QAEHI@Z
+            call FUN_63653d
 
             jmp $L_636415
 $L_6363f4::
@@ -976622,6 +976720,8 @@ $L_636415::
             pop EBX
             ret 4
 ??0CString@@QAE@PBD@Z ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63641d PROC
 
             push ESI
@@ -976645,7 +976745,13 @@ FUN_63641d PROC
             pop ESI
             ret 8
 FUN_63641d ENDP
+ELSE
+EXTERN @String_AssignCopy@16:PROC
+FUN_63641d TEXTEQU <@String_AssignCopy@16>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63644a PROC
 
             push ESI
@@ -976673,6 +976779,10 @@ $L_636461::
             pop ESI
             ret 4
 FUN_63644a ENDP
+ELSE
+EXTERN @String_Assign@12:PROC
+FUN_63644a TEXTEQU <@String_Assign@12>
+ENDIF
 FUN_636471 PROC
 
             push EBX
@@ -976795,7 +976905,9 @@ $L_63653b::
             pop ESI
             ret 
 FUN_636508 ENDP
-?LoadStringA@CString@@QAEHI@Z PROC ;FUN_63653d BOOL CString::LoadString(UINT nID)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_63653d PROC ;?LoadStringA@CString@@QAEHI@Z BOOL CString::LoadString(UINT nID)
 
             push EBP
             mov EBP,ESP
@@ -976862,7 +976974,13 @@ $L_6365bb::
             pop ESI
             leave 
             ret 4
-?LoadStringA@CString@@QAEHI@Z ENDP
+FUN_63653d ENDP
+ELSE
+EXTERN @String_LoadString@12:PROC
+FUN_63653d TEXTEQU <@String_LoadString@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6365c1 PROC
 
             push ESI
@@ -976885,6 +977003,10 @@ $L_6365e4::
             pop ESI
             ret 12
 FUN_6365c1 ENDP
+ELSE
+EXTERN _Afx_LoadString@12:PROC
+FUN_6365c1 TEXTEQU <_Afx_LoadString@12>
+ENDIF
 ALIGN 8
 FUN_6365e8 PROC
 
@@ -977901,7 +978023,9 @@ ELSE
 EXTERN _Dc_FromHandle@4:PROC
 FUN_636c7c TEXTEQU <_Dc_FromHandle@4>
 ENDIF
-?Attach@CDC@@QAEHPAUHDC__@@@Z PROC ;FUN_636c91 BOOL CDC::Attach(HDC hDC)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_636c91 PROC ;?Attach@CDC@@QAEHPAUHDC__@@@Z BOOL CDC::Attach(HDC hDC)
 
             push ESI
             push EDI
@@ -977935,8 +978059,14 @@ $L_636cc3::
             pop EDI
             pop ESI
             ret 4
-?Attach@CDC@@QAEHPAUHDC__@@@Z ENDP
+FUN_636c91 ENDP
+ELSE
+EXTERN @Cdc_Attach@12:PROC
+FUN_636c91 TEXTEQU <@Cdc_Attach@12>
+ENDIF
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_636cc8 PROC
 
             push ESI
@@ -977967,6 +978097,10 @@ $L_636ce9::
             pop ESI
             ret 
 FUN_636cc8 ENDP
+ELSE
+EXTERN @Cdc_Detach@4:PROC
+FUN_636cc8 TEXTEQU <@Cdc_Detach@4>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 FUN_636cf9 PROC ;??1CDC@@UAE@XZ virtual CDC::~CDC()
@@ -978099,7 +978233,9 @@ $L_636db7::
             ret 4
 $L_636d7e ENDP
 ALIGN 4
-?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z PROC ;FUN_636dbc protected: static CGdiObject *PASCAL CDC::SelectGdiObject(HDC hDC, HGDIOBJ h)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_636dbc PROC ;?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z protected: static CGdiObject *PASCAL CDC::SelectGdiObject(HDC hDC, HGDIOBJ h)
 
             push DWORD PTR [ESP+8]
             push DWORD PTR [ESP+8]
@@ -978109,7 +978245,11 @@ ALIGN 4
             call FUN_637143
 
             ret 8
-?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z ENDP
+FUN_636dbc ENDP
+ELSE
+EXTERN _Cdc_SelectGdiObject@8:PROC
+FUN_636dbc TEXTEQU <_Cdc_SelectGdiObject@8>
+ENDIF
 $L_636dd3 PROC
 
             push EBX
@@ -978257,7 +978397,9 @@ $L_636eae::
             pop ESI
             ret 4
 $L_636e84 ENDP
-?SetMapMode@CDC@@UAEHH@Z PROC ;FUN_636eb3 virtual int CDC::SetMapMode(int nMapMode)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_636eb3 PROC ;?SetMapMode@CDC@@UAEHH@Z virtual int CDC::SetMapMode(int nMapMode)
 
             push ESI
             mov ESI,ECX
@@ -978285,7 +978427,11 @@ $L_636edc::
             pop EDI
             pop ESI
             ret 4
-?SetMapMode@CDC@@UAEHH@Z ENDP
+FUN_636eb3 ENDP
+ELSE
+EXTERN @Cdc_SetMapMode@12:PROC
+FUN_636eb3 TEXTEQU <@Cdc_SetMapMode@12>
+ENDIF
 $L_636ee1 PROC
 
             push EBP
@@ -978630,6 +978776,8 @@ ELSE
 EXTERN _Afx_MapHGDIOBJ@4:PROC
 FUN_6370d1 TEXTEQU <_Afx_MapHGDIOBJ@4>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_637143 PROC
 
             push 1
@@ -978641,8 +978789,14 @@ FUN_637143 PROC
 
             ret 4
 FUN_637143 ENDP
+ELSE
+EXTERN _GdiObject_FromHandle@4:PROC
+FUN_637143 TEXTEQU <_GdiObject_FromHandle@4>
+ENDIF
 ALIGN 8
-?Attach@CGdiObject@@QAEHPAX@Z PROC ;FUN_637158 BOOL CGdiObject::Attach(HGDIOBJ hObject)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_637158 PROC ;?Attach@CGdiObject@@QAEHPAX@Z BOOL CGdiObject::Attach(HGDIOBJ hObject)
 
             push ESI
             push EDI
@@ -978671,7 +978825,11 @@ $L_637180::
             pop EDI
             pop ESI
             ret 4
-?Attach@CGdiObject@@QAEHPAX@Z ENDP
+FUN_637158 ENDP
+ELSE
+EXTERN @GdiObject_Attach@12:PROC
+FUN_637158 TEXTEQU <@GdiObject_Attach@12>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 FUN_637185 PROC
@@ -979483,7 +979641,7 @@ FUN_6376ab PROC
             push DWORD PTR [EBP+8]
             and DWORD PTR [EBP-4],0
             lea ECX,DWORD PTR [EBP-16]
-            call ?LoadStringA@CString@@QAEHI@Z
+            call FUN_63653d
 
             mov EAX,DWORD PTR [EBP+16]
             cmp EAX,-1
@@ -979746,7 +979904,9 @@ $L_63788e PROC
             ret 
 $L_63788e ENDP
 ALIGN 4
-??0CFrameWnd@@QAE@XZ PROC ;FUN_637894 CFrameWnd::CFrameWnd()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_637894 PROC ;??0CFrameWnd@@QAE@XZ CFrameWnd::CFrameWnd()
 
             mov EAX,OFFSET $L_64a489
             call FUN_62001c
@@ -979802,7 +979962,11 @@ ALIGN 4
             mov DWORD PTR FS:[0],ECX
             leave 
             ret 
-??0CFrameWnd@@QAE@XZ ENDP
+FUN_637894 ENDP
+ELSE
+EXTERN @FrameWnd_Construct@4:PROC
+FUN_637894 TEXTEQU <@FrameWnd_Construct@4>
+ENDIF
 $L_637956 PROC
 
             push ESI
@@ -979881,6 +980045,8 @@ EXTERN @FrameWnd_Destruct@4:PROC
 FUN_637972 TEXTEQU <@FrameWnd_Destruct@4>
 ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6379f2 PROC
 
             push ESI
@@ -979899,6 +980065,10 @@ FUN_6379f2 PROC
             pop ESI
             ret 
 FUN_6379f2 ENDP
+ELSE
+EXTERN @FrameWnd_AddFrameWnd@4:PROC
+FUN_6379f2 TEXTEQU <@FrameWnd_AddFrameWnd@4>
+ENDIF
 ALIGN 2
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
@@ -980326,6 +980496,8 @@ $L_637cb8::
             ret 8
 $L_637c47 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_637cbe PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -980353,6 +980525,10 @@ $L_637cdb::
 
             ret 8
 FUN_637cbe ENDP
+ELSE
+EXTERN _Afx_IsDescendant@8:PROC
+FUN_637cbe TEXTEQU <_Afx_IsDescendant@8>
+ENDIF
 $L_637cde PROC
 
             push ECX
@@ -980739,6 +980915,8 @@ $L_637fb1::
             pop EBX
             ret 4
 $L_637f01 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_637fb7 PROC
 
             push EBX
@@ -980835,6 +981013,10 @@ $L_63805a::
             pop EBX
             ret 4
 FUN_637fb7 ENDP
+ELSE
+EXTERN @Wnd_NotifyFloatingWindows@12:PROC
+FUN_637fb7 TEXTEQU <@Wnd_NotifyFloatingWindows@12>
+ENDIF
 $L_638061 PROC
 
             push ESI
@@ -980870,7 +981052,9 @@ $L_63809e::
             pop ESI
             ret 4
 $L_638061 ENDP
-?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z PROC ;FUN_6380a5 virtual BOOL CFrameWnd::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, LPCTSTR lpszMenuName, DWORD dwExStyle, CCreateContext *pContext)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_6380a5 PROC ;?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z virtual BOOL CFrameWnd::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, LPCTSTR lpszMenuName, DWORD dwExStyle, CCreateContext *pContext)
 
             push EBP
             mov EBP,ESP
@@ -980956,7 +981140,11 @@ $L_638136::
             pop EBX
             pop EBP
             ret 32
-?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z ENDP
+FUN_6380a5 ENDP
+ELSE
+EXTERN @FrameWnd_Create@40:PROC
+FUN_6380a5 TEXTEQU <@FrameWnd_Create@40>
+ENDIF
 FUN_63813d PROC
 
             push EBP
@@ -981058,6 +981246,8 @@ $L_6381d7 PROC
             ret 4
 $L_6381d7 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6381e6 PROC
 
             push ESI
@@ -981098,6 +981288,10 @@ $L_638231::
             pop ESI
             ret 8
 FUN_6381e6 ENDP
+ELSE
+EXTERN @FrameWnd_OnCreate@16:PROC
+FUN_6381e6 TEXTEQU <@FrameWnd_OnCreate@16>
+ENDIF
 FUN_638235 PROC
 
             push EBP
@@ -981185,7 +981379,7 @@ $L_6382b8 PROC
             push EDI
             lea ECX,DWORD PTR [EBP+8]
             mov DWORD PTR [EBP-4],EBX
-            call ?LoadStringA@CString@@QAEHI@Z
+            call FUN_63653d
 
             test EAX,EAX
             je $L_6382fc
@@ -981217,7 +981411,7 @@ $L_6382fc::
             push ECX
             push EAX
             mov ECX,ESI
-            call ?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z
+            call FUN_6380a5
 
             test EAX,EAX
             je $L_638363
@@ -985164,7 +985358,7 @@ $L_63a034 PROC
             mov DWORD PTR [EBP-4],EAX
             je $L_63a05d
 
-            call ??0CFrameWnd@@QAE@XZ
+            call FUN_637894
 $L_63a05d::
 
             mov ECX,DWORD PTR [EBP-12]
@@ -986060,6 +986254,8 @@ $L_63a656::
             ret 
 FUN_63a62c ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a662 PROC ;?Enable3dControls@CWinApp@@IAEHXZ protected: BOOL CWinApp::Enable3dControls()
 
             push EBX
@@ -986201,6 +986397,10 @@ $L_63a771::
             pop EBX
             ret 
 FUN_63a662 ENDP
+ELSE
+EXTERN @WinApp_Enable3dControls@4:PROC
+FUN_63a662 TEXTEQU <@WinApp_Enable3dControls@4>
+ENDIF
 $L_63a774 PROC
 
             call FUN_63a77e
@@ -986253,6 +986453,8 @@ $L_63a7b1 PROC
             mov ECX,OFFSET $L_72dd0c
             jmp $L_639ca1
 $L_63a7b1 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a7bb PROC ;?SetDialogBkColor@CWinApp@@IAEXKK@Z protected: void CWinApp::SetDialogBkColor(COLORREF clrCtlBk, COLORREF clrCtlText)
 
             push ESI
@@ -986308,6 +986510,10 @@ $L_63a82f::
 
             ret 8
 FUN_63a7bb ENDP
+ELSE
+EXTERN @WinApp_SetDialogBkColor@16:PROC
+FUN_63a7bb TEXTEQU <@WinApp_SetDialogBkColor@16>
+ENDIF
 $L_63a832 PROC
 
             mov EAX,OFFSET $L_654520
@@ -1048979,7 +1049185,7 @@ $L_6543a8           DWORD $L_63a483
           DWORD $L_636e0f
           DWORD $L_636e55
           DWORD $L_636e84
-          DWORD ?SetMapMode@CDC@@UAEHH@Z
+          DWORD FUN_636eb3
           DWORD $L_636ee1
           DWORD $L_636f2d
           DWORD $L_636f79
@@ -1049013,7 +1049219,7 @@ $L_654430           DWORD $L_63a4fa
           DWORD $L_636e0f
           DWORD $L_636e55
           DWORD $L_636e84
-          DWORD ?SetMapMode@CDC@@UAEHH@Z
+          DWORD FUN_636eb3
           DWORD $L_636ee1
           DWORD $L_636f2d
           DWORD $L_636f79
