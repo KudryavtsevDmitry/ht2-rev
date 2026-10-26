@@ -2432,6 +2432,10 @@ extern "C" BYTE* __fastcall Dtor543de0_DeletingDestructor(BYTE* s, void*, int fl
         operator delete(s);
     return s;
 }
+// [$L_5574f0] [$L_557500] the same deleting destructor reached through the
+// object's second and third base (this adjusted by -272 and -392)
+extern "C" BYTE* __fastcall Dtor543de0_Adjust272(BYTE* s, void* d, int flags) { return Dtor543de0_DeletingDestructor(s - 272, d, flags); }
+extern "C" BYTE* __fastcall Dtor543de0_Adjust392(BYTE* s, void* d, int flags) { return Dtor543de0_DeletingDestructor(s - 392, d, flags); }
 
 extern "C" void FUN_55ebf0(); KING_ALIAS("_FUN_55ebf0", "@Truck55ebf0_Destroy@4")
 // [$L_55ebd0]

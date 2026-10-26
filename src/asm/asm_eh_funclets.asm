@@ -1,48 +1,37 @@
 ; asm_eh_funclets.asm - the procedures of this original unit not yet rewritten in C++
 INCLUDE king.inc
 
+EXTERN @Eh_EmptyDtor@4:NEAR
 EXTERN $L_462e30:NEAR
-EXTERN $L_61c4c0:NEAR
-EXTERN $L_61c730:NEAR
 EXTERN ??3@YAXPAX@Z:NEAR
 EXTERN @AiVec_FreeStorage@8:PROC
 EXTERN @Buf459df0_Destruct@8:PROC
-EXTERN @Cdc_Destruct@4:PROC
-EXTERN @CmdTarget_Destruct@4:PROC
 EXTERN @Gate_602bd0@8:PROC
 EXTERN @Gate_FreeBuffers@8:PROC
 EXTERN @List16_Destroy@4:PROC
 EXTERN @MsgBuf_Destroy@8:PROC
-EXTERN @MsgBuf_FreeStorage@8:PROC
 EXTERN @Object_Destroy@4:PROC
-EXTERN @Play_DestructBase@8:PROC
 EXTERN @RopeFn_ResetVtbl@8:PROC
 EXTERN @SchHandle_Release@8:PROC
 EXTERN @Shell_Nop@8:PROC
-EXTERN @String_Destruct@4:PROC
 EXTERN @Thunk530190@8:PROC
 EXTERN @VecBytes_FreeStorage@4:PROC
 EXTERN @Wea5a47f0_Destroy@4:PROC
-EXTERN @WinThread_Destruct@4:PROC
 EXTERN @Wnd_Destruct@4:PROC
-EXTERN _Fw_Delete@4:PROC
 EXTERN _KingRdata:BYTE
-EXTERN _NoTrack_Delete@4:PROC
 EXTERN _Stl_Unlock:PROC
 EXTERN ___CxxFrameHandler:PROC
 
 PUBLIC $L_63b648, $L_63b64f, $L_63f8a0, $L_63f8b0, $L_63f8d0, $L_63f8d8, $L_63fde0
 PUBLIC $L_63fe00, $L_63fe40, $L_63fe78, $L_63fe7f, $L_63fe87, $L_63fed0
-PUBLIC $L_63fee1, $L_63fef0, $L_63ff01, $L_63ff10, $L_63ff21, $L_63ff30, $L_63ff60, $L_63ff71
-PUBLIC $L_63ff80, $L_640020, $L_640031, $L_640040, $L_640060, $L_640960
-PUBLIC $L_640971, $L_640980, $L_643ed0, $L_643ef0, $L_643f00, $L_643f10, $L_643f20
-PUBLIC $L_643f30, $L_643f60, $L_644420, $L_644ae0, $L_644ae8, $L_645e30
-PUBLIC $L_645e38, $L_649af0, $L_649afb, $L_649d20, $L_649df0, $L_649e10
-PUBLIC $L_649e30, $L_649e50, $L_649e60, $L_64a298, $L_64a2a0, $L_64a2ac
-PUBLIC $L_64a2c0, $L_64a2d4, $L_64a2e8, $L_64a2fc
-PUBLIC $L_64a304, $L_64a310, $L_64a330, $L_64a344
-PUBLIC $L_64a358, $L_64a36c, $L_64a380, $L_64a3a0
-PUBLIC $L_64a3c0, $L_64a3e0, $L_64a3f4
+PUBLIC $L_63fee1, $L_63fef0, $L_63ff01, $L_63ff10, $L_63ff21, $L_63ff60, $L_63ff71
+PUBLIC $L_640020, $L_640031, $L_640960
+PUBLIC $L_640971, $L_643ef0, $L_643f00, $L_643f10, $L_643f20
+PUBLIC $L_643f30, $L_644420, $L_644ae0, $L_644ae8, $L_645e30
+PUBLIC $L_645e38, $L_649af0, $L_649afb, $L_649d20, $L_649e10
+PUBLIC $L_649e50, $L_64a298, $L_64a2a0
+PUBLIC $L_64a2fc
+PUBLIC $L_64a304
 
 _TEXT SEGMENT
 $L_63b630 PROC
@@ -273,15 +262,6 @@ $L_63fe8f PROC
             mov EAX,OFFSET (_KingRdata+71248)
             jmp ___CxxFrameHandler
 $L_63fe8f ENDP
-$L_63feba PROC
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
 $L_63fed0::
 
             mov EAX,DWORD PTR [EBP-20]
@@ -345,25 +325,6 @@ $L_63ff21::
           BYTE 0ccH
 
             int 3
-$L_63ff30::
-
-            mov EAX,DWORD PTR [EBP-20]
-            push EAX
-            mov ECX,DWORD PTR [EBP-24]
-            push ECX
-            call @Shell_Nop@8
-
-            add ESP,8
-            ret 
-$L_63feba ENDP
-$L_63ff5b PROC
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
 $L_63ff60::
 
             mov EAX,DWORD PTR [EBP-20]
@@ -385,22 +346,6 @@ $L_63ff71::
           BYTE 0ccH
 
             int 3
-$L_63ff80::
-
-            mov EAX,DWORD PTR [EBP-20]
-            push EAX
-            mov ECX,DWORD PTR [EBP-24]
-            push ECX
-            call @Shell_Nop@8
-
-            add ESP,8
-            ret 
-$L_63ff5b ENDP
-$L_64001e PROC
-
-            int 3
-
-            int 3
 $L_640020::
 
             mov EAX,DWORD PTR [EBP-20]
@@ -417,39 +362,6 @@ $L_640031::
             jmp ___CxxFrameHandler
 
             int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_640040::
-
-            mov EAX,DWORD PTR [EBP-20]
-            push EAX
-            mov ECX,DWORD PTR [EBP-24]
-            push ECX
-            call @Shell_Nop@8
-
-            add ESP,8
-            ret 
-$L_640060::
-
-            mov EAX,DWORD PTR [EBP-20]
-            push EAX
-            mov ECX,DWORD PTR [EBP-24]
-            push ECX
-            call @Shell_Nop@8
-
-            add ESP,8
-            ret 
-$L_64001e ENDP
-$L_640940 PROC
-
-            mov EAX,OFFSET (_KingRdata+75984)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
@@ -476,17 +388,6 @@ $L_640971::
           BYTE 0ccH
 
             int 3
-$L_640980::
-
-            mov EAX,DWORD PTR [EBP-20]
-            push EAX
-            mov ECX,DWORD PTR [EBP-24]
-            push ECX
-            call @Shell_Nop@8
-
-            add ESP,8
-            ret 
-$L_640940 ENDP
 $L_641620 PROC
 
             lea ECX,DWORD PTR [EBP+12]
@@ -583,15 +484,6 @@ $L_643b18 ENDP
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
-$L_643ece PROC
-
-            int 3
-
-            int 3
-$L_643ed0::
-
-            lea ECX,DWORD PTR [EBP-32]
-            jmp _Stl_Unlock
 $L_643ef0::
 
             mov EAX,OFFSET (_KingRdata+92104)
@@ -652,11 +544,6 @@ $L_643f30::
           BYTE 0ccH
 
             int 3
-$L_643f60::
-
-            lea ECX,DWORD PTR [EBP+8]
-            jmp @SchHandle_Release@8
-$L_643ece ENDP
 $L_64441d PROC
 
             int 3
@@ -959,10 +846,6 @@ $L_649de1 PROC
             mov EAX,OFFSET (_KingRdata+119752)
             jmp ___CxxFrameHandler
 $L_649de1 ENDP
-$L_649df0::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @MsgBuf_FreeStorage@8
 $L_649e10::
 
             mov EAX,OFFSET (_KingRdata+119944)
@@ -975,10 +858,6 @@ $L_649e10::
           BYTE 0ccH
 
             int 3
-$L_649e30::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @Play_DestructBase@8
 $L_649e50::
 
             mov EAX,OFFSET (_KingRdata+120160)
@@ -991,23 +870,10 @@ $L_649e50::
           BYTE 0ccH
 
             int 3
-$L_649e60::
-
-            mov EAX,DWORD PTR [EBP-60]
-            push EAX
-            call ??3@YAXPAX@Z
-
-            pop ECX
-            ret 
-$L_64a296 PROC
-
-            int 3
-
-            int 3
 $L_64a298::
 
             mov ECX,DWORD PTR [EBP-16]
-            jmp $L_61c4c0
+            jmp @Eh_EmptyDtor@4
 $L_64a2a0::
 
             mov EAX,OFFSET (_KingRdata+121456)
@@ -1016,24 +882,6 @@ $L_64a2a0::
             int 3
 
             int 3
-$L_64a2ac::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @WinThread_Destruct@4
-$L_64a2c0::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @WinThread_Destruct@4
-$L_64a2d4::
-
-            push DWORD PTR [EBP-16]
-            call _NoTrack_Delete@4
-
-            ret 
-$L_64a2e8::
-
-            lea ECX,DWORD PTR [EBP-16]
-            jmp @String_Destruct@4
 $L_64a2fc::
 
             lea ECX,DWORD PTR [EBP-80]
@@ -1046,53 +894,5 @@ $L_64a304::
             int 3
 
             int 3
-$L_64a310::
-
-            push DWORD PTR [EBP-16]
-            call _Fw_Delete@4
-
-            ret 
-$L_64a330::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @CmdTarget_Destruct@4
-$L_64a344::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @CmdTarget_Destruct@4
-$L_64a358::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @CmdTarget_Destruct@4
-$L_64a36c::
-
-            push DWORD PTR [EBP-16]
-            call _NoTrack_Delete@4
-
-            ret 
-$L_64a380::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @Shell_Nop@8
-$L_64a3a0::
-
-            push DWORD PTR [EBP+8]
-            call ??3@YAXPAX@Z
-
-            pop ECX
-            ret 
-$L_64a3c0::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @CmdTarget_Destruct@4
-$L_64a3e0::
-
-            lea ECX,DWORD PTR [EBP-8]
-            jmp $L_61c730
-$L_64a3f4::
-
-            lea ECX,DWORD PTR [EBP-36]
-            jmp @Cdc_Destruct@4
-$L_64a296 ENDP
 _TEXT ENDS
 END

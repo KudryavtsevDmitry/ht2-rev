@@ -8,7 +8,7 @@
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
 extern "C" double __cdecl AI_Now();
-KING_ALIAS("_AI_Now", "FUN_401000")
+KING_ALIAS("_AI_Now", "_Ai_Clock")
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)

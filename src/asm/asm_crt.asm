@@ -3,8 +3,6 @@ INCLUDE king.inc
 
 EXTERN $L_64a2a0:NEAR
 EXTERN $L_64a304:NEAR
-EXTERN @Exception_Delete@4:PROC
-EXTERN @FixedAlloc_Free@12:PROC
 EXTERN @ThreadLocal_GetData@12:PROC
 EXTERN @Wnd_Attach@12:PROC
 EXTERN @Wnd_Construct@4:PROC
@@ -15,13 +13,10 @@ EXTERN _Afx_CriticalTerm:PROC
 EXTERN _Afx_DeleteObject@4:PROC
 EXTERN _Afx_EndThread@8:PROC
 EXTERN _Afx_GetModuleState@0:PROC
-EXTERN _Afx_GetThread@0:PROC
 EXTERN _Afx_GetThreadState:PROC
 EXTERN _Afx_InitThread:PROC
-EXTERN _Afx_SetNewHandler@4:PROC
 EXTERN _Afx_TermLocalData@8:PROC
 EXTERN _Afx_TlsRelease:PROC
-EXTERN _Afx_UnlockGlobals@4:PROC
 EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
 EXTERN _KingRdata:BYTE
@@ -143,7 +138,7 @@ PUBLIC $L_629467, $L_629492, $L_6294a4, $L_6294bb, $L_6294e3, $L_6294eb, $L_6295
 PUBLIC $L_6295af, $L_6295b3, $L_631800, $L_63181e, $L_631871, $L_631893, $L_631898
 PUBLIC $L_631d33, $L_631d35
 PUBLIC $L_631d44, $L_632649, $L_632667, $L_63291b, $L_63294a, $L_63295e
-PUBLIC $L_632961, $L_632b3d, $L_633c4b, $L_633ed4, $L_63670b
+PUBLIC $L_632961
 
 _TEXT SEGMENT
 FUN_61d0a0 PROC
@@ -8092,139 +8087,6 @@ $L_632915 ENDP
 ALIGN 2
 ALIGN 8
 ALIGN 4
-$L_632b3d LABEL NEAR
-$L_632b4e PROC
-
-            mov ECX,DWORD PTR [EBP-20]
-            call @Exception_Delete@4
-
-            mov EAX,OFFSET $L_632b3d
-            ret 
-$L_632b4e ENDP
-ALIGN 4
-ALIGN 16
-ALIGN 4
-ALIGN 4
-ALIGN 4
-ALIGN 2
-ALIGN 8
-ALIGN 2
-ALIGN 2
-ALIGN 16
-ALIGN 2
-ALIGN 8
-ALIGN 16
-ALIGN 4
-ALIGN 2
-ALIGN 2
-$L_633c4b LABEL NEAR
-ALIGN 4
-ALIGN 16
-ALIGN 2
-ALIGN 16
-$L_633ed4 LABEL NEAR
-$L_633f66 PROC
-
-            mov EAX,DWORD PTR [EBP+8]
-            mov DWORD PTR [EBP-76],EAX
-            mov EAX,DWORD PTR [EBP+12]
-            mov DWORD PTR [EBP-72],EAX
-            mov EAX,DWORD PTR [EBP+16]
-            mov DWORD PTR [EBP-68],EAX
-            mov EAX,DWORD PTR [EBP+20]
-            mov DWORD PTR [EBP-64],EAX
-            call _Afx_GetThread@0
-
-            mov EDX,DWORD PTR [EAX]
-            lea ECX,DWORD PTR [EBP-76]
-            push ECX
-            mov ECX,EAX
-            push DWORD PTR [EBP-32]
-            call DWORD PTR [EDX+108]
-
-            mov ECX,DWORD PTR [EBP-32]
-            mov DWORD PTR [EBP-20],EAX
-            call @Exception_Delete@4
-
-            mov EAX,OFFSET $L_633ed4
-            ret 
-$L_633f66 ENDP
-ALIGN 4
-ALIGN 16
-ALIGN 2
-ALIGN 4
-ALIGN 16
-ALIGN 2
-ALIGN 2
-ALIGN 2
-$L_63492f PROC
-
-            push 1
-            call _Afx_UnlockGlobals@4
-
-            xor EBX,EBX
-            push EBX
-            push EBX
-            call __CxxThrowException@8
-$L_63492f ENDP
-ALIGN 4
-ALIGN 2
-ALIGN 8
-ALIGN 2
-ALIGN 4
-ALIGN 2
-ALIGN 2
-ALIGN 2
-ALIGN 4
-ALIGN 2
-ALIGN 2
-FUN_63613a PROC
-
-            push DWORD PTR [ESP+4]
-            mov ECX,OFFSET (_KingBss+667984)
-            call @FixedAlloc_Free@12
-
-            ret 
-FUN_63613a ENDP
-ALIGN 2
-ALIGN 4
-ALIGN 2
-ALIGN 2
-ALIGN 16
-ALIGN 8
-ALIGN 4
-ALIGN 2
-ALIGN 8
-$L_63670b LABEL NEAR
-$L_63671d PROC
-
-            mov ECX,DWORD PTR [EBP-24]
-            call @Exception_Delete@4
-
-            mov EAX,OFFSET $L_63670b
-            ret 
-$L_63671d ENDP
-ALIGN 4
-ALIGN 8
-ALIGN 16
-ALIGN 8
-$L_6369f6 PROC
-
-            push DWORD PTR [EBP+8]
-            call _Afx_SetNewHandler@4
-
-            push 0
-            push 0
-            call __CxxThrowException@8
-$L_6369f6 ENDP
-ALIGN 4
-ALIGN 2
-ALIGN 2
-ALIGN 2
-ALIGN 4
-ALIGN 8
-ALIGN 4
-ALIGN 8
 FUN_6371c5 PROC
 
             push EBP
@@ -8292,24 +8154,6 @@ ALIGN 8
 ALIGN 2
 ALIGN 4
 ALIGN 4
-$L_63ae3a PROC
-
-            push 16
-            call _Afx_UnlockGlobals@4
-
-            xor EDI,EDI
-            push EDI
-            push EDI
-            call __CxxThrowException@8
-$L_63ae3a ENDP
-ALIGN 16
-ALIGN 2
-ALIGN 2
-ALIGN 4
-ALIGN 4
-ALIGN 16
-ALIGN 16
-ALIGN 2
 FUN_63b4a6 PROC
 
             mov EAX,OFFSET $L_64a2a0

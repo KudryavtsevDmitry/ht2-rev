@@ -74,3 +74,8 @@ int __cdecl OldCrt_fseek(FILE* f, long off, int origin) { return fseek(Stream(f)
 int __cdecl OldCrt_fflush(FILE* f) { return fflush(f ? Stream(f) : f); }
 void __cdecl OldCrt_rewind(FILE* f) { rewind(Stream(f)); }
 }
+
+// [UnusedTrap] procedures the program never reaches were pointed here
+extern "C" void __cdecl UnusedTrap() { __debugbreak(); }
+// [$L_61c4c0] an empty destructor (thiscall), jumped to by unwind funclets
+extern "C" void __fastcall Eh_EmptyDtor(void*) {}

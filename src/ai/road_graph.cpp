@@ -1316,7 +1316,7 @@ KING_VAR(AsmLabel, g_ag68d108, 68d108)
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
-ASM_PROC(FUN_401000)
+ASM_FUNC(FUN_401000, _Ai_Clock)
 
 // appends n bytes at p to the byte vector v
 static void Ag_Put(BYTE** v, const void* p, int n)

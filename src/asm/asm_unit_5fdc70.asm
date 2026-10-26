@@ -1,12 +1,8 @@
 ; asm_unit_5fdc70.asm - the procedures of this original unit not yet rewritten in C++
 INCLUDE king.inc
 
-EXTERN @Stl_Lock@8:PROC
-EXTERN @VecB_FreeStorage@8:PROC
 EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
-EXTERN __CxxThrowException@8:PROC
-EXTERN _free:PROC
 
 PUBLIC $L_5fdc76, $L_5fdc87, $L_5fdcaf, $L_5fdcde, $L_5fdce6, $L_5fdd0b, $L_5fdd19, $L_5fdd3a
 PUBLIC $L_5fdd55, $L_5fdd68, $L_5fdd93, $L_5fdda1, $L_5fddd4, $L_5fddef, $L_5fde1d, $L_5fde44
@@ -32,8 +28,7 @@ PUBLIC $L_5fed7d, $L_5feda9, $L_5fedab, $L_5fedad, $L_5fedaf, $L_5fedb1, $L_5fed
 PUBLIC $L_5fedf5, $L_5fee0e, $L_5fee15, $L_5fee1c, $L_5fee23, $L_5fee37, $L_5fee3e, $L_5fee45
 PUBLIC $L_5fee5e, $L_5fee65, $L_5fee6c, $L_5fee73, $L_5fee92, $L_5fee9d, $L_5fef1a, $L_5fef80
 PUBLIC $L_5fef8d, $L_5fefb6, $L_5fefcb, $L_5fefe6, $L_5feff2, $L_5ff003, $L_5ff016, $L_5ff02f
-PUBLIC $L_5ff04c, $L_5ff05a, $L_5ff060, $L_5ff070, $L_5ff093, $L_5ff0c0, $L_5ff0c7, $L_600051
-PUBLIC $L_60005f, $L_600084, $L_6000ab, $L_6004f7
+PUBLIC $L_5ff04c, $L_5ff05a, $L_5ff060, $L_5ff070, $L_5ff093, $L_5ff0c0, $L_5ff0c7
 
 _TEXT SEGMENT
 $L_5fdc70 PROC
@@ -2265,83 +2260,6 @@ ALIGN 16
 ALIGN 16
 ALIGN 16
 ; src\engine\sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-ALIGN 16
-$L_600045 PROC
-
-            mov EDI,DWORD PTR [EBP-20]
-            mov EBX,DWORD PTR [EBP-28]
-            cmp EDI,EBX
-            mov ESI,EDI
-            je $L_60005f
-$L_600051::
-
-            mov ECX,ESI
-            call @VecB_FreeStorage@8
-
-            add ESI,56
-            cmp ESI,EBX
-            jne $L_600051
-$L_60005f::
-
-            mov ECX,DWORD PTR [EBP-24]
-            test ECX,ECX
-            je $L_6000ab
-
-            lea EAX,DWORD PTR [ECX*8]
-            sub EAX,ECX
-            shl EAX,3
-            cmp EAX,128
-            jbe $L_600084
-
-            push EDI
-            call _free
-
-            add ESP,4
-            jmp $L_6000ab
-$L_600084::
-
-            add EAX,7
-            mov ECX,OFFSET (_KingBss+10724)
-            shr EAX,3
-            lea ESI,DWORD PTR [EAX*4+(_KingBss+10656)]
-            call @Stl_Lock@8
-
-            mov ECX,DWORD PTR [ESI]
-            mov DWORD PTR [EDI],ECX
-            mov DWORD PTR [ESI],EDI
-            mov DWORD PTR [(_KingBss+10724)],0
-$L_6000ab::
-
-            push 0
-            push 0
-            call __CxxThrowException@8
-
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-$L_600045 ENDP
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-$L_6004f7 LABEL NEAR
-ALIGN 16
-; src\engine\sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
 ALIGN 16
 _TEXT ENDS
 END
