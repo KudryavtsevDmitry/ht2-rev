@@ -421,3 +421,14 @@ AfxRegisterWndClass, GetSafeOwner_, AfxMessageBox (both) and CWinApp::DoMessageB
 recent file/document manager forwards; CFrameWnd's modal state, help mode, OnCommand/OnCmdMsg, activation,
 OnSysCommand, OnInitMenuPopup, DDE initiate/execute/terminate, drop files, session end, PreCreateWindow,
 CreateView, OnCreateClient and GetIconWndClass. Drive test passes.
+
+MFC part 7 (73 procs): CWinThread::Run, ProcessMessageFilter with _AfxIsHelpKey and ProcessWndProcException
+(thread and application), CCmdTarget::OnCmdMsg with _AfxDispatchCmdMsg, Begin/EndWaitCursor; CPtrList
+FreeNode/RemoveHead and the deleting destructors; CWinApp WinHelp, InitApplication; CWnd's child
+notification reflection (ReflectLastMsg, SendChildNotifyLastMsg, OnChildNotify, ReflectChildNotify),
+OnNotify, OnParentNotify, the owner-draw handlers, OnToolHitTest, OnNTCtlColor, WinHelp, Create,
+PreCreateWindow, CalcWindowRect, RepositionBars with AfxRepositionWindow, GetDescendantWindow; CFrameWnd's
+menu prompts and message bar (OnMenuSelect, GetMessageString, On(Set|Pop)MessageString, OnEnterIdle),
+tool tip texts, key indicators, control bar menu items, frame titles, RecalcLayout, NegotiateBorderSpace,
+OnSize, OnEraseBkgnd, the mouse wheel message, ActivateFrame/BringToTop; CControlBar GetDockingFrame and
+IsFloating. Drive test passes.
