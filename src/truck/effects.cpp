@@ -2080,7 +2080,7 @@ void __fastcall Effect4bc950_Attach(BYTE* self, void*, BYTE* a)
 
 extern "C" void FUN_4c1790(); KING_ALIAS("_FUN_4c1790", "@EffectLink_Init@8")
 extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")    // vehicle info by id (id, info)
-ASM_PROC(FUN_4ebd00)
+extern "C" void FUN_4ebd00(); KING_ALIAS("_FUN_4ebd00", "@PhysBody_Construct@64")
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
 ASM_VAR(char, gv64c604, $L_64c604)
 ASM_VAR(char, gv64c5f0, $L_64c5f0)
@@ -4054,7 +4054,7 @@ extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
 extern "C" void FUN_4cf620(); KING_ALIAS("_FUN_4cf620", "_Ai_CarFrame")
 extern "C" void FUN_4cfe70(); KING_ALIAS("_FUN_4cfe70", "_Car_HitsAndFrame")
 extern "C" void FUN_556a70(); KING_ALIAS("_FUN_556a70", "@CarBody_Step@4")
-ASM_PROC(FUN_55d5d0)
+extern "C" void FUN_55d5d0(); KING_ALIAS("_FUN_55d5d0", "@Tractor_Frame@4")
 ASM_VAR(void*, g_eff720908, $L_720908)
 ASM_VAR(int, g_eff7208d0, $L_7208d0)
 ASM_VAR(int, g_eff68b990, $L_68b990)
@@ -11853,7 +11853,7 @@ KING_ALIAS("_Gm_Advance", "_Ai_AdvancePlayerPosition")
 extern "C" bool __cdecl Gm_HasItems(int player); KING_ALIAS("_Gm_HasItems", "_Fx_HasItems")
 extern "C" void Gm_Length(); KING_ALIAS("_Gm_Length", "_Vec3_Length")
 extern "C" void Gm_Norm(); KING_ALIAS("_Gm_Norm", "_Vec3_Normalized")
-extern "C" void Gm_First(); KING_ALIAS("_Gm_First", "@Obj541970_First@8")
+extern "C" void Gm541970_First(); KING_ALIAS("_Gm541970_First", "@Obj541970_First@8")
 extern "C" void Gm_Self(); KING_ALIAS("_Gm_Self", "@Obj541960_Self@8")
 ASM_VAR(BYTE, g_gmSpecs, $L_697db8)
 ASM_VAR(Vec3, g_gmUp, $L_702630)
@@ -11925,7 +11925,7 @@ unsigned __cdecl Car_GearBlockMask(BYTE* c, double a52, int rev, int fol, double
         for (int i = 0; i < 3; i++)
             D[i] = -D[i];
     double best = 1000.0;
-    BYTE* it = CallThis<BYTE*>(Gm_First, c);
+    BYTE* it = CallThis<BYTE*>(Gm541970_First, c);
     while (it)
     {
         BYTE* o = CallThis<BYTE*>(Gm_Self, it);

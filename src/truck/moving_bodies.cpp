@@ -3509,3 +3509,83 @@ int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int si
 }
 
 } // extern "C"
+
+// === a body's switch between lying and standing (FUN_590520 with its tails $L_590786, $L_590791)
+
+extern "C" void Ls_Mode(); KING_ALIAS("_Ls_Mode", "@Body_SetContactMode@12")
+extern "C" void Ls_Reach(); KING_ALIAS("_Ls_Reach", "@Body_AttachedInReach@8")
+ASM_VAR(float, g_ls6969a0, $L_6969a0)
+ASM_VAR(float, g_ls64f768, $L_64f768)
+ASM_VAR(float, g_ls64f730, $L_64f730)
+ASM_VAR(float, g_ls650818, $L_650818)
+ASM_VAR(float, g_ls64da74, $L_64da74)
+ASM_VAR(char, g_lsBad, $L_67df30)
+
+// p (+536) through the frame at 6969a0 and its squared length (z unrounded)
+static double Ls_Place(BYTE* s, float* v)
+{
+    const float* M = &g_ls6969a0;
+    double a0 = F(float, s, 536), a1 = F(float, s, 540), a2 = F(float, s, 544);
+    v[0] = (float)(M[0] * a0 + M[6] * a2 + M[3] * a1 + M[9]);
+    v[1] = (float)(M[1] * a0 + M[7] * a2 + M[4] * a1 + M[10]);
+    double z = M[2] * a0 + M[8] * a2 + M[5] * a1 + M[11];
+    v[2] = (float)z;
+    return (double)v[0] * v[0] + (double)v[1] * v[1] + z * z;
+}
+
+extern "C" {
+
+// [FUN_590520..$L_590791] body s (only with flag 1 at +1196) in state +3976 (0, 1 free, 2 attached, 3 lying):
+// its place near the frame at 6969a0 asks for lying (+3980 or, attached, at once); a pending 2 / 3 taken once
+// its contacts (3) or its attachment (2) allow; fatal on a bad request
+void __fastcall Body_UpdateLying(BYTE* s)
+{
+    if (F(BYTE, s, 1196) & 1)
+    {
+        int st = F(int, s, 3976);
+        float v[3];
+        if (st == 0 || st == 1)
+        {
+            double r2 = Ls_Place(s, v);
+            if (r2 < g_ls650818 ||
+                (r2 < g_ls64da74 && (x87_fabs(v[0]) < v[1] || x87_fabs(v[2]) < v[1])))
+                F(int, s, 3980) = 3;
+        }
+        else if (st == 2)
+        {
+            double r2 = Ls_Place(s, v);
+            if (r2 < g_ls64f768 ||
+                (r2 < g_ls64f730 && (x87_fabs(v[0]) < v[1] || x87_fabs(v[2]) < v[1])))
+                F(int, s, 3976) = 3;
+        }
+    }
+    int e = F(int, s, 3980);
+    if (e != 3 && e != 2)
+    {
+        if (e != 0 && e != 1)
+            World_Fatal(&g_lsBad);
+        return;
+    }
+    int c = F(int, s, 3976);
+    if (e == c)
+        return;
+    bool ok;
+    if (e == 3)
+    {
+        F(int, s, 3588) = 1;
+        CallThis(Ls_Mode, s, 0);
+        ok = !F(int, s, 3588);
+    }
+    else
+        ok = !CallThis<int>(Ls_Reach, s);
+    if (!ok)
+        return;
+    e = F(int, s, 3980);
+    if (e == 2)
+        F(int, s, 3976) = 2;
+    if (e == 3)
+        F(int, s, 3976) = 3;
+    F(int, s, 3980) = 0;
+}
+
+} // extern "C"

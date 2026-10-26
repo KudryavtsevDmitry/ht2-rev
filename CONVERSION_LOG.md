@@ -280,3 +280,22 @@ can't do without __try (no _except_handler3 in this build). Also fixed Save_Writ
 went through the __thiscall CallVirt and now use the stdcall Sv_Com. A coverage run showed many of these are not
 reached by the load test (trailers, copters, police, script natives, garage, net, body contacts). Load test exact
 (507.330231,940.087585) with exit code 0.
+
+Batch 29 done: 44,369 bytes (about 89.9% -> 91.9%). Largest: FUN_4ebd00..$L_4ed6c8 PhysBody_Construct (10,192,
+the vehicle body built from its type record, four PROCs split at fatal calls). Then FUN_4fca10..$L_4fdb50
+Body_NextFrame (4720), FUN_4fdc80..$L_4fe18e Body_PlainStep (4704), FUN_4ff800..$L_5006aa Car_DriveStep (4176,
+clutch, automatic gears and drive force), FUN_4f5820..$L_4f5c77 Body_StartSteps (4160), FUN_586df0..$L_58738c
+MovingItem_Frame (3280), FUN_4fb470..$L_4fbb7e Body_EndSteps (2400), FUN_55d5d0..$L_55ddfe Tractor_Frame (2160),
+FUN_562eb0..$L_56337b Copter_CircleTouch (1504), FUN_57e540..$L_57e9ca Body_SurfaceResponse (1440), FUN_5a6420
+Dial_Update (1088), FUN_590520..$L_590791 Body_UpdateLying (752), FUN_4eacce..$L_4eaf8f History_Record (714),
+FUN_562c20..$L_562e94 Copter_SideDrift (656), FUN_4aa460 Elems44_InsertAux (583), FUN_4fef20..$L_4ff139
+Body_StateStep (560), FUN_467580..$L_46776a OrderInfos_UninitCopy (512), FUN_467000..$L_467163 /
+FUN_47e260..$L_47e3c3 Orders144_UninitCopy / _UninitCopyB (384 each). Most ranges are functions the disassembler
+split at calls it took as noreturn (World_Fatal, __CIpow, Sys_Fatal); the real end was found by following every
+jump out of the range. The order copiers' catch funclets are still named by their EH tables, so their ELSE blocks
+define the funclet label with LABEL NEAR. Body_PlainStep first crashed at exit with the position still exact: its
+KING_ALIAS `_Ps_Query` already existed in scenery.cpp for another function, and the linker took that one. A scan of
+all aliases found two older clashes, fixed by renaming: `_Gm_First` (effects.cpp, batch 28, Car_GearBlockMask now
+calls Obj541970_First as the asm does) and `_Ce_Fatal` (clusters.cpp, batch 27). The trailer, copter, dial,
+police-free and sub-step paths are probably not reached by the load test. Load test exact (507.330231,940.087585)
+with exit code 0.

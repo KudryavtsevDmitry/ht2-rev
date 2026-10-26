@@ -2879,7 +2879,7 @@ extern "C" void FUN_6148a0(); KING_ALIAS("_FUN_6148a0", "@Terrain_FreeObjects@8"
 extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 extern "C" void FUN_4d08d0(); KING_ALIAS("_FUN_4d08d0", "_Fx_MakePlayerVehicle")    // the player's vehicle for an effect (world, effect, player id)
-ASM_PROC(FUN_4ebd00)    // constructs a vehicle (scene object, matrix, type)
+extern "C" void FUN_4ebd00(); KING_ALIAS("_FUN_4ebd00", "@PhysBody_Construct@64")    // constructs a vehicle (scene object, matrix, type)
 extern "C" void FUN_5291a0(); KING_ALIAS("_FUN_5291a0", "@Map_BuildRoads@8")
 extern "C" void FUN_544920(); KING_ALIAS("_FUN_544920", "@NetVehicle_Construct@40")    // constructs a network vehicle
 ASM_PROC(FUN_5a44c0)    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
@@ -4557,7 +4557,7 @@ ASM_VAR(AsmLabel, g_wu6d1db8, $L_6d1db8)
 ASM_VAR(AsmLabel, g_wu7025f0, $L_7025f0)
 extern "C" void FUN_530070(); KING_ALIAS("_FUN_530070", "@Controls_ActionState@12")
 extern "C" void FUN_5a58c0(); KING_ALIAS("_FUN_5a58c0", "@Obj5a58c0_Start@8")
-ASM_PROC(FUN_5a6420)
+extern "C" void FUN_5a6420(); KING_ALIAS("_FUN_5a6420", "@Dial_Update@4")
 extern "C" void FUN_5a9d40(); KING_ALIAS("_FUN_5a9d40", "@Wave_Value@16")
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
 extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
@@ -5369,7 +5369,7 @@ void __fastcall Copter_FlightStep(BYTE* s, void*)
 
 // === the helicopter heading for its target (FUN_5665c0)
 
-ASM_FUNC(Ht_ClearAhead, FUN_562c20)
+extern "C" void Ht_ClearAhead(); KING_ALIAS("_Ht_ClearAhead", "@Copter_SideDrift@12")
 extern "C" void Ht_NodePos(); KING_ALIAS("_Ht_NodePos", "_Node_Position")
 extern "C" void Ht_MulAssign(); KING_ALIAS("_Ht_MulAssign", "@Vec3_MulAssign@16")
 ASM_VAR(double, g_ht64b678, $L_64b678)
@@ -7612,6 +7612,172 @@ void __fastcall Vehicle573d10_Destroy(BYTE* s, void*)
     CallThis(Vd_Init, data, k, b, name, w, pl, state, *(int*)&f, 0, 0);
     CallThis(Vd_SetData, F(BYTE*, s, 52) + 704, F(int, s, 360), F(int, F(BYTE*, s, 308), 60), 300, data);
     CallThis(Vd_Destruct, s);
+}
+
+} // extern "C"
+
+// === how far the copter drifts sideways before it stops (FUN_562c20 with its tail $L_562e94)
+
+extern "C" void Cd_FrameTime(); KING_ALIAS("_Cd_FrameTime", "_Game_FrameTime")
+extern "C" void Cd_Tilt(); KING_ALIAS("_Cd_Tilt", "@Copter_Tilt@24")
+ASM_VAR(float, g_cd6f2c3c, $L_6f2c3c)
+ASM_VAR(double, g_cd64b670, $L_64b670)
+ASM_VAR(double, g_cd64ca48, $L_64ca48)
+ASM_VAR(double, g_cd64b5b8, $L_64b5b8)
+ASM_VAR(double, g_cd64b6e0, $L_64b6e0)
+ASM_VAR(float, g_cd64c264, $L_64c264)
+ASM_VAR(float, g_cd64d2f8, $L_64d2f8)
+ASM_VAR(char, g_cdFmt1, $L_67b410)
+ASM_VAR(char, g_cdFmt2, $L_67b3d0)
+ASM_VAR(char, g_cdFmt3, $L_67b3bc)
+ASM_VAR(char, g_cdFmt, $L_67a2e8)
+
+extern "C" {
+
+// [FUN_562c20..$L_562e94] copter s banked against its side speed (s +100 in its frame's x, +52 .. +108) by the
+// tilt it would take (+128, 6f2c3c a step) stepped in tenths of frames towards p until the speed is spent (at
+// most 1000 steps): the distance; fatal with the state when it never stops
+float __fastcall Copter_SideDrift(BYTE* s, void*, const float* p)
+{
+    double d = (double)F(float, s, 76) * F(float, s, 108) + (double)F(float, s, 104) * F(float, s, 64) +
+               (double)F(float, s, 52) * F(float, s, 100);
+    float sg = (float)(d < g_cd64c264 ? g_cd64ca48 : g_cd64b670);
+    double dd = d;
+    float v = (float)x87_fabs(d);
+    float tilt = F(float, s, 3232);
+    float t = 0;
+    float dist = 1.0f;
+    float acc = 123456.0f;
+    int saved = F(int, s, 128);
+    float dt = (float)(CallC<double>(Cd_FrameTime) * g_cd64d2f8);
+    F(float, s, 128) = (float)-(g_cd6f2c3c * sg);
+    for (int i = 0; v > g_cd64b5b8;)
+    {
+        tilt = (float)CallThis<double>(Cd_Tilt, s, dt, tilt, p, &acc);
+        dist = (float)((double)dt * dt * acc * g_cd64b6e0 + ((double)dt * v + dist));
+        v = (float)(((double)dt * acc * sg + v) * F(float, s, 3216));
+        t = (float)((double)dt + t);
+        if (++i >= 1000)
+            break;
+    }
+    if (v > g_cd64b5b8)
+    {
+        char a[200], b[200], c[200], all[488];
+        sprintf(a, &g_cdFmt1, (double)F(float, s, 3232), (double)tilt, (double)F(float, s, 128), (double)sg,
+                (double)F(float, s, 3216), (double)F(float, s, 3228));
+        sprintf(b, &g_cdFmt2, (double)F(float, s, 100), (double)F(float, s, 104), (double)F(float, s, 108),
+                (double)p[0], (double)p[1], (double)p[2], dd, (double)v, (double)acc, (double)dist, (double)dt,
+                (double)t);
+        sprintf(c, &g_cdFmt3, (double)F(float, s, 36), (double)F(float, s, 40), (double)F(float, s, 44));
+        sprintf(all, &g_cdFmt, a, b, c);
+        World_Fatal(all);
+    }
+    F(int, s, 128) = saved;
+    return dist;
+}
+
+} // extern "C"
+
+// === where a circle about a center touches a line in a plane (FUN_562eb0 with its tails $L_563376, $L_56337b)
+
+ASM_PROC(FUN_4e7889)
+extern "C" void Ct_Set(); KING_ALIAS("_Ct_Set", "@Vec3_SetThis@20")
+extern "C" void Ct_MulAssign(); KING_ALIAS("_Ct_MulAssign", "@Vec3_MulAssign@16")
+ASM_VAR(double, g_ct64b670, $L_64b670)
+ASM_VAR(double, g_ct64d960, $L_64d960)
+ASM_VAR(double, g_ct64b678, $L_64b678)
+ASM_VAR(double, g_ct64b5a0, $L_64b5a0)
+ASM_VAR(char, g_ctBad, $L_67b45c)
+
+extern "C" {
+
+// [FUN_562eb0..$L_56337b] circle about c through p (radius r) and the line through a along plane normal n: the
+// two crossing points in the plane (by the quadratic 4e7889, the larger of n's x / y as divisor), the one on the
+// side of u taken: *at that point, *angle the arc from p (its asin times r), *dir u x the unit radius; the root
+// count, 0 when the line misses; fatal when the point is off the circle
+int __cdecl Copter_CircleTouch(const float* a, const float* n, const float* p, const float* u, const float* c,
+                               float* at, float* angle, float* dir)
+{
+    float w[3] = {(float)((double)c[0] - p[0]), (float)((double)c[1] - p[1]), (float)((double)c[2] - p[2])};
+    double rl = Vec3_Length((const Vec3*)w);
+    float r = (float)rl;
+    float inv = (float)(g_ct64b670 / rl);
+    double e0 = (double)a[0] - c[0], e1 = (double)a[1] - c[1];
+    float e2 = (float)((double)a[2] - c[2]);
+    float f[3] = {(float)((double)p[0] - c[0]), (float)((double)p[1] - c[1]), (float)((double)p[2] - c[2])};
+    double g0 = f[0] - e0, g1 = f[1] - e1, g2 = (double)f[2] - e2;
+    if (x87_fabs(n[0] * g0 + (g2 * n[2] + g1 * n[1])) > (double)r)
+        return 0;
+    double de = n[0] * e0 + (e1 * n[1] + (double)n[2] * e2);
+    float x1, y1, x2, y2;
+    int cnt;
+    if (x87_fabs(n[1]) < x87_fabs(n[0]))
+    {
+        float h = (float)(de / n[0] - f[0]);
+        float qa = (float)((double)n[1] * n[1] / ((double)n[0] * n[0]) + g_ct64b670);
+        float qb = (float)(((double)h * n[1] / n[0] + f[1]) * g_ct64d960);
+        float qc = (float)(((double)f[1] * f[1] + (double)h * h) - (double)r * r);
+        cnt = CallC<int>(FUN_4e7889, qa, qb, qc, &y1, &y2);
+        if (!cnt)
+            return 0;
+        double t = (double)f[0] + h;
+        x1 = (float)(t - (double)y1 * n[1] / n[0]);
+        x2 = (float)(t - (double)y2 * n[1] / n[0]);
+    }
+    else
+    {
+        float h = (float)(de / n[1] - f[1]);
+        float qa = (float)((double)n[0] * n[0] / ((double)n[1] * n[1]) + g_ct64b670);
+        float qb = (float)(((double)h * n[0] / n[1] + f[0]) * g_ct64d960);
+        float qc = (float)(((double)f[0] * f[0] + (double)h * h) - (double)r * r);
+        cnt = CallC<int>(FUN_4e7889, qa, qb, qc, &x1, &x2);
+        if (!cnt)
+            return 0;
+        double t = (double)f[1] + h;
+        y1 = (float)(t - (double)x1 * n[0] / n[1]);
+        y2 = (float)(t - (double)x2 * n[0] / n[1]);
+    }
+    float kx = (float)((double)x1 - f[0]), ky = (float)((double)y1 - f[1]);
+    double z1 = -(double)f[2];
+    float cx = (float)(z1 * u[1] - (double)ky * u[2]);
+    double cy = (double)kx * u[2] - z1 * u[0];
+    double cz = (double)ky * u[0] - (double)kx * u[1];
+    if ((double)n[0] * cx + (cz * n[2] + cy * n[1]) < g_ct64b678)
+    {
+        at[0] = x1;
+        at[1] = y1;
+    }
+    else
+    {
+        at[0] = x2;
+        at[1] = y2;
+    }
+    at[2] = 0;
+    float mf[3] = {-f[0], -f[1], -f[2]};
+    float kk[3] = {(float)((double)at[0] - f[0]), (float)((double)at[1] - f[1]), (float)((double)at[2] - f[2])};
+    float M[3] = {(float)((double)mf[1] * kk[2] - (double)mf[2] * kk[1]),
+                  (float)((double)mf[2] * kk[0] - (double)kk[2] * mf[0]),
+                  (float)((double)kk[1] * mf[0] - (double)mf[1] * kk[0])};
+    float lk = (float)Vec3_Length((const Vec3*)kk);
+    double lm = Vec3_Length((const Vec3*)mf);
+    if (x87_fabs((double)lk - r) * inv > g_ct64b5a0 || x87_fabs(lm - r) * inv > g_ct64b5a0)
+    {
+        char buf[500];
+        sprintf(buf, &g_ctBad, lm, (double)lk, (double)r);
+        World_Fatal(buf);
+    }
+    float tmp[3];
+    CallThis(Ct_MulAssign, M, tmp, (float)((double)inv * inv));
+    double dm = (double)u[0] * M[0] + ((double)M[2] * u[2] + (double)M[1] * u[1]);
+    *angle = (float)(x87_fabs(x87_asin(dm)) * r);
+    float kn[3];
+    CallThis(Ct_Set, kn, (float)((double)kk[0] * inv), (float)((double)kk[1] * inv), (float)((double)kk[2] * inv));
+    Vec3 d;
+    memcpy(dir, Vec3_Cross(&d, (const Vec3*)u, (const Vec3*)kn), 12);
+    CallThis(Ct_Set, tmp, (float)((double)c[0] + at[0]), (float)((double)c[1] + at[1]),
+             (float)((double)c[2] + at[2]));
+    memcpy(at, tmp, 12);
+    return cnt;
 }
 
 } // extern "C"

@@ -2273,3 +2273,259 @@ int __cdecl Item_SphereContact(const float* from, const float* to, float rad, BY
 }
 
 } // extern "C"
+
+#include "x87.h"
+
+// === a moving item's frame: carried, net-driven or free (FUN_586df0 with its tail $L_58738c)
+
+extern "C" void Mf_Local(); KING_ALIAS("_Mf_Local", "@Node_GetLocal@12")
+extern "C" void Mf_Root(); KING_ALIAS("_Mf_Root", "@Node_Root@8")
+extern "C" void Mf_Hit(); KING_ALIAS("_Mf_Hit", "_Query_HitObject")
+extern "C" void Mf_Log(); KING_ALIAS("_Mf_Log", "_VehLog_Value")
+extern "C" void Mf_Decompose(); KING_ALIAS("_Mf_Decompose", "_Matrix_Decompose6F")
+extern "C" void Mf_Pose(); KING_ALIAS("_Mf_Pose", "_Matrix_FromPose")
+extern "C" void Mf_MulAssign(); KING_ALIAS("_Mf_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Mf_MakeOut(); KING_ALIAS("_Mf_MakeOut", "@Vehicle_MakeOut@8")
+extern "C" void Mf_Post(); KING_ALIAS("_Mf_Post", "@Queue_PostEvent@12")
+extern "C" void Mf_FrameTime(); KING_ALIAS("_Mf_FrameTime", "_Game_FrameTime")
+ASM_VAR(BYTE*, g_mf6cec6c, $L_6cec6c)
+ASM_VAR(float, g_mf67d114, $L_67d114)
+ASM_VAR(float, g_mf64da74, $L_64da74)
+ASM_VAR(float, g_mf64c250, $L_64c250)
+ASM_VAR(float, g_mf64c264, $L_64c264)
+ASM_VAR(float, g_mf64c450, $L_64c450)
+ASM_VAR(float, g_mf64d2f8, $L_64d2f8)
+ASM_VAR(double, g_mf64b5a0, $L_64b5a0)
+ASM_VAR(double, g_mf64b780, $L_64b780)
+ASM_VAR(double, g_mf64b828, $L_64b828)
+ASM_VAR(double, g_mf64b820, $L_64b820)
+ASM_VAR(double, g_mf64b818, $L_64b818)
+ASM_VAR(double, g_mf64b668, $L_64b668)
+ASM_VAR(double, g_mf64b6a0, $L_64b6a0)
+ASM_VAR(double, g_mf64b670, $L_64b670)
+ASM_VAR(char, g_mfStart, $L_67d960)
+ASM_VAR(char, g_mfEnd, $L_67d954)
+ASM_VAR(char, g_mfPos, $L_67d138)
+ASM_VAR(char, g_mfMine, $L_67d11c)
+
+static double Mf_Dt()
+{
+    return CallC<double>(Mf_FrameTime);
+}
+
+// the logged positions of item s: its node's (m) and its own (+536)
+static void Mf_LogPos(BYTE* s, const char* tag, const float* m)
+{
+    CallC(Mf_Log, tag);
+    char buf[100];
+    const char* name = F(const char*, F(BYTE*, s, 320), 12);
+    sprintf(buf, &g_mfPos, name, (double)m[9], (double)m[10], (double)m[11]);
+    CallC(Mf_Log, buf);
+    sprintf(buf, &g_mfMine, name, (double)F(float, s, 536), (double)F(float, s, 540), (double)F(float, s, 544));
+    CallC(Mf_Log, buf);
+}
+
+// an angle a moved by a whole turn when it is more than half a turn away from b
+static void Mf_Wrap(float* a, float b)
+{
+    double d = (double)*a - b;
+    if (!(x87_fabs(d) > g_mf64b828))
+        return;
+    if (d > g_mf64b828)
+        *a = (float)(*a - g_mf64b820);
+    if ((double)*a - b < g_mf64b818)
+        *a = (float)(*a + g_mf64b820);
+}
+
+extern "C" {
+
+// [FUN_586df0..$L_58738c] moving item s: its frame from its node (+740 times the node's) and the scene frame
+// (+692 times +548); in net play (6cec6c +1300 > 1) the node's frame taken; else when carried (flag 4 of +1196,
+// a close carrier among +3508) eased towards the carrier's speed and blended into its pose, the move and angles
+// recorded (+3148, +3160) and its own step (vtable +80) run, or its frame taken with its speed and spin slowed;
+// then its hit object, outputs and event 1; logged when 696c6c
+void __fastcall MovingItem_Frame(BYTE* s)
+{
+    F(int, s, 3556) = 2;
+    CallVirt(s, 76);
+    float dt = (float)Mf_Dt();
+    Matrix M, A, B;
+    memcpy(&M, &g_identity, 48);
+    CallThis(Mf_Local, F(BYTE*, F(BYTE*, s, 32), 68), &M);
+    Matrix_Multiply(&A, (const Matrix*)(s + 740), &M);
+    Matrix_Multiply(&B, (const Matrix*)(s + 692), (const Matrix*)(s + 548));
+    if (g_ra696c6c)
+        Mf_LogPos(s, &g_mfStart, M.m);
+    float tmp[3];
+    bool takeFrame = true;
+    if (F(int, g_mf6cec6c, 1300) > 1)
+    {
+        memcpy(s + 500, &A, 48);
+        Matrix I;
+        const float* i = (const float*)memcpy(s + 596, Matrix_Inverse(&I, (const Matrix*)(s + 500)), 48);
+        const float* w = &F(float, s, 440);
+        float v[3] = {(float)((double)i[3] * w[1] + (double)i[6] * w[2] + (double)i[0] * w[0]),
+                      (float)((double)i[4] * w[1] + (double)i[7] * w[2] + (double)i[1] * w[0]),
+                      (float)((double)i[5] * w[1] + (double)i[8] * w[2] + (double)i[2] * w[0])};
+        Vec3 d;
+        memcpy(s + 428, Vec3_DivComponents(&d, (const Vec3*)v, (const Vec3*)(s + 404)), 12);
+        BYTE* r = CallThis<BYTE*>(Mf_Root, s + 256);
+        F(int, s, 800) = CallC<int>(Mf_Hit, r, &M.m[9], s + 536);
+        goto outputs;
+    }
+    {
+        float P[3];
+        bool carried = false;
+        if (F(BYTE, s, 1196) & 4)
+        {
+            int i;
+            for (i = 0; i < 6; i++)
+            {
+                BYTE* o = F(BYTE*, s, 3508 + 4 * i);
+                if (o && F(int, o, 1204) && F(float, s, 3532 + 4 * i) < g_mf64da74)
+                    break;
+            }
+            BYTE* o = i < 6 ? F(BYTE*, s, 3508 + 4 * i) : 0;
+            if (o && F(int, o, 1204))
+            {
+                carried = true;
+                float dv[3] = {(float)((double)dt * F(float, s, 416)), (float)((double)dt * F(float, s, 420)),
+                               (float)((double)dt * F(float, s, 424))};
+                const float* bp = &B.m[9];
+                float d[3] = {(float)((double)F(float, s, 852) - bp[0]), (float)((double)F(float, s, 856) - bp[1]),
+                              (float)((double)F(float, s, 860) - bp[2])};
+                float len = (float)Vec3_Length((const Vec3*)d);
+                if (len > g_mf64b5a0)
+                {
+                    double r = Vec3_Length((const Vec3*)dv) / len * g_mf67d114;
+                    r = r / (r + g_mf64c250);
+                    double q = g_mf64c250 - r;
+                    float q0 = (float)(d[0] * q), q1 = (float)(d[1] * q);
+                    double q2 = q * d[2];
+                    float t0 = (float)((double)q0 * dt), t1 = (float)((double)q1 * dt);
+                    double t2 = q2 * dt;
+                    float k0 = (float)((double)t0 * g_mf64c450), k1 = (float)((double)t1 * g_mf64c450);
+                    float k2 = (float)(t2 * g_mf64c450);
+                    float r0 = (float)(dv[0] * r), r1 = (float)(dv[1] * r);
+                    double r2 = r * dv[2];
+                    float u0 = (float)((double)r0 + F(float, s, 584)), u1 = (float)((double)r1 + F(float, s, 588));
+                    double u2 = r2 + F(float, s, 592);
+                    P[0] = (float)((double)u0 + k0);
+                    P[1] = (float)((double)k1 + u1);
+                    P[2] = (float)(k2 + u2);
+                }
+                else
+                {
+                    P[0] = (float)((double)dv[0] + F(float, s, 584));
+                    P[1] = (float)((double)dv[1] + F(float, s, 588));
+                    P[2] = (float)((double)dv[2] + F(float, s, 592));
+                }
+                float a[6] = {0}, b[3] = {0};
+                CallC(Mf_Decompose, &B, &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
+                CallC(Mf_Decompose, s + 816, &a[0], &a[1], &a[2], &b[0], &b[1], &b[2]);
+                float p = (float)x87_pow(0.6, Mf_Dt() * g_mf64b780);
+                Mf_Wrap(&b[0], a[3]);
+                Mf_Wrap(&b[1], a[4]);
+                Mf_Wrap(&b[2], a[5]);
+                double qq = (double)g_mf64c250 - p;
+                float b0 = (float)(qq * b[0]), b1 = (float)(qq * b[1]);
+                double b2 = qq * b[2];
+                float c1 = (float)((double)a[4] * p), c2 = (float)((double)a[5] * p);
+                float y0 = (float)((double)a[3] * p + b0);
+                float y1 = (float)((double)b1 + c1);
+                double y2 = b2 + c2;
+                CallC(Mf_Pose, &A, (double)P[0], (double)P[1], (double)P[2], (double)y0, (double)y1, y2);
+            }
+        }
+        if (F(DWORD, s, 1196) & 4)
+        {
+            int i;
+            for (i = 0; i < 6; i++)
+            {
+                BYTE* o = F(BYTE*, s, 3508 + 4 * i);
+                if (!o || !F(int, o, 1204))
+                    continue;
+                double sq = x87_sqrt(F(float, s, 3532 + 4 * i));
+                double lim = (((double)F(float, o, 3460) + F(float, s, 3460)) * dt + F(float, o, 3272) +
+                              F(float, s, 3272)) * g_mf64b668;
+                if (lim <= sq)
+                    continue;
+                double dx = (double)P[0] - F(float, s, 584);
+                double dy = (double)P[1] - F(float, s, 588);
+                double dz = (double)P[2] - F(float, s, 592);
+                if (dx * dx + dy * dy + dz * dz <= g_mf64b6a0)
+                    break;
+            }
+            (void)carried;
+            if (i < 6)
+            {
+                takeFrame = false;
+                F(float, s, 3148) = (float)((double)P[0] - F(float, s, 584));
+                F(float, s, 3152) = (float)((double)P[1] - F(float, s, 588));
+                F(float, s, 3156) = (float)((double)P[2] - F(float, s, 592));
+                Matrix C;
+                Matrix_Multiply(&C, &A, (const Matrix*)(s + 644));
+                float t[3] = {0, 0, 0};
+                CallC(Mf_Decompose, &C, &t[0], &t[1], &t[2], s + 3168, s + 3160, s + 3164);
+                F(float, s, 3160) = -F(float, s, 3160);
+                CallVirt(s, 80, (float)Mf_Dt(), 0);
+            }
+        }
+        if (takeFrame)
+        {
+            memcpy(s + 500, &A, 48);
+            Matrix I;
+            const float* i = (const float*)memcpy(s + 596, Matrix_Inverse(&I, (const Matrix*)(s + 500)), 48);
+            const float* w = &F(float, s, 440);
+            float v[3] = {(float)((double)i[3] * w[1] + (double)i[6] * w[2] + (double)i[0] * w[0]),
+                          (float)((double)i[4] * w[1] + (double)i[1] * w[0] + (double)i[7] * w[2]),
+                          (float)((double)i[5] * w[1] + (double)i[2] * w[0] + (double)i[8] * w[2])};
+            Vec3 d;
+            memcpy(s + 428, Vec3_DivComponents(&d, (const Vec3*)v, (const Vec3*)(s + 404)), 12);
+            BYTE* r = CallThis<BYTE*>(Mf_Root, s + 256);
+            F(int, s, 800) = CallC<int>(Mf_Hit, r, &M.m[9], s + 536);
+            F(int, s, 892) = 0;
+            F(int, s, 896) = 0;
+            F(int, s, 3464) = 0;
+            if (F(BYTE, s, 1196) & 4)
+                CallVirt(s, 60);
+        }
+        if (F(double, g_ra6ef1fc, 2968) - F(float, s, 808) > g_mf64b670)
+        {
+            float* v = &F(float, s, 416);
+            float* w = &F(float, s, 428);
+            float lv = (float)Vec3_Length((const Vec3*)v);
+            float lw = (float)Vec3_Length((const Vec3*)w);
+            double nv = lv - dt * g_mf64d2f8;
+            float nw = (float)((double)lw - dt);
+            if (nv < g_mf64c264)
+                nv = g_mf64c264;
+            if (nw < g_mf64c264)
+                nw = 0;
+            if (lv > g_mf64c264)
+                CallThis(Mf_MulAssign, v, tmp, (float)(nv / lv));
+            if (lw > g_mf64c264)
+                CallThis(Mf_MulAssign, w, tmp, (float)((double)nw / lw));
+            Vec3 q;
+            const float* e = &Vec3_MulComponents(&q, (const Vec3*)w, (const Vec3*)(s + 404))->x;
+            F(float, s, 440) = (float)((double)F(float, s, 524) * e[2] + (double)F(float, s, 512) * e[1] +
+                                       (double)e[0] * F(float, s, 500));
+            F(float, s, 444) = (float)((double)F(float, s, 528) * e[2] + (double)F(float, s, 504) * e[0] +
+                                       (double)F(float, s, 516) * e[1]);
+            F(float, s, 448) = (float)((double)F(float, s, 532) * e[2] + (double)F(float, s, 508) * e[0] +
+                                       (double)F(float, s, 520) * e[1]);
+        }
+    }
+outputs:
+    CallVirt(s, 52);
+    CallThis(Mf_MakeOut, s);
+    CallThis(Mf_Post, s, 1);
+    if (g_ra696c6c)
+    {
+        CallThis(Mf_Local, F(BYTE*, F(BYTE*, s, 32), 68), &M);
+        Mf_LogPos(s, &g_mfEnd, M.m);
+    }
+    F(int, s, 3556) = 0;
+}
+
+} // extern "C"

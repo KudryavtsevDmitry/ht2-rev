@@ -2794,3 +2794,62 @@ extern "C" void __cdecl Names_LinearInsert(BYTE* first, BYTE* last, int, int cmp
     if (v[2] - v[0])
         CallC(FUN_44b4a0, v[0], v[2] - v[0]);
 }
+
+// === uninitialized copy of 144-byte orders (FUN_467000 with its tails $L_46713e, $L_467163)
+
+extern "C" {
+
+// [FUN_467000..$L_467163] orders [first, last) copy-constructed at dest: their fields (+0 .. +104, +112, +116,
+// +136) copied and their vector of 16-byte records (+120) rebuilt (its +132 copied); the end of the copies
+BYTE* __cdecl Orders144_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, int)
+{
+    for (; first != last; first += 144, dest += 144)
+    {
+        if (!dest)
+            continue;
+        memcpy(dest, first, 20);
+        memcpy(dest + 24, first + 24, 32);
+        memcpy(dest + 56, first + 56, 52);
+        memcpy(dest + 112, first + 112, 8);
+        Vec* v = (Vec*)(dest + 120);
+        unsigned n = (unsigned)((F(BYTE*, first, 124) - F(BYTE*, first, 120)) >> 4);
+        Vec16_Reserve(v, 0, n, 0);
+        F(BYTE*, dest, 124) = CallC<BYTE*>(FUN_466300, F(BYTE*, first, 120), F(BYTE*, first, 124), v->begin, dest);
+        F(int, dest, 132) = F(int, first, 132);
+        F(int, dest, 136) = F(int, first, 136);
+    }
+    return dest;
+}
+
+} // extern "C"
+
+// === uninitialized copy of 192-byte order infos (FUN_467580 with its tails $L_467728, $L_46776a)
+
+extern "C" void Oi_FirstNonEmpty(); KING_ALIAS("_Oi_FirstNonEmpty", "@Rec_FirstNonEmpty@8")
+
+extern "C" {
+
+// [FUN_467580..$L_46776a] order infos [first, last) copy-constructed at dest: their fields copied, their four
+// char vectors (+52, +64, +76, +88) copied, then their first non-empty entry found (442800); the end of the copies
+BYTE* __cdecl OrderInfos_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, int)
+{
+    for (; first != last; first += 192, dest += 192)
+    {
+        if (!dest)
+            continue;
+        F(int, dest, 0) = F(int, first, 0);
+        F(int, dest, 8) = F(int, first, 8);
+        F(int, dest, 12) = F(int, first, 12);
+        memcpy(dest + 16, first + 16, 32);
+        F(int, dest, 48) = F(int, first, 48);
+        for (int k = 52; k <= 88; k += 12)
+            CallThis(FUN_44dd90, dest + k, first + k);
+        memcpy(dest + 100, first + 100, 16);
+        memcpy(dest + 120, first + 120, 64);
+        F(BYTE, dest, 184) = F(BYTE, first, 184);
+        CallThis(Oi_FirstNonEmpty, dest);
+    }
+    return dest;
+}
+
+} // extern "C"
