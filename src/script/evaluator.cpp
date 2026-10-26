@@ -4262,7 +4262,7 @@ extern "C" void __fastcall Dq_ReserveBackPages(BYTE* self, void*, unsigned k)
         F(void**, self, 36)[i] = page;
     }
 }
-extern "C" void Dq_InsertAux(); KING_ALIAS("_Dq_InsertAux", "FUN_4ac3d0")
+extern "C" void __fastcall Deque_InsertAux(BYTE* self, void*, DequeIt pos, const char* first, const char* last, unsigned n);
 extern "C" void __fastcall Deque_InsertRange(BYTE* self, void*, DequeIt pos, const char* first, const char* last)
 {
     unsigned n = (unsigned)(last - first);
@@ -4286,7 +4286,7 @@ extern "C" void __fastcall Deque_InsertRange(BYTE* self, void*, DequeIt pos, con
         Deque_CopyChars(&junk, first, last, finish);
         finish = nf;
     } else {
-        CallThis(Dq_InsertAux, self, pos, first, last, n);
+        Deque_InsertAux(self, 0, pos, first, last, n);
     }
 }
 
@@ -4332,5 +4332,57 @@ extern "C" void __fastcall Quote_Step(BYTE* self, void*, BYTE* p)
         o = (BYTE*)h[0];
         if (!F(int, o, 4) && o)
             CallVirt(o, 12, 1);
+    }
+}
+
+// [FUN_4ac3d0] deque<char>::_M_insert_aux (pos, first, last, n): the SGI
+// algorithm, moving the shorter side (start +8, finish +24)
+static DequeIt Dq_Plus(DequeIt it, int n) { return *DequeIt_Advance(&it, 0, n); }
+extern "C" void __fastcall Deque_InsertAux(BYTE* self, void*, DequeIt pos, const char* first, const char* last, unsigned n)
+{
+    DequeIt& start = *(DequeIt*)(self + 8);
+    DequeIt& finish = *(DequeIt*)(self + 24);
+    DequeIt out;
+    int before = Distance(start, pos);
+    unsigned length = (unsigned)DequeIt_Diff(&finish, 0, &start);
+    if ((unsigned)before < length >> 1) {
+        unsigned room = (unsigned)(start.cur - start.first);
+        if (n > room)
+            Dq_ReserveFrontPages(self, 0, n - room);
+        DequeIt newStart = Dq_Plus(start, -(int)n);
+        DequeIt oldStart = start;
+        pos = Dq_Plus(start, before);
+        if (before >= (int)n) {
+            DequeIt startN = Dq_Plus(start, (int)n);
+            Deque_Copy4acb40(&out, start, startN, newStart);
+            start = newStart;
+            Deque_Copy4acb90(&out, startN, pos, oldStart);
+            Deque_CopyChars4acbe0(&out, first, last, Dq_Plus(pos, -(int)n));
+        } else {
+            const char* mid = first + (n - before);
+            Deque4acc20(&out, start, pos, (int)first, (int)mid, newStart);
+            start = newStart;
+            Deque_CopyChars4acbe0(&out, mid, last, oldStart);
+        }
+    } else {
+        unsigned room = (unsigned)(finish.last - finish.cur - 1);
+        if (n > room)
+            Dq_ReserveBackPages(self, 0, n - room);
+        DequeIt newFinish = Dq_Plus(finish, (int)n);
+        DequeIt oldFinish = finish;
+        int after = (int)length - before;
+        pos = Dq_Plus(finish, -after);
+        if (after > (int)n) {
+            DequeIt finishN = Dq_Plus(finish, -(int)n);
+            Deque_Copy4acb40(&out, finishN, finish, finish);
+            finish = newFinish;
+            Deque_CopyBackward(&out, pos, finishN, oldFinish);
+            Deque_CopyChars4acbe0(&out, first, last, pos);
+        } else {
+            const char* mid = first + after;
+            Deque4acd70(&out, (int)mid, (int)last, pos, finish, finish);
+            finish = newFinish;
+            Deque_CopyChars4acbe0(&out, first, mid, pos);
+        }
     }
 }

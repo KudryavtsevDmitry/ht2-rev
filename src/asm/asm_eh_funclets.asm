@@ -8,24 +8,11 @@ EXTERN @Wnd_Destruct@4:PROC
 EXTERN _KingRdata:BYTE
 EXTERN ___CxxFrameHandler:PROC
 
-PUBLIC $L_643f10
 PUBLIC $L_64a298, $L_64a2a0
 PUBLIC $L_64a2fc
 PUBLIC $L_64a304
 
 _TEXT SEGMENT
-$L_643f10::
-
-            mov EAX,OFFSET (_KingRdata+92336)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
 $L_646800 PROC
 
             lea ECX,DWORD PTR [EBP-624]
