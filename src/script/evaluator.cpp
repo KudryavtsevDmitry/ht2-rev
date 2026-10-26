@@ -22,7 +22,7 @@ ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")
 extern "C" void FUN_4abd20(); KING_ALIAS("_FUN_4abd20", "_Items44_UninitCopy")
-ASM_PROC(FUN_4a4950)
+ASM_FUNC(FUN_4a4950, @SchMap_CopySubtree@16)
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
 KING_VAR(AsmLabel, s_errNotSymbolList, 67115c)
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
@@ -1414,7 +1414,7 @@ DequeIt* __cdecl Deque4acd70(DequeIt* out, int c, int d, DequeIt a, DequeIt b, D
 }
 
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")    // uninitialized copy of 12-byte values (first, last, to)
-ASM_PROC(FUN_4ac330)    // deque<char>: allocate the pages of [first, last)
+ASM_FUNC(FUN_4ac330, @Deque_AllocPages512@16)    // deque<char>: allocate the pages of [first, last)
 extern "C" void FUN_4aa160(); KING_ALIAS("_FUN_4aa160", "@Vec44_At@12")
 extern "C" void FUN_4a55c0(); KING_ALIAS("_FUN_4a55c0", "_Sch_DumpFrame")
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // writes a string to a port (by value)
@@ -4189,4 +4189,75 @@ BYTE* __cdecl Items44_UninitCopyB(const BYTE* first, const BYTE* last, BYTE* des
     return Si33_UninitCopy(first, last, dest);
 }
 
+}
+
+// [FUN_4a4950] the map's _M_copy (thiscall: source subtree x, new parent p):
+// clones x (colour +0, parent +4, left +8, right +12) and copies right
+// subtrees recursively while walking down the left side
+extern "C" BYTE* __fastcall SchMap_CopySubtree(BYTE* tree, void*, const BYTE* x, BYTE* p)
+{
+    BYTE* top = SchMap_MakeNode(x + 16);
+    F(BYTE, top, 0) = F(BYTE, x, 0);
+    F(BYTE*, top, 8) = 0;
+    F(BYTE*, top, 12) = 0;
+    F(BYTE*, top, 4) = p;
+    if (F(const BYTE*, x, 12))
+        F(BYTE*, top, 12) = SchMap_CopySubtree(tree, 0, F(const BYTE*, x, 12), top);
+    p = top;
+    for (x = F(const BYTE*, x, 8); x; x = F(const BYTE*, x, 8)) {
+        BYTE* y = SchMap_MakeNode(x + 16);
+        F(BYTE, y, 0) = F(BYTE, x, 0);
+        F(BYTE*, y, 8) = 0;
+        F(BYTE*, y, 12) = 0;
+        F(BYTE*, p, 8) = y;
+        F(BYTE*, y, 4) = p;
+        if (F(const BYTE*, x, 12))
+            F(BYTE*, y, 12) = SchMap_CopySubtree(tree, 0, F(const BYTE*, x, 12), y);
+        p = y;
+    }
+    return top;
+}
+
+// [FUN_4ac330] deque<char>: allocates the 512-byte pages of [first, last)
+extern "C" void* __cdecl Ai_OperatorNew(unsigned n);
+extern "C" void __fastcall Deque_AllocPages512(BYTE* self, void*, char** first, char** last)
+{
+    for (; first < last; first++) {
+        void* p = malloc(512);
+        if (!p)
+            p = Ai_OperatorNew(512);
+        *first = (char*)p;
+    }
+}
+
+// [FUN_4ac0b0] deque<char>::insert (pos, first, last): at the front or the
+// back after reserving room, elsewhere through insert_aux (4ac3d0)
+extern "C" void Dq_ReserveFront(); KING_ALIAS("_Dq_ReserveFront", "FUN_4ac930")
+extern "C" void Dq_ReserveBack(); KING_ALIAS("_Dq_ReserveBack", "FUN_4aca10")
+extern "C" void Dq_InsertAux(); KING_ALIAS("_Dq_InsertAux", "FUN_4ac3d0")
+extern "C" void __fastcall Deque_InsertRange(BYTE* self, void*, DequeIt pos, const char* first, const char* last)
+{
+    unsigned n = (unsigned)(last - first);
+    DequeIt& start = *(DequeIt*)(self + 8);
+    DequeIt& finish = *(DequeIt*)(self + 24);
+    DequeIt junk;
+    if (pos.cur == start.cur) {
+        unsigned room = (unsigned)(start.cur - start.first);
+        if (n > room)
+            CallThis(Dq_ReserveFront, self, n - room);
+        DequeIt t = start;
+        DequeIt ns = *DequeIt_Advance(&t, 0, -(int)n);
+        Deque_CopyChars(&junk, first, last, ns);
+        start = ns;
+    } else if (pos.cur == finish.cur) {
+        unsigned room = (unsigned)(finish.last - finish.cur - 1);
+        if (n > room)
+            CallThis(Dq_ReserveBack, self, n - room);
+        DequeIt t = finish;
+        DequeIt nf = *DequeIt_Advance(&t, 0, (int)n);
+        Deque_CopyChars(&junk, first, last, finish);
+        finish = nf;
+    } else {
+        CallThis(Dq_InsertAux, self, pos, first, last, n);
+    }
 }
