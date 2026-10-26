@@ -3,7 +3,6 @@ INCLUDE king.inc
 
 EXTERN @Eh_EmptyDtor@4:NEAR
 EXTERN $L_462e30:NEAR
-EXTERN ??3@YAXPAX@Z:NEAR
 EXTERN @AiVec_FreeStorage@8:PROC
 EXTERN @Buf459df0_Destruct@8:PROC
 EXTERN @Gate_602bd0@8:PROC
@@ -14,7 +13,6 @@ EXTERN @Object_Destroy@4:PROC
 EXTERN @RopeFn_ResetVtbl@8:PROC
 EXTERN @SchHandle_Release@8:PROC
 EXTERN @Shell_Nop@8:PROC
-EXTERN @Thunk530190@8:PROC
 EXTERN @VecBytes_FreeStorage@4:PROC
 EXTERN @Wea5a47f0_Destroy@4:PROC
 EXTERN @Wnd_Destruct@4:PROC
@@ -25,10 +23,10 @@ EXTERN ___CxxFrameHandler:PROC
 PUBLIC $L_63b648, $L_63b64f, $L_63f8a0, $L_63f8b0, $L_63f8d0, $L_63f8d8, $L_63fde0
 PUBLIC $L_63fe00, $L_63fe40, $L_63fe78, $L_63fe7f, $L_63fe87, $L_63fed0
 PUBLIC $L_63fee1, $L_63fef0, $L_63ff01, $L_63ff10, $L_63ff21, $L_63ff60, $L_63ff71
-PUBLIC $L_640020, $L_640031, $L_640960
-PUBLIC $L_640971, $L_643ef0, $L_643f00, $L_643f10, $L_643f20
-PUBLIC $L_643f30, $L_644420, $L_644ae0, $L_644ae8, $L_645e30
-PUBLIC $L_645e38, $L_649af0, $L_649afb, $L_649d20, $L_649e10
+PUBLIC $L_640020, $L_640031
+PUBLIC $L_643ef0, $L_643f00, $L_643f10, $L_643f20
+PUBLIC $L_643f30, $L_644420, $L_644ae0, $L_644ae8
+PUBLIC $L_649d20, $L_649e10
 PUBLIC $L_649e50, $L_64a298, $L_64a2a0
 PUBLIC $L_64a2fc
 PUBLIC $L_64a304
@@ -367,75 +365,6 @@ $L_640031::
           BYTE 0ccH
 
             int 3
-$L_640960::
-
-            mov EAX,DWORD PTR [EBP-20]
-            push EAX
-            mov ECX,DWORD PTR [EBP-24]
-            push ECX
-            call @Shell_Nop@8
-
-            add ESP,8
-            ret 
-$L_640971::
-
-            mov EAX,OFFSET (_KingRdata+76160)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_641620 PROC
-
-            lea ECX,DWORD PTR [EBP+12]
-            jmp @Shell_Nop@8
-$L_641620 ENDP
-$L_641628 PROC
-
-            mov EAX,OFFSET (_KingRdata+80456)
-            jmp ___CxxFrameHandler
-$L_641628 ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-$L_641690 PROC
-
-            lea ECX,DWORD PTR [EBP-12]
-            jmp _Stl_Unlock
-$L_641690 ENDP
-$L_641698 PROC
-
-            mov EAX,OFFSET (_KingRdata+80592)
-            jmp ___CxxFrameHandler
-$L_641698 ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_6436b0 PROC
 
             mov ECX,DWORD PTR [EBP+8]
@@ -597,34 +526,6 @@ $L_644ada ENDP
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
-$L_645e2e PROC
-
-            int 3
-
-            int 3
-$L_645e30::
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @Thunk530190@8
-$L_645e38::
-
-            mov EAX,OFFSET (_KingRdata+101272)
-            jmp ___CxxFrameHandler
-$L_645e2e ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_646800 PROC
 
             lea ECX,DWORD PTR [EBP-624]
@@ -718,41 +619,6 @@ $L_648ba8 ENDP
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-$L_649ae8 PROC
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_649af0::
-
-            mov EAX,DWORD PTR [EBP+4]
-            push EAX
-            call ??3@YAXPAX@Z
-
-            pop ECX
-            ret 
-$L_649afb::
-
-            mov EAX,OFFSET (_KingRdata+118752)
-            jmp ___CxxFrameHandler
-$L_649ae8 ENDP
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH

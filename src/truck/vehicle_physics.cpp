@@ -785,7 +785,7 @@ extern "C" void __fastcall Car_CountType(BYTE* self, void*)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_4ebbe0(); KING_ALIAS("_FUN_4ebbe0", "@Car_RandomStep@12")
-ASM_PROC(FUN_4eb2f0)
+ASM_FUNC(FUN_4eb2f0, @Part_NextTime@8)
 KING_VAR(AsmLabel, g_697608, 697608)
 KING_VAR(AsmLabel, g_6975b8, 6975b8)
 KING_VAR(int, g_697658, 697658)
@@ -899,7 +899,7 @@ static BYTE* Vehphy_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 // [$L_4eb2d0]
 extern "C" BYTE* __fastcall Vehphy4eb2d0_DeletingDestructor(BYTE* s, void*, int flags) { return Vehphy_DeleteAfter(s, flags, FUN_530190); }
 
-ASM_PROC(FUN_4eb260)
+ASM_FUNC(FUN_4eb260, @Part_Construct@24)
 
 // [FUN_4eb3c0] a new 40-byte part (FUN_4eb260 (self, a, +4, b))
 extern "C" int __fastcall Phys4eb3c0_NewPart(BYTE* s, void*, int a, int b)
@@ -6687,3 +6687,51 @@ void __fastcall Wheels_FrameSpin(BYTE* s)
 } // extern "C"
 
 #undef WF
+
+// [FUN_4eb0c7] a normally distributed random number (Box-Muller with the
+// CRT's rand, log, sqrt and cos, as the original called them)
+#include <math.h>
+#pragma function(log, sqrt, cos)
+KING_VAR(float, vp_64d968, 64d968)      // RAND_MAX as float
+KING_VAR(double, vp_64d960, 64d960)
+KING_VAR(double, vp_64d908, 64d908)
+extern "C" double __cdecl Rand_Gauss(float mean, float sigma)
+{
+    float u1 = rand() / vp_64d968;
+    float u2 = rand() / vp_64d968;
+    double m = mean, s = sigma;
+    double r = sqrt(log((double)u1) * vp_64d960) * s;
+    return cos(u2 * vp_64d908) * r + m;
+}
+
+// [FUN_4eb2f0] [$L_4eb319] the part's next event time: now (+16) plus a
+// random delay around +24, reflected so it stays above +24 * k
+KING_VAR(double, vp_64d0f0, 64d0f0)
+KING_VAR(double, vp_64b6e0, 64b6e0)
+extern "C" void __fastcall Part_NextTime(BYTE* self, void*)
+{
+    F(float, self, 16) = (float)Game_Time();
+    float mean = F(float, self, 24);
+    float sigma = (float)(mean * vp_64d0f0);
+    double g = Rand_Gauss(mean, sigma);
+    double m = F(float, self, 24) * vp_64b6e0;
+    if (g < m)
+        g = (m - g) + m;
+    F(float, self, 20) = (float)(g + F(float, self, 16));
+}
+
+// [FUN_4eb260] [$L_4eb2b4] constructs a 40-byte part: a holder of p, the
+// mean delay (+24), +28, +36, then the first event time
+KING_VAR(AsmLabel, vp_vtbl64d96c, 64d96c)
+extern "C" BYTE* __fastcall Holder_Construct(BYTE* self, void*, BYTE** p, int after);
+extern "C" BYTE* __fastcall Part_Construct(BYTE* self, void* edx, BYTE** p, int mean, int c, int b)
+{
+    Holder_Construct(self, edx, p, 1);
+    F(int, self, 24) = mean;
+    F(int, self, 32) = 0;
+    F(void*, self, 0) = vp_vtbl64d96c;
+    F(int, self, 36) = c;
+    F(int, self, 28) = b;
+    Part_NextTime(self, 0);
+    return self;
+}

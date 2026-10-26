@@ -25,7 +25,7 @@ cpp_names = {v[1] for img, (d, ptrs) in images.items() for o, v in ptrs.items()
 for p in list(Path('src').rglob('*.cpp')) + list(Path('src').rglob('*.h')):
     if p.name == 'data_image.cpp':
         continue
-    t = p.read_text(encoding='utf-8', errors='replace')
+    t = re.sub(r'//[^\n]*', '', p.read_text(encoding='utf-8', errors='replace'))
     cpp_names.update(tok.findall(t))
     cpp_names.update(re.findall(r'"_?([$\w@?]+)"', t))
 

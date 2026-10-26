@@ -73,8 +73,8 @@ PUBLIC $L_463191, $L_4631a2, $L_4631bb, $L_4631d6, $L_4631f1, $L_4631f5, $L_4632
 PUBLIC $L_463229, $L_463232, $L_46323c, $L_46324c, $L_4644af, $L_4644d9, $L_46622f, $L_466271
 PUBLIC $L_4662a5, $L_4662c4, $L_4662e4, $L_46632f, $L_46636b, $L_46639e, $L_4663ba, $L_4663da
 PUBLIC $L_46646c, $L_4664ab, $L_4664d7, $L_4664f4, $L_46651d, $L_466d7f, $L_466dc1
-PUBLIC $L_466df5, $L_466e14, $L_466e34, $L_46713e, $L_4672ae, $L_46734f, $L_467385
-PUBLIC $L_4673b6, $L_4673cf, $L_4673f5, $L_467728, $L_469bd7, $L_469c0c
+PUBLIC $L_466df5, $L_466e14, $L_466e34, $L_46734f, $L_467385
+PUBLIC $L_4673b6, $L_4673cf, $L_4673f5, $L_469bd7, $L_469c0c
 
 _TEXT SEGMENT
 FUN_45a2b0 PROC
@@ -2673,12 +2673,6 @@ $L_466e3d PROC
             ret 
 $L_466e3d ENDP
 ALIGN 16
-$L_46713e LABEL NEAR
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-$L_4672ae LABEL NEAR
-ALIGN 16
 FUN_467320 PROC
 
             push EBP
@@ -2800,59 +2794,6 @@ $L_4673fe PROC
 $L_4673fe ENDP
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-$L_467728 LABEL NEAR
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
 ALIGN 16
 FUN_469bc0 PROC
 

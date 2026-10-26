@@ -98,12 +98,6 @@ ALIGN 16
 ; vehicle: src\truck\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
 ALIGN 16
 ALIGN 16
-FUN_53fd30 PROC
-
-            mov ECX,DWORD PTR [(_KingBss+50320)]
-            mov EAX,DWORD PTR [ECX]
-            jmp DWORD PTR [EAX+68]
-FUN_53fd30 ENDP
 ALIGN 16
 ALIGN 16
 ; vehicle: src\truck\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original

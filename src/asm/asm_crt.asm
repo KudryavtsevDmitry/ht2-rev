@@ -81,8 +81,7 @@ PUBLIC $L_61f2ff, $L_61f304, $L_61f309, $L_61f30e, $L_61f311, $L_61f31d, $L_61f3
 PUBLIC $L_61f36a, $L_61f372, $L_61f37f, $L_61f388, $L_61f3f5, $L_61f406, $L_61f416, $L_61f424
 PUBLIC $L_61f441, $L_61f5e3, $L_61f5e9, $L_61f607, $L_61f60d, $L_61f613, $L_61f705
 PUBLIC $L_61f70e, $L_61f72b, $L_61f742, $L_61f749, $L_61f75e, $L_61f76b, $L_61f7c2, $L_61f7ca
-PUBLIC $L_61f7e7, $L_61f7ef, $L_61f7fd, $L_61f804, $L_61f81f, $L_61f876, $L_61f884, $L_61f88a
-PUBLIC $L_61f8a7, $L_61f8bc, $L_61f8cb, $L_61f8d2, $L_61f8ed
+PUBLIC $L_61f7e7, $L_61f7ef, $L_61f7fd, $L_61f804, $L_61f81f
 PUBLIC $L_61fbf6, $L_61fc03, $L_61fc08
 PUBLIC $L_61fd58, $L_61fdf2, $L_61fe00, $L_61fe1d, $L_61fe32, $L_61fe40, $L_61fe5a, $L_61fe62
 PUBLIC $L_61ffe0, $L_6201cd, $L_6201ea, $L_6201ec, $L_6201ed, $L_620215, $L_62021a, $L_620222
@@ -2323,89 +2322,6 @@ $L_61f81f::
             pop EDX
             ret 
 FUN_61f7ad ENDP
-_log PROC ;FUN_61f854 double log(double x)
-
-            lea EDX,DWORD PTR [ESP+4]
-            call FUN_6247b5
-_log ENDP
-FUN_61f85d PROC
-
-            push EDX
-            wait 
-            fnstcw WORD PTR [ESP]
-            je $L_61f8a7
-
-            mov EAX,DWORD PTR [ESP+12]
-            cmp WORD PTR [ESP],639
-            je $L_61f876
-
-            fldcw WORD PTR [(_KingRdata+39512)]
-$L_61f876::
-
-            test EAX,2146435072
-            je $L_61f8d2
-
-            test EAX,2147483648
-            jne $L_61f8bc
-$L_61f884::
-
-            fldln2 
-            fxch ST(1)
-            fyl2x 
-$L_61f88a::
-
-            cmp DWORD PTR [(_KingBss+669944)],0
-            jne $L_62480e
-
-            lea ECX,DWORD PTR [(_KingData+108080)]
-            mov EDX,26
-            jmp $L_62481b
-$L_61f8a7::
-
-            test EAX,1048575
-            jne $L_61f8cb
-
-            cmp DWORD PTR [ESP+8],0
-            jne $L_61f8cb
-
-            and EAX,2147483648
-            je $L_61f88a
-$L_61f8bc::
-
-            fstp ST(0)
-            fld TBYTE PTR [(_KingData+117568)]
-            mov EAX,1
-            jmp $L_61f8ed
-$L_61f8cb::
-
-            call FUN_62479c
-
-            jmp $L_61f8ed
-$L_61f8d2::
-
-            test EAX,1048575
-            jne $L_61f884
-
-            cmp DWORD PTR [ESP+8],0
-            jne $L_61f884
-
-            fstp ST(0)
-            fld TBYTE PTR [(_KingData+117482)]
-            mov EAX,2
-$L_61f8ed::
-
-            cmp DWORD PTR [(_KingBss+669944)],0
-            jne $L_62480e
-
-            lea ECX,DWORD PTR [(_KingData+108080)]
-            mov EDX,26
-            call FUN_624727
-
-            pop EDX
-            ret 
-FUN_61f85d ENDP
-ALIGN 4
-ALIGN 2
 $L_61fbf4 PROC
 
             fxch ST(1)

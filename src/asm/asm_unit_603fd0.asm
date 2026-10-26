@@ -6,10 +6,8 @@ EXTERN @Wave_Free@8:PROC
 EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
 EXTERN _KingRdata:BYTE
-EXTERN _Mixer_ReleaseBuffers:PROC
 EXTERN _Mixer_Unload:PROC
 EXTERN __CxxThrowException@8:PROC
-EXTERN __imp__DeleteCriticalSection@4:PROC
 EXTERN __imp__GetProcAddress@8:PROC
 EXTERN __imp__LoadLibraryA@4:PROC
 
@@ -218,34 +216,6 @@ $L_6049dc ENDP
 ALIGN 16
 ALIGN 16
 ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-$L_604c4e PROC
-
-            call _Mixer_ReleaseBuffers
-
-            push OFFSET (_KingBss+629032)
-            call DWORD PTR __imp__DeleteCriticalSection@4
-
-            mov EAX,DWORD PTR [EBP-32]
-            mov DWORD PTR [EBP-32],EAX
-            mov EAX,OFFSET $L_604c6a
-            ret 
-$L_604c4e ENDP
-$L_604c6a PROC
-
-            mov ESI,DWORD PTR [EBP-32]
-            mov ECX,DWORD PTR [EBP-12]
-            mov EAX,ESI
-            pop EDI
-            pop ESI
-            mov DWORD PTR FS:[0],ECX
-            pop EBX
-            mov ESP,EBP
-            pop EBP
-            ret 
-$L_604c6a ENDP
 ALIGN 16
 ALIGN 16
 ALIGN 16
