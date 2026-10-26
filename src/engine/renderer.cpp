@@ -42,7 +42,7 @@ extern "C" void FUN_5b2950(); KING_ALIAS("_FUN_5b2950", "@Mesh_Draw@12")
 extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5b0810(); KING_ALIAS("_FUN_5b0810", "@Material_SetStages@20")
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
-ASM_PROC(FUN_5feace)    // fills words
+ASM_FUNC(FUN_5feace, _Span_Fill16)    // fills words
 extern "C" void FUN_5b6770(); KING_ALIAS("_FUN_5b6770", "@Surface_Create@24")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5b81c0(); KING_ALIAS("_FUN_5b81c0", "_Image_DrawPart")    // blits a bitmap (dst, bitmap, rect, x, y)
@@ -2159,11 +2159,11 @@ extern "C" void __fastcall Surface_Prepare(BYTE* s)
 // Horizontal lines.
 
 extern "C" void FUN_5b73a0(); KING_ALIAS("_FUN_5b73a0", "_Window_DrawLine")
-ASM_PROC(FUN_5fe9b3)
-ASM_PROC(FUN_5fea6c)
-ASM_PROC(FUN_5feb12)
-ASM_PROC(FUN_5feace)
-ASM_PROC(FUN_5feafa)
+ASM_FUNC(FUN_5fe9b3, _Span_Shade8)
+ASM_FUNC(FUN_5fea6c, _Span_Shade16)
+ASM_FUNC(FUN_5feb12, _Span_Blend32)
+ASM_FUNC(FUN_5feace, _Span_Fill16)
+ASM_FUNC(FUN_5feafa, _Span_Fill32)
 extern "C" void FUN_5b64c0(); KING_ALIAS("_FUN_5b64c0", "@Window_RootSurface@8")
 extern "C" void FUN_5b94b0(); KING_ALIAS("_FUN_5b94b0", "@Rows_Get@12")
 extern "C" void FUN_5ba3f0(); KING_ALIAS("_FUN_5ba3f0", "@Palette_Color@12")
@@ -2310,8 +2310,8 @@ extern "C" void __cdecl Surface_VLine(BYTE* s, int x, int y1, int y2, int color,
 // Drawing run-length images.
 
 ASM_PROC(FUN_5feff3)
-ASM_PROC(FUN_5fea03)
-ASM_PROC(FUN_5fe860)
+ASM_FUNC(FUN_5fea03, _Span_Table16)
+ASM_FUNC(FUN_5fe860, _Span_Table8)
 KING_VAR(unsigned, g_q153_702e8c, 702e8c)
 // [FUN_5b8720] draws run-length image img (w +4, h +6, data +16: a byte with bit 7 skips that many pixels, else
 // copies that many) at x, y on dst; blend mode 2 (+80) with an alpha other than 1 goes through the palette's
@@ -3042,11 +3042,11 @@ KING_VAR(double, g_blOne64b670, 64b670)
 KING_VAR(double, g_blZero64b678, 64b678)
 extern "C" void FUN_5b64c0(); KING_ALIAS("_FUN_5b64c0", "@Window_RootSurface@8")
 extern "C" void FUN_5d79a0(); KING_ALIAS("_FUN_5d79a0", "_Dd_Blit7")
-ASM_PROC(FUN_5fe814)
-ASM_PROC(FUN_5fe837)
-ASM_PROC(FUN_5fe860)
-ASM_PROC(FUN_5fe8d4)
-ASM_PROC(FUN_5fea03)
+ASM_FUNC(FUN_5fe814, _Span_Shift8)
+ASM_FUNC(FUN_5fe837, _Span_Shift16)
+ASM_FUNC(FUN_5fe860, _Span_Table8)
+ASM_FUNC(FUN_5fe8d4, _Span_ShadeIndexed8)
+ASM_FUNC(FUN_5fea03, _Span_Table16)
 
 static __declspec(noinline) int Bl_Int(double d)
 {
@@ -3568,11 +3568,11 @@ int __fastcall Texture_Create(BYTE* t, void*, unsigned flags)
 KING_VAR(float, g_fr64c458, 64c458)
 extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
 extern "C" void FUN_5ba3f0(); KING_ALIAS("_FUN_5ba3f0", "@Palette_Color@12")
-ASM_PROC(FUN_5fe9b3)
-ASM_PROC(FUN_5fea6c)
-ASM_PROC(FUN_5feace)
-ASM_PROC(FUN_5feafa)
-ASM_PROC(FUN_5feb12)
+ASM_FUNC(FUN_5fe9b3, _Span_Shade8)
+ASM_FUNC(FUN_5fea6c, _Span_Shade16)
+ASM_FUNC(FUN_5feace, _Span_Fill16)
+ASM_FUNC(FUN_5feafa, _Span_Fill32)
+ASM_FUNC(FUN_5feb12, _Span_Blend32)
 
 extern "C" {
 
@@ -3667,9 +3667,9 @@ void __cdecl Surface_FillRect(BYTE* s, const int* r, DWORD color, int raw)
 
 KING_VAR(AsmLabel, s_gd67f104, 67f104)
 extern "C" void FUN_5b8720(); KING_ALIAS("_FUN_5b8720", "_Surface_DrawRle")
-ASM_PROC(FUN_5fe887)
-ASM_PROC(FUN_5fe906)
-ASM_PROC(FUN_5fe943)
+ASM_FUNC(FUN_5fe887, _Span_MaskedShade8)
+ASM_FUNC(FUN_5fe906, _Span_Table8Z)
+ASM_FUNC(FUN_5fe943, _Span_Copy8Z)
 
 extern "C" {
 
@@ -6523,3 +6523,147 @@ int __cdecl Line_ClipEdge(int k, int e, int* x0, int* y0, int* x1, int* y1)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// The software renderer's hand-written span helpers (originally MASM with
+// enter/pushad; cdecl). Counts are signed: nothing happens for n <= 0.
+
+// [FUN_5fe814] 8-bit: each pixel takes the pixel src[i] bytes further on
+extern "C" void __cdecl Span_Shift8(BYTE* d, const BYTE* s, int n)
+{
+    for (; n > 0; n--, d++, s++)
+        *d = d[*s];
+}
+
+// [FUN_5fe837] 16-bit: the same with 2-byte pixels
+extern "C" void __cdecl Span_Shift16(BYTE* d, const BYTE* s, int n)
+{
+    for (; n > 0; n--, d += 2, s++)
+        *(WORD*)d = *(const WORD*)(d + (WORD)(*s << 1));
+}
+
+// [FUN_5fe860] 8-bit: dst = table[src][dst]
+extern "C" void __cdecl Span_Table8(const BYTE* table, BYTE* d, const BYTE* s, int n)
+{
+    for (; n > 0; n--, d++, s++)
+        *d = table[*s << 8 | *d];
+}
+
+// [FUN_5fe887] 8-bit with a mask: 0 keeps the pixel, 255 writes the colour,
+// other values pick the table (mask / div) for (colour, pixel). The count is
+// a signed byte.
+extern "C" void __cdecl Span_MaskedShade8(const BYTE* const* tables, BYTE* d, const BYTE* m, int n, BYTE colour, BYTE div)
+{
+    for (int c = (signed char)(BYTE)(n + 1); --c > 0; m++, d++) {
+        BYTE v = *m;
+        if (v == 0)
+            continue;
+        if (v >= 255) {
+            *d = colour;
+            continue;
+        }
+        *d = tables[(BYTE)(v / div)][colour << 8 | *d];
+    }
+}
+
+// [FUN_5fe8d4] 8-bit: where src is set, dst = table[shade][dst[src]]
+extern "C" void __cdecl Span_ShadeIndexed8(const BYTE* table, BYTE* d, const BYTE* s, int n, BYTE shade)
+{
+    for (; n > 0; n--, d++, s++)
+        if (*s)
+            *d = table[shade << 8 | d[*s]];
+}
+
+// [FUN_5fe906] 8-bit with a 16-bit z buffer: where z (>> 9) is not behind,
+// store it and dst = table[src][dst]
+extern "C" void __cdecl Span_Table8Z(const BYTE* table, BYTE* d, const BYTE* s, int n, WORD* zb, unsigned z)
+{
+    WORD zz = (WORD)(z >> 9);
+    for (; n > 0; n--, d++, s++, zb++)
+        if (zz >= *zb) {
+            *zb = zz;
+            *d = table[*s << 8 | *d];
+        }
+}
+
+// [FUN_5fe943] the same copying src
+extern "C" void __cdecl Span_Copy8Z(BYTE* d, const BYTE* s, int n, WORD* zb, unsigned z)
+{
+    WORD zz = (WORD)(z >> 9);
+    for (; n > 0; n--, d++, s++, zb++)
+        if (zz >= *zb) {
+            *zb = zz;
+            *d = *s;
+        }
+}
+
+// [FUN_5fe9b3] 8-bit: dst = table[shade][dst]
+extern "C" void __cdecl Span_Shade8(const BYTE* table, BYTE* d, BYTE shade, int n)
+{
+    for (; n > 0; n--, d++)
+        *d = table[shade << 8 | *d];
+}
+
+// [FUN_5fea03] 16-bit: dst = table[src][dst] (word table indexed by the pixel
+// doubled, or with its low bit cleared when 71e7d4 is not set)
+KING_VAR(int, g_rd71e7d4, 71e7d4)
+extern "C" void __cdecl Span_Table16(const BYTE* table, WORD* d, const BYTE* s, int n)
+{
+    if (g_rd71e7d4) {
+        for (; n > 0; n--, d++, s++)
+            *d = *(const WORD*)(table + ((DWORD)*s << 16 | (WORD)(*d << 1)));
+    } else {
+        for (; n > 0; n--, d++, s++)
+            *d = *(const WORD*)(table + ((DWORD)*s << 16 | (WORD)(*d & 0xFFFE)));
+    }
+}
+
+// [FUN_5fea6c] 16-bit: dst = table[shade][dst], the same two indexings
+extern "C" void __cdecl Span_Shade16(const BYTE* table, WORD* d, BYTE shade, int n)
+{
+    DWORD base = (DWORD)shade << 16;
+    if (g_rd71e7d4) {
+        for (; n > 0; n--, d++)
+            *d = *(const WORD*)(table + (base | (WORD)(*d << 1)));
+    } else {
+        for (; n > 0; n--, d++)
+            *d = *(const WORD*)(table + (base | (WORD)(*d & 0xFFFE)));
+    }
+}
+
+// [FUN_5feace] fills n words with v
+extern "C" void __cdecl Span_Fill16(WORD* d, WORD v, unsigned n)
+{
+    if (n & 1)
+        *d++ = v;
+    DWORD vv = (DWORD)v << 16 | v;
+    for (n >>= 1; n; n--, d += 2)
+        *(DWORD*)d = vv;
+}
+
+// [FUN_5feafa] fills n dwords with v
+extern "C" void __cdecl Span_Fill32(DWORD* d, DWORD v, unsigned n)
+{
+    for (; n; n--)
+        *d++ = v;
+}
+
+// [FUN_5feb12] blends n 32-bit pixels towards colour by alpha a (the MMX
+// original: p*(255-a) + c*a per byte, unsigned-saturated, shifted right
+// arithmetically by 8 and packed with signed saturation)
+extern "C" void __cdecl Span_Blend32(DWORD a, BYTE* d, DWORD colour, int n)
+{
+    DWORD e = a | a << 8;
+    e |= e << 16;
+    DWORD inv = 0xFFFFFFFF - e;
+    for (; n > 0; n--, d += 4)
+        for (int k = 0; k < 4; k++) {
+            unsigned w = (unsigned)d[k] * ((inv >> (8 * k)) & 255);
+            unsigned ca = (WORD)(((colour >> (8 * k)) & 255) * ((e >> (8 * k)) & 255));
+            w += ca;
+            if (w > 65535)
+                w = 65535;
+            int s = (short)(WORD)w >> 8;
+            d[k] = (BYTE)(s > 127 ? 127 : s < -128 ? -128 : s);
+        }
+}
