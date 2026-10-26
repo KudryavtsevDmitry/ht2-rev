@@ -3005,3 +3005,119 @@ BYTE* __fastcall Explosion_Construct(BYTE* self, void*, BYTE* o, int a1, float x
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// Batch 33: falling flakes, weather scene items
+
+extern "C" void Wf33_MarkPixel(); KING_ALIAS("_Wf33_MarkPixel", "_Gfx_MarkPixel")
+extern "C" void Wf33_SurfaceMark(); KING_ALIAS("_Wf33_SurfaceMark", "_Surface_Mark")
+extern "C" void Wf33_PostEvent(); KING_ALIAS("_Wf33_PostEvent", "@Queue_PostEvent@12")
+extern "C" void Wi33_Base(); KING_ALIAS("_Wi33_Base", "@Worobj5a4120_Construct@28")
+extern "C" void Wi33_Node(); KING_ALIAS("_Wi33_Node", "@Node_Construct@16")
+extern "C" void Wi33_GetWorld(); KING_ALIAS("_Wi33_GetWorld", "@Node_GetWorld@12")
+extern "C" void Wi33_Root(); KING_ALIAS("_Wi33_Root", "@Node_Root@8")
+extern "C" void Wi33_NodeN(); KING_ALIAS("_Wi33_NodeN", "@NodeN_Construct@20")
+extern "C" void Wi33_Apply(); KING_ALIAS("_Wi33_Apply", "@Node_ApplyMatrix@16")
+extern "C" void Wi33_Attach(); KING_ALIAS("_Wi33_Attach", "@WeatherNode_Attach@12")
+extern "C" void Wi33_Fatal(); KING_ALIAS("_Wi33_Fatal", "_Sys_Fatal")
+ASM_VAR(double, wf33_speed64b938, $L_64b938)
+ASM_VAR(double, wf33_half64b6e0, $L_64b6e0)
+ASM_VAR(float, wf33_wind7025ac, $L_7025ac)
+ASM_VAR(double, wf33_k64c958, $L_64c958)
+ASM_VAR(int, wf33_hw7025b0, $L_7025b0)
+ASM_VAR(char, wi33_name68d1c0, $L_68d1c0)
+ASM_VAR(BYTE, wi33_vtbl64c7dc, $L_64c7dc)
+ASM_VAR(BYTE, wi33_vtbl651358, $L_651358)
+ASM_VAR(BYTE, wi33_vtbl65130c, $L_65130c)
+ASM_VAR(BYTE, wi33_vtbl64d7d0, $L_64d7d0)
+ASM_VAR(BYTE, wi33_identity7025f0, $L_7025f0)
+ASM_VAR(char, wi33_s67e918, $L_67e918)
+
+struct Wi33_M48 { DWORD d[12]; };    // a matrix passed by value
+
+extern "C" {
+
+// [$L_5a5f50..$L_5a6050] a falling flake's step (vtable): it falls by the frame's speed (y +52) and drifts by
+// the wind and its place across the surface (x +48, a random -4..3); its trail is marked in thirds on the
+// surface (+40, colour +44), by the hardware marker (7025b0) or in software; inside the surface it posts event
+// 1, else it shrinks (+36) and ends through vtable +28
+void __fastcall Flake_Step(BYTE* self, void*)
+{
+    int dy = (int)(F(double, F(BYTE*, self, 32), 2960) * wf33_speed64b938);
+    int r = rand() % 8;
+    BYTE* surf = F(BYTE*, self, 40);
+    int w = F(WORD, surf, 0);
+    int dx = (int)((((double)F(int, self, 48) / w - wf33_half64b6e0) * wf33_wind7025ac) * wf33_k64c958 + (r - 4));
+    void (*mark)() = wf33_hw7025b0 ? Wf33_MarkPixel : Wf33_SurfaceMark;
+    int c = F(int, self, 44);
+    CallC(mark, surf, F(int, self, 48) + dx / 3, F(int, self, 52) + dy / 3, c);
+    CallC(mark, F(BYTE*, self, 40), F(int, self, 48) + dx * 2 / 3, F(int, self, 52) + dy * 2 / 3, F(int, self, 44));
+    CallC(mark, F(BYTE*, self, 40), F(int, self, 48) + dx, F(int, self, 52) + dy, F(int, self, 44));
+    F(int, self, 52) += dy;
+    F(int, self, 48) += dx;
+    surf = F(BYTE*, self, 40);
+    int x = F(int, self, 48);
+    if ((int)F(WORD, surf, 2) > F(int, self, 52) && x > 0 && x < (int)F(WORD, surf, 0)) {
+        CallThis(Wf33_PostEvent, self, 1);
+        return;
+    }
+    F(int, self, 36) -= 4;
+    CallVirt(self, 28, 1);
+}
+
+// [FUN_5a44c0..$L_5a45b8] a weather scene item (world, object a, object b, n, scale, -, matrix m, kind): the
+// world object base, its node (+256: name 68d1c0, the model of b or of b's +64, -1 slot at +344), kind 1 takes
+// b's root after placing it by m (b must be of type 17); a 112-byte matrix node at +324 set to m, the item
+// attached to its owner (the model's +20 or +28 of the world's +524, or b's +44) and b's colour at +276
+BYTE* __fastcall WeatherItem_Construct(BYTE* self, void*, BYTE* world, BYTE* a, BYTE* b, int n, int scale, int z,
+                                       Wi33_M48 m, int kind)
+{
+    CallThis(Wi33_Base, self, world, n, 0, scale, z);
+    BYTE* model = kind == 0 ? b : F(BYTE*, b, 64);
+    BYTE* node = self + 256;
+    CallThis(Wi33_Node, node, (const char*)&wi33_name68d1c0, 17);
+    for (int i = 48; i <= 60; i += 4)
+        F(int, node, i) = 0;
+    F(void*, node, 0) = &wi33_vtbl64c7dc;
+    F(BYTE*, node, 64) = model;
+    for (int i = 68; i <= 80; i += 4)
+        F(int, node, i) = 0;
+    F(int, node, 84) = -1;
+    F(int, node, 36) = F(int, model, 36);
+    F(int, self, 344) = -1;
+    F(void*, self, 0) = &wi33_vtbl651358;
+    F(void*, node, 0) = &wi33_vtbl65130c;
+    BYTE* owner = a;
+    if (kind == 1) {
+        if (F(int, b, 16) != 17)
+            CallC(Wi33_Fatal, (const char*)&wi33_s67e918, 0);
+        CallThis(Wi33_GetWorld, F(BYTE*, b, 68), &m);
+        owner = CallThis<BYTE*>(Wi33_Root, b);
+        F(BYTE, b, 40) |= 1;
+    }
+    BYTE* p = (BYTE*)operator new(112);
+    if (p) {
+        CallThis(Wi33_NodeN, p, (const char*)&wi33_name68d1c0, 6, 1);
+        memset(p + 64, 0, 48);
+        memcpy(p + 64, &wi33_identity7025f0, 48);
+        F(void*, p, 0) = &wi33_vtbl64d7d0;
+        F(int, p, 56) = 0;
+        F(int, p, 60) = 0;
+    }
+    F(BYTE*, self, 324) = p;
+    CallThis(Wi33_Apply, p, &m, 0);
+    BYTE* adj = self ? node : 0;
+    if (kind == 0) {
+        if (owner == F(BYTE*, world, 524))
+            CallVirt(owner, 20, 0, adj);
+        else
+            CallVirt(owner, 28, adj);
+    } else {
+        CallVirt(F(BYTE*, b, 44), 20, 0, adj);
+    }
+    memcpy(self + 276, b + 20, 16);
+    CallThis(Wi33_Attach, self, adj);
+    return self;
+}
+
+}

@@ -3107,3 +3107,58 @@ BYTE* __fastcall List_NewNode(void* list, void*, BYTE* src)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// Batch 33: polyline nearness, the way file parser
+
+extern "C" void Rt33_Ctor4883f0(); KING_ALIAS("_Rt33_Ctor4883f0", "@Rec4883f0_Construct@12")
+extern "C" void Rt33_End(); KING_ALIAS("_Rt33_End", "@SchList_End@12")
+extern "C" void Rt33_Insert(); KING_ALIAS("_Rt33_Insert", "@List489_Insert@20")
+extern "C" void Rt33_SetDestroy(); KING_ALIAS("_Rt33_SetDestroy", "@RoadSet_Destroy@4")
+extern "C" void Rt33_SetText(); KING_ALIAS("_Rt33_SetText", "@Rec_SetText12@12")
+ASM_VAR(char, rt33_s66c934, $L_66c934)
+ASM_VAR(char, rt33_s67035c, $L_67035c)
+
+extern "C" {
+
+// [FUN_48dd50] whether the polyline (self, its bounding sphere at +584) comes within *range of point p: outside
+// the sphere plus range 0, else the nearest parameter of the squared distance polynomial on 0..1 (into at)
+int __fastcall Polyline_Near(BYTE* self, void*, const DVec3* p, double* range, double* at)
+{
+    DVec3 c = *(const DVec3*)(self + 584);
+    double dx = c.x - p->x;
+    double dy = c.y - p->y;
+    double dz = c.z - p->z;
+    double d = x87_sqrt((dy * dy + dz * dz) + dx * dx);
+    if (d > F(double, self, 608) + *range)
+        return 0;
+    Poly sq;
+    Poly_DistanceSq(&sq, (VecPoly*)self, p);
+    return Poly_FindMin(&sq, range, at, 0.0, 1.0, 3);
+}
+
+// [FUN_488620] way file parser constructor: empty fields, a list (+24) holding one empty record (66c934) and
+// its first node at +28, the text 67035c
+BYTE* __fastcall WayParser_Construct(BYTE* self, void*)
+{
+    for (int i = 0; i < 6; i++)
+        F(int, self, i * 4) = 0;
+    BYTE** list = (BYTE**)(self + 24);
+    BYTE* head = CallC<BYTE*>(FUN_44b740, 44);
+    list[0] = head;
+    F(BYTE*, head, 0) = head;
+    F(BYTE*, list[0], 4) = list[0];
+    BYTE tmp[36];
+    BYTE* t = CallThis<BYTE*>(Rt33_Ctor4883f0, tmp, (const char*)&rt33_s66c934);
+    void* end;
+    CallThis(Rt33_End, list, &end);
+    void* out;
+    CallThis(Rt33_Insert, list, &out, end, t);
+    CallThis(Rt33_SetDestroy, tmp);
+    CallThis(Rt33_SetText, self, (const char*)&rt33_s67035c);
+    F(BYTE*, self, 28) = list[0];
+    F(BYTE*, self, 28) = F(BYTE*, list[0], 4);
+    return self;
+}
+
+}

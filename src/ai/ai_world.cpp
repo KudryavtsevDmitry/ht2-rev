@@ -5888,7 +5888,7 @@ extern "C" void FUN_449680(); KING_ALIAS("_FUN_449680", "@List64_Construct@12")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_4ad440(); KING_ALIAS("_FUN_4ad440", "@Sch_Construct@16")
 ASM_PROC($L_401b90)
-ASM_PROC($L_447d50)
+extern "C" void $L_447d50(); KING_ALIAS("_$L_447d50", "@HashTable_Construct@8")
 ASM_VAR(char, g_init68a830, $L_68a830)
 ASM_VAR(char, g_init68a840, $L_68a840)
 ASM_VAR(char, g_init68a850, $L_68a850)
@@ -9718,7 +9718,7 @@ extern "C" void FUN_44a490(); KING_ALIAS("_FUN_44a490", "@Vec1_Reserve@16")
 extern "C" void FUN_4611e0(); KING_ALIAS("_FUN_4611e0", "_Bytes_Construct")
 extern "C" void FUN_45b3d0(); KING_ALIAS("_FUN_45b3d0", "_Names_IntroSort")    // introsort loop of 12-byte records (first, last, 0, depth, cmp)
 extern "C" void FUN_45b4e0(); KING_ALIAS("_FUN_45b4e0", "_Sort_FinalInsertion12")
-ASM_PROC(FUN_488620)    // a way file parser's constructor
+extern "C" void FUN_488620(); KING_ALIAS("_FUN_488620", "@WayParser_Construct@8")    // a way file parser's constructor
 extern "C" void FUN_4895b0(); KING_ALIAS("_FUN_4895b0", "@Rt_ReadFile@12")    // parses a way file (name)
 extern "C" void FUN_4886e0(); KING_ALIAS("_FUN_4886e0", "@RoadIndex_Destroy@4")    // the parser's destructor
 extern "C" void FUN_488350(); KING_ALIAS("_FUN_488350", "_Crc_File")
@@ -14740,7 +14740,7 @@ extern "C" void __fastcall DwordVec_InsertFill(DWORD** self, void*, DWORD* pos, 
 // the two closest free helpers (players in mode 5) head for the player
 
 ASM_VAR(AsmLabel, s_callHelpers, $L_66cc40)
-ASM_PROC(FUN_45bab0)    // introsort loop (first, last, 0, depth, point24 by value): by distance to a point
+extern "C" void FUN_45bab0(); KING_ALIAS("_FUN_45bab0", "_Holders_IntrosortByDistance")    // introsort loop (first, last, 0, depth, point24 by value): by distance to a point
 extern "C" void FUN_45bbc0(); KING_ALIAS("_FUN_45bbc0", "_Near_FinalInsertion")    // final insertion sort (first, last, point24 by value)
 
 // [FUN_40a690] collects the free players in mode 5, sorts them by distance to the player's position and sends the
@@ -15756,7 +15756,7 @@ extern "C" int* __cdecl Ai_FindParkingPlace(int* market, int* place, const int* 
 extern "C" void FUN_4660b0(); KING_ALIAS("_FUN_4660b0", "_Sort_MedianBy504")    // median of three (a, b, c, cmp) -> pointer
 extern "C" void FUN_466160(); KING_ALIAS("_FUN_466160", "_Sort_PartitionBy504")    // unguarded partition (first, last, pivot, cmp)
 extern "C" void FUN_45f8d0(); KING_ALIAS("_FUN_45f8d0", "_IntroSort_By504")    // introsort loop (first, last, 0, depth, cmp)
-ASM_PROC(FUN_465fd0)    // partial sort (first, middle, last, cmp)
+extern "C" void FUN_465fd0(); KING_ALIAS("_FUN_465fd0", "_Recs504_PartialSort")    // partial sort (first, middle, last, cmp)
 extern "C" void FUN_45f990(); KING_ALIAS("_FUN_45f990", "_Ptrs504_FinalSort")    // final insertion sort (first, last, cmp)
 
 // [FUN_431420] a sorted copy of the players at 68a980; the last one (the head when there are none)
@@ -16116,7 +16116,7 @@ extern "C" void FUN_458500(); KING_ALIAS("_FUN_458500", "@Rec458500_Copy@12")   
 extern "C" void FUN_459610(); KING_ALIAS("_FUN_459610", "@Vec4b_CopyB@12")    // vector<4 bytes> copy constructor (thiscall src)
 extern "C" void FUN_463940(); KING_ALIAS("_FUN_463940", "_Rec36_CopyBack")    // copy_backward of 36-byte records (first, last, result, -, 0)
 extern "C" void FUN_45acc0(); KING_ALIAS("_FUN_45acc0", "@Vec4_Assign@12")    // vector<4 bytes> assignment (thiscall src)
-ASM_PROC(FUN_4671c0)    // uninitialized copy of 36-byte records (first, last, dest, -)
+extern "C" void FUN_4671c0(); KING_ALIAS("_FUN_4671c0", "_Recs36_UninitCopy")    // uninitialized copy of 36-byte records (first, last, dest, -)
 extern "C" void FUN_44b0d0(); KING_ALIAS("_FUN_44b0d0", "@Vec4_Free@8")    // vector<4 bytes> destructor (thiscall)
 
 // [FUN_452380] vector<int>::insert(pos, first, last) (thiscall), the same as FUN_44d170
@@ -16236,7 +16236,7 @@ extern "C" void __fastcall Rec36Vec_InsertAux(BYTE** v, void*, BYTE* pos, const 
 
 extern "C" void FUN_458660(); KING_ALIAS("_FUN_458660", "@Rec458660_Copy@12")    // 56-byte record copy constructor (thiscall src)
 extern "C" void FUN_463c60(); KING_ALIAS("_FUN_463c60", "_Rec56_CopyBack")    // copy_backward of 56-byte records (first, last, result, -, 0)
-ASM_PROC(FUN_467440)    // uninitialized copy of 56-byte records (first, last, dest, -)
+extern "C" void FUN_467440(); KING_ALIAS("_FUN_467440", "_Recs56_UninitCopy")    // uninitialized copy of 56-byte records (first, last, dest, -)
 extern "C" void FUN_468d10(); KING_ALIAS("_FUN_468d10", "_UninitCopy32Skip1")    // uninitialized copy of 32-byte entries (first, last, dest, -)
 extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")    // 32-byte entry copy (thiscall src; skips word 1)
 
@@ -16316,7 +16316,7 @@ extern "C" void FUN_40c220(); KING_ALIAS("_FUN_40c220", "@Rec40c220_Copy@12")   
 extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")    // script handle assignment (thiscall src)
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")    // script handle copy constructor (thiscall src)
 extern "C" void FUN_462500(); KING_ALIAS("_FUN_462500", "_Rec104_CopyBack")    // copy_backward of 104-byte records (first, last, result, -, 0)
-ASM_PROC(FUN_466590)    // uninitialized copy of 104-byte records (first, last, dest, -)
+extern "C" void FUN_466590(); KING_ALIAS("_FUN_466590", "_Recs104_UninitCopy")    // uninitialized copy of 104-byte records (first, last, dest, -)
 extern "C" void FUN_460960(); KING_ALIAS("_FUN_460960", "_Rec40c220_Construct")    // construct a 104-byte record in place (dest, src)
 extern "C" void FUN_4581f0(); KING_ALIAS("_FUN_4581f0", "@Rec4581f0_Copy@12")    // 24-byte record copy constructor (thiscall src)
 extern "C" void FUN_463390(); KING_ALIAS("_FUN_463390", "_Rec24b_CopyBack")    // copy_backward of 24-byte records (first, last, result, -, 0)
@@ -16843,7 +16843,7 @@ extern "C" void FUN_45aa00(); KING_ALIAS("_FUN_45aa00", "@Vec24_Assign@12")    /
 extern "C" void FUN_46c900(); KING_ALIAS("_FUN_46c900", "@Mult46c900_DeletingDestructor@12")    // a 24-byte element's destructor (thiscall: flags)
 extern "C" void FUN_44a500(); KING_ALIAS("_FUN_44a500", "@Vec24_Free@8")    // vector storage free (thiscall)
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // script handle destructor (thiscall)
-ASM_PROC(FUN_466e50)    // uninitialized_copy of 24-byte records (first, last, dest, -)
+extern "C" void FUN_466e50(); KING_ALIAS("_FUN_466e50", "_Recs24_UninitCopy")    // uninitialized_copy of 24-byte records (first, last, dest, -)
 extern "C" void FUN_448300(); KING_ALIAS("_FUN_448300", "@Vec24_Destroy@8")    // vector<24 bytes> destructor (thiscall)
 extern "C" void FUN_425790(); KING_ALIAS("_FUN_425790", "_Player_CheckGoods")
 extern "C" void FUN_41ef90(); KING_ALIAS("_FUN_41ef90", "_Player_CheckTownAA")
@@ -21493,7 +21493,7 @@ extern "C" void __cdecl AiworInit_4014f0() { Aiwor_RngInit((DWORD*)g_aiworRng68a
 
 typedef void (*AiFn)();
 extern "C" void FUN_48e450(); KING_ALIAS("_FUN_48e450", "@Poly1392_AbsDiff01@8")
-ASM_PROC(FUN_48dd50)
+extern "C" void FUN_48dd50(); KING_ALIAS("_FUN_48dd50", "@Polyline_Near@20")
 ASM_VAR(DWORD, g_aiwor68baa4, $L_68baa4)
 ASM_VAR(DWORD, g_aiwor68baa8, $L_68baa8)
 ASM_VAR(AsmLabel, g_aiwor68b9c8, $L_68b9c8)
@@ -24608,7 +24608,7 @@ BYTE** __cdecl Records_PartitionNear(BYTE** first, BYTE** last, BYTE* pivot, Ps_
 // === the nearest point of a road's curves to a point ($L_454ca0, a vtable entry)
 
 extern "C" void Cn_Nearest(); KING_ALIAS("_Cn_Nearest", "@Curve_NearestTo@36")
-ASM_FUNC(Cn_Inside, FUN_48dd50)
+extern "C" void Cn_Inside(); KING_ALIAS("_Cn_Inside", "@Polyline_Near@20")
 
 extern "C" {
 
@@ -24804,3 +24804,111 @@ void** __fastcall Hash_NewNode(void*, void*, const DWORD* key)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 33: sorting by road distance
+
+extern "C" {
+
+// [FUN_469c70] unguarded linear insert of v at last: earlier entries farther from point pt (by their road
+// position's point, +40) than v move up one
+void __cdecl Ai_InsertByDistance(BYTE** last, BYTE* v, DVec3 pt)
+{
+    BYTE** prev = last - 1;
+    for (;;) {
+        DVec3 a, b;
+        Road_PointOf(&a, *(PositionId*)(v + 40));
+        double ax = pt.x - a.x, ay = pt.y - a.y, az = pt.z - a.z;
+        Road_PointOf(&b, *(PositionId*)(*prev + 40));
+        double bx = pt.x - b.x, by = pt.y - b.y, bz = pt.z - b.z;
+        double dv = x87_sqrt((ay * ay + az * az) + ax * ax);
+        double dp = x87_sqrt((by * by + bz * bz) + bx * bx);
+        if (!(dp > dv))
+            break;
+        *last = *prev;
+        last = prev;
+        prev--;
+    }
+    *last = v;
+}
+
+}
+
+// ---------------------------------------------------------------------------
+// Batch 33: the AI hash tables
+
+extern "C" void Ht33_LowerBound(); KING_ALIAS("_Ht33_LowerBound", "_U32_LowerBound")
+extern "C" void Ht33_AllocFill(); KING_ALIAS("_Ht33_AllocFill", "_Vec4b_AllocFill@12")
+extern "C" void Ht33_InsertFill(); KING_ALIAS("_Ht33_InsertFill", "@DwordVec_InsertFill@20")
+ASM_VAR(unsigned, ht33_primes64b530, $L_64b530)
+ASM_VAR(unsigned, ht33_primesEnd64b5a0, $L_64b5a0)
+ASM_VAR(unsigned, ht33_lastPrime64b59c, $L_64b59c)
+
+extern "C" {
+
+// [$L_447d50] hash table constructor for 100 entries: the bucket vector (+4) holds the next prime from the
+// table of null buckets, no entries (+16); the three empty functor bytes (+0) take what the asm stack held
+BYTE* __fastcall HashTable_Construct(BYTE* self, void*)
+{
+    F(BYTE, self, 0) = 0;
+    F(BYTE, self, 1) = 0;
+    F(BYTE, self, 2) = 0;
+    BYTE** v = (BYTE**)(self + 4);
+    v[0] = 0;
+    v[1] = 0;
+    v[2] = 0;
+    F(int, self, 16) = 0;
+    unsigned want = 100;
+    const unsigned* p = CallC<const unsigned*>(Ht33_LowerBound, &ht33_primes64b530, &ht33_primesEnd64b5a0, &want, 0);
+    unsigned n = p == &ht33_primesEnd64b5a0 ? ht33_lastPrime64b59c : *p;
+    if ((unsigned)((v[2] - v[0]) >> 2) < n) {
+        int used = (int)((v[1] - v[0]) >> 2);
+        BYTE* nb = CallStd<BYTE*>(Ht33_AllocFill, n, v[0], v[1]);
+        if (int cap = (int)((v[2] - v[0]) >> 2))
+            CallC(FUN_44b4a0, v[0], (unsigned)(cap * 4));
+        v[0] = nb;
+        v[1] = nb + used * 4;
+        v[2] = nb + n * 4;
+    }
+    void* zero = 0;
+    CallThis(Ht33_InsertFill, v, v[1], n, &zero);
+    F(int, self, 16) = 0;
+    return self;
+}
+
+}
+
+extern "C" void Ps33_Adjust(); KING_ALIAS("_Ps33_Adjust", "_Heap504_Adjust")
+ASM_PROC(FUN_46ad50)    // pop heap step (first, last, result, value, cmp, -)
+
+extern "C" {
+
+// [FUN_465fd0] partial sort (first, middle, last, cmp) of records by their double at +504: a heap of
+// first..middle, the later entries that differ from the top swapped in, then the heap sorted
+void __cdecl Recs504_PartialSort(BYTE** first, BYTE** middle, BYTE** last, int cmp)
+{
+    int len = (int)(((BYTE*)middle - (BYTE*)first) & ~3);
+    if (len >= 8) {
+        int n = (int)(middle - first);
+        int parent = (n - 2) / 2;
+        for (BYTE** p = first + parent;; p--, parent--) {
+            CallC(Ps33_Adjust, first, parent, n, *p, cmp);
+            if (!parent)
+                break;
+        }
+    }
+    for (BYTE** i = middle; i < last; i++) {
+        double d = F(double, *i, 504) - F(double, *first, 504);
+        if (d < 0.0 || d > 0.0)
+            CallC(FUN_46ad50, first, middle, i, *i, cmp, 0);
+    }
+    if (len > 4) {
+        BYTE** e = middle;
+        do {
+            e--;
+            CallC(FUN_46ad50, first, e, e, *e, cmp, 0);
+        } while ((((BYTE*)e - (BYTE*)first) & ~3) > 4);
+    }
+}
+
+}

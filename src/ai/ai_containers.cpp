@@ -2706,7 +2706,7 @@ BYTE** __cdecl Nodes_RandomOther(BYTE** first, BYTE** last, int idx, BYTE* playe
 
 // === the final insertion sort by road distance (FUN_45bbc0)
 
-ASM_PROC(FUN_469c70)    // unguarded linear insert by road distance (last, value, point)
+extern "C" void FUN_469c70(); KING_ALIAS("_FUN_469c70", "_Ai_InsertByDistance")    // unguarded linear insert by road distance (last, value, point)
 
 // the distance of obj's road position from pt
 static double RdDist(BYTE* obj, const DVec3* pt)
@@ -2853,3 +2853,174 @@ BYTE* __cdecl OrderInfos_UninitCopy(const BYTE* first, const BYTE* last, BYTE* d
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 33: uninitialized copies of records with a shared head
+
+extern "C" void Uc33_Allocate(); KING_ALIAS("_Uc33_Allocate", "_Stl_Allocate")
+extern "C" void Uc33_Reserve1(); KING_ALIAS("_Uc33_Reserve1", "@Vec1_Reserve@16")
+extern "C" void Uc33_Copy1(); KING_ALIAS("_Uc33_Copy1", "_Copy1")
+ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte items (first, last, dest, -)
+
+// the shared head (object +0 with its count at +4, value +4, flags +8; flag 0x10000 means a plain value)
+static void Uc33_CopyHead(BYTE* d, const BYTE* s)
+{
+    if (F(DWORD, s, 8) & 0x10000) {
+        F(DWORD, d, 8) = F(DWORD, s, 8);
+        F(DWORD, d, 0) = F(DWORD, s, 0);
+        F(DWORD, d, 4) = F(DWORD, s, 4);
+    } else {
+        F(DWORD, d, 4) = 0;
+        if (BYTE* o = F(BYTE*, s, 0)) {
+            F(BYTE*, d, 0) = o;
+            F(DWORD, d, 8) = F(DWORD, s, 8);
+            F(int, o, 4)++;
+        } else {
+            F(DWORD, d, 0) = 0;
+            F(DWORD, d, 8) = 0;
+        }
+    }
+}
+
+extern "C" {
+
+// [FUN_466e50..$L_466fc0] uninitialized copy of 24-byte records (head, vector of 24-byte items at +12); returns
+// the end of the copies
+BYTE* __cdecl Recs24_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*)
+{
+    BYTE* dest0 = dest;
+    for (; first != last; first += 24, dest += 24) {
+        if (!dest)
+            continue;
+        Uc33_CopyHead(dest, first);
+        int n = (int)(F(BYTE*, first, 16) - F(BYTE*, first, 12)) / 24;
+        BYTE** v = (BYTE**)(dest + 12);
+        v[0] = 0;
+        v[1] = 0;
+        v[2] = 0;
+        BYTE* p = n ? CallC<BYTE*>(Uc33_Allocate, n * 24) : 0;
+        v[0] = p;
+        v[1] = p;
+        v[2] = p + n * 24;
+        v[1] = CallC<BYTE*>(FUN_466200, F(BYTE*, first, 12), F(BYTE*, first, 16), p, dest0);
+    }
+    return dest;
+}
+
+// [FUN_466590..$L_466727] uninitialized copy of 104-byte records (head, values +16..+48, +56..+72, +80, +84, a
+// byte vector at +88); returns the end of the copies
+BYTE* __cdecl Recs104_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*)
+{
+    for (; first != last; first += 104, dest += 104) {
+        if (!dest)
+            continue;
+        Uc33_CopyHead(dest, first);
+        memcpy(dest + 16, first + 16, 36);
+        memcpy(dest + 56, first + 56, 20);
+        F(DWORD, dest, 80) = F(DWORD, first, 80);
+        F(DWORD, dest, 84) = F(DWORD, first, 84);
+        BYTE alloc;
+        CallThis(Uc33_Reserve1, dest + 88, (int)(F(BYTE*, first, 92) - F(BYTE*, first, 88)), &alloc);
+        F(BYTE*, dest, 92) = CallC<BYTE*>(Uc33_Copy1, F(BYTE*, first, 88), F(BYTE*, first, 92), F(BYTE*, dest, 88));
+    }
+    return dest;
+}
+
+}
+
+extern "C" void Uc33_Reserve4(); KING_ALIAS("_Uc33_Reserve4", "@Vec4_Reserve@16")
+extern "C" void Uc33_CopyDwords(); KING_ALIAS("_Uc33_CopyDwords", "_UninitCopyDwords")
+
+extern "C" {
+
+// [FUN_4671c0..$L_4672fe] uninitialized copy of 36-byte records (3 values, a byte vector at +12, a dword
+// vector at +24); returns the end of the copies
+BYTE* __cdecl Recs36_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*)
+{
+    BYTE* dest0 = dest;
+    for (; first != last; first += 36, dest += 36) {
+        if (!dest)
+            continue;
+        memcpy(dest, first, 12);
+        BYTE** b = (BYTE**)(dest + 12);
+        b[0] = 0;
+        b[1] = 0;
+        b[2] = 0;
+        int n = (int)(F(BYTE*, first, 16) - F(BYTE*, first, 12));
+        BYTE* p = n ? CallC<BYTE*>(Uc33_Allocate, n) : 0;
+        b[0] = p;
+        b[1] = p;
+        b[2] = p + n;
+        b[1] = CallC<BYTE*>(Uc33_Copy1, F(BYTE*, first, 12), F(BYTE*, first, 16), p);
+        BYTE alloc;
+        CallThis(Uc33_Reserve4, dest + 24, (int)(F(BYTE*, first, 28) - F(BYTE*, first, 24)) >> 2, &alloc);
+        F(BYTE*, dest, 28) = CallC<BYTE*>(Uc33_CopyDwords, F(BYTE*, first, 24), F(BYTE*, first, 28),
+                                          F(BYTE*, dest, 24), dest0);
+    }
+    return dest;
+}
+
+}
+
+// ---------------------------------------------------------------------------
+// Batch 33: sorting holders by distance to a point
+
+struct Is33_Pt { DWORD d[6]; };    // the point (3 doubles), passed by value
+extern "C" void Is33_Middle(); KING_ALIAS("_Is33_Middle", "_Road_MiddleOfThree")
+extern "C" void Is33_Partition(); KING_ALIAS("_Is33_Partition", "_Holders_PartitionByDistance")
+extern "C" void Is33_MakeHeap(); KING_ALIAS("_Is33_MakeHeap", "_MakeHeap4A")
+ASM_PROC(FUN_469bc0)    // sort_heap by distance (first, last, point)
+
+extern "C" {
+
+// [FUN_45bab0] introsort loop over holders (first, last, -, depth limit) by distance to the point pt: median of
+// three, partition, recurse on the upper part; at depth 0 a heap sort; stops at 16 entries
+void __cdecl Holders_IntrosortByDistance(BYTE** first, BYTE** last, int, int depth, Is33_Pt pt)
+{
+    while (((BYTE*)last - (BYTE*)first & ~3) > 64) {
+        if (!depth) {
+            CallC(Is33_MakeHeap, first, last, pt, 0, 0);
+            CallC(FUN_469bc0, first, last, pt);
+            return;
+        }
+        depth--;
+        int n = (int)(last - first);
+        BYTE** m = CallC<BYTE**>(Is33_Middle, first, first + n / 2, last - 1, pt);
+        BYTE** cut = CallC<BYTE**>(Is33_Partition, first, last, *m, pt);
+        Holders_IntrosortByDistance(cut, last, 0, depth, pt);
+        last = cut;
+    }
+}
+
+}
+
+extern "C" {
+
+// [FUN_467440..$L_467561] uninitialized copy of 56-byte records (a value, a byte vector at +4, values +16..+32
+// and +40..+52); returns the end of the copies
+BYTE* __cdecl Recs56_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*)
+{
+    for (; first != last; first += 56, dest += 56) {
+        if (!dest)
+            continue;
+        F(DWORD, dest, 0) = F(DWORD, first, 0);
+        BYTE** b = (BYTE**)(dest + 4);
+        int n = (int)(F(BYTE*, first, 8) - F(BYTE*, first, 4));
+        b[0] = 0;
+        b[1] = 0;
+        b[2] = 0;
+        BYTE* p = n ? CallC<BYTE*>(Uc33_Allocate, n) : 0;
+        b[0] = p;
+        b[1] = p;
+        b[2] = p + n;
+        const BYTE* s0 = F(BYTE*, first, 4);
+        const BYTE* s1 = F(BYTE*, first, 8);
+        memmove(p, s0, s1 - s0);
+        b[1] = p + (s1 - s0);
+        memcpy(dest + 16, first + 16, 20);
+        memcpy(dest + 40, first + 40, 16);
+    }
+    return dest;
+}
+
+}

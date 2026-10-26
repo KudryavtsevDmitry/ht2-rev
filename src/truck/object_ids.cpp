@@ -865,7 +865,7 @@ void __fastcall MovingItem_CheckFrame(BYTE* s, void*, const float* m, const char
 extern "C" void Nm_Base(); KING_ALIAS("_Nm_Base", "@NetObject_Create@88")
 extern "C" void Nm_Root(); KING_ALIAS("_Nm_Root", "@Node_Root@8")
 extern "C" void Nm_World(); KING_ALIAS("_Nm_World", "@Node_GetWorld@12")
-ASM_FUNC(Nm_Object, FUN_5a44c0)
+extern "C" void Nm_Object(); KING_ALIAS("_Nm_Object", "@WeatherItem_Construct@84")
 ASM_VAR(AsmLabel, g_nm651c34, $L_651c34)
 ASM_VAR(AsmLabel, g_nm651be8, $L_651be8)
 
