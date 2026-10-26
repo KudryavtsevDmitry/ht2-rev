@@ -1867,8 +1867,8 @@ extern "C" __declspec(dllimport) void __stdcall CoTaskMemFree(void* p);
 struct GsStatStg { WCHAR* pwcsName; DWORD rest[17]; };    // STATSTG
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")    // surface: prepare
 extern "C" void FUN_5d8460(); KING_ALIAS("_FUN_5d8460", "_Dd_ChooseTextureFormat")
-ASM_PROC($L_5d7b90)     // the video mode dialog (8 args)
-ASM_PROC($L_5d7c20)     // tries a video mode (w, h, cres, flags, 3 outs)
+ASM_FUNC($L_5d7b90, _Dd_TestModeKind)     // the video mode dialog (8 args)
+ASM_FUNC($L_5d7c20, _Dd_TestMode)     // tries a video mode (w, h, cres, flags, 3 outs)
 ASM_FUNC($L_5dd8c0, @MainWnd_SetVideoMode@24)     // window: set the video mode (w, h, cres, flags)
 KING_VAR(BYTE*, g_gs6cecd8, 6cecd8)
 KING_VAR(AsmLabel, s_gs677670, 677670)

@@ -7568,7 +7568,7 @@ BYTE* __fastcall Module_Load(BYTE* s, void*, const char* dir, const char* name, 
 
 // === the app's video mode, devices and main window set up (FUN_5e3bc0 with its tail $L_5e3c22)
 
-ASM_PROC($L_5d7c20)    // tries a video mode (w, h, cres, flags, 3 outs)
+ASM_FUNC($L_5d7c20, _Dd_TestMode)    // tries a video mode (w, h, cres, flags, 3 outs)
 extern "C" BYTE* __cdecl Dm_NewApp(); KING_ALIAS("_Dm_NewApp", "_Fw_NewApp384")
 extern "C" void __cdecl Dm_DefaultMode(int* w, int* h, int* c, int* flags); KING_ALIAS("_Dm_DefaultMode", "_Dd_DefaultMode")
 extern "C" void __cdecl Dm_TexFormat(int kind, int b); KING_ALIAS("_Dm_TexFormat", "_Dd_ChooseTextureFormat")
@@ -8271,7 +8271,7 @@ extern "C" void __cdecl CGameApp_Fatal()
 
 // [$L_5ddad0] sets the display mode (w, h, colour bits, flags; -1 keeps the
 // current +264 / +268) and remembers it
-extern "C" void Fw_SetMode5d7c20(); KING_ALIAS("_Fw_SetMode5d7c20", "$L_5d7c20")
+extern "C" void Fw_SetMode5d7c20(); KING_ALIAS("_Fw_SetMode5d7c20", "_Dd_TestMode")
 extern "C" BOOL __fastcall MainWnd_SetMode(BYTE* self, void*, int w, int h, int bits, int flags)
 {
     if (bits == -1)
