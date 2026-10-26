@@ -410,7 +410,7 @@ extern "C" int __fastcall Wheel_StepLevel(BYTE* s, void*, int i, float* amount, 
     return 1;
 }
 
-ASM_PROC(FUN_4e41d9)    // a random value (angle, name)
+extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")    // a random value (angle, name)
 extern "C" double __cdecl Table360_At(float angle);   // world.cpp
 ASM_VAR(char, g_strCheckDamage, $L_67498c)    // "_Car_V::check_damage"
 

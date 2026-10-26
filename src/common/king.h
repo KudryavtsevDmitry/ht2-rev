@@ -552,7 +552,7 @@ inline BOOL King_PlayMovie(const char* name, int mode) { return Movie_Play(name,
 // screen's subsystems down.
 inline void King_LeaveGame() { CallC(FUN_511820); }
 
-ASM_PROC(FUN_5764f0)    // King_CheatKey
+extern "C" void FUN_5764f0(); KING_ALIAS("_FUN_5764f0", "_Cheat_KeyTyped")    // King_CheatKey
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // Sound_Find
 extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")    // Sound::Play
 extern "C" void FUN_5bd710(); KING_ALIAS("_FUN_5bd710", "_Ctl_DrawFrame")    // Gfx_DrawBox

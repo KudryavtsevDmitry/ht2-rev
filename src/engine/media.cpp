@@ -3203,8 +3203,8 @@ extern "C" void FUN_603170(); KING_ALIAS("_FUN_603170", "@DpMessage_Set@16")
 extern "C" void FUN_6032f0(); KING_ALIAS("_FUN_6032f0", "@Gate_Set24@8")
 extern "C" void FUN_6034e0(); KING_ALIAS("_FUN_6034e0", "@Stream_ReadBlob@20")
 extern "C" void FUN_601060(); KING_ALIAS("_FUN_601060", "_Net_Receive")    // the next received message (stream); 0 when there is one
-ASM_PROC(FUN_6031e0)    // a message's next record type (out); 0 when there is one
-ASM_PROC(FUN_603300)    // skips to the next record; 0 when there is one
+extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // a message's next record type (out); 0 when there is one
+extern "C" void FUN_603300(); KING_ALIAS("_FUN_603300", "@Msg_SkipRecord@8")    // skips to the next record; 0 when there is one
 ASM_VAR(double, g_nm707f88, $L_707f88)
 ASM_VAR(double, g_nm64b5f0, $L_64b5f0)
 ASM_VAR(double, g_nm64b730, $L_64b730)
@@ -3793,8 +3793,8 @@ extern "C" void Cr_TscNow(); KING_ALIAS("_Cr_TscNow", "_Tsc_Now")
 extern "C" void Cr_Receive(); KING_ALIAS("_Cr_Receive", "_Net_Receive")
 extern "C" void Cr_MsgSet(); KING_ALIAS("_Cr_MsgSet", "@DpMessage_Set@16")
 extern "C" void Cr_Set24(); KING_ALIAS("_Cr_Set24", "@Gate_Set24@8")
-ASM_PROC(FUN_6031e0)    // the next field tag of a message (out)
-ASM_PROC(FUN_603300)    // whether a message is read to its end
+extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // the next field tag of a message (out)
+extern "C" void FUN_603300(); KING_ALIAS("_FUN_603300", "@Msg_SkipRecord@8")    // whether a message is read to its end
 extern "C" void Cr_ReadBlob(); KING_ALIAS("_Cr_ReadBlob", "@Stream_ReadBlob@20")
 extern "C" void Cr_ReadInt(); KING_ALIAS("_Cr_ReadInt", "@Stream_ReadInt@16")
 extern "C" void Cr_Write45(); KING_ALIAS("_Cr_Write45", "@Msg_Write45@16")
@@ -5128,7 +5128,7 @@ extern "C" void Mf_Record(); KING_ALIAS("_Mf_Record", "@Media_RecordBlock@12")
 extern "C" void Mf_Receive(); KING_ALIAS("_Mf_Receive", "_Net_Receive")
 extern "C" void Mf_Seek(); KING_ALIAS("_Mf_Seek", "@Rec_SeekTime@16")
 extern "C" void Mf_Header(); KING_ALIAS("_Mf_Header", "@Rec_ReadHeader@16")
-ASM_FUNC(Mf_Next, FUN_603300)
+extern "C" void Mf_Next(); KING_ALIAS("_Mf_Next", "@Msg_SkipRecord@8")
 ASM_VAR(BYTE*, g_mf707f6c, $L_707f6c)
 ASM_VAR(double, g_mf64b730, $L_64b730)
 ASM_VAR(double, g_mf64b678, $L_64b678)
@@ -5348,7 +5348,7 @@ extern "C" void Ah_MsgSet(); KING_ALIAS("_Ah_MsgSet", "@DpMessage_Set@16")
 extern "C" void Ah_MsgAtEnd(); KING_ALIAS("_Ah_MsgAtEnd", "@Gate_Set24@8")
 extern "C" void Ah_MsgFree(); KING_ALIAS("_Ah_MsgFree", "@MsgBuf_Destroy@8")
 extern "C" void Ah_Root(); KING_ALIAS("_Ah_Root", "@Node_Root@8")
-ASM_FUNC(Ah_MsgDone, FUN_603300)
+extern "C" void Ah_MsgDone(); KING_ALIAS("_Ah_MsgDone", "@Msg_SkipRecord@8")
 ASM_VAR(char, g_ahNetFmt, $L_67f920)
 ASM_VAR(char, g_ahNetLong, $L_67f8f0)
 
@@ -5391,6 +5391,208 @@ char* __cdecl Node_NetName(BYTE* o, char* dst)
     }
     strncpy(dst, mod, strlen(mod) + 1);
     return strncpy(dst + strlen(mod) + 1, room, strlen(room) + 1);
+}
+
+} // extern "C"
+
+// === the scene's light colours for a frame (FUN_5ca660 with its tail $L_5ca70c)
+
+ASM_FUNC(Lc_Channel, $L_5cb970)    // a light channel's flicker at time t (0 without the effects table)
+ASM_VAR(BYTE*, g_lc7025b8, $L_7025b8)
+ASM_VAR(float, g_lc64c308, $L_64c308)
+ASM_VAR(float, g_lc64c250, $L_64c250)
+ASM_VAR(float, g_lc64c264, $L_64c264)
+ASM_VAR(float, g_lc64c458, $L_64c458)
+ASM_VAR(float, g_lc651704, $L_651704)
+ASM_VAR(DWORD, g_lc67f940, $L_67f940)
+ASM_VAR(DWORD, g_lc67f944, $L_67f944)
+ASM_VAR(DWORD, g_lc67f948, $L_67f948)
+ASM_VAR(float, g_lc67f94c, $L_67f94c)
+ASM_VAR(float, g_lc67f950, $L_67f950)
+ASM_VAR(float, g_lc67f954, $L_67f954)
+ASM_VAR(DWORD, g_lc70cf68, $L_70cf68)
+ASM_VAR(float, g_lc70dcb8, $L_70dcb8)
+ASM_VAR(float, g_lc70dcbc, $L_70dcbc)
+ASM_VAR(float, g_lc70dcc0, $L_70dcc0)
+
+// a colour 0xFFrrggbb from three channels scaled by k
+static DWORD Lc_Pack(float r, float g, double b, float k)
+{
+    DWORD c = (DWORD)(int)(r * k * g_lc64c458) | 0xFFFFFF00u;
+    c <<= 8;
+    c |= (DWORD)(int)(g * k * g_lc64c458);
+    c <<= 8;
+    c |= (DWORD)(int)(b * k * g_lc64c458);
+    return c;
+}
+
+extern "C" {
+
+// [FUN_5ca660..$L_5ca70c] the sky's light (7025b8: +520..+528 base colour, +512 / +516 its two sources) at time t:
+// each channel the base plus half the sources' sum plus its flicker, clamped to 0..1; the full, the +64c308 and the
+// +651704 scaled colours packed (67f940 / 67f944 / 67f948) and the channels kept for the renderer
+void __cdecl Sky_LightColours(int t)
+{
+    BYTE* g = g_lc7025b8;
+    if (!g)
+        return;
+    BYTE* a = F(BYTE*, g, 512);
+    BYTE* b = F(BYTE*, g, 516);
+    float base0 = F(float, g, 520), base1 = F(float, g, 524), base2 = F(float, g, 528);
+    float a0 = F(float, a, 108), a1 = F(float, a, 112), a2 = F(float, a, 116);
+    float b0 = F(float, b, 108), b1 = F(float, b, 112), b2 = F(float, b, 116);
+    double v = CallC<double>(Lc_Channel, t);
+    float r = (float)(v + (b0 + a0) * g_lc64c308 + base0);
+    v = CallC<double>(Lc_Channel, t);
+    float gr = (float)(v + (b1 + a1) * g_lc64c308 + base1);
+    v = CallC<double>(Lc_Channel, t);
+    double bl = v + (b2 + a2) * g_lc64c308 + base2;
+    if (!(r <= g_lc64c250))
+        r = 1.0f;
+    if (!(gr <= g_lc64c250))
+        gr = 1.0f;
+    if (!(bl <= g_lc64c250))
+        bl = g_lc64c250;
+    if (r < g_lc64c264)
+        r = 0.0f;
+    if (gr < g_lc64c264)
+        gr = 0.0f;
+    if (bl < g_lc64c264)
+        bl = g_lc64c264;
+    DWORD full = Lc_Pack(r, gr, bl, 1.0f);
+    g_lc67f940 = full;
+    g_lc67f944 = Lc_Pack(r, gr, bl, g_lc64c308);
+    g_lc67f948 = Lc_Pack(r, gr, bl, g_lc651704);
+    g_lc67f954 = (float)bl;
+    g_lc70dcb8 = (float)bl;
+    g_lc67f94c = r;
+    g_lc70cf68 = full;
+    g_lc67f950 = gr;
+    g_lc70dcc0 = r;
+    g_lc70dcbc = gr;
+}
+
+} // extern "C"
+
+// === reading a shared value from a network or replay message ($L_5c44b0, the media vtable's reader)
+
+extern "C" void Mr_ToAngles(); KING_ALIAS("_Mr_ToAngles", "_Matrix_ToAngles")
+extern "C" void Mr_FromPose(); KING_ALIAS("_Mr_FromPose", "_Matrix_FromPose")
+extern "C" void Mr_GetWorld(); KING_ALIAS("_Mr_GetWorld", "@Node_GetWorld@12")
+extern "C" void Mr_Read7(); KING_ALIAS("_Mr_Read7", "@Msg_ReadType7@20")
+extern "C" void Mr_ReadFloat(); KING_ALIAS("_Mr_ReadFloat", "@Stream_ReadFloat@16")
+extern "C" void Mr_ReadInt(); KING_ALIAS("_Mr_ReadInt", "@Stream_ReadInt@16")
+extern "C" void Mr_ReadBlob(); KING_ALIAS("_Mr_ReadBlob", "@Stream_ReadBlob@20")
+extern "C" void Mr_ResGet(); KING_ALIAS("_Mr_ResGet", "@Resources_Get@12")
+extern "C" void Mr_ResLoad(); KING_ALIAS("_Mr_ResLoad", "@Resource_Load@12")
+extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // the message's next record type (out); 0 when there is one
+ASM_VAR(AsmLabel, g_mr7025f0, $L_7025f0)
+ASM_VAR(BYTE, g_mrBlob702fb8, $L_702fb8)
+ASM_VAR(float, g_mr64c250, $L_64c250)
+ASM_VAR(double, g_mr64d900, $L_64d900)
+ASM_VAR(double, g_mr64d908, $L_64d908)
+ASM_VAR(double, g_mr64d910, $L_64d910)
+ASM_VAR(double, g_mr651680, $L_651680)
+struct Mr_V3 { DWORD d[3]; };
+
+// angle a eased towards the node's b by t, the difference wrapped into one turn
+static float Mr_EaseAngle(float a, double b, float t)
+{
+    double d = a - b;
+    if (!(d <= g_mr64d900))
+        d = g_mr64d908 - d;
+    if (d < g_mr64d910)
+        d = g_mr651680 - d;
+    return (float)(d * t + a);
+}
+
+extern "C" {
+
+// [$L_5c44b0] media s reads the next value from message m into its table (+7976): a node's place and angles
+// (type 7; with ease, a node's current pose eased in by t, wrapped angles), a float (42), an int (45: a resource
+// id loads that resource when +7932 and the entry is one), bytes (120, else vtable +212); 0 on a bad record
+int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
+{
+    int type;
+    if (CallThis<int>(FUN_6031e0, m, &type))
+        return 0;
+    int id;
+    switch (type)
+    {
+    case 7:
+    {
+        float f[6];
+        int extra;
+        if (CallThis<int>(Mr_Read7, m, &id, f, &extra))
+            return 0;
+        if (ease)
+        {
+            float mx[12];
+            memcpy(mx, g_mr7025f0, 48);
+            BYTE* node = (BYTE*)Table_Value(s + 7976, 0, id);
+            if (!node)
+                return 1;
+            CallThis(Mr_GetWorld, node, mx);
+            double x, y, z, head, pitch, roll;
+            Mr_V3 r[4];
+            memcpy(r, mx, 48);
+            CallC(Mr_ToAngles, r[0], r[1], r[2], r[3], &x, &y, &z, &head, &pitch, &roll);
+            double c = g_mr64c250 - t;
+            f[0] = (float)(c * x + f[0] * t);
+            f[1] = (float)(c * y + f[1] * t);
+            f[2] = (float)(c * z + f[2] * t);
+            f[3] = Mr_EaseAngle(f[3], roll, t);
+            f[4] = Mr_EaseAngle(f[4], pitch, t);
+            f[5] = Mr_EaseAngle(f[5], head, t);
+        }
+        float pose[12];
+        memcpy(pose, CallC<BYTE*>(Mr_FromPose, pose, (double)f[0], (double)f[1], (double)f[2], (double)f[5],
+                                  (double)f[4], (double)f[3]), 48);
+        return Table_Set(s + 7976, 0, id, 1, (int)pose, 48);
+    }
+    case 45:
+    {
+        DWORD v;
+        if (CallThis<int>(Mr_ReadInt, m, &id, &v))
+            return 0;
+        if (F(int, s, 7932))
+        {
+            BYTE* e = Table_Find(s + 7976, 0, id);
+            if (e && F(int, e, 16) == 2)
+            {
+                BYTE* o = F(BYTE*, e, 20);
+                if (o)
+                {
+                    BYTE* r = CallThis<BYTE*>(Mr_ResGet, s + 704, F(int, o, 344));
+                    if (r)
+                        CallThis(Mr_ResLoad, r, s + 704);
+                }
+                return 1;
+            }
+        }
+        return Table_Set(s + 7976, 0, id, 3, (int)&v, 4);
+    }
+    case 42:
+    {
+        float v;
+        int r = CallThis<int>(Mr_ReadFloat, m, &id, &v);
+        double d = v;
+        if (r)
+            return 0;
+        return Table_Set(s + 7976, 0, id, 4, (int)&d, 8);
+    }
+    case 120:
+    {
+        DWORD size;
+        if (CallThis<int>(Mr_ReadBlob, m, &id, &g_mrBlob702fb8, &size))
+            return 0;
+        int r = Table_Set(s + 7976, 0, id, 6, (int)&g_mrBlob702fb8, size);
+        if (r)
+            return r;
+        return CallVirt<int>(s, 212, id, &g_mrBlob702fb8, size);
+    }
+    }
+    return 0;
 }
 
 } // extern "C"

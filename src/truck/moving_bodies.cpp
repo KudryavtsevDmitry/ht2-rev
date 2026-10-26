@@ -11,7 +11,7 @@
 
 typedef char AsmLabel[1];
 
-extern "C" void FUN_589640(); KING_ALIAS("_FUN_589640", "_Item_PointContacts")
+extern "C" void FUN_589640(); KING_ALIAS("_FUN_589640", "_Item_SweepPoints")
 extern "C" void FUN_592cc0(); KING_ALIAS("_FUN_592cc0", "_Mb_Fatal")    // fatal error with a message
 
 ASM_VAR(AsmLabel, g_vtbl65089c, $L_65089c)
@@ -3589,3 +3589,188 @@ void __fastcall Body_UpdateLying(BYTE* s)
 }
 
 } // extern "C"
+
+// === a moving body settling on the ground ($L_58fdf0 with its tail $L_590476)
+
+extern "C" void __cdecl St_Decompose(const BYTE* m, float* a, float* b, float* c, float* d, float* e, float* f); KING_ALIAS("_St_Decompose", "_Matrix_Decompose6F")
+extern "C" BYTE* __cdecl St_FromPose(BYTE* out, double x, double y, double z, double a, double b, double c); KING_ALIAS("_St_FromPose", "_Matrix_FromPose")
+extern "C" void __fastcall St_Probe(BYTE* s, void*, int a); KING_ALIAS("@St_Probe@12", "@Body_ProbeGround@12")
+extern "C" BYTE* __fastcall St_NodeInit(BYTE* self, void*); KING_ALIAS("@St_NodeInit@8", "@Node_Init@8")
+extern "C" int __cdecl St_Query(BYTE* skip, void* obj, const void* p, const void* d, BYTE* q); KING_ALIAS("_St_Query", "_Query_4e57e8")
+extern "C" int __fastcall St_PointsNext(BYTE* self, void*, void* out); KING_ALIAS("@St_PointsNext@12", "@Points_Next@12")
+extern "C" BYTE* __cdecl St_MovingOf(BYTE* o); KING_ALIAS("_St_MovingOf", "_Moving_Of")
+extern "C" double __cdecl St_FrameTime(); KING_ALIAS("_St_FrameTime", "_Game_FrameTime")
+extern "C" void St_MulA(); KING_ALIAS("_St_MulA", "@Vec3_MulAssign@16")
+ASM_VAR(double, g_st64d318, $L_64d318)
+ASM_VAR(double, g_st64b958, $L_64b958)
+ASM_VAR(double, g_st64b5a0, $L_64b5a0)
+ASM_VAR(double, g_st650810, $L_650810)
+ASM_VAR(double, g_st64b6e0, $L_64b6e0)
+ASM_VAR(double, g_st64d338, $L_64d338)
+ASM_VAR(float, g_st64c250, $L_64c250)
+ASM_VAR(float, g_st64d2f8, $L_64d2f8)
+ASM_VAR(float, g_st702630, $L_702630)
+ASM_VAR(float, g_st702634, $L_702634)
+ASM_VAR(float, g_st702638, $L_702638)
+ASM_VAR(char, g_st67df24, $L_67df24)
+ASM_VAR(int, g_st6f6568, $L_6f6568)
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+#define SF(n) F(float, s, n)
+
+extern "C" {
+
+// [$L_58fdf0..$L_590476] (moving body vtable) body s settling: its lowest contact point against the ground
+// normal (+976), then either upright on its pose (+3976 == 2), moved on (+1196 bit 8 clear), put to rest when slow
+// (a ray down from its bounding radius, the rest pose by vtable +224), or its speed damped (0.97 ^ 2dt) while
+// fewer than three points touch the ground; finally its state flags (+892 .. +900)
+void __fastcall MovingBody_Settle(BYTE* s, void*, int)
+{
+    BYTE fr[356];
+    V(96) = (float)((SF(424) * SF(424) + SF(420) * SF(420)) + SF(416) * SF(416));
+    V(40) = (float)((SF(436) * SF(436) + SF(432) * SF(432)) + SF(428) * SF(428));
+    int ground = F(int, s, 892);
+    V(16) = 1.0f;
+    if (ground && !(SF(984) <= g_st64d318) && F(int, s, 5132))
+    {
+        int n = F(int, s, 5132);
+        for (int k = 0; k < n; k++)
+        {
+            const BYTE* p = s + 3988 + 28 * k;
+            double a = (SF(500) * F(float, p, 0) + SF(524) * F(float, p, 8)) + SF(512) * F(float, p, 4);
+            double b = (SF(504) * F(float, p, 0) + SF(528) * F(float, p, 8)) + SF(516) * F(float, p, 4);
+            double c = (F(float, p, 4) * SF(520) + SF(508) * F(float, p, 0)) + SF(532) * F(float, p, 8);
+            double v = (c * SF(984) + a * SF(976)) + b * SF(980);
+            if (v < V(16))
+                V(16) = (float)v;
+        }
+    }
+    else
+        V(16) = -1.0f;
+    DWORD fl = F(DWORD, s, 1196);
+    if (!(fl & 0x100) && F(int, s, 3976) == 2 && ground)
+    {
+        St_Decompose(s + 500, &V(72), &V(76), &V(80), &V(84), &V(88), &V(92));
+        BYTE* m = St_FromPose(fr + 320, V(72), V(76), V(80), V(84), 0.0, 0.0);
+        memcpy(s + 500, m, 48);
+        St_Probe(s, 0, 0);
+    }
+    else if (!(fl & 8))
+        CallVirt(s, 140, F(BYTE*, s, 800), s + 500);
+    else if (ground && V(96) <= g_st64b958 && V(40) <= g_st64b5a0 && V(16) <= g_st650810)
+    {
+        CallVirt(s, 140, F(BYTE*, s, 804), s + 548);
+        if (F(BYTE, s, 1196) & 2)
+        {
+            int n = F(int, s, 5132);
+            if (n)
+            {
+                if (F(int, s, 892) && !(SF(984) <= g_st64d318) && !F(int, s, 1028))
+                    St_Probe(s, 0, 0);
+                else
+                {
+                    V(16) = 0.0f;
+                    for (int k = 0; k < n && k < 2; k++)
+                    {
+                        const BYTE* p = s + 4004 + 28 * k;
+                        double q = (F(float, p, 4) * F(float, p, 4) + F(float, p, 8) * F(float, p, 8))
+                                   + F(float, p, 0) * F(float, p, 0);
+                        if (!(q <= V(16)))
+                            V(16) = (float)q;
+                    }
+                    St_NodeInit(fr + 112, 0);
+                    double r = x87_sqrt(V(16));
+                    double d = r + r;
+                    V(60) = (float)(d * g_st702630);
+                    V(64) = (float)(d * g_st702634);
+                    double dz = d * g_st702638;
+                    V(24) = V(60) + SF(536);
+                    I(72) = I(24);
+                    V(28) = V(64) + SF(540);
+                    I(76) = I(28);
+                    V(32) = (float)(dz + SF(544));
+                    I(80) = I(32);
+                    double rk = r * g_st64d2f8;
+                    V(60) = (float)(rk * g_st702630);
+                    V(64) = (float)(rk * g_st702634);
+                    double rz = rk * g_st702638;
+                    V(40) = V(24) - V(60);
+                    I(100) = I(40);
+                    V(44) = V(28) - V(64);
+                    I(104) = I(44);
+                    V(48) = (float)(V(32) - rz);
+                    I(108) = I(48);
+                    if (St_Query(s, F(BYTE*, s, 800), fr + 72, fr + 100, fr + 112) && !I(228)
+                        && !(SF(984) <= g_st64d318))
+                        CallVirt(s, 224, fr + 164, fr + 176, 0);
+                }
+            }
+            if (!F(int, s, 892) || !St_MovingOf(F(BYTE*, s, 1028)))
+                F(int, s, 1192) = 1;
+        }
+    }
+    else
+    {
+        // the three ground points nearest under the body
+        I(24) = 0;
+        I(40) = F(int, s, 400);
+        I(28) = 0;
+        I(32) = 0;
+        I(36) = F(int, s, 400);
+        I(16) = F(int, s, 400);
+        for (int idx = St_PointsNext(s, 0, fr + 24); idx; idx = St_PointsNext(s, 0, fr + 24))
+        {
+            const BYTE* e = s + 208 * idx;
+            double wx = ((V(32) * SF(524) + V(28) * SF(512)) + V(24) * SF(500)) + SF(536);
+            V(76) = (float)(((V(24) * SF(504) + V(32) * SF(528)) + V(28) * SF(516)) + SF(540));
+            V(80) = (float)(((V(32) * SF(532) + V(28) * SF(520)) + V(24) * SF(508)) + SF(544));
+            double dx = wx - F(float, e, 5196);
+            V(64) = V(76) - F(float, e, 5200);
+            V(68) = V(80) - F(float, e, 5204);
+            V(20) = (float)x87_fabs((F(float, e, 5216) * V(68) + F(float, e, 5212) * V(64)) + F(float, e, 5208) * dx);
+            if (F(int, e, 5260))
+                continue;
+            double q = (dx * dx + V(64) * V(64)) + V(68) * V(68);
+            if (!(q < SF(400)))
+                continue;
+            if (SF(400) * g_st64b6e0 <= V(20))
+                continue;
+            if (V(20) < V(40))
+            {
+                I(16) = I(36);
+                I(36) = I(40);
+                I(40) = I(20);
+            }
+            else if (V(20) < V(36))
+            {
+                I(16) = I(36);
+                I(36) = I(20);
+            }
+            else if (V(20) < V(16))
+                I(16) = I(20);
+        }
+        if (!(SF(400) * g_st64d338 <= V(16)))
+        {
+            DWORD bits[2] = { 1889785610u, 1072630333u };    // 0.97
+            double t = St_FrameTime();
+            V(40) = (float)x87_pow(*(double*)bits, t + t);
+            if (V(96) < g_st64c250)
+            {
+                CallThis(St_MulA, s + 416, fr + 72, V(40));
+                CallVirt(s, 144, s + 416, &g_st67df24);
+            }
+        }
+        CallVirt(s, 140, F(BYTE*, s, 800), s + 500);
+    }
+    if (g_st6f6568)
+        F(DWORD, s, 892) |= 32;
+    F(int, s, 896) = (F(int, s, 896) || F(int, s, 892)) ? 1 : 0;
+    F(int, s, 900) = F(int, s, 892);
+}
+
+} // extern "C"
+
+#undef V
+#undef I
+#undef SF

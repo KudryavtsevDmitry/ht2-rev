@@ -365,7 +365,7 @@ extern "C" BYTE* __fastcall WasmObj5a35b0_Construct(BYTE* self, void*) { return 
 // medium-sized functions of the unit
 
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")    // named object: constructor (id, name)
-ASM_PROC(FUN_4e41d9)    // an angle checked for NaN (angle, where)
+extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")    // an angle checked for NaN (angle, where)
 extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")    // a double of an ini file (section, key, default, out, file)
 extern "C" void FUN_4e5dce(); KING_ALIAS("_FUN_4e5dce", "_Model_FindPart2")
 extern "C" void FUN_4e5c77(); KING_ALIAS("_FUN_4e5c77", "_Model_FindPart1")

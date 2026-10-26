@@ -319,3 +319,18 @@ by the tests: the placement on the road, the quit panel, the save screen's comma
 vehicle event. Left in asm on purpose: the span fillers at $L_5fdc70, the deque insert FUN_4ac3d0 (by-value
 iterators), the rope compare FUN_45a7d0, $L_5dd8c0 (starts at a bare label outside any PROC), the adjustor thunks
 at $L_55fa7f. Load test exact (507.330231,940.087585) with exit code 0.
+
+Batch 31 done: 44,228 bytes (about 93.9% -> 95.9%). Largest: FUN_4f8260..$L_4f9489 Body_SubStep (10432, a
+vehicle sub-step with its wheels on springs: wheel contacts, spring and damper forces, pressed-in wheels pushed
+out by an impulse, contact force and torque sums), FUN_4e7b4d..$L_4e8644 Body_MovingPointImpulse (3988),
+$L_582c30..$L_583c18 MovingItem_Step (4096), FUN_4e8ae1..$L_4e964c Body_FixedPointImpulse (3005), then
+MovingBody_Settle (1840), SoundSource_Update (1712), Car_PedalStep (1696), App_UpdateCamera, Windscreen_Frame
+(1648 each), $L_4e969e..$L_4e96e8 Body_ContactImpulseB (1606, unreferenced), Cab_Sway (1296), DxError_Name (1264),
+Media_ReadValue (1120), ReplayWnd_Key (1008), NetVehIn_Get (944), Cab_EyeFrame (816), Wheels_FrameSpin (768),
+MovingItem_PointBounce (736), Slot_SegmentCast (704), Car_DropToGround (672), Sky_LightColours (640),
+MovingItem_BodyContact (528), Line_ClipEdge (496), Cheat_KeyTyped (368), Msg_NextType, Dash_TextPlace (272
+each), Angle_F2Pi (269), Msg_SkipRecord (240) and Copter_SetState (144).
+Fixes: since batch 22, FUN_589640 (Item_SweepPoints) had been pointed at FUN_585150's C++ (_Item_PointContacts),
+so item point sweeps ran the wrong function and the drive test truck went through trees and fell through the
+ground (Z about -600; the original ends at Z 20.9). With that fixed, MovingItem_PointBounce's frame needed 12
+more bytes (asm ESP offsets taken after three pushes). Drive test now checks the end height.

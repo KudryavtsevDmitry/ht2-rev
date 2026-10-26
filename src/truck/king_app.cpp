@@ -157,3 +157,68 @@ void __fastcall CKingApp_DispatchInput(CKingApp* self, void*, InputEvent* ev) //
 }
 
 }
+
+// === cheat codes typed in the game (FUN_5764f0)
+
+extern "C" void __cdecl Ai_CheatCode(int code);
+extern "C" int __cdecl strncmp(const char*, const char*, size_t);
+extern "C" size_t __cdecl strlen(const char*);
+ASM_VAR(int, g_ck6f34e0, $L_6f34e0)
+ASM_VAR(char, g_ckTyped6f2c54, $L_6f2c54)
+ASM_VAR(const char*, g_ckCodes67b760, $L_67b760)
+ASM_VAR(int, g_ck6d2090, $L_6d2090)
+ASM_VAR(int, g_ck6d2088, $L_6d2088)
+ASM_VAR(int, g_ck6d208c, $L_6d208c)
+ASM_VAR(int, g_ck6d2094, $L_6d2094)
+ASM_VAR(int, g_ck6ced94, $L_6ced94)
+ASM_VAR(int, g_ck6f33f0, $L_6f33f0)
+
+extern "C" {
+
+// [FUN_5764f0] key k appended to the typed text (6f2c54, its length 6f34e0) and matched against the ten codes
+// (67b760): no code starts so, the text is cleared; a whole code sets its cheat flag (6d2090 / 6d2088 / 6d208c /
+// 6d2094 / 6ced94), tells the AI (2 or 3), or all of them (and 6f33f0), and clears the text
+void __cdecl Cheat_KeyTyped(char k)
+{
+    char* typed = &g_ckTyped6f2c54;
+    const char** codes = &g_ckCodes67b760;
+    typed[g_ck6f34e0] = k;
+    g_ck6f34e0++;
+    typed[g_ck6f34e0] = 0;
+    int i = 0;
+    while (strncmp(codes[i], typed, g_ck6f34e0))
+    {
+        i++;
+        if (i == 10)
+        {
+            g_ck6f34e0 = 0;
+            return;
+        }
+    }
+    if ((int)strlen(codes[i]) != g_ck6f34e0)
+        return;
+    switch (i)
+    {
+    case 0: g_ck6d2090 = 1; break;
+    case 1: g_ck6d2088 = 1; break;
+    case 2: g_ck6d208c = 1; break;
+    case 3: g_ck6d2094 = 1; break;
+    case 5: g_ck6ced94 = 1; break;
+    case 6: Ai_CheatCode(2); break;
+    case 7: Ai_CheatCode(3); break;
+    case 8:
+        g_ck6d2090 = 1;
+        g_ck6d2088 = 1;
+        g_ck6d208c = 1;
+        g_ck6d2094 = 1;
+        g_ck6ced94 = 1;
+        Ai_CheatCode(1);
+        Ai_CheatCode(2);
+        Ai_CheatCode(3);
+        g_ck6f33f0 = 1;
+        break;
+    }
+    g_ck6f34e0 = 0;
+}
+
+} // extern "C"

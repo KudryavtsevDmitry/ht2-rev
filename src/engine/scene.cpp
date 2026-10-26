@@ -5593,3 +5593,220 @@ int __fastcall Sprite_Draw(BYTE* s, void*, int a, BYTE* v)
 }
 
 } // extern "C"
+
+// === a 3D sound source's volume for the listener ($L_5fae60, with the second entry $L_5fb500 inside its PROC)
+
+extern "C" int __fastcall Ss3_Flag0Clear(BYTE* self, void*, int a, const BYTE* m, int c, int d); KING_ALIAS("@Ss3_Flag0Clear@24", "@Obj_Flag0Clear@24")
+extern "C" void __fastcall Ss3_Play(BYTE* s, void*, float vol, float pitch, int a3); KING_ALIAS("@Ss3_Play@20", "@Sound_Play@20")
+extern "C" BYTE* __cdecl Ss3_RotZ(BYTE* out, float a); KING_ALIAS("_Ss3_RotZ", "_Matrix_RotationZ")
+extern "C" double __cdecl Ss3_Len(const void* v); KING_ALIAS("_Ss3_Len", "_Vec3_Length")
+extern "C" double __cdecl Ss3_Dot(const void* a, const void* b); KING_ALIAS("_Ss3_Dot", "_Vec3_Dot")
+extern "C" BYTE* __cdecl Ss3_Norm(void* out, const void* v); KING_ALIAS("_Ss3_Norm", "_Vec3_Normalized")
+extern "C" BYTE* __cdecl Ss3_MulM(void* out, const void* p, const void* m); KING_ALIAS("_Ss3_MulM", "_Vec3_MulMatrix")
+extern "C" BYTE* __cdecl Ss3_Neg(void* out, const void* v); KING_ALIAS("_Ss3_Neg", "_Vec3_Negated")
+extern "C" BYTE* __cdecl Ss3_Rot(void* out, const void* v, const void* m); KING_ALIAS("_Ss3_Rot", "_Vec3_RotateBy")
+extern "C" void Ss3_SetThis(); KING_ALIAS("_Ss3_SetThis", "@Vec3_SetThis@20")
+ASM_VAR(BYTE, g_ss3Identity7025f0, $L_7025f0)
+ASM_VAR(float, g_ss3Ax702640, $L_702640)
+ASM_VAR(float, g_ss3Ax702644, $L_702644)
+ASM_VAR(float, g_ss3Ax702648, $L_702648)
+ASM_VAR(double, g_ss3_64b670, $L_64b670)
+ASM_VAR(double, g_ss3_652d60, $L_652d60)
+ASM_VAR(double, g_ss3_651690, $L_651690)
+ASM_VAR(float, g_ss3_64c264, $L_64c264)
+ASM_VAR(float, g_ss3_64c250, $L_64c250)
+ASM_VAR(float, g_ss3_64c258, $L_64c258)
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+#define SF(n) F(float, s, n)
+
+static float Ss3_Bits(DWORD b) { return *(float*)&b; }
+
+// the two ears' panning of direction (d0, d1, d2) against ear vectors e (K64..72) and f (K76..84)
+static float Ss3_Pan(BYTE* s, const BYTE* fr, float d0, float d1, float d2, int ear)
+{
+    double v = ((d2 * V(ear + 8) + d1 * V(ear + 4)) + V(ear) * d0 + g_ss3_64b670) * g_ss3_652d60 + g_ss3_651690;
+    return (float)(v * SF(60));
+}
+
+extern "C" {
+
+// [$L_5fae60] (sound source vtable) source s heard by listener m (flags fl; bit 4 = muted): the ears at +-pi/8;
+// by kind (+48) a plain volume (+60), a direction (+96), a point (+84) fading between +72 and +76, or a cone
+// (+84 point, +96 axis) fading by distance and by angle between +64 and +68; the two volumes clamped to 0..1 and
+// played on +80 with the pitch from their sum and +52. Returns 0 when muted or not updated
+int __fastcall SoundSource_Update(BYTE* s, void*, int fl, const BYTE* m, int c, int d)
+{
+    BYTE fr[232];
+    memset(fr + 40, 0, 24);
+    for (int k = 0; k < 4; k++)
+        memset(fr + 88 + k * 12, 0, 12);
+    memcpy(fr + 88, &g_ss3Identity7025f0, 48);
+    if (fl & 4)
+        return 0;
+    BYTE* r = Ss3_RotZ(fr + 196, Ss3_Bits(0x3EC90FDA));
+    V(64) = (float)(((g_ss3Ax702648 * F(float, r, 24) + g_ss3Ax702644 * F(float, r, 12)) + g_ss3Ax702640 * F(float, r, 0)) + F(float, r, 36));
+    V(68) = (float)(((g_ss3Ax702648 * F(float, r, 28) + g_ss3Ax702644 * F(float, r, 16)) + g_ss3Ax702640 * F(float, r, 4)) + F(float, r, 40));
+    V(72) = (float)(((g_ss3Ax702648 * F(float, r, 32) + g_ss3Ax702644 * F(float, r, 20)) + g_ss3Ax702640 * F(float, r, 8)) + F(float, r, 44));
+    V(28) = -g_ss3Ax702640;
+    V(32) = -g_ss3Ax702644;
+    V(36) = -g_ss3Ax702648;
+    r = Ss3_RotZ(fr + 196, Ss3_Bits(0xBEC90FDA));
+    V(76) = (float)(((V(36) * F(float, r, 24) + V(32) * F(float, r, 12)) + V(28) * F(float, r, 0)) + F(float, r, 36));
+    V(80) = (float)(((V(36) * F(float, r, 28) + V(32) * F(float, r, 16)) + V(28) * F(float, r, 4)) + F(float, r, 40));
+    V(84) = (float)(((V(36) * F(float, r, 32) + V(32) * F(float, r, 20)) + V(28) * F(float, r, 8)) + F(float, r, 44));
+    if (!Ss3_Flag0Clear(s, 0, fl, m, c, d))
+        return 0;
+    memcpy(fr + 88, m, 48);
+    double f;
+    switch (F(int, s, 48))
+    {
+    case 0:
+        I(16) = F(int, s, 60);
+        I(20) = F(int, s, 60);
+        break;
+    case 1:
+        V(28) = (float)((V(88) * SF(96) + V(112) * SF(104)) + V(100) * SF(100));
+        I(52) = I(28);
+        V(32) = (float)((V(92) * SF(96) + V(116) * SF(104)) + V(104) * SF(100));
+        I(56) = I(32);
+        V(36) = (float)((V(96) * SF(96) + V(120) * SF(104)) + V(108) * SF(100));
+        I(60) = I(36);
+        V(20) = Ss3_Pan(s, fr, V(28), V(32), V(36), 76);
+        V(16) = Ss3_Pan(s, fr, V(28), V(32), V(36), 64);
+        break;
+    case 2:
+    {
+        float z = (float)(((V(96) * SF(84) + V(120) * SF(92)) + V(108) * SF(88)) + V(132));
+        float y = (float)(((V(92) * SF(84) + V(116) * SF(92)) + V(104) * SF(88)) + V(128));
+        float x = (float)(((V(112) * SF(92) + V(100) * SF(88)) + V(88) * SF(84)) + V(124));
+        CallThis(Ss3_SetThis, fr + 28, x, y, z);
+        memcpy(fr + 40, fr + 28, 12);
+        V(24) = (float)Ss3_Len(fr + 40);
+        memcpy(fr + 52, Ss3_Norm(fr + 160, fr + 40), 12);
+        V(20) = Ss3_Pan(s, fr, V(52), V(56), V(60), 76);
+        V(16) = Ss3_Pan(s, fr, V(52), V(56), V(60), 64);
+        if (!(V(24) < SF(76)))
+            return 1;
+        if (V(24) <= SF(72))
+            break;
+        f = g_ss3_64c250 - (V(24) - SF(72)) / (SF(76) - SF(72));
+        V(20) = (float)(f * V(20));
+        V(16) = (float)(f * V(16));
+        break;
+    }
+    case 3:
+    {
+        memcpy(fr + 40, Ss3_MulM(fr + 172, s + 84, fr + 88), 12);
+        V(24) = (float)Ss3_Len(fr + 40);
+        memcpy(fr + 40, Ss3_Norm(fr + 144, fr + 40), 12);
+        V(20) = Ss3_Pan(s, fr, V(40), V(44), V(48), 76);
+        V(16) = Ss3_Pan(s, fr, V(40), V(44), V(48), 64);
+        if (!(V(24) < SF(76)))
+            return 1;
+        if (V(24) > SF(72))
+        {
+            f = g_ss3_64c250 - (V(24) - SF(72)) / (SF(76) - SF(72));
+            V(20) = (float)(f * V(20));
+            V(16) = (float)(f * V(16));
+        }
+        BYTE* n = Ss3_Neg(fr + 180, s + 96);
+        memcpy(fr + 52, Ss3_Rot(fr + 144, n, fr + 88), 12);
+        double a = x87_acos(Ss3_Dot(fr + 52, fr + 40));
+        V(24) = (float)a;
+        if (!(a <= SF(68)))
+            return 1;
+        if (V(24) <= SF(64))
+            break;
+        f = g_ss3_64c250 - (V(24) - SF(64)) / (SF(68) - SF(64));
+        V(20) = (float)(f * V(20));
+        V(16) = (float)(f * V(16));
+        break;
+    }
+    default:
+        break;
+    }
+    if (V(20) < g_ss3_64c264)
+        I(20) = 0;
+    else if (!(V(20) <= g_ss3_64c250))
+        V(20) = 1.0f;
+    if (V(16) < g_ss3_64c264)
+        I(16) = 0;
+    else if (!(V(16) <= g_ss3_64c250))
+        V(16) = 1.0f;
+    BYTE* snd = F(BYTE*, s, 80);
+    if (snd)
+        Ss3_Play(snd, 0, V(20), V(16), (int)(((V(16) + V(20)) * F(int, s, 52)) * g_ss3_64c258));
+    return 1;
+}
+
+// ($L_5fb500, inside the PROC above) (sound source vtable) the source's vtable +20 with (0, a)
+int __fastcall SoundSource_Call20(BYTE* s, void*, int a)
+{
+    return CallVirt<int>(s, 20, 0, a);
+}
+
+} // extern "C"
+
+#undef V
+#undef I
+#undef SF
+
+// === a slot's segment test against its volume (the slot vtable's $L_5f8ff0)
+
+extern "C" {
+
+// [$L_5f8ff0] slot s (flag +40 bit 0: off) and query q (frame +4..+48, segment ends +76 and +88, radius +0,
+// +52 the hit point, +108 set to the volume +56): the segment swept both ways against the volume and its first
+// end tested inside it; the slot's rays cast by that: inside and crossing tries ray 0 kept inside then ray 1 kept
+// outside, outside and crossing the reverse, wholly inside ray 0, wholly outside ray 1
+int __fastcall Slot_SegmentCast(BYTE* s, void*, int flags, BYTE* q)
+{
+    if (F(BYTE, s, 40) & 1)
+        return 0;
+    BYTE* vol = s + 56;
+    F(BYTE*, q, 108) = vol;
+    const float* m = (const float*)(q + 4);
+    const float* P = (const float*)(q + 76);
+    const float* Q = (const float*)(q + 88);
+    float a[3], b[3];
+    a[0] = (float)((((double)m[3] * P[1] + (double)m[6] * P[2]) + (double)P[0] * m[0]) + m[9]);
+    a[1] = (float)((((double)m[4] * P[1] + (double)m[1] * P[0]) + (double)m[7] * P[2]) + m[10]);
+    a[2] = (float)((((double)m[5] * P[1] + (double)m[2] * P[0]) + (double)m[8] * P[2]) + m[11]);
+    b[0] = (float)((((double)m[3] * Q[1] + (double)m[6] * Q[2]) + (double)m[0] * Q[0]) + m[9]);
+    b[1] = (float)((((double)m[1] * Q[0] + (double)m[4] * Q[1]) + (double)m[7] * Q[2]) + m[10]);
+    b[2] = (float)((((double)m[2] * Q[0] + (double)m[5] * Q[1]) + (double)m[8] * Q[2]) + m[11]);
+    ShV a1 = { a[0], a[1], a[2] }, b1 = { b[0], b[1], b[2] };
+    int r;
+    if (Shape_SweepHit(vol, 0, flags, &a1, &b1, F(float, q, 0)) || Shape_SweepHit(vol, 0, flags, &b1, &a1, F(float, q, 0)))
+        r = Volume_Contains((DWORD*)vol, 0, a) ? 1 : 2;
+    else
+        r = Volume_Contains((DWORD*)vol, 0, a) ? 3 : 0;
+    int h;
+    switch (r)
+    {
+    case 0:
+        return Slot_CastRay(s, 0, 1, flags, q);
+    case 3:
+        return Slot_CastRay(s, 0, 0, flags, q);
+    case 1:
+        h = Slot_CastRay(s, 0, 0, flags, q);
+        if (h && Volume_Contains((DWORD*)vol, 0, (const float*)(q + 52)))
+            return h;
+        h = Slot_CastRay(s, 0, 1, flags, q);
+        if (h && !Volume_Contains((DWORD*)vol, 0, (const float*)(q + 52)))
+            return h;
+        return 0;
+    default:
+        h = Slot_CastRay(s, 0, 1, flags, q);
+        if (h && !Volume_Contains((DWORD*)vol, 0, (const float*)(q + 52)))
+            return h;
+        h = Slot_CastRay(s, 0, 0, flags, q);
+        if (h && Volume_Contains((DWORD*)vol, 0, (const float*)(q + 52)))
+            return h;
+        return 0;
+    }
+}
+
+} // extern "C"
