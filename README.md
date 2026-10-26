@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), version `v 8.0 30.01.03`.
 
-`king.masm` is the whole program as MASM source and assembles back into a working `king.exe`. Functions are rewritten in C++ (`src/`) one by one and linked in place of their assembly, so the game runs at every step. About 48% of the game code (by size) is C++ now; see `CONVERSION_LOG.md`.
+`king.masm` is the whole program as MASM source and assembles back into a working `king.exe`. Functions are rewritten in C++ (`src/`) one by one and linked in place of their assembly, so the game runs at every step. About 97% of the game code (by size) is C++ now. The statically linked MFC 4.2 is being replaced by own code with the same layouts (`src/engine/mfc.cpp`): 269 of its 954 procs so far. See `CONVERSION_LOG.md`.
 
 The game is not included: building needs your own original `king.exe` (for resources), running needs an installed game.
 
