@@ -973,3 +973,384 @@ void __cdecl Body_SurfaceResponse(BYTE* b, BYTE* c, const Matrix* m)
 }
 
 } // extern "C"
+
+// === two bodies' impulse at a contact (FUN_57eae0 with its tail $L_58084e)
+
+extern "C" void Lw_Set(); KING_ALIAS("_Lw_Set", "@Vec3_SetThis@20")
+extern "C" void Lw_MulA(); KING_ALIAS("_Lw_MulA", "@Vec3_MulAssign@16")
+extern "C" void Lw_DivA(); KING_ALIAS("_Lw_DivA", "@Vec3_DivAssign@16")
+extern "C" void Lw_AddA(); KING_ALIAS("_Lw_AddA", "@Vec3_AddAssign@16")
+extern "C" float* __cdecl Lw_Negated(float* out, const float* v); KING_ALIAS("_Lw_Negated", "_Vec3_Negated")
+extern "C" void __cdecl Lw_Check(const float* v, const char* name, float k); KING_ALIAS("_Lw_Check", "_World_CheckPoint")
+extern "C" int __cdecl Lw_Out(const float* v, float k); KING_ALIAS("_Lw_Out", "_Vec3_OutOfBox")
+extern "C" void __cdecl Lw_Soften(float* v); KING_ALIAS("_Lw_Soften", "_Vec3_Soften")
+extern "C" void __cdecl Lw_Fatal(const char* msg); KING_ALIAS("_Lw_Fatal", "_World_Fatal")
+ASM_VAR(double, g_lw64b5b8, $L_64b5b8)
+ASM_VAR(double, g_lw64b658, $L_64b658)
+ASM_VAR(double, g_lw64b670, $L_64b670)
+ASM_VAR(double, g_lw64b678, $L_64b678)
+ASM_VAR(double, g_lw64b6e0, $L_64b6e0)
+ASM_VAR(double, g_lw64b7e8, $L_64b7e8)
+ASM_VAR(double, g_lw64b840, $L_64b840)
+ASM_VAR(float, g_lw64c250, $L_64c250)
+ASM_VAR(float, g_lw64c448, $L_64c448)
+ASM_VAR(float, g_lw64c450, $L_64c450)
+ASM_VAR(double, g_lw64d918, $L_64d918)
+ASM_VAR(float, g_lw64da74, $L_64da74)
+ASM_VAR(float, g_lw64f730, $L_64f730)
+ASM_VAR(float, g_lw696be0, $L_696be0)
+ASM_VAR(char, g_lw67d200, $L_67d200)
+ASM_VAR(char, g_lw67d214, $L_67d214)
+ASM_VAR(char, g_lw67d228, $L_67d228)
+ASM_VAR(char, g_lw67d23c, $L_67d23c)
+ASM_VAR(char, g_lw67d250, $L_67d250)
+ASM_VAR(char, g_lw67d2a0, $L_67d2a0)
+ASM_VAR(char, g_lw67d318, $L_67d318)
+ASM_VAR(char, g_lw67d390, $L_67d390)
+ASM_VAR(char, g_lw67d3c0, $L_67d3c0)
+ASM_VAR(char, g_lw67d3d8, $L_67d3d8)
+ASM_VAR(char, g_lw67d3f0, $L_67d3f0)
+ASM_VAR(char, g_lw67d408, $L_67d408)
+
+#define V(n) (*(float*)(fr + (n)))
+#define D(n) (*(double*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+
+// the state of both bodies for the fatal message when an impulse ran out of range
+static void Lw_Dump(BYTE* b, BYTE* c, BYTE* o, BYTE* fr)
+{
+    char* b1 = (char*)fr + 1868;
+    char* b2 = (char*)fr + 2868;
+    char* b3 = (char*)fr + 868;
+    char* b4 = (char*)fr + 3868;
+    sprintf(b1, &g_lw67d390, (double)F(float, c, 52), (double)F(float, c, 56), (double)F(float, c, 60),
+            (double)F(float, c, 64), (double)F(float, c, 68), (double)F(float, c, 72), (double)V(240), D(180), D(68));
+    D(52) = V(224);
+    sprintf(b2, &g_lw67d318, F(const char*, F(BYTE*, b, 320), 12), (double)V(88), (double)V(92), (double)V(96),
+            (double)V(156), (double)V(160), (double)V(164), D(52), D(52), (double)V(232), (double)F(float, b, 3300),
+            (double)F(float, b, 3304), (double)F(float, b, 3308), (double)F(float, b, 3312), (double)F(float, b, 3316),
+            (double)F(float, b, 3320), (double)V(460), (double)V(464), (double)V(468), (double)V(472), (double)V(476),
+            (double)V(480), (double)V(484), (double)V(488), (double)V(492), (double)V(496), (double)V(500),
+            (double)V(504));
+    D(52) = V(256);
+    sprintf(b3, &g_lw67d2a0, F(const char*, F(BYTE*, o, 320), 12), (double)V(100), (double)V(104), (double)V(108),
+            (double)V(168), (double)V(172), (double)V(176), D(52), D(52), (double)V(264), (double)F(float, o, 3300),
+            (double)F(float, o, 3304), (double)F(float, o, 3308), (double)F(float, o, 3312), (double)F(float, o, 3316),
+            (double)F(float, o, 3320), (double)V(412), (double)V(416), (double)V(420), (double)V(424), (double)V(428),
+            (double)V(432), (double)V(436), (double)V(440), (double)V(444), (double)V(448), (double)V(452),
+            (double)V(456));
+    sprintf(b4, &g_lw67d250, (double)V(340), (double)V(344), (double)V(348), (double)V(304), (double)V(308),
+            (double)V(312), (double)V(280), (double)V(284), (double)V(288), (double)V(292), (double)V(296),
+            (double)V(300), b1, b2, b3);
+    Lw_Fatal(b4);
+}
+
+extern "C" {
+
+// [FUN_57eae0..$L_58084e] bodies b and o meeting at contact c (point +52, normal +64): their speeds and spins at
+// the point, the normal impulse from their masses (+3268), inertia (+3288) and restitution (696be0) and a slide
+// against friction, both bodies' new speeds and spins (vtable +144 / +148), their energies kept from growing;
+// fatal when a result leaves its range. The asm's frame is kept as fr (V float, D double, I int slots)
+void __cdecl Bodies_Impulse(BYTE* b, BYTE* c, BYTE* o)
+{
+    BYTE fr[5900];
+    memcpy(&V(460), b + 3172, 48);
+    memcpy(&V(412), o + 3172, 48);
+    float* P1 = (float*)Matrix_Inverse((Matrix*)(&V(556)), (const Matrix*)(&V(460)));
+    float* P2 = (float*)Matrix_Inverse((Matrix*)(&V(772)), (const Matrix*)(&V(412)));
+    V(12) = (float)((F(float, c, 52) - V(496)));
+    I(316) = I(12);
+    V(16) = (float)((F(float, c, 56) - V(500)));
+    I(320) = I(16);
+    V(20) = (float)((F(float, c, 60) - V(504)));
+    I(324) = I(20);
+    V(12) = (float)((F(float, c, 52) - V(448)));
+    I(388) = I(12);
+    V(16) = (float)((F(float, c, 56) - V(452)));
+    I(392) = I(16);
+    V(20) = (float)((F(float, c, 60) - V(456)));
+    I(396) = I(20);
+    I(24) = F(int, c, 64);
+    I(28) = F(int, c, 68);
+    I(240) = *(int*)&g_lw696be0;
+    I(32) = F(int, c, 72);
+    I(124) = F(int, b, 3268);
+    I(48) = F(int, o, 3268);
+    double RET4 = Vec3_Length((const Vec3*)&V(316));
+    V(220) = (float)(RET4);
+    double RET5 = Vec3_Length((const Vec3*)&V(388));
+    V(216) = (float)(RET5);
+    I(88) = F(int, b, 416);
+    I(92) = F(int, b, 420);
+    I(156) = F(int, b, 428);
+    I(96) = F(int, b, 424);
+    I(160) = F(int, b, 432);
+    I(164) = F(int, b, 436);
+    I(224) = F(int, b, 3288);
+    I(228) = F(int, b, 3292);
+    I(232) = F(int, b, 3296);
+    I(100) = F(int, o, 416);
+    V(132) = (float)((((V(156) * V(460)) + (V(160) * V(472))) + (V(164) * V(484))));
+    I(104) = F(int, o, 420);
+    I(168) = F(int, o, 428);
+    I(108) = F(int, o, 424);
+    I(172) = F(int, o, 432);
+    V(136) = (float)((((V(156) * V(464)) + (V(160) * V(476))) + (V(164) * V(488))));
+    I(176) = F(int, o, 436);
+    V(140) = (float)((((V(156) * V(468)) + (V(160) * V(480))) + (V(164) * V(492))));
+    V(180) = (float)((((V(168) * V(412)) + (V(172) * V(424))) + (V(176) * V(436))));
+    I(256) = F(int, o, 3288);
+    I(260) = F(int, o, 3292);
+    V(184) = (float)((((V(168) * V(416)) + (V(172) * V(428))) + (V(176) * V(440))));
+    I(264) = F(int, o, 3296);
+    V(188) = (float)((((V(168) * V(420)) + (V(172) * V(432))) + (V(176) * V(444))));
+    V(128) = (float)((((V(108) * V(108)) + (V(104) * V(104))) + (V(100) * V(100))));
+    V(84) = (float)((((V(164) * V(164)) + (V(160) * V(160))) + (V(156) * V(156))));
+    V(152) = (float)((((V(176) * V(176)) + (V(172) * V(172))) + (V(168) * V(168))));
+    double qb = (((V(92) * V(92)) + (V(88) * V(88))) + (V(96) * V(96)));
+    if (qb > g_lw64da74)
+    {
+        V(112) = (float)((V(88) / x87_sqrt((((V(92) * V(92)) + (V(88) * V(88))) + (V(96) * V(96))))));
+        V(116) = (float)((V(92) / x87_sqrt((((V(92) * V(92)) + (V(88) * V(88))) + (V(96) * V(96))))));
+        V(12) = (float)((V(112) * g_lw64c448));
+        double t1 = (V(96) / x87_sqrt((((V(92) * V(92)) + (V(88) * V(88))) + (V(96) * V(96)))));
+        I(88) = I(12);
+        V(16) = (float)((V(116) * g_lw64c448));
+        I(92) = I(16);
+        V(20) = (float)((t1 * g_lw64c448));
+        I(96) = I(20);
+    }
+    if (V(128) > g_lw64da74)
+    {
+        V(112) = (float)((V(100) / x87_sqrt(V(128))));
+        V(116) = (float)((V(104) / x87_sqrt(V(128))));
+        V(12) = (float)((V(112) * g_lw64c448));
+        I(100) = I(12);
+        V(16) = (float)((V(116) * g_lw64c448));
+        I(104) = I(16);
+        V(20) = (float)(((V(108) / x87_sqrt(V(128))) * g_lw64c448));
+        I(108) = I(20);
+    }
+    if (V(84) > g_lw64f730)
+    {
+        V(112) = (float)((V(156) / x87_sqrt(V(84))));
+        V(116) = (float)((V(160) / x87_sqrt(V(84))));
+        V(12) = (float)((V(112) * g_lw64c450));
+        I(156) = I(12);
+        V(16) = (float)((V(116) * g_lw64c450));
+        I(160) = I(16);
+        V(20) = (float)(((V(164) / x87_sqrt(V(84))) * g_lw64c450));
+        I(164) = I(20);
+    }
+    if (V(152) > g_lw64f730)
+    {
+        V(112) = (float)((V(168) / x87_sqrt(V(152))));
+        V(116) = (float)((V(172) / x87_sqrt(V(152))));
+        V(12) = (float)((V(112) * g_lw64c450));
+        I(168) = I(12);
+        V(16) = (float)((V(116) * g_lw64c450));
+        I(172) = I(16);
+        V(20) = (float)(((V(176) / x87_sqrt(V(152))) * g_lw64c450));
+        I(176) = I(20);
+    }
+    Lw_Check(&V(88), &g_lw67d408, 150.0f);
+    Lw_Check(&V(100), &g_lw67d3f0, 150.0f);
+    Lw_Check(&V(156), &g_lw67d3d8, 30.0f);
+    Lw_Check(&V(168), &g_lw67d3c0, 30.0f);
+    V(16) = (float)((V(104) * V(48)));
+    V(20) = (float)((V(108) * V(48)));
+    V(116) = (float)((V(92) * V(124)));
+    V(120) = (float)((V(96) * V(124)));
+    V(72) = (float)((V(16) + V(116)));
+    V(76) = (float)((V(20) + V(120)));
+    V(84) = (float)((V(48) + V(124)));
+    V(52) = (float)((((V(100) * V(48)) + (V(88) * V(124))) / V(84)));
+    I(364) = I(52);
+    V(56) = (float)((V(72) / V(84)));
+    I(368) = I(56);
+    V(60) = (float)((V(76) / V(84)));
+    I(372) = I(60);
+    CallThis(Lw_Set, &V(12), (float)((V(88) - V(52))), (float)((V(92) - V(56))), (float)((V(96) - V(60))));
+    I(92) = I(16);
+    I(88) = I(12);
+    I(96) = I(20);
+    CallThis(Lw_Set, &V(12), (float)((V(100) - V(364))), (float)((V(104) - V(368))), (float)((V(108) - V(372))));
+    I(100) = I(12);
+    I(104) = I(16);
+    I(108) = I(20);
+    if (((V(316) * V(24)) + (V(324) * V(32))) + (V(320) * V(28)) > g_lw64b678)
+        CallThis(Lw_MulA, &V(24), &V(36), -1.0f);
+    CallThis(Lw_Set, &V(52), (float)((V(316) / V(220))), (float)((V(320) / V(220))), (float)((V(324) / V(220))));
+    CallThis(Lw_Set, &V(68), (float)((V(388) / V(216))), (float)((V(392) / V(216))), (float)((V(396) / V(216))));
+    CallThis(Lw_Set, &V(196), (float)(((V(96) * V(28)) - (V(92) * V(32)))), (float)(((V(88) * V(32)) - (V(24) * V(96)))), (float)(((V(24) * V(92)) - (V(88) * V(28)))));
+    CallThis(Lw_Set, &V(12), (float)(((V(200) * V(32)) - (V(204) * V(28)))), (float)(((V(24) * V(204)) - (V(196) * V(32)))), (float)(((V(196) * V(28)) - (V(24) * V(200)))));
+    I(520) = I(12);
+    I(524) = I(16);
+    I(528) = I(20);
+    CallThis(Lw_Set, &V(12), (float)(((((V(132) * V(52)) + (V(60) * V(140))) + (V(56) * V(136))) * V(52))), (float)(((((V(132) * V(52)) + (V(60) * V(140))) + (V(56) * V(136))) * V(56))), (float)(((((V(132) * V(52)) + (V(60) * V(140))) + (V(56) * V(136))) * V(60))));
+    I(400) = I(12);
+    I(404) = I(16);
+    I(408) = I(20);
+    CallThis(Lw_Set, &V(196), (float)(((V(28) * V(140)) - (V(32) * V(136)))), (float)(((V(132) * V(32)) - (V(24) * V(140)))), (float)(((V(24) * V(136)) - (V(132) * V(28)))));
+    CallThis(Lw_Set, &V(112), (float)(((V(200) * V(32)) - (V(204) * V(28)))), (float)(((V(24) * V(204)) - (V(196) * V(32)))), (float)(((V(196) * V(28)) - (V(24) * V(200)))));
+    CallThis(Lw_Set, &V(12), (float)(((V(120) * V(56)) - (V(116) * V(60)))), (float)(((V(112) * V(60)) - (V(120) * V(52)))), (float)(((V(116) * V(52)) - (V(112) * V(56)))));
+    CallThis(Lw_Set, &V(36), (float)(((V(16) * V(60)) - (V(20) * V(56)))), (float)(((V(20) * V(52)) - (V(12) * V(60)))), (float)(((V(12) * V(56)) - (V(16) * V(52)))));
+    I(328) = I(36);
+    I(332) = I(40);
+    I(336) = I(44);
+    CallThis(Lw_Set, &V(36), (float)((V(132) - V(400))), (float)((V(136) - V(404))), (float)((V(140) - V(408))));
+    CallThis(Lw_Set, &V(12), (float)((V(36) - V(328))), (float)((V(40) - V(332))), (float)((V(44) - V(336))));
+    I(508) = I(12);
+    I(512) = I(16);
+    I(516) = I(20);
+    CallThis(Lw_Set, &V(12), (float)(((V(108) * V(28)) - (V(104) * V(32)))), (float)(((V(100) * V(32)) - (V(24) * V(108)))), (float)(((V(24) * V(104)) - (V(100) * V(28)))));
+    CallThis(Lw_Set, &V(36), (float)(((V(16) * V(32)) - (V(20) * V(28)))), (float)(((V(24) * V(20)) - (V(12) * V(32)))), (float)(((V(12) * V(28)) - (V(24) * V(16)))));
+    I(532) = I(36);
+    I(536) = I(40);
+    I(540) = I(44);
+    CallThis(Lw_Set, &V(36), (float)((V(68) * (((V(68) * V(180)) + (V(76) * V(188))) + (V(72) * V(184))))), (float)((V(72) * (((V(68) * V(180)) + (V(76) * V(188))) + (V(72) * V(184))))), (float)((V(76) * (((V(68) * V(180)) + (V(76) * V(188))) + (V(72) * V(184))))));
+    I(376) = I(36);
+    I(380) = I(40);
+    I(384) = I(44);
+    CallThis(Lw_Set, &V(12), (float)(((V(28) * V(188)) - (V(32) * V(184)))), (float)(((V(180) * V(32)) - (V(24) * V(188)))), (float)(((V(24) * V(184)) - (V(180) * V(28)))));
+    CallThis(Lw_Set, &V(112), (float)(((V(16) * V(32)) - (V(20) * V(28)))), (float)(((V(24) * V(20)) - (V(12) * V(32)))), (float)(((V(12) * V(28)) - (V(24) * V(16)))));
+    CallThis(Lw_Set, &V(132), (float)(((V(120) * V(72)) - (V(116) * V(76)))), (float)(((V(112) * V(76)) - (V(120) * V(68)))), (float)(((V(116) * V(68)) - (V(112) * V(72)))));
+    CallThis(Lw_Set, &V(36), (float)(((V(136) * V(76)) - (V(140) * V(72)))), (float)(((V(140) * V(68)) - (V(132) * V(76)))), (float)(((V(132) * V(72)) - (V(136) * V(68)))));
+    I(352) = I(36);
+    I(356) = I(40);
+    I(360) = I(44);
+    CallThis(Lw_Set, &V(36), (float)((V(180) - V(376))), (float)((V(184) - V(380))), (float)((V(188) - V(384))));
+    CallThis(Lw_Set, &V(12), (float)((V(36) - V(352))), (float)((V(40) - V(356))), (float)((V(44) - V(360))));
+    I(544) = I(12);
+    I(548) = I(16);
+    I(552) = I(20);
+    CallThis(Lw_Set, &V(36), (float)(((V(60) * V(28)) - (V(56) * V(32)))), (float)(((V(52) * V(32)) - (V(24) * V(60)))), (float)(((V(24) * V(56)) - (V(52) * V(28)))));
+    I(244) = I(36);
+    I(248) = I(40);
+    I(252) = I(44);
+    CallThis(Lw_Set, &V(36), (float)(((V(76) * V(28)) - (V(72) * V(32)))), (float)(((V(68) * V(32)) - (V(24) * V(76)))), (float)(((V(24) * V(72)) - (V(68) * V(28)))));
+    I(268) = I(36);
+    I(272) = I(40);
+    I(276) = I(44);
+    double RET35 = Vec3_Length((const Vec3*)&V(244));
+    V(84) = (float)(RET35);
+    double RET36 = Vec3_Length((const Vec3*)&V(268));
+    V(152) = (float)(RET36);
+    CallThis(Lw_Set, &V(36), (float)((-V(88))), (float)((-V(92))), (float)((-V(96))));
+    I(128) = 1;
+    V(180) = (float)((((V(40) * V(28)) + (V(44) * V(32))) + (V(24) * V(36))));
+    if (!(((V(244) * V(328)) + (V(252) * V(336))) + (V(248) * V(332)) > g_lw64b678))
+        I(128) = -1;
+    double RET38 = Vec3_Length((const Vec3*)&V(328));
+    V(132) = (float)((RET38 * I(128)));
+    V(196) = (float)((((V(232) + V(228)) + V(224)) * g_lw64b7e8));
+    CallThis(Lw_Set, &V(36), (float)((-V(100))), (float)((-V(104))), (float)((-V(108))));
+    I(236) = 1;
+    V(128) = (float)((((V(44) * V(32)) + (V(40) * V(28))) + (V(36) * V(24))));
+    if (!(((V(268) * V(352)) + (V(276) * V(360))) + (V(272) * V(356)) > g_lw64b678))
+        I(236) = -1;
+    double RET40 = Vec3_Length((const Vec3*)&V(352));
+    V(52) = (float)((RET40 * I(236)));
+    V(68) = (float)((((V(264) + V(260)) + V(256)) * g_lw64b7e8));
+    float* P3 = (float*)Matrix_ScaleColumns((Matrix*)(&V(820)), (const Matrix*)(&V(556)), (const Vec3*)(&V(224)));
+    float* P4 = (float*)Matrix_Multiply((Matrix*)(&V(724)), (const Matrix*)(P3), (const Matrix*)(&V(460)));
+    float* P5 = (float*)Matrix_ScaleColumns((Matrix*)(&V(820)), (const Matrix*)(&V(772)), (const Vec3*)(&V(256)));
+    float* P6 = (float*)Matrix_Multiply((Matrix*)(&V(676)), (const Matrix*)(P5), (const Matrix*)(&V(412)));
+    I(760) = ((const int*)&g_zeroVec)[0];
+    I(712) = ((const int*)&g_zeroVec)[0];
+    I(764) = ((const int*)&g_zeroVec)[1];
+    I(768) = ((const int*)&g_zeroVec)[2];
+    I(716) = ((const int*)&g_zeroVec)[1];
+    I(720) = ((const int*)&g_zeroVec)[2];
+    if (V(84) > g_lw64b658)
+    {
+        CallThis(Lw_DivA, &V(244), &V(36), V(84));
+        CallThis(Lw_Set, &V(36), (float)((((V(232) * V(580)) + (V(228) * V(568))) + (V(556) * V(224)))), (float)((((V(232) * V(584)) + (V(228) * V(572))) + (V(224) * V(560)))), (float)((((V(232) * V(588)) + (V(228) * V(576))) + (V(224) * V(564)))));
+        float* P7 = (float*)Vec3_RotateBy((Vec3*)(&V(36)), (const Vec3*)(&V(244)), (const Matrix*)(&V(724)));
+        V(196) = (float)(x87_fabs((((F(float, P7, 8) * V(252)) + (F(float, P7, 4) * V(248))) + (V(244) * F(float, P7, 0)))));
+    }
+    double X;
+    if (V(152) > g_lw64b658)
+    {
+        CallThis(Lw_DivA, &V(268), &V(36), V(152));
+        float* P8 = (float*)Vec3_RotateBy((Vec3*)(&V(36)), (const Vec3*)(&V(256)), (const Matrix*)(&V(772)));
+        double RET50 = Vec3_Dot((const Vec3*)(P8), (const Vec3*)(&V(268)));
+        float* P9 = (float*)Vec3_RotateBy((Vec3*)(&V(36)), (const Vec3*)(&V(268)), (const Matrix*)(&V(676)));
+        double RET52 = Vec3_Dot((const Vec3*)(P9), (const Vec3*)(&V(268)));
+        X = x87_fabs(RET52);
+    }
+    else
+        X = V(68);
+    double t2 = (((V(84) * V(220)) * V(124)) / V(196));
+    V(196) = (float)(t2);
+    double t4 = (((V(152) * V(216)) * V(48)) / X);
+    V(68) = (float)(t4);
+    double t5 = ((((((((V(52) * V(152)) * V(216)) + V(128)) * (V(240) + g_lw64c250)) + (((((-V(240)) - g_lw64c250) * V(132)) * V(84)) * V(220))) + (((((((V(68) * V(152)) + g_lw64c250) * V(124)) / V(48)) + (V(196) * V(84))) - V(240)) * V(180))) / ((((((V(68) * V(152)) + g_lw64c250) * V(124)) / V(48)) + (V(196) * V(84))) + g_lw64c250)) * g_lw64b840);
+    double t6 = (((((((((V(52) * V(152)) * V(216)) + V(128)) * (V(240) + g_lw64c250)) + (((((-V(240)) - g_lw64c250) * V(132)) * V(84)) * V(220))) + (((((((V(68) * V(152)) + g_lw64c250) * V(124)) / V(48)) + (V(196) * V(84))) - V(240)) * V(180))) / ((((((V(68) * V(152)) + g_lw64c250) * V(124)) / V(48)) + (V(196) * V(84))) + g_lw64c250)) * g_lw64b840) - V(180));
+    V(180) = (float)(t6);
+    V(236) = (float)((V(128) - ((V(124) / V(48)) * V(180))));
+    float* P10 = (float*)Vec3_Scaled((Vec3*)(&V(616)), (const Vec3*)(&V(24)), (float)(x87_fabs(t5)));
+    float* P11 = (float*)Vec3_Add((Vec3*)(&V(340)), (const Vec3*)(&V(616)), (const Vec3*)(&V(520)));
+    float* P12 = (float*)Lw_Negated(&V(36), &V(24));
+    float* P13 = (float*)Vec3_Scaled((Vec3*)(&V(604)), (const Vec3*)(P12), (float)(x87_fabs(V(236))));
+    float* P14 = (float*)Vec3_Add((Vec3*)(&V(280)), (const Vec3*)(&V(604)), (const Vec3*)(&V(532)));
+    float* P15 = (float*)Vec3_Scaled((Vec3*)(&V(640)), (const Vec3*)(&V(244)), (float)((((V(196) / V(220)) * V(180)) + V(132))));
+    float* P16 = (float*)Vec3_Add((Vec3*)(&V(36)), (const Vec3*)(&V(400)), (const Vec3*)(&V(508)));
+    float* P17 = (float*)Vec3_Add((Vec3*)(&V(664)), (const Vec3*)(P16), (const Vec3*)(&V(640)));
+    float* P18 = (float*)Vec3_RotateBy((Vec3*)(&V(304)), (const Vec3*)(&V(664)), (const Matrix*)(&V(556)));
+    float* P19 = (float*)Vec3_Scaled((Vec3*)(&V(628)), (const Vec3*)(&V(268)), (float)((((V(236) - V(128)) * (V(68) / V(216))) + V(52))));
+    float* P20 = (float*)Vec3_Add((Vec3*)(&V(36)), (const Vec3*)(&V(376)), (const Vec3*)(&V(544)));
+    float* P21 = (float*)Vec3_Add((Vec3*)(&V(652)), (const Vec3*)(P20), (const Vec3*)(&V(628)));
+    float* P22 = (float*)Vec3_RotateBy((Vec3*)(&V(292)), (const Vec3*)(&V(652)), (const Matrix*)(&V(772)));
+    CallThis(Lw_AddA, &V(340), &V(36), &V(364));
+    CallThis(Lw_AddA, &V(280), &V(36), &V(364));
+    float* P23 = (float*)Vec3_MulComponents((Vec3*)(&V(36)), (const Vec3*)(&V(224)), (const Vec3*)(b + 3312));
+    double RET69 = Vec3_Dot((const Vec3*)(P23), (const Vec3*)(b + 3312));
+    D(52) = RET69;
+    double RET70 = Vec3_Dot((const Vec3*)(b + 3300), (const Vec3*)(b + 3300));
+    V(68) = (float)((((RET70 * V(124)) + D(52)) * g_lw64b6e0));
+    float* P24 = (float*)Vec3_MulComponents((Vec3*)(&V(36)), (const Vec3*)(&V(256)), (const Vec3*)(o + 3312));
+    double RET72 = Vec3_Dot((const Vec3*)(P24), (const Vec3*)(o + 3312));
+    D(52) = RET72;
+    double RET73 = Vec3_Dot((const Vec3*)(o + 3300), (const Vec3*)(o + 3300));
+    double t7 = (((RET73 * V(48)) + D(52)) * g_lw64b6e0);
+    V(52) = (float)(t7);
+    D(180) = V(124);
+    float* P25 = (float*)Vec3_MulComponents((Vec3*)(&V(36)), (const Vec3*)(&V(224)), (const Vec3*)(&V(304)));
+    double RET75 = Vec3_Dot((const Vec3*)(P25), (const Vec3*)(&V(304)));
+    D(132) = RET75;
+    double RET76 = Vec3_Dot((const Vec3*)(&V(340)), (const Vec3*)(&V(340)));
+    double t8 = (((RET76 * D(180)) + D(132)) * g_lw64b6e0);
+    V(132) = (float)(t8);
+    double t9 = (V(52) + V(68));
+    V(52) = (float)(t9);
+    D(68) = V(48);
+    float* P26 = (float*)Vec3_MulComponents((Vec3*)(&V(36)), (const Vec3*)(&V(256)), (const Vec3*)(&V(292)));
+    double RET78 = Vec3_Dot((const Vec3*)(P26), (const Vec3*)(&V(292)));
+    D(196) = RET78;
+    double RET79 = Vec3_Dot((const Vec3*)(&V(280)), (const Vec3*)(&V(280)));
+    V(48) = (float)((((((RET79 * D(68)) + D(196)) * g_lw64b6e0) + V(132)) / V(52)));
+    if (V(52) > g_lw64b678 && V(48) > g_lw64d918)
+    {
+        double t10 = (g_lw64b670 / (V(48) + g_lw64b5b8));
+        V(48) = (float)(t10);
+        CallThis(Lw_MulA, &V(340), &V(36), V(48));
+        CallThis(Lw_MulA, &V(280), &V(36), V(48));
+        CallThis(Lw_MulA, &V(304), &V(36), V(48));
+        CallThis(Lw_MulA, &V(292), &V(36), V(48));
+    }
+    Lw_Soften(&V(304));
+    Lw_Soften(&V(292));
+    if (Lw_Out(&V(340), 150.0f) || Lw_Out(&V(280), 150.0f) || Lw_Out(&V(304), 30.0f) || Lw_Out(&V(292), 30.0f))
+        Lw_Dump(b, c, o, fr);
+    CallVirt(b, 144, &V(340), &g_lw67d23c);
+    CallVirt(b, 148, &V(304), &g_lw67d228);
+    CallVirt(o, 144, &V(280), &g_lw67d214);
+    CallVirt(o, 148, &V(292), &g_lw67d200);
+}
+
+} // extern "C"
+
+#undef V
+#undef D
+#undef I

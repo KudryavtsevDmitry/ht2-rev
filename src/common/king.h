@@ -560,7 +560,7 @@ extern "C" void FUN_530050(); KING_ALIAS("_FUN_530050", "@Words295_ClearEmpty@8"
 extern "C" void FUN_578fe0(); KING_ALIAS("_FUN_578fe0", "_Joy_ReadState")    // Joy_Read
 extern "C" void FUN_5c3990(); KING_ALIAS("_FUN_5c3990", "@Med5c3990_Destroy@4")    // destructor of CKingApp's base class
 extern "C" void __cdecl Loading_Update();       // carat.cpp
-ASM_PROC(FUN_56ce40)
+extern "C" void FUN_56ce40(); KING_ALIAS("_FUN_56ce40", "_Hud_Frame")
 extern "C" void FUN_53b4c0(); KING_ALIAS("_FUN_53b4c0", "@Player_Controls@8")
 
 // Appends a key typed during the pause to the cheat code being typed and

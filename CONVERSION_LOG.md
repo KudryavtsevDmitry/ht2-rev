@@ -299,3 +299,23 @@ all aliases found two older clashes, fixed by renaming: `_Gm_First` (effects.cpp
 calls Obj541970_First as the asm does) and `_Ce_Fatal` (clusters.cpp, batch 27). The trailer, copter, dial,
 police-free and sub-step paths are probably not reached by the load test. Load test exact (507.330231,940.087585)
 with exit code 0.
+
+Batch 30 done: 44,528 bytes (about 91.9% -> 93.9%). Largest: FUN_533590..$L_53549a Car_PlaceOnRoad (8000, the
+vehicle put back on the road: tries along its line, places from the room, rays down, sideways slides against
+other cars' boxes and the car's points), FUN_57eae0..$L_58084e Bodies_Impulse (7648, two bodies' impulse at a
+contact) and FUN_54ff80..$L_550358 Car_AfterPhysics (6480). Those three were written with a new symbolic x87
+lifter (lift.py in the session scratchpad) that replays the FPU stack over a listing range and prints C in the
+asm's operation order; the biggest frames stay a byte array with V/D/I slot accessors. Then the .rmp resource
+loader FUN_5ec0f0..$L_5ed091 Image_ReadResources (5488), FUN_5f0b10..$L_5f0d41 Mesh_PrepareDraw (2560),
+FUN_527f30..$L_5280e2 GameWindow_Construct (2288, the main menu and shell screens), FUN_5dae90..$L_5db637
+Module_Load (2000, *.b3d, image, overlays, color keys), FUN_4d8350..$L_4d88b9 Media_VehicleEvent (1744),
+FUN_5e3bc0..$L_5e3c22 App_SetupVideo (1408), FUN_5e29b0..$L_5e2cb0 App_InitInstance (1184, MFC calls through
+mangled-name aliases), $L_511170..$L_5112b7 App_ShowEscMenu (1088), $L_5ddc50..$L_5ddd68 App_ShowQuitPanel
+(1040), $L_528820..$L_528bd6 GameWindow_Draw (1008, info screens and the intro movie), FUN_5db710..$L_5db9b8
+Module_LoadImage (736), $L_528ca0..$L_528de2 MovieScreen_Frame (688), FUN_56ce40..$L_56ce61 Hud_Frame (656) and
+$L_51e140..$L_51e2d3 SaveScreen_Command (512). Checked by eye: the main menu (all eight buttons) and the Esc menu
+(a copy of the test script presses Esc 22 s into the loaded game: smoke_esc.ps1 -EscAt) and the HUD. Not reached
+by the tests: the placement on the road, the quit panel, the save screen's commands, the trailer paths of the
+vehicle event. Left in asm on purpose: the span fillers at $L_5fdc70, the deque insert FUN_4ac3d0 (by-value
+iterators), the rope compare FUN_45a7d0, $L_5dd8c0 (starts at a bare label outside any PROC), the adjustor thunks
+at $L_55fa7f. Load test exact (507.330231,940.087585) with exit code 0.

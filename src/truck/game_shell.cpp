@@ -816,7 +816,7 @@ extern "C" int __cdecl Loading_Step()
 }
 
 extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")
-ASM_PROC(FUN_5dae90)
+extern "C" void FUN_5dae90(); KING_ALIAS("_FUN_5dae90", "@Module_Load@20")
 extern "C" void FUN_5c43c0(); KING_ALIAS("_FUN_5c43c0", "@Rec_Mark@8")
 extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
 extern "C" void FUN_51d0e0(); KING_ALIAS("_FUN_51d0e0", "_Save_ListEntries")
@@ -6001,7 +6001,7 @@ extern "C" void __cdecl Shell_StartGame(const char* name, int ask)
 // ---------------------------------------------------------------------------
 // Loading a shell scene.
 
-ASM_PROC(FUN_5ec0f0)
+extern "C" void FUN_5ec0f0(); KING_ALIAS("_FUN_5ec0f0", "@Image_ReadResources@24")
 extern "C" void FUN_5ea880(); KING_ALIAS("_FUN_5ea880", "@Cluster5ea880_Construct@12")
 extern "C" void FUN_5bc060(); KING_ALIAS("_FUN_5bc060", "@Image_RleToSurface@8")
 extern "C" void FUN_5db6e0(); KING_ALIAS("_FUN_5db6e0", "@Scenes_Add@12")
@@ -6423,7 +6423,7 @@ extern "C" void __fastcall InputScreen_Command(BYTE* s, void*, int cmd)
 // ---------------------------------------------------------------------------
 // Paying for a repair.
 
-ASM_PROC(FUN_533590)
+extern "C" void FUN_533590(); KING_ALIAS("_FUN_533590", "@Car_PlaceOnRoad@12")
 extern "C" void FUN_53b3c0(); KING_ALIAS("_FUN_53b3c0", "@King_53b3c0@12")
 extern "C" void FUN_4eb600(); KING_ALIAS("_FUN_4eb600", "@Ramp_SetValue@12")
 extern "C" void FUN_43f7c0(); KING_ALIAS("_FUN_43f7c0", "_Player_Set136")
@@ -7894,7 +7894,7 @@ extern "C" void FUN_51e7a0(); KING_ALIAS("_FUN_51e7a0", "@Shell51e7a0_Apply@8")
 extern "C" void FUN_50bd60(); KING_ALIAS("_FUN_50bd60", "_Carat_SetScreenSize")
 extern "C" void FUN_5c4340(); KING_ALIAS("_FUN_5c4340", "@Rec_Close@8")
 extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
-ASM_PROC(FUN_533590)
+extern "C" void FUN_533590(); KING_ALIAS("_FUN_533590", "@Car_PlaceOnRoad@12")
 extern "C" void FUN_53b3c0(); KING_ALIAS("_FUN_53b3c0", "@King_53b3c0@12")
 extern "C" void FUN_4eb600(); KING_ALIAS("_FUN_4eb600", "@Ramp_SetValue@12")
 extern "C" void FUN_516e40(); KING_ALIAS("_FUN_516e40", "@Screen_SetState@12")
@@ -11511,6 +11511,85 @@ int __fastcall Net_CheckSession(BYTE* s, void*)
     }
     CallThis(Ns_Free, tmp);
     return r;
+}
+
+} // extern "C"
+
+// === the save screen's commands ($L_51e140 with its pieces up to $L_51e2d3)
+
+extern "C" char* __cdecl Sc_Name(char* s); KING_ALIAS("_Sc_Name", "_Str_Name")
+extern "C" void __cdecl Sc_Write(const char* name, int a); KING_ALIAS("_Sc_Write", "_Save_WriteEntry")
+extern "C" void __cdecl Sc_Delete(const char* name); KING_ALIAS("_Sc_Delete", "_Save_DeleteEntry")
+extern "C" void __fastcall Sc_ListRemove(BYTE* self, void*, const char* name); KING_ALIAS("@Sc_ListRemove@12", "@List_RemoveName@12")
+extern "C" int __fastcall Sc_Activate(BYTE* self, void*); KING_ALIAS("@Sc_Activate@8", "@Win_Activate@8")
+extern "C" void __cdecl Sc_ScreenSize(); KING_ALIAS("_Sc_ScreenSize", "_Carat_SetScreenSize")
+extern "C" int __cdecl Sc_ForceFeedback(int on); KING_ALIAS("_Sc_ForceFeedback", "_Joy_ForceFeedback")
+extern "C" BYTE* __cdecl Sc_ClearMessages(); KING_ALIAS("_Sc_ClearMessages", "_Messages_Clear1276")
+extern "C" int __cdecl Sc_LeaveRace(); KING_ALIAS("_Sc_LeaveRace", "_Shell_LeaveRace")
+extern "C" const char* __cdecl Sc_Text(int i); KING_ALIAS("_Sc_Text", "_Table71e858_Get")
+ASM_VAR(BYTE*, g_scEsc6ced6c, $L_6ced6c)
+ASM_VAR(BYTE*, g_sc6ce4f4, $L_6ce4f4)
+ASM_VAR(BYTE*, g_scApp696ca0, $L_696ca0)
+ASM_VAR(int, g_sc6968a4, $L_6968a4)
+
+extern "C" {
+
+// [$L_51e140..$L_51e2d3] (save screen vtable) command cmd of save screen s (+308 the name typed, +436 the list):
+// Esc / 172 back to the Esc menu, 117 the chosen save's name copied, 282 that save deleted, 173 / 174 the game
+// saved under the name (then the screen closed and the game left by s +448: the race, a flag, or the app vtable
+// +36), or the "no name" text when the name is empty
+void __fastcall SaveScreen_Command(BYTE* s, void*, int cmd)
+{
+    if (cmd > 172)
+    {
+        if (cmd == 173 || cmd == 174)
+        {
+            char buf[128];
+            strcpy(buf, (char*)s + 308);
+            char* n = Sc_Name(buf);
+            if (!n || !*n)
+            {
+                strcpy((char*)s + 308, Sc_Text(103));
+                return;
+            }
+            Sc_Write(n, 1);
+            CallVirt(s - 64, 32);
+            Sc_ScreenSize();
+            Sc_ForceFeedback(1);
+            if (g_sc6ce4f4)
+                CallVirt(g_sc6ce4f4, 0, 1);
+            g_sc6ce4f4 = 0;
+            F(DWORD, g_scApp696ca0, 16) |= 3;
+            Sc_ClearMessages();
+            int mode = F(int, s, 448);
+            if (mode == 1)
+                Sc_LeaveRace();
+            else if (mode == 2)
+                g_sc6968a4 = 1;
+            else
+                CallVirt(g_scApp696ca0, 36);
+        }
+        else if (cmd == 282)
+        {
+            BYTE* e = F(BYTE*, F(BYTE*, s, 436), 300);
+            const char* name = e ? F(const char*, e, 12) : 0;
+            Sc_Delete(name);
+            Sc_ListRemove(F(BYTE*, s, 436), 0, name);
+        }
+        return;
+    }
+    if (cmd == 172 || cmd == 27)
+    {
+        CallVirt(s - 64, 32);
+        Sc_Activate(g_scEsc6ced6c, 0);
+        return;
+    }
+    if (cmd != 117)
+        return;
+    BYTE* e = F(BYTE*, F(BYTE*, s, 436), 300);
+    if (!e || !F(char*, e, 12))
+        return;
+    strcpy((char*)s + 308, F(char*, e, 12));
 }
 
 } // extern "C"

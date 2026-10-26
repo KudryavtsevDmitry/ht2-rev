@@ -983,7 +983,7 @@ extern "C" void FUN_5e48a0(); KING_ALIAS("_FUN_5e48a0", "@ResTable_Remove@12")
 extern "C" void FUN_5e4ec0(); KING_ALIAS("_FUN_5e4ec0", "@Resources_Find@12")
 extern "C" void FUN_5e4660(); KING_ALIAS("_FUN_5e4660", "@Resource_Construct@16")
 extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")    // (this, a) -> b
-ASM_PROC(FUN_5dae90)    // (this, b, c, d)
+extern "C" void FUN_5dae90(); KING_ALIAS("_FUN_5dae90", "@Module_Load@20")    // (this, b, c, d)
 extern "C" void FUN_5e4f60(); KING_ALIAS("_FUN_5e4f60", "@Resources_AddTable@12")    // resources: load table (this, name)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
@@ -1265,7 +1265,7 @@ extern "C" void __stdcall Fw_Delete(void* p)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
-ASM_PROC(FUN_5ec0f0)    // image: read (this, name, file, kind, path)
+extern "C" void FUN_5ec0f0(); KING_ALIAS("_FUN_5ec0f0", "@Image_ReadResources@24")    // image: read (this, name, file, kind, path)
 extern "C" void FUN_5d2f90(); KING_ALIAS("_FUN_5d2f90", "_Sys_FreeMemory")
 extern "C" void FUN_5e9ff0(); KING_ALIAS("_FUN_5e9ff0", "_Image_ErrorText")
 ASM_VAR(AsmLabel, s_682b34, $L_682b34)
@@ -2859,7 +2859,7 @@ extern "C" void FUN_5e3ba0(); KING_ALIAS("_FUN_5e3ba0", "_Fw_Startup")
 extern "C" void FUN_5f33e0(); KING_ALIAS("_FUN_5f33e0", "@Node_Call5f2a40b@12")
 extern "C" void FUN_5f2dd0(); KING_ALIAS("_FUN_5f2dd0", "@Node_Call5f2a40a@12")
 extern "C" void FUN_5fa910(); KING_ALIAS("_FUN_5fa910", "@Mesh_BuildVertices@12")
-ASM_PROC(FUN_5f0b10)
+extern "C" void FUN_5f0b10(); KING_ALIAS("_FUN_5f0b10", "@Mesh_PrepareDraw@12")
 extern "C" void Mfc_AfxEndThread(); KING_ALIAS("_Mfc_AfxEndThread", "?AfxEndThread@@YGXIH@Z")
 extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec);
 ASM_VAR(HDC, g_q53_72091c, $L_72091c)
@@ -6401,6 +6401,1528 @@ int __fastcall Wnd_BlitTo(BYTE* s, void*, BYTE* to)
     BitBlt(F(HDC, to, 4), pt.x, pt.y, sz.cx, sz.cy, F(HDC, dc, 4), pt.x, pt.y, SRCCOPY);
     CallThis(Cd_Free, dc);
     return 1;
+}
+
+} // extern "C"
+
+// === the resource file (*.rmp or its text form) read into an image (FUN_5ec0f0 with its tails $L_5ec1a4, $L_5ec1d7, $L_5ed091)
+
+extern "C" void __cdecl Rm_SetDir(const char* dir); KING_ALIAS("_Rm_SetDir", "_Files_SetDir")
+extern "C" void Rm_MmioReset(); KING_ALIAS("_Rm_MmioReset", "@Mmio_Reset@8")
+extern "C" void Rm_MmioOpen(); KING_ALIAS("_Rm_MmioOpen", "@Mmio_Open@12")
+extern "C" char* __cdecl Rm_ReadString(char* buf, void* f); KING_ALIAS("_Rm_ReadString", "_File_ReadString")
+extern "C" char* __cdecl Rm_Token(char** cur); KING_ALIAS("_Rm_Token", "_NextToken")
+extern "C" int __cdecl Rm_ReadInt(void* f); KING_ALIAS("_Rm_ReadInt", "_File_ReadInt")
+extern "C" char* __cdecl Rm_fgets(char* s, int n, void* f); KING_ALIAS("_Rm_fgets", "_fgets")
+extern "C" long __cdecl Rm_ftell(void* f); KING_ALIAS("_Rm_ftell", "_ftell")
+extern "C" int __cdecl Rm_fseek(void* f, long off, int origin); KING_ALIAS("_Rm_fseek", "_fseek")
+extern "C" void __cdecl Rm_SoundBuffers(int n); KING_ALIAS("_Rm_SoundBuffers", "_Sound_AllocBuffers")
+extern "C" void* __cdecl Rm_SoundFromFile(void* f, int i, int size, int noload); KING_ALIAS("_Rm_SoundFromFile", "_Sound_CreateFromFile")
+extern "C" void* __cdecl Rm_SoundCreate(const char* name, int i, int noload); KING_ALIAS("_Rm_SoundCreate", "_Sound_Create")
+extern "C" void Rm_HashAdd(); KING_ALIAS("_Rm_HashAdd", "@NameHash_Add@16")
+extern "C" void Rm_SoundCtor(); KING_ALIAS("_Rm_SoundCtor", "@Sound_Construct@20")
+extern "C" void Rm_BitmapData(); KING_ALIAS("_Rm_BitmapData", "@Bitmap_ConstructData@20")
+extern "C" void Rm_BitmapCtor(); KING_ALIAS("_Rm_BitmapCtor", "@Bitmap_Construct@12")
+extern "C" void __cdecl Rm_MaskHeader(void* o, void* f, int size, void* map); KING_ALIAS("_Rm_MaskHeader", "_Mask_ReadHeader")
+extern "C" void* __cdecl Rm_MaskFromFile(void* f, int size); KING_ALIAS("_Rm_MaskFromFile", "_Texture_ReadFile")
+extern "C" void __cdecl Rm_MaskRead(void* o, const char* name); KING_ALIAS("_Rm_MaskRead", "_Data_Read5e94d0")
+extern "C" void* __cdecl Rm_MaskLoad(const char* name); KING_ALIAS("_Rm_MaskLoad", "_Data_Read5e9360")
+extern "C" void Rm_TexNamed(); KING_ALIAS("_Rm_TexNamed", "@Texture_ConstructNamed@20")
+extern "C" void Rm_TexCtor(); KING_ALIAS("_Rm_TexCtor", "@Texture_Construct@12")
+extern "C" void __cdecl Rm_TgaHeader(void* o, void* f, void* map); KING_ALIAS("_Rm_TgaHeader", "_Tga_ReadHeader")
+extern "C" void* __cdecl Rm_ImageFromFile(void* f, const char* name, int flags); KING_ALIAS("_Rm_ImageFromFile", "_Image_FromFile")
+extern "C" void __cdecl Rm_TgaRead(void* o, const char* name); KING_ALIAS("_Rm_TgaRead", "_Data_Read5e7930")
+extern "C" void* __cdecl Rm_ImageLoad(const char* name); KING_ALIAS("_Rm_ImageLoad", "_Image_LoadFile")
+extern "C" int __cdecl Rm_Material(char* text, BYTE* m); KING_ALIAS("_Rm_Material", "_Material_Read")
+extern "C" void* __cdecl Rm_PalFromFile(void* f); KING_ALIAS("_Rm_PalFromFile", "_Palette_Load")
+extern "C" void* __cdecl Rm_PalLoad(const char* name); KING_ALIAS("_Rm_PalLoad", "_Data_Read5e6e90")
+extern "C" void __cdecl Rm_Fatal(const char* fmt, ...); KING_ALIAS("_Rm_Fatal", "_Sys_Fatal")
+
+ASM_VAR(char, g_rmDot671204, $L_671204)        // ".\\"
+ASM_VAR(char, g_rm68d1c0, $L_68d1c0)
+ASM_VAR(char, g_rmCannotOpen, $L_683774)       // "Cannot open *.rmp"
+ASM_VAR(char, g_rmColors, $L_68376c)           // "COLORS"
+ASM_VAR(char, g_rmEffects, $L_672998)          // "EFFECTS"
+ASM_VAR(char, g_rmSoundFiles, $L_683760)       // "SOUNDFILES"
+ASM_VAR(char, g_rmSounds, $L_683750)           // "SOUNDS"
+ASM_VAR(char, g_rmMaskFiles, $L_683744)        // "MASKFILES"
+ASM_VAR(char, g_rmTextureFiles, $L_683734)     // "TEXTUREFILES"
+ASM_VAR(char, g_rmMaterials, $L_683720)        // "MATERIALS"
+ASM_VAR(char, g_rmPaletteFiles, $L_6836f0)     // "PALETTEFILES"
+ASM_VAR(char, g_rmBackFiles, $L_6836e4)        // "BACKFILES"
+ASM_VAR(char, g_rmNoload, $L_683758)           // "noload"
+ASM_VAR(char, g_rmMemfix, $L_68372c)           // "memfix"
+ASM_VAR(char, g_rmBumpcoord, $L_683674)        // "bumpcoord"
+ASM_VAR(char, g_rmNumMaterials, $L_6836d4)     // "num materials"
+ASM_VAR(char, g_rmIncorrectMat, $L_68370c)     // "Incorrect material"
+ASM_VAR(char, g_rmMatRoad, $L_683700)          // "mat_road"
+ASM_VAR(char, g_rmIllegal, $L_6836c0)          // "illegal keyword %s"
+ASM_VAR(char, g_rmLine, $L_7220a4)             // the line buffer
+ASM_VAR(char, g_rmMatText, $L_722950)
+ASM_VAR(BYTE, g_rmNames, $L_71e820)            // the name hash
+
+typedef void(__cdecl* Rm_Callback)();
+extern "C" int __cdecl atoi(const char* s);
+
+#define RM_EOF(f) (F(BYTE, f, 12) & 16)
+
+// a line of the file: from the mapped resource file (mode != 0) or by fgets
+static void Rm_ReadLine(int mode, void* f, int n)
+{
+    if (mode)
+        Rm_ReadString(&g_rmLine, f);
+    else
+        Rm_fgets(&g_rmLine, n, f);
+}
+
+static char* Rm_Dup(const char* s)
+{
+    char* d = (char*)operator new(strlen(s) + 1);
+    strcpy(d, s);
+    return d;
+}
+
+static void Rm_Add(const char* name, void* o) { CallThis(Rm_HashAdd, &g_rmNames, name, o); }
+
+extern "C" {
+
+// [FUN_5ec0f0..$L_5ed091] the image's resources from file f (kind 3: the .rmp at path mapped into memory, kind 2:
+// the mmio file at path, else plain text lines): sections COLORS, EFFECTS (name, text), SOUNDFILES, SOUNDS,
+// MASKFILES, TEXTUREFILES (noload / memfix / bumpcoord / a number), MATERIALS (must match the count at +72),
+// PALETTEFILES and BACKFILES, each "KEYWORD n" and n named lines; every resource also goes into the name hash.
+// At the end the materials get their textures (+56 -> +76), masks (+60 -> +72) and palette shade (+68).
+// Returns 0, or the name of what failed (or the illegal keyword's message)
+const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void* f, int kind, const char* path)
+{
+    Rm_SetDir(strcmp(dir, &g_rmDot671204) == 0 ? &g_rm68d1c0 : dir);
+    if (kind == 3)
+    {
+        F(DWORD, s, 152) |= 1;
+        HANDLE h = CreateFileA(path, 0x80000000, 1, 0, 3, 0, 0);
+        F(HANDLE, s, 44) = h;
+        if (h == INVALID_HANDLE_VALUE)
+            Rm_Fatal(&g_rmCannotOpen, 0);
+        HANDLE m = CreateFileMappingA(F(HANDLE, s, 44), 0, 2, 0, 0, 0);
+        F(HANDLE, s, 48) = m;
+        F(void*, s, 40) = MapViewOfFile(m, 4, 0, 0, 0);
+        kind = 2;
+    }
+    else
+        F(DWORD, s, 152) &= ~1u;
+    if (kind == 2)
+    {
+        F(void*, s, 36) = f;
+        BYTE* mm = (BYTE*)operator new(131596);
+        if (mm)
+            mm = CallThis<BYTE*>(Rm_MmioReset, mm);
+        F(BYTE*, s, 52) = mm;
+        CallThis(Rm_MmioOpen, mm, path);
+    }
+    int mode = kind - 1;
+    char* cur;
+
+    for (;;)    // $L_5ec232: the next keyword
+    {
+        char* key;
+        do
+        {
+            Rm_ReadLine(mode, f, 70);
+            cur = &g_rmLine;
+            key = Rm_Token(&cur);
+        }
+        while (!key && !RM_EOF(f));
+        if (RM_EOF(f))
+            break;
+        if (F(Rm_Callback, s, 56))
+            F(Rm_Callback, s, 56)();
+
+        if (strcmp(key, &g_rmColors) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                if (Rm_Token(&cur))
+                    i++;
+            }
+        }
+        else if (strcmp(key, &g_rmEffects) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            if (n == 0)
+                continue;
+            F(int, s, 132) = n;
+            F(char**, s, 124) = (char**)operator new(n * 4);
+            F(char**, s, 128) = (char**)operator new(n * 4);
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                if (!name)
+                    continue;
+                F(char**, s, 124)[i] = Rm_Dup(name);
+                F(char**, s, 128)[i] = cur ? Rm_Dup(cur) : 0;
+                i++;
+            }
+        }
+        else if (strcmp(key, &g_rmSoundFiles) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            if (n == 0)
+                continue;
+            Rm_SoundBuffers(n);
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                if (!name)
+                    continue;
+                char* t = Rm_Token(&cur);
+                int noload = t && strcmp(t, &g_rmNoload) == 0;
+                void* o;
+                if (mode)
+                {
+                    int size = Rm_ReadInt(f);
+                    long pos = Rm_ftell(f);
+                    o = Rm_SoundFromFile(f, i, size, noload);
+                    Rm_fseek(f, pos + size, 0);
+                }
+                else
+                    o = Rm_SoundCreate(name, i, noload);
+                i++;
+                Rm_Add(name, o);
+            }
+        }
+        else if (strcmp(key, &g_rmSounds) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            if (n == 0)
+                continue;
+            F(int, s, 112) = n;
+            F(void**, s, 116) = (void**)operator new(n * 4);
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                if (!name)
+                    continue;
+                BYTE* o = (BYTE*)operator new(32);
+                if (o)
+                {
+                    int k = atoi(Rm_Token(&cur)) - 1;
+                    o = CallThis<BYTE*>(Rm_SoundCtor, o, name, k, 1);
+                }
+                F(void**, s, 116)[i] = o;
+                Rm_Add(name, F(void**, s, 116)[i]);
+                i++;
+            }
+        }
+        else if (strcmp(key, &g_rmMaskFiles) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            if (n == 0)
+                continue;
+            F(int, s, 104) = n;
+            F(BYTE**, s, 108) = (BYTE**)operator new(n * 4);
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                char* t = Rm_Token(&cur);
+                BYTE** list = F(BYTE**, s, 108);
+                if (mode)
+                {
+                    int size = Rm_ReadInt(f);
+                    long pos = Rm_ftell(f);
+                    if ((t && strcmp(t, &g_rmNoload) == 0) || (F(BYTE, s, 152) & 1))
+                    {
+                        bool noload = t && strcmp(t, &g_rmNoload) == 0;
+                        BYTE* o = (BYTE*)operator new(40);
+                        if (o)
+                            o = CallThis<BYTE*>(Rm_BitmapData, o, f, pos, size);
+                        F(BYTE**, s, 108)[i] = o;
+                        if (F(BYTE, s, 152) & 1)
+                            Rm_MaskHeader(F(BYTE**, s, 108)[i], f, size, F(void*, s, 40));
+                        else
+                        {
+                            Rm_MaskHeader(F(BYTE**, s, 108)[i], f, size, 0);
+                            F(DWORD, F(BYTE**, s, 108)[i], 28) |= 4;
+                            F(DWORD, F(BYTE**, s, 108)[i], 28) &= ~1u;
+                        }
+                        (void)noload;
+                    }
+                    else
+                        F(BYTE**, s, 108)[i] = (BYTE*)Rm_MaskFromFile(f, size);
+                    Rm_fseek(f, pos + size, 0);
+                }
+                else if (t && strcmp(t, &g_rmNoload) == 0)
+                {
+                    BYTE* o = (BYTE*)operator new(40);
+                    if (o)
+                        o = CallThis<BYTE*>(Rm_BitmapCtor, o, name);
+                    F(BYTE**, s, 108)[i] = o;
+                    Rm_MaskRead(F(BYTE**, s, 108)[i], name);
+                }
+                else
+                    F(BYTE**, s, 108)[i] = (BYTE*)Rm_MaskLoad(name);
+                (void)list;
+                Rm_Add(name, F(BYTE**, s, 108)[i]);
+                if (name)
+                    i++;
+            }
+        }
+        else if (strcmp(key, &g_rmTextureFiles) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            F(int, s, 80) = n;
+            if (n == 0)
+                continue;
+            F(BYTE**, s, 84) = (BYTE**)operator new(n * 4);
+            for (int i = 0; i < n;)
+            {
+                if (i % 10 == 0 && F(Rm_Callback, s, 56))
+                    F(Rm_Callback, s, 56)();
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                char* t = Rm_Token(&cur);
+                if (mode)
+                {
+                    int size = Rm_ReadInt(f);
+                    long pos = Rm_ftell(f);
+                    if (t && strcmp(t, &g_rmNoload) == 0)
+                    {
+                        BYTE* o = (BYTE*)operator new(84);
+                        if (o)
+                            o = CallThis<BYTE*>(Rm_TexNamed, o, name, f, pos);
+                        F(BYTE**, s, 84)[i] = o;
+                        if (F(BYTE, s, 152) & 1)
+                        {
+                            Rm_TgaHeader(F(BYTE**, s, 84)[i], f, F(void*, s, 40));
+                            F(DWORD, F(BYTE**, s, 84)[i], 52) &= ~1u;
+                        }
+                        else
+                            Rm_TgaHeader(F(BYTE**, s, 84)[i], f, 0);
+                        char* t3 = Rm_Token(&cur);
+                        if (!t3 || strcmp(t3, &g_rmMemfix) != 0)
+                            F(DWORD, F(BYTE**, s, 84)[i], 52) |= 0x400;
+                        if (t3)
+                            Rm_Token(&cur);
+                        F(DWORD, F(BYTE**, s, 84)[i], 52) |= 4;
+                    }
+                    else
+                    {
+                        int flags = 0;
+                        if (!t || strcmp(t, &g_rmMemfix) != 0)
+                            flags = 1028;
+                        flags |= 1;
+                        if (F(BYTE, s, 152) & 1)
+                        {
+                            BYTE* o = (BYTE*)operator new(84);
+                            if (o)
+                                o = CallThis<BYTE*>(Rm_TexNamed, o, name, f, pos);
+                            F(BYTE**, s, 84)[i] = o;
+                            Rm_TgaHeader(F(BYTE**, s, 84)[i], f, F(void*, s, 40));
+                            F(DWORD, F(BYTE**, s, 84)[i], 52) |= flags;
+                        }
+                        else
+                            F(BYTE**, s, 84)[i] = (BYTE*)Rm_ImageFromFile(f, name, flags);
+                        if (t)
+                        {
+                            if (strcmp(t, &g_rmBumpcoord) == 0)
+                                F(int, F(BYTE**, s, 84)[i], 64) = 8;
+                            else
+                                F(int, F(BYTE**, s, 84)[i], 56) = atoi(t);
+                        }
+                    }
+                    Rm_fseek(f, pos + size, 0);
+                }
+                else if (t && strcmp(t, &g_rmNoload) == 0)
+                {
+                    BYTE* o = (BYTE*)operator new(84);
+                    if (o)
+                        o = CallThis<BYTE*>(Rm_TexCtor, o, name);
+                    F(BYTE**, s, 84)[i] = o;
+                    Rm_TgaRead(F(BYTE**, s, 84)[i], name);
+                }
+                else
+                {
+                    F(BYTE**, s, 84)[i] = (BYTE*)Rm_ImageLoad(name);
+                    if (t && strcmp(t, &g_rmBumpcoord) == 0)
+                        F(int, F(BYTE**, s, 84)[i], 64) = 8;
+                }
+                Rm_Add(name, F(BYTE**, s, 84)[i]);
+                if (!F(BYTE**, s, 84)[i])
+                    return name;
+                F(int, F(BYTE**, s, 84)[i], 80) = F(int, s, 52);
+                if (name)
+                    i++;
+            }
+        }
+        else if (strcmp(key, &g_rmMaterials) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            if (n == 0)
+                continue;
+            if (n != F(int, s, 72))
+                return &g_rmNumMaterials;
+            int at = 0;
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                if (!name)
+                    continue;
+                for (int j = 0, off = 0; j < n; j++, off += 124)
+                {
+                    if (strcmp(name, (char*)F(BYTE*, s, 76) + off) != 0)
+                        continue;
+                    if (!cur)
+                        Rm_Fatal(&g_rmIncorrectMat, name);
+                    strcpy(&g_rmMatText, cur);
+                    if (!Rm_Material(&g_rmMatText, F(BYTE*, s, 76) + off))
+                        return name;
+                    if (strncmp(name, &g_rmMatRoad, 8) == 0)
+                    {
+                        int c = (signed char)name[8];
+                        if (c > 0)
+                            c -= 47;
+                        if (c >= 0 && c < 6)
+                            F(int, s, 156 + c * 4) = j;
+                    }
+                    Rm_Add(name, F(BYTE*, s, 76) + at);
+                }
+                i++;
+                at += 124;
+            }
+        }
+        else if (strcmp(key, &g_rmPaletteFiles) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            F(int, s, 96) = n;
+            if (n == 0)
+                continue;
+            F(void**, s, 100) = (void**)operator new(n * 4);
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                if (mode)
+                {
+                    int size = Rm_ReadInt(f);
+                    long pos = Rm_ftell(f);
+                    F(void**, s, 100)[i] = Rm_PalFromFile(f);
+                    Rm_fseek(f, pos + size, 0);
+                }
+                else
+                    F(void**, s, 100)[i] = Rm_PalLoad(name);
+                Rm_Add(name, F(void**, s, 100)[i]);
+                if (!F(void**, s, 100)[i])
+                    return name;
+                if (name)
+                    i++;
+            }
+        }
+        else if (strcmp(key, &g_rmBackFiles) == 0)
+        {
+            int n = atoi(Rm_Token(&cur));
+            F(int, s, 88) = n;
+            if (n == 0)
+                continue;
+            F(BYTE**, s, 92) = (BYTE**)operator new(n * 4);
+            for (int i = 0; i < n;)
+            {
+                Rm_ReadLine(mode, f, 80);
+                cur = &g_rmLine;
+                char* name = Rm_Token(&cur);
+                char* t = Rm_Token(&cur);
+                if (mode)
+                {
+                    int size = Rm_ReadInt(f);
+                    long pos = Rm_ftell(f);
+                    if (t && strcmp(t, &g_rmNoload) == 0)
+                    {
+                        BYTE* o = (BYTE*)operator new(84);
+                        if (o)
+                            o = CallThis<BYTE*>(Rm_TexNamed, o, name, f, pos);
+                        F(BYTE**, s, 92)[i] = o;
+                        Rm_TgaHeader(F(BYTE**, s, 92)[i], f, 0);
+                    }
+                    else
+                        F(BYTE**, s, 92)[i] = (BYTE*)Rm_ImageFromFile(f, 0, 0);
+                    Rm_fseek(f, pos + size, 0);
+                }
+                else if (t && strcmp(t, &g_rmNoload) == 0)
+                {
+                    BYTE* o = (BYTE*)operator new(84);
+                    if (o)
+                        o = CallThis<BYTE*>(Rm_TexCtor, o, name);
+                    F(BYTE**, s, 92)[i] = o;
+                    Rm_TgaRead(F(BYTE**, s, 92)[i], name);
+                }
+                else
+                    F(BYTE**, s, 92)[i] = (BYTE*)Rm_ImageLoad(name);
+                Rm_Add(name, F(BYTE**, s, 92)[i]);
+                if (!F(BYTE**, s, 92)[i])
+                    return name;
+                if (name)
+                    i++;
+            }
+        }
+        else
+        {
+            sprintf(&g_rmLine, &g_rmIllegal, key);
+            return &g_rmLine;
+        }
+        if (RM_EOF(f))
+            break;
+    }
+
+    // $L_5ed597: the materials' textures, masks and palette shades
+    BYTE* pal = 0;
+    if (F(BYTE**, s, 100) && *F(BYTE**, s, 100))
+        pal = *F(BYTE**, s, 100) + 24;
+    for (int k = 0, off = 0; k < F(int, s, 72); k++, off += 124)
+    {
+        BYTE* m = F(BYTE*, s, 76) + off;
+        if (m[32] & 1)
+            F(BYTE*, m, 76) = F(BYTE**, s, 84)[F(int, m, 56)];
+        m = F(BYTE*, s, 76) + off;
+        if (m[32] & 16)
+            F(BYTE*, m, 72) = F(BYTE**, s, 108)[F(int, m, 60)];
+        m = F(BYTE*, s, 76) + off;
+        if (pal)
+        {
+            int idx = F(int, m, 40);
+            DWORD b = pal[idx * 3];
+            F(DWORD, m, 68) = (b << 8 | b) << 8 | b;
+        }
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === a mesh's draw data built from its faces (FUN_5f0b10 with its pieces $L_5f0d09, $L_5f0d3c, $L_5f0d41)
+
+extern "C" void __fastcall Mb_FaceDestroy(BYTE* f); KING_ALIAS("@Mb_FaceDestroy@4", "@Fw5e57a0_Destroy@4")
+extern "C" int __fastcall Mb_SetFlags(BYTE* s, void*, BYTE* nodes, int idx); KING_ALIAS("@Mb_SetFlags@16", "@MeshDraw_SetFlags@16")
+extern "C" int __fastcall Mb_BuildVerts(BYTE* s, void*, BYTE* verts, BYTE* nodes, const BYTE* colors, int); KING_ALIAS("@Mb_BuildVerts@24", "@Mesh_BuildVertices@24")
+ASM_VAR(float, g_mb64c250, $L_64c250)
+ASM_VAR(float, g_mb64c458, $L_64c458)
+ASM_VAR(double, g_mb64eba8, $L_64eba8)
+
+// the faces' corners (32 bytes each, three per face at the face's +src) copied into one array at s +dst, their
+// layer coordinates (8 bytes, s +72 layers, from the face's +68) into s +76, and when lit (+80) the corner's own
+// +24 pair followed by its layer pairs
+static void Mb_Corners(BYTE* s, int dst, int src, int lit)
+{
+    F(WORD, s, 60) = (WORD)(F(WORD, s, 52) * 3);
+    unsigned n3 = F(WORD, s, 60);
+    BYTE* p = (BYTE*)operator new(n3 * 32);
+    F(BYTE*, s, dst) = p ? p : 0;
+    BYTE nl = F(BYTE, F(BYTE*, s, 56), 64);
+    F(BYTE, s, 72) = nl;
+    if (nl > 0)
+        F(BYTE*, s, 76) = (BYTE*)operator new(nl * F(WORD, s, 52) * 24);
+    if (lit)
+        F(BYTE*, s, 80) = (BYTE*)operator new((F(BYTE, s, 72) + 1) * F(WORD, s, 52) * 24);
+    int at = 0;
+    for (int i = 0, fo = 0; i < F(WORD, s, 52); i++, fo += 88)
+    {
+        BYTE* c = F(BYTE*, F(BYTE*, s, 56) + fo, src);
+        memcpy(F(BYTE*, s, dst) + at, c, 32);
+        memcpy(F(BYTE*, s, dst) + at + 32, F(BYTE*, F(BYTE*, s, 56) + fo, src) + 32, 32);
+        memcpy(F(BYTE*, s, dst) + at + 64, F(BYTE*, F(BYTE*, s, 56) + fo, src) + 64, 32);
+        at += 96;
+        int k0 = 3 * i, k1 = 3 * i + 1, k2 = 3 * i + 2;
+        if (lit)
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                int st = F(BYTE, s, 72) + 1;
+                int kk = k == 0 ? k0 : k == 1 ? k1 : k2;
+                BYTE* cc = F(BYTE*, F(BYTE*, s, 56) + fo, src);
+                F(DWORD, F(BYTE*, s, 80), st * kk * 8) = F(DWORD, cc, 32 * k + 24);
+                st = F(BYTE, s, 72) + 1;
+                cc = F(BYTE*, F(BYTE*, s, 56) + fo, src);
+                F(DWORD, F(BYTE*, s, 80), st * kk * 8 + 4) = F(DWORD, cc, 32 * k + 28);
+            }
+        }
+        for (int j = 0; j < F(BYTE, s, 72); j++)
+        {
+            int l = F(BYTE, s, 72);
+            BYTE* uv = F(BYTE*, F(BYTE*, s, 56) + fo, 68);
+            F(DWORD, F(BYTE*, s, 76), (l * k0 + j) * 8) = F(DWORD, uv, j * 8);
+            F(DWORD, F(BYTE*, s, 76), (l * k0 + j) * 8 + 4) = F(DWORD, uv, j * 8 + 4);
+            F(DWORD, F(BYTE*, s, 76), (l * k1 + j) * 8) = F(DWORD, uv, (l + j) * 8);
+            F(DWORD, F(BYTE*, s, 76), (l * k1 + j) * 8 + 4) = F(DWORD, uv, (l + j) * 8 + 4);
+            F(DWORD, F(BYTE*, s, 76), (l * k2 + j) * 8) = F(DWORD, uv, (j + 2 * l) * 8);
+            F(DWORD, F(BYTE*, s, 76), (l * k2 + j) * 8 + 4) = F(DWORD, uv, (j + 2 * l) * 8 + 4);
+            if (lit)
+            {
+                const int ks[3] = { k0, k1, k2 };
+                for (int k = 0; k < 3; k++)
+                {
+                    int m = F(BYTE, s, 72);
+                    F(DWORD, F(BYTE*, s, 80), ((m + 1) * ks[k] + j) * 8 + 8) = F(DWORD, F(BYTE*, s, 76), (m * ks[k] + j) * 8);
+                    m = F(BYTE, s, 72);
+                    F(DWORD, F(BYTE*, s, 80), ((m + 1) * ks[k] + j) * 8 + 12) = F(DWORD, F(BYTE*, s, 76), (m * ks[k] + j) * 8 + 4);
+                }
+            }
+        }
+    }
+    BYTE* faces = F(BYTE*, s, 56);
+    if (faces)
+    {
+        int cnt = F(int, faces, -4);
+        for (int k = cnt - 1; k >= 0; k--)
+            Mb_FaceDestroy(faces + k * 88);
+        operator delete(faces - 4);
+    }
+    F(BYTE*, s, 56) = 0;
+}
+
+extern "C" {
+
+// [FUN_5f0b10..$L_5f0d41] mesh s (+52 its face count, +56 the faces of 88 bytes, +96 its kind, +98 the root
+// node) prepared from model a (+16 the nodes of 124 bytes, +20 the colors, +4/+8/+12 the vertex lights): kind 3
+// with lights packs each light's color scaled by the root's color and alpha into it; other kinds build each
+// face's vertices. Then kind 2 copies the corners to +88 (from the face's +80), kind 1 to +84 (from +76), with
+// the layer coordinates and lit pairs when a node on the root's chain has flags 2060, and frees the faces
+void __fastcall Mesh_PrepareDraw(BYTE* s, void*, BYTE* a)
+{
+    BYTE* nodes = F(BYTE*, a, 16);
+    BYTE* colors = F(BYTE*, a, 20);
+    if (!F(WORD, s, 52))
+        return;
+    if (F(WORD, s, 96) == 3)
+    {
+        if (F(int, a, 4) == 3)
+        {
+            float alpha = 1.0f;
+            BYTE* nd = nodes + F(WORD, s, 98) * 124;
+            int ci = F(int, nd, 40) + 8;
+            const BYTE* rgb = colors + ci * 2 + ci;
+            DWORD fl = F(DWORD, nd, 32);
+            if (fl & 32)
+                alpha = (float)(g_mb64c250 - F(float, nd, 88));
+            double r;
+            float g, b;
+            if (fl & 1)
+            {
+                r = g_mb64c250;
+                b = 1.0f;
+                g = 1.0f;
+            }
+            else
+            {
+                r = rgb[0] * g_mb64eba8;
+                g = (float)(rgb[1] * g_mb64eba8);
+                b = (float)(rgb[2] * g_mb64eba8);
+            }
+            if (F(int, a, 8) > 0)
+            {
+                DWORD hi = (DWORD)(int)(alpha * g_mb64c458) << 8;
+                for (int i = 0, off = 0; i < F(int, a, 8); i++, off += 12)
+                {
+                    BYTE* v = F(BYTE*, a, 12) + off;
+                    DWORD c = (DWORD)(int)(r * F(float, v, 0) * g_mb64c458) | hi;
+                    c <<= 8;
+                    c |= (DWORD)(int)(g * F(float, v, 0) * g_mb64c458);
+                    c <<= 8;
+                    c |= (DWORD)(int)(b * F(float, v, 0) * g_mb64c458);
+                    F(DWORD, v, 0) = c;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0, off = 0; i < F(WORD, s, 52); i++, off += 88)
+            Mb_BuildVerts(F(BYTE*, s, 56) + off, 0, F(BYTE*, s, 48), nodes, colors, 0);
+    }
+
+    int lit = 0;
+    for (BYTE* nd = nodes + F(WORD, s, 98) * 124; ; )
+    {
+        if (F(DWORD, nd, 32) & 2060)
+            lit = 1;
+        int next = F(int, nd, 44);
+        if (next < 0)
+            break;
+        nd = nodes + next * 124;
+        if (!nd)
+            break;
+    }
+    if (F(WORD, s, 96) == 1)
+        Mb_Corners(s, 84, 76, lit);
+    else if (F(WORD, s, 96) == 2)
+        Mb_Corners(s, 88, 80, lit);
+    if (F(WORD, s, 96) != 0)
+        Mb_SetFlags(s + 60, 0, nodes, F(WORD, s, 98));
+}
+
+} // extern "C"
+
+// === the QUIT / RESTART panel ($L_5ddc50 with its tail $L_5ddd68)
+
+extern "C" BYTE* __cdecl Qd_FontLoad(const char* name); KING_ALIAS("_Qd_FontLoad", "_Font_LoadFile")
+extern "C" void __cdecl Qd_Exit(const char* msg); KING_ALIAS("_Qd_Exit", "_Sys_Exit")
+extern "C" DWORD __fastcall Qd_StyleAssign(void* self, void*, const void* s); KING_ALIAS("@Qd_StyleAssign@12", "@Style_Assign@12")
+extern "C" BYTE* __fastcall Qd_PanelCtor(BYTE* s, void*, const char* name, int a, BYTE* font, int b, int c); KING_ALIAS("@Qd_PanelCtor@28", "@Panel_Construct@28")
+extern "C" BYTE* __fastcall Qd_ControlCtor(BYTE* s, void*, const char* name, int id); KING_ALIAS("@Qd_ControlCtor@16", "@Control_Construct@16")
+extern "C" BYTE* __fastcall Qd_ButtonCtor(BYTE* s, void*, const char* text, int flags, int id); KING_ALIAS("@Qd_ButtonCtor@20", "@Button_ConstructId@20")
+extern "C" void __fastcall Qd_AddChild(BYTE* self, void*, BYTE* child, BYTE* after); KING_ALIAS("@Qd_AddChild@16", "@Ctl_AddChild@16")
+extern "C" BYTE* __fastcall Qd_NewChild(BYTE* self, void*, BYTE* w); KING_ALIAS("@Qd_NewChild@12", "@Fw_NewChild64@12")
+ASM_VAR(char, g_qdMenuSft, $L_682ed4)       // "menu.sft"
+ASM_VAR(char, g_qdMenuFon, $L_676220)       // "menu.fon"
+ASM_VAR(char, g_qdNoFont, $L_682eb8)        // "menu.sft(fon) is absent."
+ASM_VAR(char, g_qdQuit, $L_682eb0)          // "QUIT"
+ASM_VAR(char, g_qdRestart, $L_682ea8)       // "RESTART"
+ASM_VAR(char, g_qd68d1c0, $L_68d1c0)
+ASM_VAR(char, g_qd67663c, $L_67663c)
+ASM_VAR(BYTE, g_qdPanelVt, $L_6524d8)
+ASM_VAR(BYTE, g_qdMenuVt, $L_64dc50)
+ASM_VAR(int, g_qd720938, $L_720938)
+ASM_VAR(int, g_qd72093c, $L_72093c)
+ASM_VAR(int, g_qd720940, $L_720940)
+ASM_VAR(int, g_qd720944, $L_720944)
+ASM_VAR(BYTE*, g_qd721750, $L_721750)
+
+// a control style (36 bytes) as its constructor leaves it
+static void Qd_Style(DWORD* st)
+{
+    memset(st, 0, 36);
+    ((float*)st)[6] = 0.5f;
+}
+
+static void Qd_Styles(BYTE* b, DWORD* s1, DWORD* s2, DWORD* s3, DWORD* s4)
+{
+    Qd_StyleAssign(b + 68, 0, s1);
+    Qd_StyleAssign(b + 104, 0, s2);
+    Qd_StyleAssign(b + 140, 0, s3);
+    Qd_StyleAssign(b + 176, 0, s4);
+}
+
+extern "C" {
+
+// [$L_5ddc50..$L_5ddd68] (app vtable) app s's quit panel: the menu font (+2864, loaded once), a panel with the
+// buttons QUIT (4) and RESTART (3) centred in the app's window (vtable +20 width, +24 height), shown as +2716/+2856
+void __fastcall App_ShowQuitPanel(BYTE* s, void*)
+{
+    DWORD st1[9], st2[9], st3[9], st5[9];
+    Qd_Style(st2);
+    Qd_Style(st1);
+    Qd_Style(st3);
+    Qd_Style(st5);
+    if (F(BYTE*, s, 2864) == 0)
+    {
+        BYTE* f = Qd_FontLoad(&g_qdMenuSft);
+        if (!f)
+        {
+            f = Qd_FontLoad(&g_qdMenuFon);
+            if (!f)
+                Qd_Exit(&g_qdNoFont);
+        }
+        F(BYTE*, s, 2864) = f;
+    }
+    st1[1] = 0;
+    st1[0] = 2;
+    st1[3] = 0;
+    st1[2] = 4;
+    Qd_StyleAssign(st2, 0, st1);
+    st2[1] = 5;
+    Qd_StyleAssign(st3, 0, st2);
+    st3[3] = 4;
+    st3[2] = 0;
+    Qd_StyleAssign(st5, 0, st3);
+    st5[1] = 0;
+
+    BYTE* panel = (BYTE*)operator new(304);
+    if (panel)
+    {
+        Qd_PanelCtor(panel, 0, &g_qd68d1c0, 0, F(BYTE*, s, 2864), 4, 0);
+        F(void*, panel, 0) = &g_qdPanelVt;
+        F(BYTE*, panel, 300) = s;
+    }
+    BYTE* menu = (BYTE*)operator new(296);
+    if (menu)
+    {
+        Qd_ControlCtor(menu, 0, &g_qd67663c, 0);
+        F(int, menu, 288) = 0;
+        F(int, menu, 292) = 0;
+        F(void*, menu, 0) = &g_qdMenuVt;
+    }
+    BYTE* b = (BYTE*)operator new(288);
+    if (b)
+        b = Qd_ButtonCtor(b, 0, &g_qdQuit, 1, 4);
+    Qd_Styles(b, st1, st2, st5, st3);
+    Qd_AddChild(menu, 0, b, 0);
+    b = (BYTE*)operator new(288);
+    if (b)
+        b = Qd_ButtonCtor(b, 0, &g_qdRestart, 1, 3);
+    Qd_Styles(b, st1, st2, st5, st3);
+    Qd_AddChild(menu, 0, b, 0);
+    CallVirt(menu, 20);
+    int h = CallVirt<int>(s, 24);
+    int dy = (h + (F(int, menu, 48) - F(int, menu, 56))) / 3;
+    int w = CallVirt<int>(s, 20);
+    int dx = (w + (F(int, menu, 44) - F(int, menu, 52))) / 2;
+    F(int, menu, 44) += dx;
+    F(int, menu, 48) += dy;
+    F(int, menu, 52) += dx;
+    F(int, menu, 56) += dy;
+    Qd_AddChild(panel, 0, menu, 0);
+    F(BYTE*, s, 2716) = panel;
+    F(int, panel, 44) = g_qd720938;
+    F(int, panel, 52) = g_qd720940;
+    F(int, panel, 48) = g_qd72093c;
+    F(int, panel, 56) = g_qd720944;
+    F(BYTE*, s, 2856) = Qd_NewChild(g_qd721750, 0, F(BYTE*, s, 2716));
+    CallVirt(F(BYTE*, s, 2856), 32);
+}
+
+} // extern "C"
+
+// === the in-game Esc menu window ($L_511170 with its tail $L_5112b7)
+
+extern "C" int* __cdecl Ow_RectBelow(int* out, void* window); KING_ALIAS("_Ow_RectBelow", "_Carat_WindowRectBelow")
+extern "C" BYTE* __fastcall Ow_WindowCtor(BYTE* s, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8); KING_ALIAS("@Ow_WindowCtor@40", "@ControlWindow_Construct@40")
+extern "C" void __fastcall Ow_BoxInit(void* b, void*); KING_ALIAS("@Ow_BoxInit@8", "@Box_Init@8")
+extern "C" BYTE* __cdecl Ow_FontLoad(const char* name); KING_ALIAS("_Ow_FontLoad", "_Font_LoadFile")
+extern "C" void __cdecl Ow_Exit(const char* msg); KING_ALIAS("_Ow_Exit", "_Sys_Exit")
+extern "C" DWORD __fastcall Ow_StyleAssign(void* self, void*, const void* s); KING_ALIAS("@Ow_StyleAssign@12", "@Style_Assign@12")
+extern "C" BYTE* __cdecl Ow_NewObjRef(); KING_ALIAS("_Ow_NewObjRef", "_Shell_NewObjRef")
+extern "C" int __cdecl Ow_Mode(); KING_ALIAS("_Ow_Mode", "_Game_568fd0")
+extern "C" BYTE* __cdecl Ow_Find(const char* name); KING_ALIAS("_Ow_Find", "_Objects_Find")
+extern "C" BYTE* __fastcall Ow_ScreenCtor(BYTE* s, void*, const char* name, int id); KING_ALIAS("@Ow_ScreenCtor@16", "@Screen_Construct@16")
+extern "C" void __fastcall Ow_SetBoxes(BYTE* s, void*, void* a, void* b, void* c, void* d); KING_ALIAS("@Ow_SetBoxes@24", "@Screen_SetBoxes@24")
+extern "C" BYTE* __cdecl Ow_Button(const char* name, int id); KING_ALIAS("_Ow_Button", "_Shell_ModeButtonC")
+extern "C" void __fastcall Ow_AddChild(BYTE* self, void*, BYTE* child, BYTE* after); KING_ALIAS("@Ow_AddChild@16", "@Ctl_AddChild@16")
+extern "C" void __fastcall Ow_LayoutRow(BYTE* self, void*, int gap); KING_ALIAS("@Ow_LayoutRow@12", "@Ctl_LayoutRow@12")
+extern "C" void __fastcall Ow_RectOffset(void* r, void*, int dx, int dy); KING_ALIAS("@Ow_RectOffset@16", "@Rect_Offset@16")
+extern "C" void __fastcall Ow_RectMoveTo(void* r, void*, int x, int y); KING_ALIAS("@Ow_RectMoveTo@16", "@Rect_MoveTo@16")
+extern "C" BYTE* __fastcall Ow_WindowsAdd(BYTE* self, void*, BYTE* w); KING_ALIAS("@Ow_WindowsAdd@12", "@Windows_Add@12")
+ASM_VAR(void*, g_ow69684c, $L_69684c)
+ASM_VAR(int, g_ow6ced24, $L_6ced24)
+ASM_VAR(BYTE, g_owVt64ddc0, $L_64ddc0)
+ASM_VAR(BYTE, g_owVt64dd80, $L_64dd80)
+ASM_VAR(char, g_owMenuFon, $L_676220)
+ASM_VAR(char, g_owNoFont, $L_676820)
+ASM_VAR(BYTE, g_ow6ce3b8, $L_6ce3b8)
+ASM_VAR(BYTE, g_ow6ce408, $L_6ce408)
+ASM_VAR(BYTE, g_ow6ce988, $L_6ce988)
+ASM_VAR(BYTE, g_ow6ceb38, $L_6ceb38)
+ASM_VAR(BYTE, g_ow6ce3e0, $L_6ce3e0)
+ASM_VAR(char, g_owBack15, $L_676808)       // "m_15\\BackEscMain.txr"
+ASM_VAR(char, g_owBack16, $L_6767f0)       // "m_16\\BackEscMain.txr"
+ASM_VAR(BYTE*, g_ow6ce3fc, $L_6ce3fc)
+ASM_VAR(char, g_ow67663c, $L_67663c)
+ASM_VAR(char, g_owExitsys, $L_6767e8)
+ASM_VAR(char, g_owMain, $L_6767e0)
+ASM_VAR(char, g_owSound, $L_6767d8)
+ASM_VAR(char, g_owControl, $L_6767d0)
+ASM_VAR(char, g_ow911, $L_6767cc)
+ASM_VAR(char, g_owRestart, $L_6767c4)
+ASM_VAR(char, g_owLoadg, $L_6767bc)
+ASM_VAR(char, g_owSavg, $L_6767b4)
+ASM_VAR(BYTE*, g_ow6cec6c, $L_6cec6c)
+ASM_VAR(int, g_ow6ced0c, $L_6ced0c)
+ASM_VAR(int, g_ow6ced10, $L_6ced10)
+ASM_VAR(BYTE*, g_ow6ced6c, $L_6ced6c)
+ASM_VAR(BYTE, g_owWindows696750, $L_696750)
+
+extern "C" {
+
+// [$L_511170..$L_5112b7] (app vtable) app s's Esc menu: a control window below the main one, the menu font
+// (+2864), the background (m_15 or m_16 by the game mode), a screen with the buttons exitsys, main, sound,
+// control, 911, restart, loadg and savg (the last three disabled (+40) when the controls screen's +1316 is set)
+// laid out in a row; shown as +2716 / +2856
+void __fastcall App_ShowEscMenu(BYTE* s, void*)
+{
+    DWORD st1[9], st2[9], st3[9], box[9];
+    int rect[4];
+    BYTE* w = (BYTE*)operator new(376);
+    if (w)
+    {
+        int* r = Ow_RectBelow(rect, g_ow69684c);
+        Ow_WindowCtor(w, 0, (int)g_ow69684c, r[0], r[1], r[2], r[3], 0, g_ow6ced24, 0);
+        F(void*, w, 0) = &g_owVt64ddc0;
+        F(void*, w, 64) = &g_owVt64dd80;
+        memset(st1, 0, sizeof st1);
+        ((float*)st1)[6] = 0.5f;
+        memset(st2, 0, sizeof st2);
+        ((float*)st2)[6] = 0.5f;
+        memset(st3, 0, sizeof st3);
+        ((float*)st3)[6] = 0.5f;
+        Ow_BoxInit(box, 0);
+        BYTE* f = Ow_FontLoad(&g_owMenuFon);
+        if (!f)
+            Ow_Exit(&g_owNoFont);
+        F(BYTE*, s, 2864) = f;
+        Ow_StyleAssign(st1, 0, &g_ow6ce3b8);
+        Ow_StyleAssign(st2, 0, &g_ow6ce408);
+        Ow_StyleAssign(st3, 0, &g_ow6ce988);
+        Ow_StyleAssign(box, 0, &g_ow6ceb38);
+        BYTE* ref = Ow_NewObjRef();
+        F(BYTE*, w, 52) = ref;
+        F(BYTE*, w, 48) = ref;
+        F(BYTE*, w, 368) = s;
+        g_ow6ce3fc = Ow_Find(Ow_Mode() == 2 ? &g_owBack15 : &g_owBack16);
+
+        BYTE* back = (BYTE*)operator new(296);
+        if (back)
+            back = Ow_ScreenCtor(back, 0, &g_ow67663c, 4);
+        Ow_SetBoxes(back, 0, &g_ow6ce3e0, &g_ow6ce3e0, &g_ow6ce3e0, &g_ow6ce3e0);
+        BYTE* row = (BYTE*)operator new(296);
+        if (row)
+            row = Ow_ScreenCtor(row, 0, &g_ow67663c, 0);
+        Ow_SetBoxes(row, 0, &g_ow6ce3e0, &g_ow6ce3e0, &g_ow6ce3e0, &g_ow6ce3e0);
+        Ow_AddChild(row, 0, Ow_Button(&g_owExitsys, 169), 0);
+        BYTE* mainb = Ow_Button(&g_owMain, 163);
+        Ow_AddChild(row, 0, mainb, 0);
+        Ow_AddChild(row, 0, Ow_Button(&g_owSound, 164), 0);
+        Ow_AddChild(row, 0, Ow_Button(&g_owControl, 165), 0);
+        Ow_AddChild(row, 0, Ow_Button(&g_ow911, 166), 0);
+        BYTE* b = Ow_Button(&g_owRestart, 168);
+        Ow_AddChild(row, 0, b, 0);
+        if (F(int, g_ow6cec6c, 1316) != 0)
+            F(int, b, 40) = 1;
+        b = Ow_Button(&g_owLoadg, 110);
+        Ow_AddChild(row, 0, b, 0);
+        if (F(int, g_ow6cec6c, 1316) != 0)
+            F(int, b, 40) = 1;
+        b = Ow_Button(&g_owSavg, 167);
+        Ow_AddChild(row, 0, b, 0);
+        if (F(int, g_ow6cec6c, 1316) != 0)
+            F(int, b, 40) = 1;
+        Ow_LayoutRow(row, 0, F(int, mainb, 48) - F(int, mainb, 56) + 45);
+        Ow_AddChild(back, 0, row, 0);
+        CallVirt(back, 20);
+        Ow_RectOffset(row + 44, 0, 18, 454);
+        Ow_RectMoveTo(back + 44, 0, g_ow6ced0c, g_ow6ced10);
+        Ow_AddChild(w + 64, 0, back, 0);
+        F(BYTE*, s, 2716) = w + 64;
+    }
+    g_ow6ced6c = w;
+    F(BYTE*, s, 2856) = w;
+    Ow_WindowsAdd(&g_owWindows696750, 0, w);
+    CallVirt(F(BYTE*, s, 2856), 32);
+}
+
+} // extern "C"
+
+// === a module (*.b3d with its resources and overlays) loaded (FUN_5dae90 with its pieces up to $L_5db637)
+
+extern "C" BYTE* __fastcall Rl_ClusterCtor(BYTE* s, void*, const char* name); KING_ALIAS("@Rl_ClusterCtor@12", "@Cluster5ea880_Construct@12")
+extern "C" void __fastcall Rl_NodeLink(BYTE* self, void*, BYTE* list); KING_ALIAS("@Rl_NodeLink@12", "@Node_Link@12")
+extern "C" void __cdecl Rl_Fatal(const char* fmt, ...); KING_ALIAS("_Rl_Fatal", "_Sys_Fatal")
+extern "C" void* __cdecl Rl_fopen(const char* name, const char* mode); KING_ALIAS("_Rl_fopen", "_fopen")
+extern "C" int __cdecl Rl_fclose(void* f); KING_ALIAS("_Rl_fclose", "_fclose")
+extern "C" int __fastcall Rl_ReadFile(BYTE* c, void*, void* f); KING_ALIAS("@Rl_ReadFile@12", "@Cluster_ReadFile@12")
+extern "C" int __cdecl Rl_FreeMemory(); KING_ALIAS("_Rl_FreeMemory", "_Sys_FreeMemory")
+extern "C" const char* __cdecl Rl_SoundStart(); KING_ALIAS("_Rl_SoundStart", "_Sound_Start")
+extern "C" int __cdecl Rl_LoadAny(BYTE* img, const char* dir, char* path); KING_ALIAS("_Rl_LoadAny", "_Image_LoadAny")
+extern "C" BYTE* __fastcall Rl_OverlaysLoad(BYTE* s, void*, const char* path, BYTE* o, int size); KING_ALIAS("@Rl_OverlaysLoad@20", "@Overlays_Load@20")
+extern "C" int __fastcall Rl_TexCreate(BYTE* t, void*, unsigned flags); KING_ALIAS("@Rl_TexCreate@12", "@Texture_Create@12")
+extern "C" void __fastcall Rl_RleTo16(BYTE* self, void*, BYTE* pal); KING_ALIAS("@Rl_RleTo16@12", "@Image_RleTo16@12")
+extern "C" void __fastcall Rl_RoomEach(BYTE* self, void*, void* fn, void* arg); KING_ALIAS("@Rl_RoomEach@16", "@Room_Each@16")
+extern "C" int __fastcall Rl_RleToSurface(BYTE* self, void*); KING_ALIAS("@Rl_RleToSurface@8", "@Image_RleToSurface@8")
+extern "C" const char* __cdecl Rl_DdError(DWORD hr, const char* where); KING_ALIAS("_Rl_DdError", "_Dd_ErrorText")
+extern "C" void __cdecl Rl_Log(const void* text, int value); KING_ALIAS("_Rl_Log", "_Sys_Log")
+extern "C" void Rl_NodeDispatch(); KING_ALIAS("_Rl_NodeDispatch", "_Node_Dispatch")
+typedef long(__stdcall* Rl_SetColorKey)(void* surf, DWORD flags, void* key);
+
+ASM_VAR(char, g_rlName720b60, $L_720b60)
+ASM_VAR(char, g_rlName720b61, $L_720b61)
+ASM_VAR(char*, g_rl7209cc, $L_7209cc)
+ASM_VAR(char*, g_rl7209d0, $L_7209d0)
+ASM_VAR(char, g_rlBase720bb4, $L_720bb4)
+ASM_VAR(char, g_rlPath721218, $L_721218)
+ASM_VAR(char, g_rlDot671204, $L_671204)        // ".\\"
+ASM_VAR(char, g_rlBadName, $L_682d80)          // "Incorrect b3d file name"
+ASM_VAR(char, g_rlTooLong, $L_682d68)          // "The path is too long."
+ASM_VAR(char, g_rlRb, $L_6703e8)               // "rb"
+ASM_VAR(char, g_rlNotFound, $L_682d58)         // " is not found"
+ASM_VAR(char, g_rlNoMemory, $L_682ca4)         // "Not enough memory\n"
+ASM_VAR(char, g_rlBadB3d, $L_682d48)           // "*.b3d is bad"
+ASM_VAR(char, g_rlNoPalMasks, $L_682d20)       // "Module has masks and has not palette"
+ASM_VAR(char, g_rlNoPalBase, $L_682d00)        // "Base module have not palette"
+ASM_VAR(char, g_rlCheckFormat, $L_682ce0)      // "check format(resolution) of "
+ASM_VAR(BYTE*, g_rl71e82c, $L_71e82c)
+ASM_VAR(BYTE*, g_rl721750, $L_721750)
+ASM_VAR(int, g_rl720904, $L_720904)
+ASM_VAR(int, g_rl7208c4, $L_7208c4)
+
+static void Rl_SetDir(const char* dir)
+{
+    if (strcmp(dir, &g_rlDot671204) == 0)
+        g_rlPath721218 = 0;
+    else
+        strcpy(&g_rlPath721218, dir);
+}
+
+extern "C" {
+
+// [FUN_5dae90..$L_5db637] the module file name (quotes removed) loaded from dir into a new cluster linked into s
+// +468: its *.b3d read, its image file (ext, or the b3d name) loaded, its overlays (*.ovl) when found, the
+// materials' texture flags, the masks converted with the base palette, and with 16-bit textures (720904) each
+// textured material's texture created and its color key set. Returns the cluster (0 when its image failed)
+BYTE* __fastcall Module_Load(BYTE* s, void*, const char* dir, const char* name, const char* ext)
+{
+    strcpy(&g_rlName720b60, name);
+    g_rl7209cc = &g_rlName720b60;
+    if (g_rlName720b60 == '"')
+    {
+        g_rl7209cc = &g_rlName720b61;
+        (&g_rlName720b60)[strlen(&g_rlName720b61)] = 0;
+    }
+    strcpy(&g_rlBase720bb4, g_rl7209cc);
+    if (strlen(&g_rlBase720bb4) < 5)
+        Rl_Fatal(&g_rlBadName, 0);
+    (&g_rlBase720bb4)[strlen(&g_rlBase720bb4) - 4] = 0;
+    BYTE* r = (BYTE*)operator new(180);
+    r = r ? Rl_ClusterCtor(r, 0, &g_rlBase720bb4) : 0;
+    BYTE* old = F(BYTE*, s, 468);
+    if (!old)
+        F(BYTE*, s, 468) = r;
+    else if (F(BYTE*, old, 100))
+        Rl_NodeLink(r, 0, old);
+    else
+    {
+        F(BYTE*, s, 468) = r;
+        Rl_NodeLink(old, 0, r);
+    }
+    if (strlen(g_rl7209cc) + strlen(dir) + 1 >= 128)
+        Rl_Fatal(&g_rlTooLong, 0);
+    Rl_SetDir(dir);
+    strcat(&g_rlPath721218, g_rl7209cc);
+    void* f = Rl_fopen(&g_rlPath721218, &g_rlRb);
+    if (!f)
+    {
+        strcat(&g_rlPath721218, &g_rlNotFound);
+        Rl_Fatal(&g_rlPath721218, 0);
+    }
+    if (F(Rm_Callback, s, 536))
+        F(Rm_Callback, s, 536)();
+    F(void*, r, 56) = F(void*, s, 536);
+    g_rl71e82c = r;
+    if (!Rl_ReadFile(r, 0, f))
+        Rl_Fatal(Rl_FreeMemory() < 500000 ? &g_rlNoMemory : &g_rlBadB3d, 0);
+    Rl_fclose(f);
+
+    // the image file: ext from dir, else the b3d's own name, up to its '.'
+    if (ext)
+    {
+        Rl_SetDir(dir);
+        strcat(&g_rlPath721218, ext);
+    }
+    char* p = &g_rlPath721218;
+    while (*p && *p != '.')
+    {
+        p++;
+        g_rl7209d0 = p;
+    }
+    *p = '.';
+    g_rl7209d0 = &g_rlPath721218;
+    if (F(void*, g_rl721750, 344))
+        Rl_SoundStart();
+    int img = Rl_LoadAny(r, dir, g_rl7209d0);
+    if (!img)
+    {
+        if (F(BYTE*, s, 468) == r)
+            F(BYTE*, s, 468) = 0;
+        if (r)
+            CallVirt(r, 0, 1);
+        r = 0;
+    }
+
+    // the overlays: the path's extension replaced by "ovl"
+    p = &g_rlPath721218;
+    g_rl7209d0 = p;
+    if (*p)
+    {
+        do
+        {
+            p++;
+            g_rl7209d0 = p;
+        }
+        while (*p != 0);
+    }
+    if (*p != '.')
+    {
+        while (p > &g_rlPath721218)
+        {
+            p--;
+            g_rl7209d0 = p;
+            if (*p == '.')
+                break;
+        }
+    }
+    if (*p == '.')
+    {
+        p++;
+        g_rl7209d0 = p;
+        *g_rl7209d0 = 'o';
+        g_rl7209d0++;
+        *g_rl7209d0 = 'v';
+        g_rl7209d0++;
+        *g_rl7209d0 = 'l';
+        g_rl7209d0++;
+        *g_rl7209d0 = 0;
+        int keep = 1;
+        if (img == 3 || (img == 2 && g_rl720904))
+            keep = 0;
+        BYTE* ov = (BYTE*)operator new(20);
+        if (ov)
+            ov = Rl_OverlaysLoad(ov, 0, &g_rlPath721218, r, keep);
+        F(BYTE*, r, 136) = ov;
+    }
+
+    if (F(int, r, 88) && (F(DWORD, g_rl721750, 268) & 0x800))
+        Rl_TexCreate(*F(BYTE**, r, 92), 0, 0);
+    for (int i = 0, off = 0; i < F(int, r, 72); i++, off += 124)
+    {
+        BYTE* m = F(BYTE*, r, 76) + off;
+        if (m[32] & 2)
+            F(DWORD, F(BYTE**, r, 84)[F(int, m, 56)], 52) |= 8;
+        m = F(BYTE*, r, 76) + off;
+        if (m[32] & 64)
+        {
+            BYTE* t = F(BYTE**, r, 84)[F(int, m, 56)];
+            if (!(F(DWORD, t, 52) & 8))
+                F(DWORD, t, 52) |= 64;
+        }
+    }
+    for (int i = 0; i < F(int, r, 104); i++)
+    {
+        if (!F(BYTE**, F(BYTE*, s, 468), 100))
+            Rl_Fatal(&g_rlNoPalMasks, 0);
+        Rl_RleTo16(F(BYTE**, r, 108)[i], 0, *F(BYTE**, F(BYTE*, s, 468), 100));
+    }
+    if (g_rl720904)
+    {
+        void* each[6] = { 0, 0, 0, 0, 0, 0 };
+        if (!F(BYTE**, F(BYTE*, s, 468), 100))
+            Rl_Fatal(&g_rlNoPalBase, 0);
+        each[5] = *F(BYTE**, F(BYTE*, s, 468), 100);
+        each[4] = F(void*, r, 76);
+        Rl_RoomEach(r, 0, (void*)&Rl_NodeDispatch, each);
+        for (int i = 0, off = 0; i < F(int, r, 72); i++, off += 124)
+        {
+            BYTE* m = F(BYTE*, r, 76) + off;
+            if (!(F(DWORD, m, 32) & 1))
+                continue;
+            BYTE* t = F(BYTE*, m, 76);
+            if (F(WORD, t, 26) == 0 && F(WORD, t, 20) != 1 && F(WORD, t, 22) != 1)
+                Rl_Fatal(&g_rlCheckFormat, m);
+            if (F(DWORD, m, 32) & 0x200)
+                F(DWORD, t, 52) |= 0x100;
+            DWORD fl = F(DWORD, t, 52);
+            if (!(fl & 1) || (fl & 2))
+                continue;
+            if (!Rl_TexCreate(t, 0, fl >> 10 & 1))
+                Rl_Log(m, i);
+            if (F(int, t, 64) == 8)
+                F(DWORD, m, 32) |= 0x80000;
+            if ((F(DWORD, m, 32) & 0x80000) && !g_rl7208c4)
+                F(int, t, 64) = 5;
+            if (F(DWORD, t, 52) & 8)
+            {
+                const BYTE* c = *F(BYTE**, F(BYTE*, s, 468), 100) + (F(int, m, 40) + 8) * 3;
+                DWORD key[2];
+                DWORD v = ((DWORD)(c[0] & 0xF8) << 5 | (c[1] & 0xFFFFFFFC)) << 3 | (DWORD)c[2] >> 3;
+                key[0] = v;
+                key[1] = v;
+                void* surf = F(void*, t, 72);
+                long hr = (*(Rl_SetColorKey*)(*(BYTE**)surf + 116))(surf, 8, key);
+                if (hr)
+                    Rl_Log(Rl_DdError(hr, 0), 0);
+            }
+        }
+        for (int i = 0; i < F(int, r, 104); i++)
+        {
+            BYTE* im = F(BYTE**, r, 108)[i];
+            if (F(BYTE, im, 28) & 1)
+                Rl_RleToSurface(im, 0);
+        }
+        for (int i = 0; i < F(int, r, 80); i++)
+        {
+            BYTE* t = F(BYTE**, r, 84)[i];
+            DWORD fl = F(DWORD, t, 52);
+            if ((fl & 1) && !(fl & 2))
+                Rl_TexCreate(t, 0, ((fl & 1024) | 0x800) >> 10);
+        }
+    }
+    void* probe = operator new(50000);
+    if (!probe)
+        Rl_Fatal(&g_rlNoMemory, 0);
+    else
+        operator delete(probe);
+    g_rl71e82c = 0;
+    return r;
+}
+
+} // extern "C"
+
+// === the app's video mode, devices and main window set up (FUN_5e3bc0 with its tail $L_5e3c22)
+
+ASM_PROC($L_5d7c20)    // tries a video mode (w, h, cres, flags, 3 outs)
+extern "C" BYTE* __cdecl Dm_NewApp(); KING_ALIAS("_Dm_NewApp", "_Fw_NewApp384")
+extern "C" void __cdecl Dm_DefaultMode(int* w, int* h, int* c, int* flags); KING_ALIAS("_Dm_DefaultMode", "_Dd_DefaultMode")
+extern "C" void __cdecl Dm_TexFormat(int kind, int b); KING_ALIAS("_Dm_TexFormat", "_Dd_ChooseTextureFormat")
+extern "C" int __cdecl Dm_ReadInt(const char* section, const char* key, int def, int* out, const char* file); KING_ALIAS("_Dm_ReadInt", "_Ini_ReadInt")
+extern "C" int __cdecl Dm_GetDouble(const char* section, const char* key, double def, double* out, const char* file); KING_ALIAS("_Dm_GetDouble", "_Ini_GetDouble")
+extern "C" int __cdecl Dm_SetMode(int w, int h, int bits, int windowed, int xs, int ys); KING_ALIAS("_Dm_SetMode", "_Video_SetMode")
+extern "C" int __cdecl Dm_CreateDevices(DWORD flags); KING_ALIAS("_Dm_CreateDevices", "_Dd_CreateDevices")
+extern "C" int __cdecl Dm_EffectZero(int); KING_ALIAS("_Dm_EffectZero", "_Effect_Zero")
+extern "C" int __cdecl Dm_TimerCalibrate(int a); KING_ALIAS("_Dm_TimerCalibrate", "_Timer_Calibrate")
+extern "C" void __fastcall Dm_SetMousePos(BYTE* self, void*, int x, int y); KING_ALIAS("@Dm_SetMousePos@16", "@CGameApp_SetMousePos@16")
+extern "C" int __cdecl Dm_SoundOpen(); KING_ALIAS("_Dm_SoundOpen", "_Sound_Open")
+extern "C" int __cdecl Dm_ScaleX(); KING_ALIAS("_Dm_ScaleX", "_Video_Get67fcf0")
+extern "C" int __cdecl Dm_ScaleY(); KING_ALIAS("_Dm_ScaleY", "_Video_Get67fcf4")
+extern "C" int __cdecl Dm_FrameExtra(int edge); KING_ALIAS("_Dm_FrameExtra", "_Wnd_FrameExtra")
+extern "C" BYTE* __fastcall Dm_WindowCtor(BYTE* self, void*, int a, int b, int c, int d); KING_ALIAS("@Dm_WindowCtor@24", "@Fw5d8650_Construct@24")
+extern "C" BYTE* __fastcall Dm_RootSurface(BYTE* self, void*); KING_ALIAS("@Dm_RootSurface@8", "@Window_RootSurface@8")
+extern "C" void __fastcall Dm_PaletteApply(BYTE* self, void*); KING_ALIAS("@Dm_PaletteApply@8", "@Palette_Apply@8")
+extern "C" int __cdecl Dm_TextureLevel(void); KING_ALIAS("_Dm_TextureLevel", "_Mode_TextureLevel")
+extern "C" void __cdecl Dm_Set71e7d4(int v); KING_ALIAS("_Dm_Set71e7d4", "_Set71e7d4")
+ASM_VAR(int, g_dm721754, $L_721754)
+ASM_VAR(BYTE*, g_dm721750, $L_721750)
+ASM_VAR(double, g_dm652728, $L_652728)
+ASM_VAR(char, g_dmEnv, $L_6730a0)           // "ENV"
+ASM_VAR(char, g_dmXStretch, $L_68327c)      // "xstretch"
+ASM_VAR(char, g_dmYStretch, $L_683270)      // "ystretch"
+ASM_VAR(char, g_dmJoystick, $L_683260)      // "JOYSTICK"
+ASM_VAR(char, g_dmJ68326c, $L_68326c)
+ASM_VAR(char, g_dmJ68325c, $L_68325c)
+ASM_VAR(char, g_dmJ683258, $L_683258)
+ASM_VAR(char, g_dmJ683254, $L_683254)
+ASM_VAR(char, g_dmJ683250, $L_683250)
+ASM_VAR(char, g_dmJ68324c, $L_68324c)
+ASM_VAR(char, g_dmJ683248, $L_683248)
+ASM_VAR(char, g_dmJ683244, $L_683244)
+ASM_VAR(char, g_dmJ683240, $L_683240)
+ASM_VAR(char, g_dmJ68323c, $L_68323c)
+ASM_VAR(char, g_dmJ683238, $L_683238)
+ASM_VAR(char, g_dmJ683234, $L_683234)
+ASM_VAR(char, g_dmRender, $L_682e68)        // "RENDER"
+ASM_VAR(char, g_dmScaleTime, $L_683228)     // "scale_time"
+
+extern "C" {
+
+// [FUN_5e3bc0..$L_5e3c22] app s: its mode (+256 width, +260 height, +264 bits, +268 flags) tried, else the default
+// mode with the flags it reports (0x100 kept only if reported, 0x200..0x2000 copied); the texture format, the
+// video mode with the ini's stretch factors and the devices (once, unless 721754); the joystick ranges read; the
+// mouse centred, the sound opened, the main window (+240..+252) sized to the screen less its frame, the ini's time
+// scale (window vtable +20 less 100) into +368, the root palette and the texture level
+void __fastcall App_SetupVideo(BYTE* s, void*)
+{
+    int m[4];
+    Dm_NewApp();
+    if (!CallC<int>($L_5d7c20, F(int, s, 256), F(int, s, 260), F(int, s, 264),
+                    (F(DWORD, s, 268) & 0x1000) << 3 | (F(DWORD, s, 268) & 0x3F00), 0, 0, 0))
+    {
+        m[3] = F(DWORD, s, 268) & 0x7F00;
+        m[0] = F(int, s, 256);
+        m[1] = F(int, s, 260);
+        m[2] = F(int, s, 264);
+        Dm_DefaultMode(&m[0], &m[1], &m[2], &m[3]);
+        F(int, s, 264) = m[2];
+        F(int, s, 256) = m[0];
+        F(int, s, 260) = m[1];
+        DWORD fl = m[3];
+        if (!(fl & 0x100))
+            F(DWORD, s, 268) &= ~0x100u;
+        static const DWORD bits[5] = { 0x400, 0x200, 0x800, 0x1000, 0x2000 };
+        for (int i = 0; i < 5; i++)
+        {
+            if (fl & bits[i])
+                F(DWORD, s, 268) |= bits[i];
+            else
+                F(DWORD, s, 268) &= ~bits[i];
+        }
+    }
+    F(int, s, 284) = F(int, s, 256);
+    F(int, s, 288) = F(int, s, 260);
+    Dm_TexFormat(F(int, s, 264), -1);
+    if (!g_dm721754)
+    {
+        int xs, ys;
+        Dm_ReadInt(&g_dmEnv, &g_dmXStretch, 1, &xs, F(const char*, s, 280));
+        if (xs < 1)
+            xs = 1;
+        Dm_ReadInt(&g_dmEnv, &g_dmYStretch, 1, &ys, F(const char*, s, 280));
+        if (ys < 1)
+            ys = 1;
+        Dm_SetMode(F(int, s, 256), F(int, s, 260), F(int, s, 264), F(DWORD, s, 268) & 256, xs, ys);
+        if (F(DWORD, g_dm721750, 268) & 0x200)
+            Dm_CreateDevices(F(DWORD, g_dm721750, 268));
+        Dm_EffectZero(0);
+        Dm_EffectZero(0);
+        Dm_TimerCalibrate(0);
+        if (F(int, g_dm721750, 316))
+        {
+            double v[12];
+            const char* keys[12] = { &g_dmJ68326c, &g_dmJ68325c, &g_dmJ683258, &g_dmJ683254, &g_dmJ683250,
+                                     &g_dmJ68324c, &g_dmJ683248, &g_dmJ683244, &g_dmJ683240, &g_dmJ68323c,
+                                     &g_dmJ683238, &g_dmJ683234 };
+            for (int i = 0; i < 12; i++)
+                Dm_GetDouble(&g_dmJoystick, keys[i], i < 4 ? 0.0 : i < 8 ? 0.5 : 1.0, &v[i], F(const char*, s, 280));
+        }
+    }
+    Dm_SetMousePos(s, 0, F(int, s, 256) / 2, F(int, s, 260) / 2);
+    if (F(int, s, 344) && Dm_SoundOpen())
+        F(int, s, 344) = 0;
+    int w = Dm_ScaleX() * F(int, g_dm721750, 256);
+    int hh = F(int, g_dm721750, 260);
+    int h = Dm_ScaleY() * hh;
+    if (F(BYTE, g_dm721750, 292) & 2)
+    {
+        int a = Dm_FrameExtra(2);
+        a += Dm_FrameExtra(1);
+        w -= a;
+        int b = Dm_FrameExtra(4);
+        b += Dm_FrameExtra(3);
+        h -= b;
+    }
+    BYTE* win = (BYTE*)operator new(56);
+    if (win)
+        win = Dm_WindowCtor(win, 0, w, h, F(int, s, 264), F(int, s, 268));
+    F(BYTE*, s, 252) = win;
+    F(BYTE*, s, 248) = win;
+    F(BYTE*, s, 244) = win;
+    F(BYTE*, s, 240) = win;
+    int sc = CallVirt<int>(win, 20) - 100;
+    Dm_GetDouble(&g_dmRender, &g_dmScaleTime, sc * g_dm652728, (double*)(s + 368), F(const char*, s, 280));
+    BYTE* root = Dm_RootSurface(F(BYTE*, F(BYTE*, s, 252), 12), 0);
+    if (root)
+        Dm_PaletteApply(root, 0);
+    Dm_Set71e7d4(Dm_TextureLevel() == 2);
+}
+
+} // extern "C"
+
+// === the app's start (InitInstance, FUN_5e29b0 with its tail $L_5e2cb0)
+
+extern "C" void Ia_GdiAttach(); KING_ALIAS("_Ia_GdiAttach", "?Attach@CGdiObject@@QAEHPAX@Z")
+extern "C" void Ia_DialogBkColor(); KING_ALIAS("_Ia_DialogBkColor", "?SetDialogBkColor@CWinApp@@IAEXKK@Z")
+extern "C" void Ia_Enable3d(); KING_ALIAS("_Ia_Enable3d", "?Enable3dControls@CWinApp@@IAEHXZ")
+extern "C" BYTE* __fastcall Ia_BitmapCtor(BYTE* self, void*); KING_ALIAS("@Ia_BitmapCtor@8", "@Obj654420_Construct@8")
+extern "C" void __cdecl Ia_MemoryTouch(int n); KING_ALIAS("_Ia_MemoryTouch", "_Memory_Touch")
+extern "C" const char* __cdecl Ia_DataPath(const char* path); KING_ALIAS("_Ia_DataPath", "_DataPath_Set")
+extern "C" char* __cdecl Ia_Token(char** cur); KING_ALIAS("_Ia_Token", "_NextToken")
+extern "C" void __fastcall Ia_SetupVideo(BYTE* s, void*); KING_ALIAS("@Ia_SetupVideo@8", "@App_SetupVideo@8")
+extern "C" int __cdecl Ia_ScaleX(); KING_ALIAS("_Ia_ScaleX", "_Video_Get67fcf0")
+extern "C" int __cdecl Ia_ScaleY(); KING_ALIAS("_Ia_ScaleY", "_Video_Get67fcf4")
+extern "C" int __cdecl Ia_FrameExtra(int edge); KING_ALIAS("_Ia_FrameExtra", "_Wnd_FrameExtra")
+extern "C" BYTE* __cdecl Ia_FontLoad(const char* name); KING_ALIAS("_Ia_FontLoad", "_Font_LoadFile")
+ASM_VAR(BYTE, g_iaSplashVt652570, $L_652570)
+ASM_VAR(BYTE, g_iaBitmapVt652564, $L_652564)
+ASM_VAR(char, g_iaTitleBmp, $L_68314c)       // "TITLEBMP"
+ASM_VAR(char, g_iaTitleBmpE, $L_683140)      // "TITLEBMPE"
+ASM_VAR(BYTE*, g_iaApp721750, $L_721750)
+ASM_VAR(char*, g_iaArgv720c04, $L_720c04)    // the exe path, then the command line's tokens (720c08..720c68)
+ASM_VAR(int, g_ia721778, $L_721778)
+ASM_VAR(char, g_iaMenuFon, $L_676220)
+
+extern "C" {
+
+// [FUN_5e29b0..$L_5e2cb0] (app vtable, InitInstance) app s: the title bitmap (TITLEBMP, or TITLEBMPE for language
+// 1) centred in a splash frame, the data path and the exe name (.exe) into 720c04 and +276, the command line's
+// tokens, the dialog colors and 3d controls, the video setup, the mouse captured or the cursor loaded, the main
+// window (+384) centred on the screen, the command line handled (vtable +156), the splash deleted, the menu font
+BOOL __fastcall App_InitInstance(BYTE* s, void*)
+{
+    char cmd[124];
+    BYTE* splash = (BYTE*)operator new(192);
+    if (splash)
+    {
+        CallThis(Mf_FrameCtor, splash);
+        RECT rc = { 100, 100, 200, 300 };
+        F(void*, splash, 0) = &g_iaSplashVt652570;
+        CallThis(Mf_FrameCreate, splash, 0, 0, 0x80000000, &rc, 0, 0, 0, 0);
+        BYTE* bmp = (BYTE*)operator new(8);
+        if (bmp)
+        {
+            Ia_BitmapCtor(bmp, 0);
+            F(void*, bmp, 0) = &g_iaBitmapVt652564;
+        }
+        F(BYTE*, splash, 188) = bmp;
+        const char* res = F(int, g_iaApp721750, 320) == 1 ? &g_iaTitleBmp : &g_iaTitleBmpE;
+        HBITMAP hb = LoadBitmapA(F(HINSTANCE, CallStd<BYTE*>(Mf_ModuleState), 12), res);
+        CallThis(Ia_GdiAttach, bmp, hb);
+        int sw = GetSystemMetrics(0);
+        int sh = GetSystemMetrics(1);
+        int bw = 100, bh = 200;
+        BYTE* b = F(BYTE*, splash, 188);
+        if (F(HGDIOBJ, b, 4))
+        {
+            BITMAP bm;
+            GetObjectA(F(HGDIOBJ, b, 4), 24, &bm);
+            bw = bm.bmWidth;
+            bh = bm.bmHeight;
+        }
+        CallThis(Mf_SetWindowPos, splash, &g_mfWndTop, (sw - bw) / 2, (sh - bh) / 2, bw, bh, 64);
+    }
+    Ia_MemoryTouch(100);
+    g_iaApp721750 = s;
+    F(int, s, 392) = F(int, s, 104);
+    const char* path = Ia_DataPath(F(const char*, s, 140));
+    g_iaArgv720c04 = (char*)operator new(strlen(path) + 1);
+    strcpy(g_iaArgv720c04, path);
+    size_t n = strlen(path);
+    g_iaArgv720c04[n - 3] = 'e';
+    g_iaArgv720c04[n - 2] = 'x';
+    g_iaArgv720c04[n - 1] = 'e';
+    F(char*, g_iaApp721750, 276) = (char*)operator new(strlen(path) + 1);
+    strcpy(F(char*, g_iaApp721750, 276), path);
+    strcpy(cmd, F(const char*, s, 112));
+    int argc = 1;
+    char* cur = cmd;
+    for (char** a = &g_iaArgv720c04 + 1; a < &g_iaArgv720c04 + 25; )
+    {
+        char* tok = Ia_Token(&cur);
+        if (!tok)
+            break;
+        *a = (char*)operator new(strlen(tok) + 1);
+        strcpy(*a, tok);
+        a++;
+        argc++;
+    }
+    CallThis(Ia_DialogBkColor, s, 0xC0C0C0, 0);
+    CallThis(Ia_Enable3d, s);
+    Ia_SetupVideo(s, 0);
+
+    if (F(DWORD, g_iaApp721750, 268) & 0x400)
+        SetCapture(F(HWND, F(BYTE*, g_iaApp721750, 384), 28));
+    else
+        F(HCURSOR, F(BYTE*, s, 384), 192) = LoadCursorA(F(HINSTANCE, s, 104), 0);
+    BYTE* mw = F(BYTE*, s, 384);
+    F(BYTE*, s, 28) = mw;
+    F(HWND, s, 388) = F(HWND, mw, 28);
+    int sw = GetSystemMetrics(0);
+    int sh = GetSystemMetrics(1);
+    int w = Ia_ScaleX() * F(int, g_iaApp721750, 256);
+    int hh = F(int, g_iaApp721750, 260);
+    int h = Ia_ScaleY() * hh;
+    if (F(BYTE, g_iaApp721750, 292) & 2)
+    {
+        int a = Ia_FrameExtra(2);
+        w = Ia_FrameExtra(1) + w + a;
+        int b = Ia_FrameExtra(4);
+        h = Ia_FrameExtra(3) + h + b;
+    }
+    DWORD fl = F(DWORD, g_iaApp721750, 292);
+    DWORD bit = fl & 1;
+    F(DWORD, g_iaApp721750, 292) = fl & ~1u;
+    CallThis(Mf_SetWindowPos, F(BYTE*, s, 384), &g_mfWndTop, (sw - w) / 2, (sh - h) / 2, w, h, 64);
+    F(DWORD, g_iaApp721750, 292) |= bit;
+    CallVirt(s, 156, argc, &g_iaArgv720c04);
+    if (splash)
+        CallVirt(splash, 4, 1);
+    F(int, s, 328) = 1;
+    g_ia721778 = 1;
+    F(BYTE*, s, 272) = Ia_FontLoad(&g_iaMenuFon);
+    return 1;
+}
+
+} // extern "C"
+
+// === a base module's image and overlays loaded (FUN_5db710 with its pieces up to $L_5db9b8)
+
+ASM_VAR(char, g_rlPath720d08, $L_720d08)
+ASM_VAR(char*, g_rl7212b4, $L_7212b4)
+
+extern "C" {
+
+// [FUN_5db710..$L_5db9b8] s +468 = a new cluster named name with only its image file (dir + name) loaded, its
+// overlays (*.ovl) and the first texture created; returns it (0 when the image failed)
+BYTE* __fastcall Module_LoadImage(BYTE* s, void*, const char* dir, const char* name)
+{
+    BYTE* r = (BYTE*)operator new(180);
+    r = r ? Rl_ClusterCtor(r, 0, name) : 0;
+    F(BYTE*, s, 468) = r;
+    if (strlen(dir) + strlen(name) + 1 >= 128)
+        Rl_Fatal(&g_rlTooLong, 0);
+    if (strcmp(dir, &g_rlDot671204) == 0)
+        g_rlPath720d08 = 0;
+    else
+        strcpy(&g_rlPath720d08, dir);
+    strcat(&g_rlPath720d08, name);
+    if (F(Rm_Callback, s, 536))
+        F(Rm_Callback, s, 536)();
+    if (F(void*, g_rl721750, 344))
+        Rl_SoundStart();
+    F(void*, F(BYTE*, s, 468), 56) = F(void*, s, 536);
+    g_rl71e82c = F(BYTE*, s, 468);
+    int img = Rl_LoadAny(F(BYTE*, s, 468), dir, &g_rlPath720d08);
+    if (!img)
+    {
+        if (F(BYTE*, s, 468))
+            CallVirt(F(BYTE*, s, 468), 0, 1);
+        F(BYTE*, s, 468) = 0;
+    }
+    char* p = &g_rlPath720d08;
+    g_rl7212b4 = p;
+    if (*p)
+    {
+        do
+        {
+            p++;
+            g_rl7212b4 = p;
+        }
+        while (*p != 0);
+    }
+    if (*p != '.')
+    {
+        while (p > &g_rlPath720d08)
+        {
+            p--;
+            g_rl7212b4 = p;
+            if (*p == '.')
+                break;
+        }
+        if (*p != '.')
+        {
+            g_rl71e82c = 0;
+            return F(BYTE*, s, 468);
+        }
+    }
+    p++;
+    g_rl7212b4 = p;
+    *g_rl7212b4 = 'o';
+    g_rl7212b4++;
+    *g_rl7212b4 = 'v';
+    g_rl7212b4++;
+    *g_rl7212b4 = 'l';
+    g_rl7212b4++;
+    *g_rl7212b4 = 0;
+    int keep = 1;
+    if (img == 3 || (img == 2 && g_rl720904))
+        keep = 0;
+    BYTE* ov = (BYTE*)operator new(20);
+    if (ov)
+        ov = Rl_OverlaysLoad(ov, 0, &g_rlPath720d08, F(BYTE*, s, 468), keep);
+    F(BYTE*, F(BYTE*, s, 468), 136) = ov;
+    BYTE* m = F(BYTE*, s, 468);
+    if (F(int, m, 88) && (F(DWORD, g_rl721750, 268) & 0x800))
+        Rl_TexCreate(*F(BYTE**, m, 92), 0, 0);
+    void* probe = operator new(50000);
+    if (!probe)
+        Rl_Fatal(&g_rlNoMemory, 0);
+    else
+        operator delete(probe);
+    g_rl71e82c = 0;
+    return F(BYTE*, s, 468);
 }
 
 } // extern "C"
