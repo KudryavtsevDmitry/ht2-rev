@@ -1,1 +1,1 @@
-ASMOBJS = asm_crt.obj asm_gzip.obj asm_library.obj asm_eh_funclets.obj
+ASMOBJS = asm_crt.obj asm_gzip.obj asm_eh_funclets.obj

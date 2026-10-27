@@ -8,7 +8,7 @@ EXTERN @Wnd_Attach@12:PROC
 EXTERN @Wnd_Construct@4:PROC
 EXTERN @Wnd_Destruct@4:PROC
 EXTERN @Wnd_Detach@4:PROC
-EXTERN FUN_6317ac:NEAR
+EXTERN __imp__RtlUnwind@16:PROC
 EXTERN _Afx_CriticalTerm:PROC
 EXTERN _Afx_DeleteObject@4:PROC
 EXTERN _Afx_EndThread@8:PROC
@@ -143,7 +143,7 @@ FUN_61d0a0 PROC
             push 0
             push OFFSET $L_61d0b8
             push DWORD PTR [EBP+8]
-            call FUN_6317ac
+            call DWORD PTR __imp__RtlUnwind@16
 $L_61d0b8::
 
             pop EBP
