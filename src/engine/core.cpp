@@ -1455,8 +1455,8 @@ extern "C" void __cdecl Pool7200c0_Release(void)
     operator delete(g_q200_7200cc);
 }
 
-ASM_PROC(FUN_5fedbc)
-ASM_PROC(FUN_5fef04)
+ASM_FUNC(FUN_5fedbc, _Span_SelectFlat)
+ASM_FUNC(FUN_5fef04, _Span_DrawFlat)
 extern "C" void FUN_5b94b0(); KING_ALIAS("_FUN_5b94b0", "@Rows_Get@12")
 KING_VAR(BYTE*, g_q222_71e7ec, 71e7ec)
 KING_VAR(int, g_q222_71e7f0, 71e7f0)
@@ -1986,7 +1986,7 @@ void __cdecl Messages_Load()
 // === textured span fill with u and v (FUN_5d1740)
 
 extern "C" void FUN_5cf6f0(); KING_ALIAS("_FUN_5cf6f0", "_Span_DrawPerspective")
-ASM_PROC(FUN_5feb87)
+ASM_FUNC(FUN_5feb87, _Span_SelectTextured)
 KING_VAR(int, g_q223_702e90, 702e90)
 extern "C" void Sp_ShadeRow(); KING_ALIAS("_Sp_ShadeRow", "@Palette_ShadeRow@12")
 
@@ -2064,7 +2064,7 @@ extern "C" void __cdecl Span_FillRowsUVZ(int unused, int mode, int a3)
 
 // === affine textured span fill (FUN_5d1c50)
 
-ASM_PROC(FUN_5fee7c)
+ASM_FUNC(FUN_5fee7c, _Span_DrawTextured)
 KING_VAR(int, g_q223_72007c, 72007c)
 
 // fills the spans of the rows 71e7dc..71e7d8 with u and v (+12, +16 of the edges) stepped by the
@@ -2114,8 +2114,8 @@ extern "C" void __cdecl Span_FillRowsAffineFast(int unused, int mode) { Span_Aff
 
 // === filling a polygon's spans (FUN_5d1a80)
 
-ASM_FUNC(Sf_Setup, FUN_5feb87)
-ASM_FUNC(Sf_Span, FUN_5fee7c)
+ASM_FUNC(Sf_Setup, _Span_SelectTextured)
+ASM_FUNC(Sf_Span, _Span_DrawTextured)
 extern "C" void Sf_FogColor(); KING_ALIAS("_Sf_FogColor", "@Palette_FogColor@12")
 KING_VAR(int, g_sf71e7dc, 71e7dc)    // the first row
 KING_VAR(int, g_sf71e7d8, 71e7d8)    // the last row
