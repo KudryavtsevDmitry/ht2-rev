@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), version `v 8.0 30.01.03`.
 
-`king.exe` is built from C++ only (`src/`); there is no assembly file left. C++ owns all the program's data. The two long x87 procedures (the helicopter step, the trailer hitch solver) are translated instruction by instruction (`tools/x87_to_c.py`) so their rounding is the original's, and `tools/x87_test` checks them against the original machine code. The statically linked MFC 4.2 is replaced by own code with the same layouts (`src/engine/mfc.cpp`), gzip 1.2.4 is C++ (`src/terrain/gzip.cpp`, `terrain_grid.cpp`; `tools/gzip_test` compares its output with an older build's), and the game runs on the modern static C runtime instead of its 1999 one (`src/engine/crt.cpp` keeps the few helpers whose results differ). Some x87 helpers are still inline `__asm` (`src/common/x87.h` and a few FPU sequences). See `CONVERSION_LOG.md`.
+`king.exe` is built from C++ only (`src/`); there is no assembly file left. C++ owns all the program's data. The two long x87 procedures (the helicopter step, the trailer hitch solver) are translated instruction by instruction (`tools/x87_to_c.py`) so their rounding is the original's, and `tools/x87_test` checks them against the original machine code. The statically linked MFC 4.2 is replaced by own code with the same layouts (`src/engine/mfc.cpp`), gzip 1.2.4 is C++ (`src/terrain/gzip.cpp`, `terrain_grid.cpp`; `tools/gzip_test` compares its output with an older build's), and the game runs on the modern static C runtime instead of its 1999 one (`src/engine/crt.cpp` keeps the few helpers whose results differ). The x87 helpers (`src/common/x87.cpp`) are C++ compiled with `/fp:fast`, which makes them the FPU instructions the original used. See `CONVERSION_LOG.md`.
 
 The program started as a full disassembly, `king.masm`, which assembled back into a byte-identical `king.exe` and had a switch per source file to put the original assembly back. It is deleted; the tag `last-masm` is the last commit that has it (`nmake ASM=1` there builds the original program).
 
@@ -49,7 +49,7 @@ Run the drive test after every step.
 
 1. **Static initializers.** `WinMain` (`crt.cpp`) still runs the old initializer table `$L_66c000`..`$L_66c488`. Replace it with a C++ list of the same init functions in the same order, then with C++ global objects where the order doesn't matter.
 2. *(Done.)* Rest of MFC, the old runtime, gzip and the exception funclets are C++ or the modern runtime; `src/asm` and the `ml` rule are gone.
-3. **Inline x87.** The helpers in `x87.h` (`fsqrt`, `fsin`, `fcos`, `fpatan`, `fptan`, `fyl2x`, `f2xm1` sequences) are inline `__asm`; they can become bit-exact C (software extended precision, as `tools/x87_to_c.py` does).
+3. *(Done.)* The x87 helpers are C++ in `src/common/x87.cpp`, compiled with `/fp:fast` so that they are the FPU instructions themselves. The last inline `__asm` is `Ai_CallAt40` (`ai_world.cpp`), a naked thunk that forwards unknown arguments to the function pointer at +40.
 4. **Typed data.** Replace the raw images piece by piece with real C++ definitions: globals as typed variables (a struct when code reaches neighbouring labels by offset), strings, float/double constants with the same bit patterns, lookup tables, vtables as arrays of C++ functions. Then `KING_VAR` and the fixed addresses go.
 
 ## Replacing an assembly procedure

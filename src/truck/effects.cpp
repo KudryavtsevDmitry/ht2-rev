@@ -7846,7 +7846,6 @@ int __cdecl Fx_Beam(const Vec3* p, float len, float w, const Vec3* dir, int fram
 // === a vehicle's shadows (FUN_4ca7e0)
 
 #include "x87.h"
-X87 double Sh_tan(double x) { __asm { fld x } __asm { fptan } __asm { fstp st(0) } }
 
 extern "C" void Sh_Get800(); KING_ALIAS("_Sh_Get800", "@SceneObj_Get800@8")
 extern "C" void Sh_Matrix1(); KING_ALIAS("_Sh_Matrix1", "@SceneObj_Matrix1@12")
@@ -7945,7 +7944,7 @@ void __cdecl Fx_CarShadows(BYTE* car, BYTE* sh1, BYTE* sh2, int mode)
     double sp = x87_atan2(a * g_sh64c328, 1.0) * 2 - ang;
     float spread = (float)sp;
     double hv = (sp + ang) * g_bm64c258;
-    float radius = (float)(Sh_tan(hv) * g_bm64c664);
+    float radius = (float)(x87_tan(hv) * g_bm64c664);
     BYTE* obj = CallThis<BYTE*>(Sh_Get800, car + 16);
     BYTE node[208];
     CallThis(FUN_5ef5c0, node);
@@ -10098,29 +10097,6 @@ KING_VAR(float, g_as64c250, 64c250)
 KING_VAR(float, g_as64ca90, 64ca90)
 KING_VAR(double, g_as64b678, 64b678)
 
-// k ^ (t * m) as the original computes it, all on the FPU stack
-static __declspec(noinline) double As_Pow(double k, double t, double m)
-{
-    __asm {
-        fldln2
-        fld k
-        fyl2x
-        fmul t
-        fmul m
-        fldl2e
-        fmulp st(1), st
-        fld st(0)
-        frndint
-        fxch st(1)
-        fsub st, st(1)
-        f2xm1
-        fld1
-        faddp st(1), st
-        fscale
-        fstp st(1)
-    }
-}
-
 extern "C" {
 
 // [FUN_4cf620] AI car c of its player (+20636) with flags *flags: its lamps by the time of day, its frame offset
@@ -10180,7 +10156,7 @@ int __cdecl Ai_CarFrame(BYTE* c, int* flags)
         const float* R = Matrix_Inverse(&I, &O)->m;
         double hx = (double)R[6] * F(float, c, 20684) + (double)R[3] * F(float, c, 20680) +
                     (double)R[0] * F(float, c, 20676) + R[9];
-        double f = As_Pow(g_as64ca98, F(double, g_as696ca0, 2960), g_as64b780);
+        double f = x87_pow_mul(g_as64ca98, F(double, g_as696ca0, 2960), g_as64b780);
         double val = (lvl + g_as64b6e0) * F(double, cab, 16552) * (g_as64c250 - f) + hx * f;
         Vec3 v;
         v.x = (float)(val * g_as702640.x);

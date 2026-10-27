@@ -33,20 +33,6 @@ extern "C" double __cdecl Vec3_LengthSq(const Vec3*);
 static double MarineMath_Unsigned(DWORD x) { volatile __int64 value=x;return (double)value; }
 static double MarineMath_X(BYTE* self,const DWORD* p) {return MarineMath_Unsigned(p[0])*F(float,self,192)+F(float,self,176);}
 static double MarineMath_Y(BYTE* self,const DWORD* p) {return MarineMath_Unsigned(p[1])*F(float,self,196)+F(float,self,188);}
-// Retain the extended square-root result through the reciprocal, as VC6 did.
-X87 double MarineMath_DistanceWeight(float x,float y)
-{
-    __asm {
-        fld x
-        fmul x
-        fld y
-        fmul y
-        faddp st(1),st(0)
-        fsqrt
-        fadd g_mm_unit
-        fdivr g_mm_unit
-    }
-}
 extern "C" double __fastcall MarineGrid_TriangleWeight(BYTE* self,void*,const DWORD* a,const DWORD* b,const DWORD* c,BYTE* triangle)
 {
     DWORD depth=F(DWORD,triangle,24);
@@ -63,7 +49,7 @@ extern "C" double __fastcall MarineGrid_TriangleWeight(BYTE* self,void*,const DW
     double dot=(((double)dz/distance*normal.z+(double)dy/distance*normal.y)+dx/distance*normal.x);
     if(g_mm_threshold>=dot) return g_mm_zero;
     float roundedX=(float)dx;
-    return MarineMath_DistanceWeight(roundedX,dy);
+    return x87_inv_dist(roundedX,dy,g_mm_unit);
 }
 static double MarineMath_SurfaceWeight(BYTE* self,const DWORD* a,const DWORD* b,const DWORD* c,bool second)
 {

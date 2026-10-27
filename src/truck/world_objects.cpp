@@ -3663,34 +3663,6 @@ KING_VAR(double, g_cc64da00, 64da00)
 KING_VAR(double, g_cc64b670, 64b670)
 KING_VAR(float, g_cc64c264, 64c264)
 
-// k to the power t * 64b780, the way the original's inline code works it out
-X87 double Cc_Pow(double k, double t)
-{
-    __asm {
-        fld t
-        fld k
-        fld st(0)
-        fldln2
-        fxch st(1)
-        fyl2x
-        fmul st(0), st(2)
-        fmul g_cc64b780
-        fldl2e
-        fmulp st(1), st(0)
-        fld st(0)
-        frndint
-        fxch st(1)
-        fsub st(0), st(1)
-        f2xm1
-        fld1
-        faddp st(1), st(0)
-        fscale
-        fstp st(1)
-        fstp st(1)
-        fstp st(1)
-    }
-}
-
 extern "C" {
 
 // [FUN_59a030] the chase camera s behind the player's car: zoom (+104, keys 24/25) and turn (+112, keys
@@ -3717,7 +3689,7 @@ BYTE* __fastcall Cam_ChaseStep(BYTE* s, void*, BYTE* out, double k)
         t = g_cc64d0f0;
     if (k < g_cc64b748)
         k = g_cc64b748;
-    k = Cc_Pow(k, t);
+    k = x87_pow_mul(k, t, g_cc64b780);
     int farZ = 15, nearZ = 8;
     BYTE* target = 0;
     BYTE* car = F(BYTE*, g_world6d2078, 616);

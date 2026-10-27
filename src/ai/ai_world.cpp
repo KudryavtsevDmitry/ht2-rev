@@ -9058,12 +9058,11 @@ extern "C" double __cdecl Vehicle_Value4cd730(int id);
 static const char s_queryBribeSum[] =
     "queryBribeSum(PlayerId giver, PlayerId taker, unsigned long int flags, double & sum)";
 
-X87 double Log10_x87(double x) { __asm { fldlg2 } __asm { fld x } __asm { fyl2x } }
 
 // rounds a sum up to its one or two leading digits (one digit below 100, ...)
 static double Bribe_Round(double s)
 {
-    int d = Ftol(Log10_x87(s) - 0.302);
+    int d = Ftol(x87_log10(s) - 0.302);
     if (d > 2)
         d = 2;
     int m = 1;

@@ -16,7 +16,6 @@ extern "C" void FUN_4f8260(); KING_ALIAS("_FUN_4f8260", "@Body_SubStep@12")
 struct Vec3Bits { DWORD x, y, z; };
 
 // fptan as the original uses it (the 1 it pushes is dropped)
-X87 double x87_tan(double x) { __asm { fld x } __asm { fptan } __asm { fstp st(0) } }
 
 extern "C" int __fastcall Obj4eb150_Kind(BYTE* self, void*)
 {
