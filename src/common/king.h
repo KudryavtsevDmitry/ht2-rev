@@ -86,11 +86,6 @@ __forceinline R CallVirt(const void* self, unsigned vtblOffset, A... args)
 // The game's C runtime (VC6 LIBCMT, named in symbols.csv). Declared by hand:
 // the SDK headers define some of these inline or aren't included.
 
-// The C++ code is compiled for the x87 FPU (/arch:IA32); it converts floating
-// point to integers through __ftol2 / __ftol2_sse, VC6 code through __ftol,
-// which has the same contract (ST(0) truncated into EDX:EAX, popped).
-KING_ALIAS("__ftol2", "__ftol")
-KING_ALIAS("__ftol2_sse", "__ftol")
 
 extern "C" {
 typedef struct _iobuf FILE;

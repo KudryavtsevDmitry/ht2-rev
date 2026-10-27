@@ -3,9 +3,9 @@ INCLUDE king.inc
 
 EXTERN ??2@YAPAXI@Z:NEAR
 EXTERN ??3@YAXPAX@Z:NEAR
-EXTERN FUN_627dd0:NEAR
-EXTERN FUN_63183b:NEAR
-EXTERN FUN_631d47:NEAR
+EXTERN _strrchr:PROC
+EXTERN _perror:PROC
+EXTERN _remove:PROC
 EXTERN _Gz_BiInit:PROC
 EXTERN _Gz_CtInit:PROC
 EXTERN _Gz_CtTally:PROC
@@ -1278,7 +1278,7 @@ $L_62b420 PROC
             call FUN_62a950
 
             push OFFSET (_KingBss+670984)
-            call FUN_631d47
+            call _remove
 
             add ESP,8
 $L_62b440::
@@ -1916,7 +1916,7 @@ FUN_62ba90 PROC
             mov ESI,DWORD PTR [ESP+8]
             push 47
             push ESI
-            call FUN_627dd0
+            call _strrchr
 
             add ESP,8
             test EAX,EAX
@@ -1927,7 +1927,7 @@ $L_62baa7::
 
             push 92
             push ESI
-            call FUN_627dd0
+            call _strrchr
 
             add ESP,8
             test EAX,EAX
@@ -1938,7 +1938,7 @@ $L_62bab9::
 
             push 58
             push ESI
-            call FUN_627dd0
+            call _strrchr
 
             add ESP,8
             test EAX,EAX
@@ -1985,7 +1985,7 @@ FUN_62bb00 PROC
             test ECX,ECX
             je $L_62bb32
 
-            call FUN_63183b
+            call _perror
 
             add ESP,4
             jmp $L_62bb44
@@ -2010,7 +2010,7 @@ FUN_62bb50 PROC
             call _OldCrt_fprintf
 
             push OFFSET (_KingBss+670984)
-            call FUN_63183b
+            call _perror
 
             add ESP,16
             jmp $L_62b420

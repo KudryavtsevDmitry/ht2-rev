@@ -18,7 +18,7 @@ extern "C" void __cdecl free(void*);
 extern "C" void* __cdecl memcpy(void*, const void*, size_t);
 
 // AfxThrowMemoryException; never returns
-ASM_PROC(FUN_6321e9)
+extern "C" void FUN_6321e9(); KING_ALIAS("_FUN_6321e9", "_Afx_RaiseMemoryException")
 static void ThrowMemory() { ((void (__cdecl*)())FUN_6321e9)(); }
 
 // ---------------------------------------------------------------------------
@@ -682,7 +682,7 @@ extern "C" void __fastcall WinApp_Destruct(BYTE* self) {
 // ---------------------------------------------------------------------------
 // Threads
 
-ASM_PROC($L_632864)                             // _AfxThreadEntry
+extern "C" void $L_632864(); KING_ALIAS("_$L_632864", "_Afx_ThreadEntry@4")                            // _AfxThreadEntry
 CRT_PROC(FUN_620066, "__beginthreadex")         // _beginthreadex
 CRT_PROC(FUN_62016d, "__endthreadex")           // _endthreadex
 KING_VAR(int, g_ctl3dThreadState, 72dd08)     // CThreadLocal<_AFX_CTL3D_THREAD>
@@ -1904,7 +1904,7 @@ extern "C" void FUN_6371de(); KING_ALIAS("_FUN_6371de", "_Afx_IsComboBoxControl@
 extern "C" void FUN_639958(); KING_ALIAS("_FUN_639958", "_Afx_OleSetUserCtrl@4")                           // AfxOleSetUserCtrl
 extern "C" void FUN_638fc2(); KING_ALIAS("_FUN_638fc2", "@FrameWnd_SetMessageTextId@12")                           // CFrameWnd::OnUpdateFrameTitle part
 extern "C" void FUN_6377ac(); KING_ALIAS("_FUN_6377ac", "@WinApp_WriteProfileInt@20")                           // CWinApp::WriteProfileInt
-ASM_PROC(FUN_63b4a6)                           // a CNoTrackObject's destructor
+extern "C" void FUN_63b4a6(); KING_ALIAS("_FUN_63b4a6", "@GdiHolder_Destruct@4")                          // a CNoTrackObject's destructor
 
 // [FUN_63730e] AfxCancelModes: closes an open combo box drop-down
 extern "C" void __stdcall Afx_CancelModes(HWND receiver) {
@@ -2526,7 +2526,7 @@ extern "C" void __fastcall Wnd_NotifyFloatingWindows(BYTE* self, void*, DWORD fl
 KING_VAR(char, g_ctl3dDll, 6544e4)           // "CTL3D32.DLL"
 KING_VAR(void*, g_winState, 72c15c)          // CProcessLocal<_AFX_WIN_STATE>
 extern "C" void $L_63a003(); KING_ALIAS("_$L_63a003", "_WinState_New")                            // new _AFX_WIN_STATE
-ASM_PROC(FUN_6371c5)                           // AfxThrowResourceException
+extern "C" void FUN_6371c5(); KING_ALIAS("_FUN_6371c5", "_Afx_ThrowResourceException")                          // AfxThrowResourceException
 
 // [FUN_63a662] CWinApp::Enable3dControls
 extern "C" BOOL __fastcall WinApp_Enable3dControls(BYTE* self) {
@@ -4059,7 +4059,7 @@ extern "C" void __fastcall FrameWnd_OnInitMenuPopup(BYTE* self, void*, BYTE* men
 KING_VAR(AsmLabel, g_memoryExceptionClass, 654520)   // RUNTIME_CLASS(CMemoryException)
 KING_VAR(AsmLabel, g_userExceptionClass, 654350)     // RUNTIME_CLASS(CUserException)
 KING_VAR(UINT, g_afxWinVer, 72e0cc)                  // afxData.nWinVer
-ASM_PROC(FUN_6201a0)                                   // memcmp
+extern "C" void FUN_6201a0(); KING_ALIAS("_FUN_6201a0", "_memcmp")                                  // memcmp
 
 // [$L_632225] CPtrList's deleting destructor
 extern "C" BYTE* __fastcall PtrList_DeletingDestruct(BYTE* self, void*, int flags) {

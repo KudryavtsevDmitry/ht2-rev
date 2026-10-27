@@ -20240,11 +20240,11 @@ KING_VAR(AsmLabel, g_throwBadAlloc659d60, 659d60)
 KING_VAR(AsmLabel, s_badAlloc66f484, 66f484)
 KING_VAR(AsmLabel, s_updateAmbushes66dcb4, 66dcb4)
 extern "C" void Exc_Construct();
-KING_ALIAS("_Exc_Construct", "??0exception@@QAE@ABQBD@Z")    // exception::exception(const char* const&)
+KING_ALIAS("_Exc_Construct", "@Exc_Construct@12")    // exception::exception(const char* const&)
 extern "C" void Exc_CopyConstruct();
-KING_ALIAS("_Exc_CopyConstruct", "??0exception@@QAE@ABV0@@Z") // exception::exception(const exception&)
+KING_ALIAS("_Exc_CopyConstruct", "@Exc_CopyConstruct@12") // exception::exception(const exception&)
 extern "C" void Exc_Destroy();
-KING_ALIAS("_Exc_Destroy", "??1exception@@UAE@XZ")            // exception::~exception()
+KING_ALIAS("_Exc_Destroy", "@Exc_Destroy@4")            // exception::~exception()
 extern "C" void Cxx_Throw();
 KING_ALIAS("_Cxx_Throw", "__CxxThrowException@8")             // _CxxThrowException(object, info)
 extern "C" void $L_422400(); KING_ALIAS("_$L_422400", "_Ai_CreatePlayersNetwork")    // creating the players for a network game
@@ -21349,7 +21349,7 @@ extern "C" void FUN_48d530(); KING_ALIAS("_FUN_48d530", "@Path_StepIndex@24")
 extern "C" void FUN_48c710(); KING_ALIAS("_FUN_48c710", "@Road_NearestOn@48")
 extern "C" void FUN_48d710(); KING_ALIAS("_FUN_48d710", "@Points_Distance@32")
 extern "C" void FUN_458940(); KING_ALIAS("_FUN_458940", "@Rec458940_Destroy@8")
-extern "C" void FUN_462b30(); KING_ALIAS("_FUN_462b30", "??1exception@@UAE@XZ")    // exception::~exception
+extern "C" void FUN_462b30(); KING_ALIAS("_FUN_462b30", "@Exc_Destroy@4")    // exception::~exception
 
 // [$L_401d80]
 extern "C" void __cdecl Ai_Nothing401d80() {}
@@ -21846,7 +21846,7 @@ extern "C" int __fastcall Ai4555e0_SwapSides(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Copying the AI's exception types.
 
-extern "C" void AiW157_ExcCopy(); KING_ALIAS("_AiW157_ExcCopy", "??0exception@@QAE@ABV0@@Z")
+extern "C" void AiW157_ExcCopy(); KING_ALIAS("_AiW157_ExcCopy", "@Exc_CopyConstruct@12")
 KING_VAR(AsmLabel, g_q157_64b974, 64b974)
 KING_VAR(AsmLabel, g_q157_64b96c, 64b96c)
 KING_VAR(AsmLabel, g_q157_64b97c, 64b97c)
