@@ -2395,8 +2395,8 @@ extern "C" void __cdecl Media_StartThread(int w, int d)
 // ---------------------------------------------------------------------------
 // Polygon span fill.
 
-ASM_PROC(FUN_5fedbc)
-ASM_PROC(FUN_5fef04)
+ASM_FUNC(FUN_5fedbc, _Span_SelectFlat)
+ASM_FUNC(FUN_5fef04, _Span_DrawFlat)
 KING_VAR(int, g_q56_71e7dc, 71e7dc)
 KING_VAR(int, g_q56_71e7d8, 71e7d8)
 KING_VAR(int, g_q56_71e7bc, 71e7bc)
@@ -3973,8 +3973,8 @@ extern "C" void __cdecl Span_FillRowsU(int mode, int c)
 
 // === affine span fill into a rotated surface (FUN_5cf920)
 
-ASM_PROC(FUN_5feb87)
-ASM_PROC(FUN_5fee7c)
+ASM_FUNC(FUN_5feb87, _Span_SelectTextured)
+ASM_FUNC(FUN_5fee7c, _Span_DrawTextured)
 KING_VAR(int, g_q58_702e90, 702e90)
 KING_VAR(int, g_q58_72007c, 72007c)
 KING_VAR(DWORD, g_q58_702e8c, 702e8c)
