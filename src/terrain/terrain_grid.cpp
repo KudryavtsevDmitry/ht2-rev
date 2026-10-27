@@ -504,8 +504,8 @@ extern "C" void __fastcall TGridBase_SetVtbl(BYTE* s) { F(void*, s, 0) = g_tgr65
 
 #include <stdlib.h>
 
-ASM_PROC(FUN_62b8e0)                                // fill_inbuf(eof_ok)
-ASM_PROC(FUN_62b9e0)                                // flush_window()
+extern "C" void FUN_62b8e0(); KING_ALIAS("_FUN_62b8e0", "_Gz_FillInbuf")       // fill_inbuf(eof_ok)
+extern "C" void FUN_62b9e0(); KING_ALIAS("_FUN_62b9e0", "_Gz_FlushWindow")     // flush_window()
 KING_VAR(unsigned, g_gzInptr, 736684)
 KING_VAR(unsigned, g_gzInsize, 736680)
 KING_VAR(BYTE, g_gzInbuf, 72e634)
@@ -1020,8 +1020,8 @@ int __cdecl Gz_Inflate()
 
 // === gzip's trees.c and bits.c, and longest_match / fill_window of deflate.c (gzip 1.2.4)
 
-ASM_PROC(FUN_62b9a0)                                // flush_outbuf()
-ASM_VAR(AsmLabel, g_gzFileRead, $L_62b770)          // file_read(buf, size)
+extern "C" void FUN_62b9a0(); KING_ALIAS("_FUN_62b9a0", "_Gz_FlushOutbuf")     // flush_outbuf()
+extern "C" int __cdecl Gz_FileRead(char* buf, unsigned size);    // file_read (gzip.cpp)
 
 struct GzCt
 {
@@ -1151,7 +1151,7 @@ void __cdecl Gz_SendBits(int value, int length)
 // [FUN_62eae0] bi_init: writing to zipfile through file_read
 void __cdecl Gz_BiInit(int zipfile)
 {
-    g_gzReadBuf = (void*)&g_gzFileRead;
+    g_gzReadBuf = (void*)Gz_FileRead;
     g_gzZfile = zipfile;
     g_gzBiBuf = 0;
     g_gzBiValid = 0;
