@@ -1043,7 +1043,6 @@ int __fastcall NodeId_Valid(const int* s, void*) { return ValidNode(*s); }      
 // Batch 3
 
 extern "C" int* __cdecl Player_FromId(int* io);   // replaces a player id by the player
-KING_ALIAS("_Player_FromId", "_Player_FromId477b60")
 extern "C" double __cdecl Player_Value430760(BYTE* p);
 KING_ALIAS("_Player_Value430760", "_Player_OrdersValue")
 extern "C" double __cdecl Player_CargoValueOf(BYTE* p);     // aiplay.cpp
@@ -2253,7 +2252,7 @@ extern "C" void __cdecl Player_StopWaiting(BYTE* pl)
     F(BYTE, pl, 872) = 1;
 }
 
-ASM_FUNC(FUN_477b60, _Player_FromId477b60)    // an order's player (in place)
+ASM_FUNC(FUN_477b60, _Player_FromId)    // an order's player (in place)
 extern "C" void __fastcall Buf_Append(void* s, void*, const void* src, int n);
 extern "C" void __fastcall Buf_AppendString(void* s, void*, const char* str);
 KING_VAR(char, g_strStart, 66c830)            // "START:"
@@ -2960,7 +2959,7 @@ extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s);   /
 extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")    // destroy a 144-byte order
 extern "C" void FUN_44fac0(); KING_ALIAS("_FUN_44fac0", "@NameHash_Resize@12")    // hash table: grow for n entries
 extern "C" void FUN_44f2c0(); KING_ALIAS("_FUN_44f2c0", "_Rope_CharAt")
-ASM_FUNC(FUN_45a7d0, _Rope_Compare45a7d0)    // compare two strings
+ASM_FUNC(FUN_45a7d0, _Rope_Compare)    // compare two strings
 extern "C" void FUN_4592b0(); KING_ALIAS("_FUN_4592b0", "@Hash_NewNode@12")    // hash table: a new node for a key
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector of 24-byte records: allocate and copy (n, first, last)
 extern "C" void FUN_46c490(); KING_ALIAS("_FUN_46c490", "_Rec_DestroyThunk46c490")    // destroy a 24-byte record

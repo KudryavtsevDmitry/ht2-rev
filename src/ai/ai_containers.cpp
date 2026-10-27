@@ -2536,6 +2536,40 @@ extern "C" int __cdecl Rope_CompareRope(RopeIt60 a, RopeIt60 b, RopeIt60 c, Rope
     return !Aicon232_Same(&a, &b);
 }
 
+// an iterator at pos of the rope r with no character buffer yet (what the original builds in place)
+static RopeIt60 RopeIt_At(const BYTE* r, int pos)
+{
+    RopeIt60 i;
+    memset(&i, 0, sizeof i);
+    i.pos = pos;
+    i.root = (int)r;
+    return i;
+}
+// [FUN_45a7d0] compares the ropes a and b (null = empty): -1, 0 or 1. Two leaves (tag +8 == 0; length +0,
+// characters +20) by LexCompare, otherwise through iterators over [0, length) of the ropes that are not leaves
+extern "C" int __cdecl Rope_Compare(const BYTE* a, const BYTE* b)
+{
+    if (!b)
+        return a != 0;
+    if (!a)
+        return -1;
+    int na = F(int, a, 0), nb = F(int, b, 0);
+    if (!F(BYTE, a, 8)) {
+        const char* ca = F(const char*, a, 20);
+        if (!F(BYTE, b, 8)) {
+            const char* cb = F(const char*, b, 20);
+            return LexCompare((const signed char*)ca, (const signed char*)ca + na, (const signed char*)cb,
+                              (const signed char*)cb + nb);
+        }
+        return Chars_CompareRope(ca, ca + na, RopeIt_At(b, 0), RopeIt_At(b, nb));
+    }
+    if (!F(BYTE, b, 8)) {
+        const char* cb = F(const char*, b, 20);
+        return Rope_CompareChars(RopeIt_At(a, 0), RopeIt_At(a, na), cb, cb + nb);
+    }
+    return Rope_CompareRope(RopeIt_At(a, 0), RopeIt_At(a, na), RopeIt_At(b, 0), RopeIt_At(b, nb));
+}
+
 extern "C" void FUN_469850(); KING_ALIAS("_FUN_469850", "_Names_InsertLinear")
 // [FUN_4679d0] the unguarded insertion sort of the 12-byte names [first, last): each one (copied by value) is
 // moved back into place

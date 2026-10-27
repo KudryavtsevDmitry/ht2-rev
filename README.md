@@ -14,7 +14,7 @@ The game is not included: building needs your own original `king.exe` (for resou
 |---|---|
 | `src/` | the C++ rewrite; folders follow the original libraries (`engine`, `ai`, `script`, `sound`, `truck`, `terrain`, `marine`), file names follow the original units in `units.csv` |
 | `src/asm/` | the assembly not yet rewritten: `asm_<unit>.asm` per original unit, `king.inc` (common header), `objects.mak` (the list of objects) |
-| `src/truck/x87_code.cpp` | procedures kept as the original machine code in naked functions (the helicopter step, the trailer hitch solver, a player lookup that reads leftover stack, the rope compare) |
+| `src/truck/x87_code.cpp` | the helicopter step, kept as the original machine code in a naked function |
 | `src/engine/data_image.cpp`, `data.cpp` | the program's data: `_RDATA` and `_DATA` as byte images with real pointers, `_BSS` |
 | `src/engine/crt.cpp` | `WinMain` and the shims between the old runtime's callers and the modern one |
 | `src/common/king.h` | glue between C++ and the assembly |

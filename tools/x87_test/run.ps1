@@ -1,4 +1,6 @@
-# run.ps1 [CASES] - builds and runs the hitch solver test (hitch_test.cpp) in $env:TEMP\x87_test:
+# run.ps1 [CASES] - builds and runs the tests of the procedures that were inline __asm, in $env:TEMP\x87_test.
+# small_test.cpp: the player lookup and the rope compare (pasted from src\ai by extract.py) against small_asm.cpp.
+# hitch_test.cpp:
 # regenerates the C++ from hitch_asm.cpp with branch counters, checks that src\truck\hitch_solver.cpp is the
 # same translation, and compares both on CASES random worlds (default 3000) at 53- and 24-bit FPU precision.
 # HT_TRACE=1 prints each side's callee sequence. The rdata constants come from the original king.exe
@@ -36,4 +38,14 @@ if ($LASTEXITCODE) { throw 'compile failed' }
 & "$vc\bin\HostX86\x86\link.exe" /nologo hitch_test.obj hitch_asm.obj hitch_c.obj /OUT:hitch_test.exe /SUBSYSTEM:CONSOLE /LIBPATH:"$vc\lib\x86" /LIBPATH:"$sdk\Lib\$sv\ucrt\x86" /LIBPATH:"$sdk\Lib\$sv\um\x86" libcmt.lib libvcruntime.lib libucrt.lib kernel32.lib
 if ($LASTEXITCODE) { throw 'link failed' }
 & .\hitch_test.exe $Cases "$out\king_original.exe"
-exit $LASTEXITCODE
+$fail = $LASTEXITCODE
+
+py "$PSScriptRoot\extract.py" "$out\small_gen.cpp" "$repo\src\ai\ai_containers.cpp:RopeIt_At,Rope_Compare" "$repo\src\ai\ai_drivers.cpp:Player_FromId"
+& $cl @game "$PSScriptRoot\small_asm.cpp"
+if ($LASTEXITCODE) { throw 'compile failed' }
+& $cl /nologo /c /O2 /W3 /EHsc /arch:IA32 /D_CRT_SECURE_NO_WARNINGS "/I$out" @inc "$PSScriptRoot\small_test.cpp"
+if ($LASTEXITCODE) { throw 'compile failed' }
+& "$vc\bin\HostX86\x86\link.exe" /nologo small_test.obj small_asm.obj /OUT:small_test.exe /SUBSYSTEM:CONSOLE /LIBPATH:"$vc\lib\x86" /LIBPATH:"$sdk\Lib\$sv\ucrt\x86" /LIBPATH:"$sdk\Lib\$sv\um\x86" libcmt.lib libvcruntime.lib libucrt.lib kernel32.lib
+if ($LASTEXITCODE) { throw 'link failed' }
+& .\small_test.exe $Cases
+exit ($fail -bor $LASTEXITCODE)
