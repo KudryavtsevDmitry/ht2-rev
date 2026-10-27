@@ -66,7 +66,7 @@ extern "C" double __cdecl Player_CargoValue(BYTE* player)
 
 extern "C" void FUN_4cd730(); KING_ALIAS("_FUN_4cd730", "_Vehicle_Value4cd730")    // the value of a vrId's vehicle
 extern "C" void FUN_4754d0(); KING_ALIAS("_FUN_4754d0", "@Player_SaveRecord@12")
-ASM_FUNC(FUN_477b60, _Player_FromId477b60)
+ASM_FUNC(FUN_477b60, _Player_FromId)
 KING_VAR(DWORD, g_tagPLYX, 66fa60)
 KING_VAR(double, g_zero64b678, 64b678)
 KING_VAR(double, g_one64b670, 64b670)
@@ -1091,6 +1091,24 @@ void __cdecl Players_SetCurrent(BYTE* p)
         return;
     }
     g_68d4f4 = p;
+}
+
+extern "C" void FUN_4afc20();
+extern "C" void FUN_4afbf0();
+extern "C" void** __cdecl AiList_FindActive(void** out, void* first, void* last);   // road_graph.cpp
+// [FUN_477b60] the first active player of the list 68b990 (its head when there is none) into *io and as the
+// current player (68d4f4); the id that io points to is not read
+extern "C" int* __cdecl Player_FromId(int* io)
+{
+    void* first;
+    void* last;
+    void* found;
+    CallThis(FUN_4afc20, &g_players, &last);
+    CallThis(FUN_4afbf0, &g_players, &first);
+    AiList_FindActive(&found, first, last);
+    g_68d4f4 = (BYTE*)found;
+    *io = (int)found;
+    return io;
 }
 
 // [FUN_4788c0] calls [FUN_477600] on every 16-byte entry of every 144-byte record
