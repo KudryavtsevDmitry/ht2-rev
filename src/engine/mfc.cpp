@@ -3712,8 +3712,8 @@ extern "C" void FUN_6332c8(); KING_ALIAS("_FUN_6332c8", "@CmdTarget_OnCmdMsg@24"
 extern "C" void FUN_638fd9(); KING_ALIAS("_FUN_638fd9", "@FrameWnd_DestroyDockBars@4")                            // CFrameWnd::DestroyDockBars
 extern "C" void FUN_6327b7(); KING_ALIAS("_FUN_6327b7", "@WinApp_DevModeChange@12")                            // CWinApp::DevModeChange
 extern "C" void FUN_63566d(); KING_ALIAS("_FUN_63566d", "@Wnd_SendChildNotifyLastMsg@12")                            // CWnd::SendChildNotifyLastMsg
-ASM_PROC(FUN_6317b8)                            // UnpackDDElParam
-ASM_PROC(FUN_6317b2)                            // ReuseDDElParam
+extern "C" void FUN_6317b8(); KING_ALIAS("_FUN_6317b8", "_UnpackDDElParam@16")                            // UnpackDDElParam
+extern "C" void FUN_6317b2(); KING_ALIAS("_FUN_6317b2", "_ReuseDDElParam@20")                            // ReuseDDElParam
 KING_VAR(AsmLabel, g_afxData, 72e078)
 KING_VAR(int, g_gotScrollLines, 72c16c)
 
@@ -6116,9 +6116,9 @@ extern "C" BYTE* __fastcall Object_SetVtbl6534a0(BYTE* self) {
 // CSimpleException's message, CWinApp::DevModeChange, the gray dialog
 // background, CFrameWnd::LoadFrame, the CTL3D and window state factories
 
-ASM_PROC(FUN_6317ca)                            // OpenPrinterA
-ASM_PROC(FUN_6317c4)                            // DocumentPropertiesA
-ASM_PROC(FUN_6317be)                            // ClosePrinter
+extern "C" void FUN_6317ca(); KING_ALIAS("_FUN_6317ca", "_OpenPrinterA@12")                            // OpenPrinterA
+extern "C" void FUN_6317c4(); KING_ALIAS("_FUN_6317c4", "_DocumentPropertiesA@24")                            // DocumentPropertiesA
+extern "C" void FUN_6317be(); KING_ALIAS("_FUN_6317be", "_ClosePrinter@4")                            // ClosePrinter
 KING_VAR(AsmLabel, g_processLocalWinState, 72c15c)   // CProcessLocal<_AFX_WIN_STATE>
 
 // [FUN_63217d] CSimpleException::InitString: loads the message of the

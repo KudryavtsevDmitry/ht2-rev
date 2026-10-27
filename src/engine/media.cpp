@@ -127,8 +127,8 @@ extern "C" void __cdecl Video_SetPalette(const BYTE* rgb, DWORD first, DWORD cou
 extern "C" void FUN_5be8c0(); KING_ALIAS("_FUN_5be8c0", "@ScrollBar_Layout@40")    // lays out list rows (thiscall on the drop part)
 extern "C" void List_RowCallback(); KING_ALIAS("_List_RowCallback", "_List_KeepSelection")
 extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")    // visible rows of a list
-ASM_PROC(FUN_6303c4)    // ICDecompress
-ASM_PROC(FUN_6303b8)    // ICSendMessage
+extern "C" void FUN_6303c4(); KING_ALIAS("_FUN_6303c4", "_ICDecompress")    // ICDecompress
+extern "C" void FUN_6303b8(); KING_ALIAS("_FUN_6303b8", "_ICSendMessage@16")    // ICSendMessage
 extern "C" void FUN_5c29d0(); KING_ALIAS("_FUN_5c29d0", "_Media_Start")
 extern "C" void FUN_5c1d40(); KING_ALIAS("_FUN_5c1d40", "@Video_DrawFrame@28")    // draws the video frame
 extern "C" void FUN_5c34a0(); KING_ALIAS("_FUN_5c34a0", "@NetValue_Write@12")
@@ -1584,8 +1584,8 @@ extern "C" long __cdecl Media_Start()
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
 extern "C" void FUN_5ab160(); KING_ALIAS("_FUN_5ab160", "_File_WriteInt")    // writes an int to a file (v, file)
 extern "C" void FUN_5c2450(); KING_ALIAS("_FUN_5c2450", "@Avi_Start@8")
-ASM_PROC(FUN_6303b8)
-ASM_PROC(FUN_6303b2)
+extern "C" void FUN_6303b8(); KING_ALIAS("_FUN_6303b8", "_ICSendMessage@16")
+extern "C" void FUN_6303b2(); KING_ALIAS("_FUN_6303b2", "_ICClose@4")
 extern "C" void FUN_5c2f00(); KING_ALIAS("_FUN_5c2f00", "_Set702f94")
 KING_VAR(BYTE*, g_md707f6c, 707f6c)
 KING_VAR(int, g_md7208b8, 7208b8)
@@ -3031,8 +3031,8 @@ KING_VAR(int, g_av702f54, 702f54)
 
 extern "C" void FUN_5c12a0(); KING_ALIAS("_FUN_5c12a0", "@Media_Close@8")
 extern "C" void FUN_5c1990(); KING_ALIAS("_FUN_5c1990", "_AnsiToBstr")    // a BSTR of an ANSI string (text, length)
-ASM_PROC(FUN_6303be)    // ICOpen
-ASM_PROC(FUN_6303b8)    // ICSendMessage
+extern "C" void FUN_6303be(); KING_ALIAS("_FUN_6303be", "_ICOpen@12")    // ICOpen
+extern "C" void FUN_6303b8(); KING_ALIAS("_FUN_6303b8", "_ICSendMessage@16")    // ICSendMessage
 extern "C" void FUN_5c2e60(); KING_ALIAS("_FUN_5c2e60", "_Media_StartThread")
 extern "C" void FUN_5c2750(); KING_ALIAS("_FUN_5c2750", "_Msavi_Open")
 

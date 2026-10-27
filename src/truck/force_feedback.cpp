@@ -702,7 +702,55 @@ extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b)
 extern "C" char* __cdecl strerror(int e);
 ASM_FUNC(FUN_576d70, _Joy_DateText)    // the DirectInput version text
 extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")    // opens joystick n
-ASM_PROC(FUN_6303a0)    // DirectInputCreateA
+extern "C" void FUN_6303a0(); KING_ALIAS("_FUN_6303a0", "_DirectInputCreateA@16")    // DirectInputCreateA
+// [$L_6300e0] the joystick's DirectInput object formats (c_dfDIJoystick) (DIOBJECTDATAFORMAT: guid, offset, type, flags;
+// the original kept them in the code segment)
+extern "C" const unsigned char* const g_joystickObjects[] = {
+    KingRdata + 42080, (const unsigned char*)0x0, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 42064, (const unsigned char*)0x4, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 42048, (const unsigned char*)0x8, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 42032, (const unsigned char*)0xc, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 42016, (const unsigned char*)0x10, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 42000, (const unsigned char*)0x14, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 41984, (const unsigned char*)0x18, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 41984, (const unsigned char*)0x1c, (const unsigned char*)0x80ffff03, (const unsigned char*)0x100,
+    KingRdata + 41936, (const unsigned char*)0x20, (const unsigned char*)0x80ffff10, (const unsigned char*)0x0,
+    KingRdata + 41936, (const unsigned char*)0x24, (const unsigned char*)0x80ffff10, (const unsigned char*)0x0,
+    KingRdata + 41936, (const unsigned char*)0x28, (const unsigned char*)0x80ffff10, (const unsigned char*)0x0,
+    KingRdata + 41936, (const unsigned char*)0x2c, (const unsigned char*)0x80ffff10, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x30, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x31, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x32, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x33, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x34, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x35, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x36, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x37, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x38, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x39, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x3a, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x3b, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x3c, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x3d, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x3e, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x3f, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x40, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x41, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x42, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x43, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x44, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x45, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x46, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x47, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x48, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x49, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x4a, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x4b, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x4c, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x4d, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x4e, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+    (const unsigned char*)0x0, (const unsigned char*)0x4f, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
+};
 ASM_FUNC(Joy_EnumCallback, _Joy_EnumDevice@8)
 typedef char JoyLabel[1];
 KING_VAR(JoyLabel, g_joyEnabled6f34e8, 6f34e8)        // 10 ints
