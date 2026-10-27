@@ -1109,12 +1109,6 @@ extern "C" Vec3* __cdecl Vec3_Sum(Vec3*,const Vec3*,const Vec3*);
 extern "C" Vec3* __cdecl Vec3_Diff(Vec3*,const Vec3*,const Vec3*);
 extern "C" Vec3* __cdecl Vec3_Times(Vec3*,const Vec3*,float);
 extern "C" BYTE* __fastcall Fx_Set2Vec(BYTE*,void*,const Vec3*,const Vec3*,int,int);
-X87 double MarineCamera_Tan(double angle)
-{
-    __asm { fld angle }
-    __asm { fptan }
-    __asm { fstp st(0) }
-}
 extern "C" double __fastcall MarineCamera_HorizontalAngle(BYTE* self,void*)
 {
     double angle=x87_atan2((double)F(float,self,88)*g_mq_half,1.0);
@@ -1143,8 +1137,8 @@ extern "C" void __fastcall MarineTask_DrawPending(BYTE* self,void*,const float* 
     Vec3 normal={0,0,1};
     float horizontal=(float)(MarineCamera_HorizontalAngle(F(BYTE*,F(void*,self,112),488),0)*g_mq_half);
     double vertical=MarineCamera_VerticalAngle(F(BYTE*,F(void*,self,112),488),0)*g_mq_half;
-    float horizontalSpan=(float)(MarineCamera_Tan(horizontal)*F(double,event,8472));
-    double verticalSpan=MarineCamera_Tan(vertical)*F(double,event,8472);
+    float horizontalSpan=(float)(x87_tan(horizontal)*F(double,event,8472));
+    double verticalSpan=x87_tan(vertical)*F(double,event,8472);
     float radius=(float)x87_sqrt(verticalSpan*verticalSpan+(double)horizontalSpan*horizontalSpan);
     Vec3 scaledNormal={(float)((double)normal.x*g_mq_height),(float)((double)normal.y*g_mq_height),(float)((double)normal.z*g_mq_height)};
     Vec3 lift={(float)((double)scaledNormal.x*fade),(float)((double)scaledNormal.y*fade),(float)((double)scaledNormal.z*fade)};

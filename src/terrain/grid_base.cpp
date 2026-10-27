@@ -37,47 +37,10 @@ extern "C" BYTE* __fastcall GridBase_DeleteAlternate(BYTE* self,void*,DWORD flag
 {
     GridBase_Destruct(self,0); if(flags&1) operator delete(self); return self;
 }
-// Keep the denominator on the x87 stack through all three divisions, as
-// the original does. Rounding it to a double changes some normalized bits.
-#pragma warning(push)
-#pragma warning(disable:4035)
-static __declspec(noinline) void GridBase_Normalize(const float* input,float* output)
-{
-    __asm {
-        mov eax,input
-        fld dword ptr [eax+8]
-        fld dword ptr [eax+4]
-        fld dword ptr [eax]
-        fld st(0)
-        fmul st(0),st(1)
-        fld st(2)
-        fmul st(0),st(3)
-        faddp st(1),st(0)
-        fld st(3)
-        fmul st(0),st(4)
-        faddp st(1),st(0)
-        fsqrt
-        fstp st(3)
-        fstp st(0)
-        fstp st(0)
-        mov edx,output
-        fld dword ptr [eax]
-        fdiv st(0),st(1)
-        fstp dword ptr [edx]
-        fld dword ptr [eax+4]
-        fdiv st(0),st(1)
-        fstp dword ptr [edx+4]
-        fld dword ptr [eax+8]
-        fdiv st(0),st(1)
-        fstp dword ptr [edx+8]
-        fstp st(0)
-    }
-}
-#pragma warning(pop)
 extern "C" void __fastcall GridBase_SetCameraAndOrigin(BYTE* self,void*,const DWORD* position,const float* direction,const DWORD* origin)
 {
     for(unsigned i=0;i<3;++i) F(volatile DWORD,self,4+i*4)=position[i];
-    float normal[3]; GridBase_Normalize(direction,normal);
+    float normal[3]; x87_normalize(direction,normal);
     for(unsigned i=0;i<3;++i) F(volatile DWORD,self,16+i*4)=F(DWORD,normal,i*4);
     for(unsigned i=0;i<3;++i) F(volatile DWORD,self,28+i*4)=origin[i];
 }

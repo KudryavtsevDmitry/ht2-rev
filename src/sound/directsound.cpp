@@ -41,13 +41,6 @@ static __forceinline void Release(BYTE* com)
     (*(void(__stdcall**)(BYTE*))(*(BYTE**)com + 8))(com);
 }
 
-static X87 double x87_log10(double x)
-{
-    __asm { fldlg2 }
-    __asm { fld x }
-    __asm { fyl2x }
-}
-
 extern "C" void FUN_6055e0(); KING_ALIAS("_FUN_6055e0", "_Play_UpdateAll")
 KING_VAR(BYTE*, g_streams, 72412c)
 

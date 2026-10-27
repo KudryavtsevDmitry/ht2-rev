@@ -31,11 +31,14 @@ $cl = "$vc\bin\HostX86\x86\cl.exe"
 $inc = @("/I$repo\src\common", "/I$vc\include", "/I$sdk\Include\$sv\um", "/I$sdk\Include\$sv\shared", "/I$sdk\Include\$sv\ucrt")
 # the game's CFLAGS for the code under test: the compiler's choices decide the rounding
 $game = @('/nologo', '/c', '/O2', '/W3', '/GS-', '/Zl', '/GR-', '/EHs-c-', '/arch:IA32') + $inc
+# the x87 helpers (x87.h) as the game builds them
+& $cl @game /fp:fast "$repo\src\common\x87.cpp"
+if ($LASTEXITCODE) { throw 'compile failed' }
 & $cl @game "$PSScriptRoot\hitch_asm.cpp" "$out\hitch_c.cpp"
 if ($LASTEXITCODE) { throw 'compile failed' }
 & $cl /nologo /c /O2 /W3 /EHsc /arch:IA32 /D_CRT_SECURE_NO_WARNINGS @inc "$PSScriptRoot\hitch_test.cpp"
 if ($LASTEXITCODE) { throw 'compile failed' }
-& "$vc\bin\HostX86\x86\link.exe" /nologo hitch_test.obj hitch_asm.obj hitch_c.obj /OUT:hitch_test.exe /SUBSYSTEM:CONSOLE /LIBPATH:"$vc\lib\x86" /LIBPATH:"$sdk\Lib\$sv\ucrt\x86" /LIBPATH:"$sdk\Lib\$sv\um\x86" libcmt.lib libvcruntime.lib libucrt.lib kernel32.lib
+& "$vc\bin\HostX86\x86\link.exe" /nologo hitch_test.obj hitch_asm.obj hitch_c.obj x87.obj /OUT:hitch_test.exe /SUBSYSTEM:CONSOLE /LIBPATH:"$vc\lib\x86" /LIBPATH:"$sdk\Lib\$sv\ucrt\x86" /LIBPATH:"$sdk\Lib\$sv\um\x86" libcmt.lib libvcruntime.lib libucrt.lib kernel32.lib
 if ($LASTEXITCODE) { throw 'link failed' }
 & .\hitch_test.exe $Cases "$out\king_original.exe"
 $fail = $LASTEXITCODE
@@ -49,7 +52,7 @@ if (Compare-Object $a $b -SyncWindow 0) { throw 'src\truck\copter_step.cpp is no
 if ($LASTEXITCODE) { throw 'compile failed' }
 & $cl /nologo /c /O2 /W3 /EHsc /arch:IA32 /D_CRT_SECURE_NO_WARNINGS @inc "$PSScriptRoot\copter_test.cpp"
 if ($LASTEXITCODE) { throw 'compile failed' }
-& "$vc\bin\HostX86\x86\link.exe" /nologo copter_test.obj copter_asm.obj copter_c.obj /OUT:copter_test.exe /SUBSYSTEM:CONSOLE /LIBPATH:"$vc\lib\x86" /LIBPATH:"$sdk\Lib\$sv\ucrt\x86" /LIBPATH:"$sdk\Lib\$sv\um\x86" libcmt.lib libvcruntime.lib libucrt.lib kernel32.lib
+& "$vc\bin\HostX86\x86\link.exe" /nologo copter_test.obj copter_asm.obj copter_c.obj x87.obj /OUT:copter_test.exe /SUBSYSTEM:CONSOLE /LIBPATH:"$vc\lib\x86" /LIBPATH:"$sdk\Lib\$sv\ucrt\x86" /LIBPATH:"$sdk\Lib\$sv\um\x86" libcmt.lib libvcruntime.lib libucrt.lib kernel32.lib
 if ($LASTEXITCODE) { throw 'link failed' }
 & .\copter_test.exe $Cases "$out\king_original.exe"
 $fail = $fail -bor $LASTEXITCODE

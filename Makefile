@@ -16,7 +16,7 @@ PYTHON = py
 RES = king.res
 OUT = king.exe
 
-ALLCPPOBJS = data.obj data_image.obj hitch_solver.obj copter_step.obj ai_statics.obj ai_containers.obj ai_drivers.obj ai_saveload.obj ai_task.obj ai_traffic.obj ai_world.obj cargo_orders.obj road_graph.obj route_search.obj clusters.obj controls.obj core.obj directdraw.obj framework.obj game_app.obj input.obj main_loop.obj mfc.obj media.obj renderer.obj scene.obj sound_files.obj spans.obj vecmath.obj video_mode.obj marine_core.obj marine_grid.obj marine_startup.obj mesh_construct.obj refinement_math.obj wave_vertices.obj evaluator.obj native_values.obj natives.obj runtime.obj values.obj directsound.obj sound_gate.obj timer.obj grid_base.obj grid_support.obj grid_topology.obj terrain.obj terrain_grid.obj gzip.obj drivetrain.obj effects.obj force_feedback.obj game_shell.obj helicopter.obj king_app.obj moving_bodies.obj moving_items.obj object_ids.obj scenery.obj startup.obj vehicle.obj vehicle_engine.obj vehicle_physics.obj vehicle_setup.obj weather.obj world.obj world_objects.obj
+ALLCPPOBJS = data.obj x87.obj data_image.obj hitch_solver.obj copter_step.obj ai_statics.obj ai_containers.obj ai_drivers.obj ai_saveload.obj ai_task.obj ai_traffic.obj ai_world.obj cargo_orders.obj road_graph.obj route_search.obj clusters.obj controls.obj core.obj directdraw.obj framework.obj game_app.obj input.obj main_loop.obj mfc.obj media.obj renderer.obj scene.obj sound_files.obj spans.obj vecmath.obj video_mode.obj marine_core.obj marine_grid.obj marine_startup.obj mesh_construct.obj refinement_math.obj wave_vertices.obj evaluator.obj native_values.obj natives.obj runtime.obj values.obj directsound.obj sound_gate.obj timer.obj grid_base.obj grid_support.obj grid_topology.obj terrain.obj terrain_grid.obj gzip.obj drivetrain.obj effects.obj force_feedback.obj game_shell.obj helicopter.obj king_app.obj moving_bodies.obj moving_items.obj object_ids.obj scenery.obj startup.obj vehicle.obj vehicle_engine.obj vehicle_physics.obj vehicle_setup.obj weather.obj world.obj world_objects.obj
 CPPOBJS = $(ALLCPPOBJS) crt.obj
 
 # The C++ code names its libraries itself (the modern static C runtime):
@@ -53,7 +53,11 @@ build: $(OUT)
 {src\truck}.cpp.obj:
 	$(CC) $(CFLAGS) /Fo$@ $<
 
-$(ALLCPPOBJS): src\ai\ai.h src\ai\road.h src\common\king.h src\common\vecmath.h src\common\x87.h src\truck\car.h
+# /fp:fast: the x87 helpers become the FPU instructions themselves (x87.cpp)
+x87.obj: src\common\x87.cpp
+	$(CC) $(CFLAGS) /fp:fast /Fo$@ src\common\x87.cpp
+
+$(CPPOBJS): src\ai\ai.h src\ai\road.h src\common\king.h src\common\vecmath.h src\common\x87.h src\truck\car.h
 
 # Resources (icon, cursor, title bitmaps, strings) taken from the game's king.exe
 $(RES): extractResources.py

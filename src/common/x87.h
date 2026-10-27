@@ -11,59 +11,31 @@
 // are unordered (NaN): write it as !(a >= b) or !(a > b).
 #pragma once
 
-// The helpers leave their result in ST(0), the return register for double,
-// so they must stay real calls: inlined, the compiler wouldn't know that
-// ST(0) holds the result and the FPU stack would go out of balance.
+// noinline: a function whose double result must come back in ST(0)
 #define X87 __declspec(noinline) inline
 
-#pragma warning(push)
-#pragma warning(disable: 4035)  // no return value: the result is in ST(0)
-
-X87 double x87_sqrt(double x) { __asm { fld x } __asm { fsqrt } }
-X87 double x87_sin(double x) { __asm { fld x } __asm { fsin } }
-X87 double x87_cos(double x) { __asm { fld x } __asm { fcos } }
-X87 double x87_atan2(double y, double x) { __asm { fld y } __asm { fld x } __asm { fpatan } }
-
-// e^x as VC6 inlines exp()
-X87 double x87_exp(double x)
-{
-    __asm {
-        fld x
-        fldl2e
-        fmulp st(1), st
-        fld st(0)
-        frndint
-        fxch st(1)
-        fsub st, st(1)
-        f2xm1
-        fld1
-        faddp st(1), st
-        fscale
-        fstp st(1)
-    }
-}
-
-// The C runtime's register-based intrinsics [__CIpow], [__CIacos], ...
-extern "C" void _CIpow();
-extern "C" void _CIacos();
-extern "C" void _CIasin();
-extern "C" void _CIfmod();
-
-X87 double x87_pow(double x, double y) { __asm { fld x } __asm { fld y } __asm { call _CIpow } }
-X87 double x87_acos(double x) { __asm { fld x } __asm { call _CIacos } }
-X87 double x87_asin(double x) { __asm { fld x } __asm { call _CIasin } }
-X87 double x87_fmod(double x, double y) { __asm { fld x } __asm { fld y } __asm { call _CIfmod } }
-
-X87 double x87_fabs(double x) { __asm { fld x } __asm { fabs } }
-
-// sqrt(x*x + y*y) computed on the FPU in one helper
-X87 double x87_hypot(double x, double y)
-{
-    __asm { fld x } __asm { fmul st, st } __asm { fld y } __asm { fmul st, st }
-    __asm { faddp st(1), st } __asm { fsqrt }
-}
-
-#pragma warning(pop)
+// The helpers are in x87.cpp, compiled with /fp:fast so that each is the FPU
+// instruction or chain itself. They stay real calls: the result comes back
+// unrounded in ST(0), the return register for double.
+double x87_sqrt(double x);
+double x87_sin(double x);
+double x87_cos(double x);
+double x87_tan(double x);                          // fptan
+double x87_atan2(double y, double x);              // fpatan
+double x87_ln(double x);                           // fldln2, fyl2x
+double x87_log10(double x);                        // fldlg2, fyl2x
+double x87_fabs(double x);
+double x87_exp(double x);                          // e^x as VC6 inlines exp()
+double x87_exp_neg_sq(double y);                   // e^-(y*y)
+double x87_pow_mul(double k, double a, double b);  // k^(a*b) through ln and exp
+double x87_hypot(double x, double y);              // sqrt(x*x + y*y)
+double x87_inv_dist(float x, float y, double unit);    // unit / (sqrt(x*x + y*y) + unit)
+void x87_normalize(const float* v, float* out);    // v / |v|, the length unrounded
+// the C runtime's register-based intrinsics __CIpow, __CIacos, __CIasin, __CIfmod
+double x87_pow(double x, double y);
+double x87_acos(double x);
+double x87_asin(double x);
+double x87_fmod(double x, double y);
 
 // fcomp with test AH,64 (C3): equal, or unordered
 inline bool x87_eq(double a, double b) { return !(a < b || a > b); }

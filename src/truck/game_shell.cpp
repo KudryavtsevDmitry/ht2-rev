@@ -6246,7 +6246,6 @@ KING_VAR(double, g_q120_64deb0, 64deb0)
 KING_VAR(double, g_q120_64dea8, 64dea8)
 KING_VAR(AsmLabel, s_q120_672998, 672998)
 // ln x the way the original computes it (fldln2, fyl2x)
-static __declspec(noinline) double Gs120_Ln(double x) { __asm { fldln2 } __asm { fld x } __asm { fyl2x } }
 static void Gs120_Write(const char* key, int v)
 {
     CallC(FUN_603c70, (const char*)s_q120_672998, key, v, g_q120_696868);
@@ -6283,7 +6282,7 @@ extern "C" void __cdecl Shell_DefaultSettings(int c640, int c800, int c1024, int
     int q = 0;
     if (vm) {
         int mb = vm / 0x100000;
-        q = (int)((Gs120_Ln((double)mb) - g_q120_64deb0) * g_q120_64dea8 * g_q120_64b6a0);
+        q = (int)((x87_ln((double)mb) - g_q120_64deb0) * g_q120_64dea8 * g_q120_64b6a0);
         if (q > 100)
             q = 100;
         else if (q < 0)

@@ -7841,29 +7841,6 @@ KING_VAR(double, g_vh64b6e0, 64b6e0)
 KING_VAR(double, g_vh64f7a8, 64f7a8)
 KING_VAR(double, g_vh64f7a0, 64f7a0)
 
-// e to the -(y * y), the way the original's inline code works it out
-X87 double Vh_ExpNegSq(double y)
-{
-    __asm {
-        fld y
-        fld st(0)
-        fmul st(0), st(1)
-        fchs
-        fldl2e
-        fmulp st(1), st(0)
-        fld st(0)
-        frndint
-        fxch st(1)
-        fsub st(0), st(1)
-        f2xm1
-        fld1
-        faddp st(1), st(0)
-        fscale
-        fstp st(1)
-        fstp st(1)
-    }
-}
-
 // damage progress k by v (scaled down for +21540 when half), counting in *n and *flag
 static void Vh_Damage(BYTE* s, int k, double q, float strength, bool half, int* n, int* flag)
 {
@@ -7916,7 +7893,7 @@ void __fastcall Car_Hit(BYTE* s, void*, const Vec3* p, const Vec3* dir)
             CallThis(FUN_549900, s + 21552, Lf);
     }
     double x = (double)Lf - g_vh64c40c;
-    double w = g_vh64b670 - Vh_ExpNegSq((x - g_vh64c450) * g_vh64ed88) * g_vh64ed80;
+    double w = g_vh64b670 - x87_exp_neg_sq((x - g_vh64c450) * g_vh64ed88) * g_vh64ed80;
     float strength = (float)(((x * g_vh64d4e8) / (x + g_vh64c320) + g_vh64c250) * w * x);
     Vec3 v, n;
     v.x = (float)((double)F(float, s, 608) * p->y + (double)F(float, s, 620) * p->z + (double)F(float, s, 596) * p->x + F(float, s, 632));

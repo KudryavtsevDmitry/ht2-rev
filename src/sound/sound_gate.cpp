@@ -89,13 +89,6 @@ static char* StrDup(const char* s)
     return d;
 }
 
-static X87 double x87_log10(double x)
-{
-    __asm { fldlg2 }
-    __asm { fld x }
-    __asm { fyl2x }
-}
-
 extern "C" {
 
 // [FUN_600b70]
