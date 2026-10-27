@@ -11,37 +11,37 @@ extern "C" unsigned char KingRdata[];
 extern "C" unsigned char KingData[];
 extern "C" unsigned char KingBss[];
 
-extern "C" void __cdecl Vec3_Add();
-extern "C" void __cdecl Vec3_Cross();
-extern "C" void __cdecl Vec3_DivComponents();
-extern "C" void __cdecl Vec3_DivScalar();
-extern "C" void __cdecl Vec3_Length();
-extern "C" void __cdecl Vec3_Negated();
-extern "C" void __cdecl Vec3_Normalized();
-extern "C" void __cdecl Vec3_RotateBy();
-extern "C" void __cdecl Vec3_Scaled();
-extern "C" void __fastcall Body_FrameIntegrate(int, int, int);
-extern "C" void __fastcall Body_Get9508(int, int);
-extern "C" void __fastcall Body_GetVec9012(int, int, int);
-extern "C" void __fastcall Body_GetVec9024(int, int, int);
-extern "C" void __fastcall Body_GetVec9048(int, int, int);
-extern "C" void __fastcall Body_GetVec9084(int, int, int);
-extern "C" void __fastcall Body_GetVec9144(int, int, int);
-extern "C" void __fastcall Body_Integrate(int, int, int, int);
-extern "C" void __fastcall Body_Matrix2274(int, int, int);
-extern "C" void __fastcall Body_Matrix22a4(int, int, int);
-extern "C" void __fastcall Body_SetSpin(int, int, int, int, int);
-extern "C" void __fastcall Body_SetVec9012(int, int, int, int, int);
-extern "C" void __fastcall Body_StateStep(int);
-extern "C" void __fastcall Car_PlaceWithTrailer(int, int, int, int);
-extern "C" void __fastcall Engine_AddContact(int, int, int, int, int);
-extern "C" void __fastcall Engine_AddPush(int, int, int, int);
-extern "C" void __fastcall Hitch_Align(int, int, int, int);
-extern "C" void __fastcall Trailer_SaddleLoad(int, int, int);
-extern "C" void __fastcall Vec3_AddAssign(int, int, int, int);
-extern "C" void __fastcall Vec3_MulAssign(int, int, int, int);
-extern "C" void __fastcall Vec3_SetThis(int, int, int, int, int);
-extern "C" void __fastcall Vec3_ZeroThis(int, int);
+extern "C" void x87c_Body_FrameIntegrate(); KING_ALIAS("_x87c_Body_FrameIntegrate", "@Body_FrameIntegrate@12")
+extern "C" void x87c_Body_Get9508(); KING_ALIAS("_x87c_Body_Get9508", "@Body_Get9508@8")
+extern "C" void x87c_Body_GetVec9012(); KING_ALIAS("_x87c_Body_GetVec9012", "@Body_GetVec9012@12")
+extern "C" void x87c_Body_GetVec9024(); KING_ALIAS("_x87c_Body_GetVec9024", "@Body_GetVec9024@12")
+extern "C" void x87c_Body_GetVec9048(); KING_ALIAS("_x87c_Body_GetVec9048", "@Body_GetVec9048@12")
+extern "C" void x87c_Body_GetVec9084(); KING_ALIAS("_x87c_Body_GetVec9084", "@Body_GetVec9084@12")
+extern "C" void x87c_Body_GetVec9144(); KING_ALIAS("_x87c_Body_GetVec9144", "@Body_GetVec9144@12")
+extern "C" void x87c_Body_Integrate(); KING_ALIAS("_x87c_Body_Integrate", "@Body_Integrate@16")
+extern "C" void x87c_Body_Matrix2274(); KING_ALIAS("_x87c_Body_Matrix2274", "@Body_Matrix2274@12")
+extern "C" void x87c_Body_Matrix22a4(); KING_ALIAS("_x87c_Body_Matrix22a4", "@Body_Matrix22a4@12")
+extern "C" void x87c_Body_SetSpin(); KING_ALIAS("_x87c_Body_SetSpin", "@Body_SetSpin@20")
+extern "C" void x87c_Body_SetVec9012(); KING_ALIAS("_x87c_Body_SetVec9012", "@Body_SetVec9012@20")
+extern "C" void x87c_Body_StateStep(); KING_ALIAS("_x87c_Body_StateStep", "@Body_StateStep@4")
+extern "C" void x87c_Car_PlaceWithTrailer(); KING_ALIAS("_x87c_Car_PlaceWithTrailer", "@Car_PlaceWithTrailer@16")
+extern "C" void x87c_Engine_AddContact(); KING_ALIAS("_x87c_Engine_AddContact", "@Engine_AddContact@20")
+extern "C" void x87c_Engine_AddPush(); KING_ALIAS("_x87c_Engine_AddPush", "@Engine_AddPush@16")
+extern "C" void x87c_Hitch_Align(); KING_ALIAS("_x87c_Hitch_Align", "@Hitch_Align@16")
+extern "C" void x87c_Trailer_SaddleLoad(); KING_ALIAS("_x87c_Trailer_SaddleLoad", "@Trailer_SaddleLoad@12")
+extern "C" void x87c_Vec3_Add(); KING_ALIAS("_x87c_Vec3_Add", "_Vec3_Add")
+extern "C" void x87c_Vec3_AddAssign(); KING_ALIAS("_x87c_Vec3_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void x87c_Vec3_Cross(); KING_ALIAS("_x87c_Vec3_Cross", "_Vec3_Cross")
+extern "C" void x87c_Vec3_DivComponents(); KING_ALIAS("_x87c_Vec3_DivComponents", "_Vec3_DivComponents")
+extern "C" void x87c_Vec3_DivScalar(); KING_ALIAS("_x87c_Vec3_DivScalar", "_Vec3_DivScalar")
+extern "C" void x87c_Vec3_Length(); KING_ALIAS("_x87c_Vec3_Length", "_Vec3_Length")
+extern "C" void x87c_Vec3_MulAssign(); KING_ALIAS("_x87c_Vec3_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void x87c_Vec3_Negated(); KING_ALIAS("_x87c_Vec3_Negated", "_Vec3_Negated")
+extern "C" void x87c_Vec3_Normalized(); KING_ALIAS("_x87c_Vec3_Normalized", "_Vec3_Normalized")
+extern "C" void x87c_Vec3_RotateBy(); KING_ALIAS("_x87c_Vec3_RotateBy", "_Vec3_RotateBy")
+extern "C" void x87c_Vec3_Scaled(); KING_ALIAS("_x87c_Vec3_Scaled", "_Vec3_Scaled")
+extern "C" void x87c_Vec3_SetThis(); KING_ALIAS("_x87c_Vec3_SetThis", "@Vec3_SetThis@20")
+extern "C" void x87c_Vec3_ZeroThis(); KING_ALIAS("_x87c_Vec3_ZeroThis", "@Vec3_ZeroThis@8")
 
 // x87 status word bits of a compare: C0 below, C3 equal, C0|C2|C3 unordered
 static inline DWORD x87_compare(double a, double b)
@@ -173,12 +173,12 @@ extern "C" DWORD __fastcall Hitch_Solve(DWORD ecx_in, DWORD edx_in)
     f0 = f0 + f1;
     f0 = f0 + (double)*(float*)(esp+200);
     *(float*)(esp+224) = (float)f0;
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = (esp+216);
     edx = (esp+1648);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     eax = *(DWORD*)(ebx+21600);
     esp += (DWORD)16;
     ecx = ecx ^ ecx; zf = (ecx) == 0; sf = (int)(ecx) < 0; cf = 0; of = 0;
@@ -200,7 +200,7 @@ extern "C" DWORD __fastcall Hitch_Solve(DWORD ecx_in, DWORD edx_in)
     *(DWORD*)(esp+36) = ecx;
 L_559198:;
     ecx = esi;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)Vec3_ZeroThis)(ecx, edx);
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Vec3_ZeroThis)(ecx, edx);
     { DWORD x = esi, y = (DWORD)12, r = x + y; esi = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
     { DWORD r = edi - 1; of = r == 0x7FFFFFFF; edi = r; zf = r == 0; sf = (int)r < 0; }
     if (!zf) goto L_559198;
@@ -212,7 +212,7 @@ L_559198:;
     edi = (DWORD)4;
 L_5591c4:;
     ecx = esi;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)Vec3_ZeroThis)(ecx, edx);
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Vec3_ZeroThis)(ecx, edx);
     { DWORD x = esi, y = (DWORD)12, r = x + y; esi = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
     { DWORD r = edi - 1; of = r == 0x7FFFFFFF; edi = r; zf = r == 0; sf = (int)r < 0; }
     if (!zf) goto L_5591c4;
@@ -224,7 +224,7 @@ L_5591c4:;
     edi = (DWORD)4;
 L_5591f0:;
     ecx = esi;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)Vec3_ZeroThis)(ecx, edx);
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Vec3_ZeroThis)(ecx, edx);
     { DWORD x = esi, y = (DWORD)12, r = x + y; esi = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
     { DWORD r = edi - 1; of = r == 0x7FFFFFFF; edi = r; zf = r == 0; sf = (int)r < 0; }
     if (!zf) goto L_5591f0;
@@ -236,7 +236,7 @@ L_5591f0:;
     edi = (DWORD)4;
 L_55921c:;
     ecx = esi;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)Vec3_ZeroThis)(ecx, edx);
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Vec3_ZeroThis)(ecx, edx);
     { DWORD x = esi, y = (DWORD)12, r = x + y; esi = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
     { DWORD r = edi - 1; of = r == 0x7FFFFFFF; edi = r; zf = r == 0; sf = (int)r < 0; }
     if (!zf) goto L_55921c;
@@ -294,7 +294,7 @@ L_55921c:;
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     *(DWORD*)(esp+268) = eax;
-    f0 = ((double (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Trailer_SaddleLoad)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    f0 = ((double (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Trailer_SaddleLoad)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     eax = *(DWORD*)(esp+32);
     *(float*)(esp+56) = (float)f0;
     { DWORD r = eax & eax; zf = (r) == 0; sf = (int)(r) < 0; cf = 0; of = 0; }
@@ -315,7 +315,7 @@ L_5593e0:;
     { DWORD v = ((DWORD)KingBss+491056); esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD x = ecx, y = (DWORD)9984, r = x + y; ecx = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Engine_AddContact)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Engine_AddContact)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     { DWORD v = ((DWORD)KingBss+491056); esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+212);
     { DWORD v = ((DWORD)KingBss+491056); esp -= 4; *(DWORD*)esp = v; }
@@ -323,19 +323,19 @@ L_5593e0:;
     ecx = *(DWORD*)(ebp+21600);
     *(DWORD*)(esp+452) = eax;
     { DWORD x = ecx, y = (DWORD)9984, r = x + y; ecx = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Engine_AddContact)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Engine_AddContact)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     ecx = *(DWORD*)(ebx+21600);
     { DWORD v = ((DWORD)KingBss+491056); esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ((DWORD)KingBss+491056); esp -= 4; *(DWORD*)esp = v; }
     { DWORD x = ecx, y = (DWORD)9984, r = x + y; ecx = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
     *(DWORD*)(esp+228) = eax;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Engine_AddPush)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Engine_AddPush)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = ((DWORD)KingBss+491056); esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ((DWORD)KingBss+491056); esp -= 4; *(DWORD*)esp = v; }
     { DWORD x = ecx, y = (DWORD)9984, r = x + y; ecx = r; zf = r == 0; sf = (int)r < 0; cf = r < x; of = (int)((x ^ r) & (y ^ r)) < 0; }
     *(DWORD*)(esp+632) = eax;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Engine_AddPush)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Engine_AddPush)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     *(DWORD*)(esp+640) = eax;
 L_559478:;
     eax = *(DWORD*)(esp+32);
@@ -348,7 +348,7 @@ L_55948c:;
     ecx = *(DWORD*)(ebx+21600);
     edx = (esp+2132);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (DWORD)12;
     esi = eax;
     edi = (esp+284);
@@ -356,7 +356,7 @@ L_55948c:;
     memcpy((void*)edi, (void*)esi, ecx * 4); esi += ecx * 4; edi += ecx * 4; ecx = 0;
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (DWORD)12;
     esi = eax;
     edi = (esp+148);
@@ -364,11 +364,11 @@ L_55948c:;
     ecx = (esp+1220);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = *(DWORD*)(ebp+21600);
     edx = (esp+1268);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     f0 = *(float*)(esp+284);
     f0 = f0 * (double)*(float*)(esp+196);
     f1 = *(float*)(esp+308);
@@ -463,15 +463,15 @@ L_55948c:;
     *(float*)(esp+588) = (float)f0;
     edx = *(DWORD*)(esp+588);
     *(DWORD*)(esp+100) = edx;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (esp+224);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = *(DWORD*)(ebx+21600);
     edx = (esp+1664);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     f0 = *(float*)(esp+308);
     f0 = f0 * (double)*(float*)(eax+8);
     f1 = *(float*)(esp+296);
@@ -502,7 +502,7 @@ L_55948c:;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     f0 = f0 + f1;
     *(float*)(esp+468) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     f0 = *(float*)(esp+148);
     f0 = f0 * (double)*(float*)(eax);
     f1 = *(float*)(esp+172);
@@ -583,7 +583,7 @@ L_55948c:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+1052);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+636);
     f0 = f0 - (double)*(float*)(esp+1048);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -597,7 +597,7 @@ L_55948c:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+1100);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     ecx = *(DWORD*)(esp+1088);
     edx = *(DWORD*)(esp+1092);
     eax = *(DWORD*)(esp+1096);
@@ -612,7 +612,7 @@ L_55948c:;
     *(DWORD*)(esp+360) = edx;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     *(DWORD*)(esp+368) = eax;
-    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     *(float*)(esp+24) = (float)f0;
     sw = x87_compare(f0, (double)*(float*)((DWORD)KingRdata+4708));
     esp += (DWORD)4;
@@ -632,7 +632,7 @@ L_55948c:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+692);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+680);
     eax = *(DWORD*)(esp+684);
     ecx = *(DWORD*)(esp+688);
@@ -680,7 +680,7 @@ L_559ad4:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+704);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+696);
     edx = *(DWORD*)(esp+692);
     ecx = *(DWORD*)(esp+700);
@@ -694,7 +694,7 @@ L_559ad4:;
     { DWORD v = (DWORD)1045220557; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+244);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     f0 = *(float*)(esp+20);
     sw = x87_compare(f0, (double)*(double*)((DWORD)KingRdata+1760));
     eax = (eax & 0xFFFF0000u) | sw;
@@ -715,7 +715,7 @@ L_559b71:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+1076);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+1072);
     f0 = f0 + (double)*(float*)(esp+96);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -729,7 +729,7 @@ L_559b71:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+1352);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+16);
     f0 = f0 * (double)*(float*)((DWORD)KingRdata+10168);
     ecx = *(DWORD*)((DWORD)KingBss+491028);
@@ -750,7 +750,7 @@ L_559b71:;
     ecx = (esp+728);
     f0 = f0 * (double)*(float*)(esp+136);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+124);
     f0 = f0 * (double)*(float*)(esp+88);
     f1 = *(float*)(esp+128);
@@ -773,7 +773,7 @@ L_559b71:;
     { DWORD v = (DWORD)1073741824; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+436);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
 L_559cb9:;
     f0 = *(float*)(esp+20);
     sw = x87_compare(f0, (double)*(float*)((DWORD)KingRdata+4704));
@@ -788,15 +788,15 @@ L_559cb9:;
     *(float*)(esp) = (float)f0;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+436);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
 L_559cee:;
     edx = (esp+428);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     *(float*)(esp+20) = (float)f0;
     eax = (esp+240);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     f0 = *(float*)(esp+32);
     f0 = f0 + f0;
     esp += (DWORD)8;
@@ -810,12 +810,12 @@ L_559cee:;
     *(float*)(esp) = (float)f0;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+436);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_MulAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     goto L_559d42;
 L_559d40:;
 L_559d42:;
     ecx = *(DWORD*)(ebx+21600);
-    f0 = ((double (__fastcall*)(DWORD, DWORD))(DWORD)Body_Get9508)(ecx, edx);
+    f0 = ((double (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Body_Get9508)(ecx, edx);
     eax = *(DWORD*)(esp+428);
     ecx = *(DWORD*)(esp+432);
     f0 = *(float*)(esp+20);
@@ -847,7 +847,7 @@ L_559d42:;
     if (!zf) goto L_55a30f;
     edx = (esp+60);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     *(float*)(esp+20) = (float)f0;
     f0 = *(float*)(esp+20);
     sw = x87_compare(f0, (double)*(float*)((DWORD)KingRdata+4708));
@@ -875,7 +875,7 @@ L_559d42:;
     ecx = (esp+1040);
     f0 = f0 * (double)*(float*)(esp+72);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+1028);
     ecx = *(DWORD*)(esp+1032);
     edx = *(DWORD*)(esp+1036);
@@ -896,7 +896,7 @@ L_559e6e:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+752);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+740);
     ecx = *(DWORD*)(esp+744);
     edx = *(DWORD*)(esp+748);
@@ -907,7 +907,7 @@ L_559e6e:;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     *(DWORD*)(esp+996) = edx;
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     f0 = *(float*)(esp+148);
     f0 = f0 * (double)*(float*)(esp+340);
     f1 = *(float*)(esp+344);
@@ -930,7 +930,7 @@ L_559e6e:;
     ecx = (esp+776);
     f0 = f0 - f1;
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+772);
     f1 = *(float*)(esp+768);
     f2 = *(float*)(esp+764);
@@ -972,7 +972,7 @@ L_559e6e:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+1088);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+1076);
     eax = *(DWORD*)(esp+1080);
     ecx = *(DWORD*)(esp+1084);
@@ -994,7 +994,7 @@ L_55a029:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+800);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+788);
     eax = *(DWORD*)(esp+792);
     ecx = *(DWORD*)(esp+796);
@@ -1005,7 +1005,7 @@ L_55a07d:;
 L_55a081:;
     edx = (esp+44);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     *(float*)(esp+20) = (float)f0;
     f0 = *(float*)(esp+20);
     sw = x87_compare(f0, (double)*(float*)((DWORD)KingRdata+4708));
@@ -1034,7 +1034,7 @@ L_55a081:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+1016);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+1004);
     ecx = *(DWORD*)(esp+1008);
     edx = *(DWORD*)(esp+1012);
@@ -1055,7 +1055,7 @@ L_55a129:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+824);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+812);
     ecx = *(DWORD*)(esp+816);
     edx = *(DWORD*)(esp+820);
@@ -1066,7 +1066,7 @@ L_55a129:;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     *(DWORD*)(esp+1068) = edx;
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Normalized)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     f0 = *(float*)(esp+124);
     f0 = f0 * (double)*(float*)(esp+352);
     f1 = *(float*)(esp+356);
@@ -1089,7 +1089,7 @@ L_55a129:;
     ecx = (esp+848);
     f0 = f0 - f1;
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+844);
     f1 = *(float*)(esp+840);
     f2 = *(float*)(esp+836);
@@ -1131,7 +1131,7 @@ L_55a129:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+956);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+944);
     eax = *(DWORD*)(esp+948);
     ecx = *(DWORD*)(esp+952);
@@ -1153,7 +1153,7 @@ L_55a2c0:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+872);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+860);
     eax = *(DWORD*)(esp+864);
     ecx = *(DWORD*)(esp+868);
@@ -1175,7 +1175,7 @@ L_55a30f:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+980);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+376);
     f0 = f0 + (double)*(float*)(esp+244);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -1194,7 +1194,7 @@ L_55a30f:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+896);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+892);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     f0 = -f0;
@@ -1208,7 +1208,7 @@ L_55a30f:;
     ecx = (esp+1004);
     f0 = -f0;
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+1000);
     ecx = *(DWORD*)(esp+992);
     edx = *(DWORD*)(esp+996);
@@ -1233,7 +1233,7 @@ L_55a30f:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+920);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     ecx = *(DWORD*)(esp+908);
     edx = *(DWORD*)(esp+912);
     eax = *(DWORD*)(esp+916);
@@ -1248,12 +1248,12 @@ L_55a30f:;
     ecx = (esp+1396);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     edx = (esp+1680);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     edi = *(DWORD*)(eax);
     ecx = *(DWORD*)(eax+4);
     *(DWORD*)(esp+604) = ecx;
@@ -1265,11 +1265,11 @@ L_55a30f:;
     edx = (esp+1428);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     eax = (esp+1812);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(eax);
     esp += (DWORD)32;
     *(DWORD*)(esp+100) = ecx;
@@ -1293,10 +1293,10 @@ L_55a50c:;
     eax = (esp+1104);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Cross)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Cross)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = (esp+1112);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
-    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     sw = x87_compare(f0, (double)*(double*)((DWORD)KingRdata+18992));
     esp += (DWORD)16;
     eax = (eax & 0xFFFF0000u) | sw;
@@ -1319,7 +1319,7 @@ L_55a50c:;
     *(float*)(esp) = (float)f0;
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Scaled)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Scaled)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(eax);
     esp += (DWORD)12;
     *(DWORD*)(esp+492) = ecx;
@@ -1333,13 +1333,13 @@ L_55a5f0:;
     ecx = (esp+1700);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = *(DWORD*)(eax+4);
     ecx = *(DWORD*)(ebp+21600);
     eax = (esp+1460);
     *(DWORD*)(esp+616) = edx;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9048)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     f0 = *(float*)(eax+4);
     f0 = f0 - (double)*(float*)(esp+616);
     f1 = *(float*)(esp+396);
@@ -1365,7 +1365,7 @@ L_55a5f0:;
     edx = (esp+1812);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     *(float*)(esp+32) = (float)f1;
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(ebx+21600);
     edx = (esi+ecx*1+10304);
     ecx = *(DWORD*)(eax);
@@ -1400,7 +1400,7 @@ L_55a5f0:;
     eax = (esp+1496);
     { DWORD v = ((DWORD)KingBss+491008); esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Scaled)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Scaled)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)20;
     ecx = (esp+1220);
     edx = (esp+492);
@@ -1409,12 +1409,12 @@ L_55a5f0:;
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     eax = (esp+1736);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     ecx = (esp+1512);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     edx = *(DWORD*)(ebx+21600);
     edi = *(DWORD*)(esp+652);
     f0 = *(float*)(esp+36);
@@ -1433,7 +1433,7 @@ L_55a5f0:;
     ecx = (esp+1840);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     edi <<= 2; zf = edi == 0; sf = (int)edi < 0;
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Scaled)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Scaled)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     edx = (esp+1268);
     ecx = (esp+1532);
@@ -1442,17 +1442,17 @@ L_55a5f0:;
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)8;
     edx = (esp+1756);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     eax = (esp+1564);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Add)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(ebp+21600);
     edx = (ecx+edi*1+10364);
     ecx = *(DWORD*)(eax);
@@ -1467,7 +1467,7 @@ L_55a5f0:;
     eax = (esp+1812);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(ebx+21600);
     esp += (DWORD)24;
     edx = (esi+ecx*1+10424);
@@ -1483,12 +1483,12 @@ L_55a5f0:;
     eax = (esp+1584);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Negated)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)8;
     ecx = (esp+1776);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     edx = *(DWORD*)(ebp+21600);
     esp += (DWORD)12;
     f0 = *(float*)(esp+20);
@@ -1510,7 +1510,7 @@ L_55a8af:;
 L_55a8b2:;
     ecx = (esp+124);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
-    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    f0 = ((double (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_Length)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     f1 = f0;
     f1 = f1 + (double)*(float*)((DWORD)KingRdata+4688);
     esp += (DWORD)4;
@@ -1580,7 +1580,7 @@ L_55a966:;
     ecx = (esp+392);
     f0 = f0 * (double)*(float*)((DWORD)KingBss+491024);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+388);
     f0 = f0 * (double)*(float*)(esp+316);
     f1 = *(float*)(esp+384);
@@ -1612,7 +1612,7 @@ L_55a966:;
     f1 = f1 * (double)*(float*)(esp+308);
     f0 = f0 + f1;
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+652);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     f0 = -f0;
@@ -1626,7 +1626,7 @@ L_55a966:;
     ecx = (esp+680);
     f0 = -f0;
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+668);
     eax = *(DWORD*)(esp+672);
     ecx = *(DWORD*)(esp+676);
@@ -1638,7 +1638,7 @@ L_55a966:;
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+84);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_AddAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_AddAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     f0 = *(float*)(esp+40);
     f0 = f0 * (double)*(float*)(esp+36);
     f1 = *(float*)(esp+40);
@@ -1659,7 +1659,7 @@ L_55a966:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+740);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+364);
     f0 = f0 * (double)*(float*)(esp+56);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -1673,7 +1673,7 @@ L_55a966:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+716);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+712);
     f0 = f0 * (double)*(float*)((DWORD)KingRdata+8952);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -1687,7 +1687,7 @@ L_55a966:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+764);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+736);
     f0 = f0 - (double)*(float*)(esp+760);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -1701,7 +1701,7 @@ L_55a966:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+788);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     ecx = *(DWORD*)(esp+776);
     edx = *(DWORD*)(esp+780);
     eax = *(DWORD*)(esp+784);
@@ -1713,7 +1713,7 @@ L_55a966:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+84);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_AddAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_AddAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     f0 = *(float*)(esp+20);
     sw = x87_compare(f0, (double)*(double*)((DWORD)KingRdata+1760));
     eax = (eax & 0xFFFF0000u) | sw;
@@ -1734,7 +1734,7 @@ L_55ac40:;
     ecx = (esp+836);
     f0 = f0 * (double)*(float*)((DWORD)KingBss+491024);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)((DWORD)KingBss+491016);
     ecx = *(DWORD*)(esp+828);
     eax = *(DWORD*)(esp+824);
@@ -1754,7 +1754,7 @@ L_55ac40:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+860);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+856);
     f0 = f0 - (double)*(float*)(esp+608);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -1768,7 +1768,7 @@ L_55ac40:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+884);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+56);
     f0 = f0 * (double)*(double*)((DWORD)KingRdata+1976);
     f1 = *(float*)(esp+880);
@@ -1784,7 +1784,7 @@ L_55ac40:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+428);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     f0 = *(float*)(esp+424);
     f0 = f0 * (double)*(float*)(esp+316);
     f1 = *(float*)(esp+420);
@@ -1816,13 +1816,13 @@ L_55ac40:;
     f1 = f1 * (double)*(float*)(esp+308);
     f0 = f0 + f1;
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = (esp+1184);
     ecx = (esp+1628);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+84);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_AddAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_AddAssign)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     f0 = *(float*)(esp+24);
     f0 = f0 * (double)*(float*)(esp+24);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
@@ -1839,7 +1839,7 @@ L_55ac40:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = (esp+908);
     *(float*)(esp) = (float)f1;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+896);
     eax = *(DWORD*)(esp+900);
     ecx = *(DWORD*)(esp+904);
@@ -1870,7 +1870,7 @@ L_55ae6b:;
     ecx = (esp+932);
     f0 = -f0;
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_SetThis)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+220);
     ecx = *(DWORD*)(ebp+21600);
     eax = (eax+eax*2);
@@ -1886,7 +1886,7 @@ L_55aef4:;
     ecx = *(DWORD*)(ebx+21600);
     { DWORD r = eax & eax; zf = (r) == 0; sf = (int)(r) < 0; cf = 0; of = 0; }
     if (zf) goto L_55af0d;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)Body_StateStep)(ecx, edx);
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Body_StateStep)(ecx, edx);
     *(DWORD*)(esp+32) = eax;
     goto L_55af31;
 L_55af0d:;
@@ -1894,17 +1894,17 @@ L_55af0d:;
     { DWORD r = eax & eax; zf = (r) == 0; sf = (int)(r) < 0; cf = 0; of = 0; }
     if (zf) goto L_55af31;
     ecx = *(DWORD*)(ebp+21600);
-    f0 = ((double (__fastcall*)(DWORD, DWORD))(DWORD)Body_Get9508)(ecx, edx);
+    f0 = ((double (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Body_Get9508)(ecx, edx);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_FrameIntegrate)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_FrameIntegrate)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
 L_55af31:;
     edi = *(DWORD*)(esp+72);
     { DWORD r = edi & edi; zf = (r) == 0; sf = (int)(r) < 0; cf = 0; of = 0; }
     if (zf) goto L_55af4c;
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)Body_StateStep)(ecx, edx);
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Body_StateStep)(ecx, edx);
     edi = eax;
     *(DWORD*)(esp+72) = edi;
     goto L_55af76;
@@ -1914,11 +1914,11 @@ L_55af4c:;
     { DWORD r = eax & eax; zf = (r) == 0; sf = (int)(r) < 0; cf = 0; of = 0; }
     if (zf) goto L_55af76;
     ecx = *(DWORD*)(ebx+21600);
-    f0 = ((double (__fastcall*)(DWORD, DWORD))(DWORD)Body_Get9508)(ecx, edx);
+    f0 = ((double (__fastcall*)(DWORD, DWORD))(DWORD)x87c_Body_Get9508)(ecx, edx);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
     *(float*)(esp) = (float)f0;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_FrameIntegrate)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_FrameIntegrate)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
 L_55af76:;
     esi = *(DWORD*)(esp+28);
     { DWORD r = esi & esi; zf = (r) == 0; sf = (int)(r) < 0; cf = 0; of = 0; }
@@ -1941,57 +1941,57 @@ L_55afaf:;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = (esp+1128);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     eax = *(DWORD*)(esp+52);
     esp += (DWORD)12;
     ecx = (esp+1328);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = (esp+1152);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     eax = (esp+404);
     ecx = (esp+1352);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = (esp+1212);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     eax = (esp+392);
     ecx = (esp+1376);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = (esp+1176);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     eax = (esp+1208);
     ecx = (esp+1124);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     ecx = *(DWORD*)(ebp+21600);
     edx = (esp+1172);
     eax = (esp+1148);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     goto L_55b17c;
 L_55b094:;
     ecx = *(DWORD*)(esp+36);
@@ -1999,57 +1999,57 @@ L_55b094:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     eax = (esp+1120);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(esp+52);
     esp += (DWORD)12;
     edx = (esp+1424);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9084)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     eax = (esp+1168);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivScalar)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     ecx = (esp+404);
     edx = (esp+1448);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     eax = (esp+1204);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     ecx = (esp+392);
     edx = (esp+1472);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9144)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     eax = (esp+1144);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_DivComponents)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     esp += (DWORD)12;
     ecx = (esp+1196);
     edx = (esp+1112);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebx+21600);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     eax = (esp+1136);
     ecx = (esp+1160);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_Integrate)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     { DWORD r = esi & esi; zf = (r) == 0; sf = (int)(r) < 0; cf = 0; of = 0; }
     if (!zf) goto L_55b561;
 L_55b17c:;
@@ -2082,7 +2082,7 @@ L_55b1db:;
 L_55b1e9:;
     eax = (esp+2228);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (DWORD)12;
     esi = eax;
     edi = (esp+284);
@@ -2090,7 +2090,7 @@ L_55b1e9:;
     ecx = (esp+2084);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (DWORD)12;
     esi = eax;
     edi = (esp+148);
@@ -2098,7 +2098,7 @@ L_55b1e9:;
     memcpy((void*)edi, (void*)esi, ecx * 4); esi += ecx * 4; edi += ecx * 4; ecx = 0;
     ecx = *(DWORD*)(ebx+21600);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (DWORD)12;
     esi = eax;
     edi = (esp+1220);
@@ -2106,7 +2106,7 @@ L_55b1e9:;
     memcpy((void*)edi, (void*)esi, ecx * 4); esi += ecx * 4; edi += ecx * 4; ecx = 0;
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix2274)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (DWORD)12;
     esi = eax;
     edi = (esp+1268);
@@ -2117,7 +2117,7 @@ L_55b1e9:;
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(eax);
     *(DWORD*)(esp+260) = ecx;
     ecx = (esp+160);
@@ -2130,7 +2130,7 @@ L_55b1e9:;
     *(DWORD*)(esp+276) = eax;
     eax = (esp+1540);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
+    eax = ((DWORD (__cdecl*)(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Vec3_RotateBy)(*(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8), *(DWORD*)(esp+12), *(DWORD*)(esp+16), *(DWORD*)(esp+20), *(DWORD*)(esp+24), *(DWORD*)(esp+28), *(DWORD*)(esp+32), *(DWORD*)(esp+36), *(DWORD*)(esp+40), *(DWORD*)(esp+44), *(DWORD*)(esp+48), *(DWORD*)(esp+52), *(DWORD*)(esp+56), *(DWORD*)(esp+60), *(DWORD*)(esp+64), *(DWORD*)(esp+68));
     ecx = *(DWORD*)(eax);
     esp += (DWORD)24;
     *(DWORD*)(esp+272) = ecx;
@@ -2141,7 +2141,7 @@ L_55b1e9:;
     *(DWORD*)(esp+280) = edx;
     eax = *(DWORD*)(eax+8);
     *(DWORD*)(esp+284) = eax;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = *(DWORD*)(eax);
     *(DWORD*)(esp+564) = edx;
     ecx = *(DWORD*)(eax+4);
@@ -2151,7 +2151,7 @@ L_55b1e9:;
     *(DWORD*)(esp+572) = edx;
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9012)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = *(DWORD*)(eax);
     *(DWORD*)(esp+540) = ecx;
     ecx = (esp+1592);
@@ -2161,7 +2161,7 @@ L_55b1e9:;
     *(DWORD*)(esp+548) = edx;
     eax = *(DWORD*)(eax+8);
     *(DWORD*)(esp+552) = eax;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9024)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9024)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = *(DWORD*)(eax);
     *(DWORD*)(esp+528) = edx;
     ecx = *(DWORD*)(eax+4);
@@ -2171,7 +2171,7 @@ L_55b1e9:;
     *(DWORD*)(esp+536) = edx;
     ecx = *(DWORD*)(ebp+21600);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_GetVec9024)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_GetVec9024)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = *(DWORD*)(eax);
     *(DWORD*)(esp+552) = ecx;
     ecx = (esp+516);
@@ -2224,7 +2224,7 @@ L_55b1e9:;
     *(DWORD*)(ecx+4) = eax;
     *(DWORD*)(ecx+8) = edx;
     ecx = *(DWORD*)(ebx+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Body_SetVec9012)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_SetVec9012)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     ecx = *(DWORD*)(esp+504);
     edx = *(DWORD*)(esp+508);
     esp -= (DWORD)12;
@@ -2234,7 +2234,7 @@ L_55b1e9:;
     *(DWORD*)(eax+4) = edx;
     *(DWORD*)(eax+8) = ecx;
     ecx = *(DWORD*)(ebx+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Body_SetSpin)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_SetSpin)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     eax = *(DWORD*)(esp+224);
     ecx = *(DWORD*)(esp+228);
     esp -= (DWORD)12;
@@ -2244,7 +2244,7 @@ L_55b1e9:;
     *(DWORD*)(edx+4) = ecx;
     ecx = *(DWORD*)(ebp+21600);
     *(DWORD*)(edx+8) = eax;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Body_SetVec9012)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_SetVec9012)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edx = *(DWORD*)(esp+516);
     eax = *(DWORD*)(esp+520);
     esp -= (DWORD)12;
@@ -2254,7 +2254,7 @@ L_55b1e9:;
     *(DWORD*)(ecx+4) = eax;
     *(DWORD*)(ecx+8) = edx;
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)Body_SetSpin)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Body_SetSpin)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4), *(DWORD*)(esp+8)); esp += 12;
     edi = *(DWORD*)(esp+72);
     eax = *(DWORD*)(esp+32);
 L_55b4f2:;
@@ -2266,17 +2266,17 @@ L_55b4fe:;
     ecx = *(DWORD*)(ebx+21600);
     eax = (esp+1892);
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     ecx = (esp+1844);
     { DWORD v = ecx; esp -= 4; *(DWORD*)esp = v; }
     ecx = *(DWORD*)(ebp+21600);
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD))(DWORD)x87c_Body_Matrix22a4)(ecx, edx, *(DWORD*)(esp+0)); esp += 4;
     edx = (esp+1844);
     eax = (esp+1892);
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     { DWORD v = eax; esp -= 4; *(DWORD*)esp = v; }
     ecx = ebx;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Hitch_Align)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Hitch_Align)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     { DWORD x = eax; cf = x != 0; of = x == 0x80000000; eax = 0 - x; zf = eax == 0; sf = (int)eax < 0; }
     { DWORD x = eax, y = eax, r = x - y - (DWORD)cf; cf = (unsigned long long)x < (unsigned long long)y + cf; eax = r; zf = r == 0; sf = (int)r < 0; of = (int)((x ^ y) & (x ^ r)) < 0; }
     ecx = (esp+1844);
@@ -2286,7 +2286,7 @@ L_55b4fe:;
     { DWORD v = edx; esp -= 4; *(DWORD*)esp = v; }
     ecx = ebx;
     *(DWORD*)(esp+36) = eax;
-    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)Car_PlaceWithTrailer)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
+    eax = ((DWORD (__fastcall*)(DWORD, DWORD, DWORD, DWORD))(DWORD)x87c_Car_PlaceWithTrailer)(ecx, edx, *(DWORD*)(esp+0), *(DWORD*)(esp+4)); esp += 8;
     goto L_559478;
 L_55b561:;
     *(DWORD*)(esp+28) = (DWORD)1;

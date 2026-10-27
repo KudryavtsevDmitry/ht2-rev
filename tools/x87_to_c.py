@@ -1,4 +1,4 @@
-"""Translate a naked inline-__asm procedure of src/truck/x87_code.cpp into C++.
+"""Translate a naked inline-__asm procedure (as tools/asm_inline.py writes them) into C++.
 
     py tools\\x87_to_c.py SRC.cpp ENTRYLABEL CNAME OUT.cpp
 
@@ -18,7 +18,9 @@ ones that return a float in ST(0) are listed in FLOAT_RET.
 import re
 import sys
 
-FLOAT_RET = {'Vec3_Length', 'Trailer_SaddleLoad', 'Body_Get9508'}
+FLOAT_RET = {'Vec3_Length', 'Trailer_SaddleLoad', 'Body_Get9508', 'Angle_F2Pi', 'Game_FrameTime', 'Copter_SideDrift'}
+# the old runtime's x87 helpers: arguments and result on the x87 stack (_ftol: result in EDX:EAX)
+X87_HELPERS = {'_CIpow': -1, '_CIacos': 0, '_ftol': -1}
 # a cdecl callee's arguments can be pushed before an earlier call (the compiler interleaves them), so every
 # cdecl call passes this many stack dwords; the extra ones are ignored and the caller pops them as before
 CDECL_ARGS = 18
@@ -38,14 +40,16 @@ decls = [d for d in text[decl0:fn] if 'unsigned char King' not in d]
 end = start
 while text[end].strip() != '}':
     end += 1
-body = [l.strip() for l in text[start:end] if l.strip() and l.strip() != 'nop']
+body = [l.strip() for l in text[start:end] if l.strip() and l.strip() != 'nop' and not l.strip().startswith('_emit')]
 
 sig = {}   # name -> (conv, nstackargs)
+nargs = {}   # name -> declared argument count (the fastcall decoration)
 for d in decls:
     m = re.match(r'extern "C" \w+ (__cdecl|__fastcall) (\w+)\((.*)\);', d)
     if m:
         args = [a for a in m.group(3).split(',') if a.strip()]
-        sig[m.group(2)] = (m.group(1), max(0, len(args) - 2) if m.group(1) == '__fastcall' else None)
+        sig[m.group(2)] = (m.group(1), max(0, len(args) - 2) if m.group(1) == "__fastcall" else None)
+        nargs[m.group(2)] = len(args)
 
 REG32 = ['EAX', 'EBX', 'ECX', 'EDX', 'ESI', 'EDI', 'EBP', 'ESP']
 REG8 = {'AL': ('eax', 0), 'AH': ('eax', 8), 'BL': ('ebx', 0), 'CL': ('ecx', 0), 'DL': ('edx', 0)}
@@ -125,7 +129,8 @@ def sti(op):
 
 # --- static x87 depth at each instruction (worklist over the control flow)
 labels = {l[:-1]: i for i, l in enumerate(body) if l.endswith(':')}
-DELTA = {'fld': 1, 'fstp': -1, 'faddp': -1, 'fsubp': -1, 'fmulp': -1, 'fdivp': -1, 'fcomp': -1}
+DELTA = {'fld': 1, 'fild': 1, 'fstp': -1, 'faddp': -1, 'fsubp': -1, 'fmulp': -1, 'fdivp': -1, 'fcomp': -1,
+         'fcompp': -2, 'fpatan': -1}
 
 
 def succ(i):
@@ -150,6 +155,8 @@ while work:
     nd = d + DELTA.get(mn, 0)
     if mn == 'call' and l.split()[1] in FLOAT_RET:
         nd = d + 1
+    if mn == 'call' and l.split()[1] in X87_HELPERS:
+        nd = d + X87_HELPERS[l.split()[1]]
     for s in succ(i):
         if s in depth:
             if depth[s] != nd:
@@ -203,6 +210,9 @@ for i, l in enumerate(body):
             c = '%s = %s %s %s; %s' % (a, a, op, b, flags_logic(a))
     elif mn == 'shl':
         c = '%s <<= %s; zf = %s == 0; sf = (int)%s < 0;' % (lval(ops[0]), ops[1], lval(ops[0]), lval(ops[0]))
+    elif mn == 'inc':
+        a = lval(ops[0])
+        c = '{ DWORD r = %s + 1; of = r == 0x80000000; %s = r; zf = r == 0; sf = (int)r < 0; }' % (a, a)
     elif mn == 'dec':
         a = lval(ops[0])
         c = '{ DWORD r = %s - 1; of = r == 0x7FFFFFFF; %s = r; zf = r == 0; sf = (int)r < 0; }' % (a, a)
@@ -223,20 +233,28 @@ for i, l in enumerate(body):
     elif mn == 'rep':
         assert parts[1] == 'movsd'
         c = 'memcpy((void*)edi, (void*)esi, ecx * 4); esi += ecx * 4; edi += ecx * 4; ecx = 0;'
-    elif mn in ('jmp', 'je', 'jne', 'jg', 'jle'):
-        cond = {'jmp': None, 'je': 'zf', 'jne': '!zf', 'jg': '!zf && sf == of', 'jle': 'zf || sf != of'}[mn]
+    elif mn in ('jmp', 'je', 'jne', 'jg', 'jle', 'jl', 'jge'):
+        cond = {'jmp': None, 'je': 'zf', 'jne': '!zf', 'jg': '!zf && sf == of', 'jle': 'zf || sf != of',
+                'jl': 'sf != of', 'jge': 'sf == of'}[mn]
         if cond is not None and cover:
             cond = 'x87c_cov(%d, %s)' % (ncov, cond)
             ncov += 1
         c = ('goto %s;' if cond is None else 'if (' + cond + ') goto %s;') % ops[0]
     elif mn == 'ret':
         c = 'return eax;'
+    elif mn == 'call' and ops[0] in X87_HELPERS:
+        if ops[0] == '_CIpow':
+            c = '%s = x87_pow(%s, %s);' % (f(d, 1), f(d, 1), f(d))
+        elif ops[0] == '_CIacos':
+            c = '%s = x87_acos(%s);' % (f(d), f(d))
+        else:
+            c = '{ __int64 v = (__int64)%s; eax = (DWORD)v; edx = (DWORD)(v >> 32); }' % f(d)
     elif mn == 'call':
         if ops[0].startswith('DWORD PTR'):
             target = '*(DWORD*)%s' % mem(ops[0])[1]
             conv, n = '__cdecl', CDECL_ARGS
         else:
-            target = '(DWORD)' + ops[0]
+            target = '(DWORD)x87c_' + ops[0]
             conv, n = sig[ops[0]]
             if n is None:
                 n = CDECL_ARGS
@@ -258,6 +276,10 @@ for i, l in enumerate(body):
         else:
             t, a = mem(ops[0])
             c = '%s = *(%s*)%s;' % (f(d + 1), 'float' if t == 'DWORD' else 'double', a)
+    elif mn == 'fild':
+        t, a = mem(ops[0])
+        assert t == 'DWORD'
+        c = '%s = *(int*)%s;' % (f(d + 1), a)
     elif mn in ('fst', 'fstp'):
         k = sti(ops[0])
         if k is not None:
@@ -271,8 +293,11 @@ for i, l in enumerate(body):
         rev = mn.endswith('r')
         if len(ops) == 2:
             dst, srcop = sti(ops[0]), sti(ops[1])
-            assert dst == 0
-            x, y = f(d), f(d, srcop)
+            if dst != 0:   # ST(i) op= ST(0)
+                assert srcop == 0
+                x, y = f(d, dst), f(d)
+            else:
+                x, y = f(d), f(d, srcop)
             c = '%s = %s %s %s;' % (x, y, op, x) if rev else '%s = %s %s %s;' % (x, x, op, y)
         else:
             t, a = mem(ops[0])
@@ -280,11 +305,20 @@ for i, l in enumerate(body):
             x = f(d)
             c = '%s = %s %s %s;' % (x, y, op, x) if rev else '%s = %s %s %s;' % (x, x, op, y)
     elif mn in ('faddp', 'fsubp', 'fmulp', 'fdivp'):
-        assert ops == ['ST(1)', 'ST(0)']
+        k = sti(ops[0])
+        assert k >= 1 and ops[1] == 'ST(0)'
         op = {'faddp': '+', 'fsubp': '-', 'fmulp': '*', 'fdivp': '/'}[mn]
-        c = '%s = %s %s %s;' % (f(d, 1), f(d, 1), op, f(d))
+        c = '%s = %s %s %s;' % (f(d, k), f(d, k), op, f(d))
     elif mn == 'fchs':
         c = '%s = -%s;' % (f(d), f(d))
+    elif mn == 'fabs':
+        c = '%s = x87_fabs(%s);' % (f(d), f(d))
+    elif mn == 'fsin':
+        c = '%s = x87_sin(%s);' % (f(d), f(d))
+    elif mn == 'fpatan':
+        c = '%s = x87_atan2(%s, %s);' % (f(d, 1), f(d, 1), f(d))
+    elif mn == 'fcompp':
+        c = 'sw = x87_compare(%s, %s);' % (f(d), f(d, 1))
     elif mn == 'fsqrt':
         c = '%s = x87_sqrt(%s);' % (f(d), f(d))
     elif mn == 'fxch':
@@ -317,7 +351,12 @@ o.append('extern "C" unsigned char KingRdata[];')
 o.append('extern "C" unsigned char KingData[];')
 o.append('extern "C" unsigned char KingBss[];')
 o.append('')
-o.extend(decls)
+# each callee under a private name aliased to its linker name, so a header's declaration can't clash
+for name, (conv, n) in sorted(sig.items()):
+    if name in X87_HELPERS:
+        continue
+    link = '@%s@%d' % (name, 4 * nargs[name]) if conv == '__fastcall' else '_' + name
+    o.append('extern "C" void x87c_%s(); KING_ALIAS("_x87c_%s", "%s")' % (name, name, link))
 o.append('')
 o.append('// x87 status word bits of a compare: C0 below, C3 equal, C0|C2|C3 unordered')
 o.append('static inline DWORD x87_compare(double a, double b)')

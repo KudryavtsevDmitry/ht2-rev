@@ -40,6 +40,20 @@ if ($LASTEXITCODE) { throw 'link failed' }
 & .\hitch_test.exe $Cases "$out\king_original.exe"
 $fail = $LASTEXITCODE
 
+py "$repo\tools\x87_to_c.py" "$PSScriptRoot\copter_asm.cpp" L_FUN_563600 Copter_StepC "$out\copter_c.cpp" --cov
+py "$repo\tools\x87_to_c.py" "$PSScriptRoot\copter_asm.cpp" L_FUN_563600 Copter_Step "$out\copter_plain.cpp"
+$a = Get-Content "$out\copter_plain.cpp" | Where-Object { $_ -notmatch '^//' }
+$b = Get-Content "$repo\src\truck\copter_step.cpp" | Where-Object { $_ -notmatch '^//' }
+if (Compare-Object $a $b -SyncWindow 0) { throw 'src\truck\copter_step.cpp is not the current translation of copter_asm.cpp' }
+& $cl @game "$PSScriptRoot\copter_asm.cpp" "$out\copter_c.cpp"
+if ($LASTEXITCODE) { throw 'compile failed' }
+& $cl /nologo /c /O2 /W3 /EHsc /arch:IA32 /D_CRT_SECURE_NO_WARNINGS @inc "$PSScriptRoot\copter_test.cpp"
+if ($LASTEXITCODE) { throw 'compile failed' }
+& "$vc\bin\HostX86\x86\link.exe" /nologo copter_test.obj copter_asm.obj copter_c.obj /OUT:copter_test.exe /SUBSYSTEM:CONSOLE /LIBPATH:"$vc\lib\x86" /LIBPATH:"$sdk\Lib\$sv\ucrt\x86" /LIBPATH:"$sdk\Lib\$sv\um\x86" libcmt.lib libvcruntime.lib libucrt.lib kernel32.lib
+if ($LASTEXITCODE) { throw 'link failed' }
+& .\copter_test.exe $Cases "$out\king_original.exe"
+$fail = $fail -bor $LASTEXITCODE
+
 py "$PSScriptRoot\extract.py" "$out\small_gen.cpp" "$repo\src\ai\ai_containers.cpp:RopeIt_At,Rope_Compare" "$repo\src\ai\ai_drivers.cpp:Player_FromId"
 & $cl @game "$PSScriptRoot\small_asm.cpp"
 if ($LASTEXITCODE) { throw 'compile failed' }
