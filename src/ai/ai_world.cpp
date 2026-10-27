@@ -10496,7 +10496,7 @@ extern "C" BYTE* __cdecl Ai_ReadService(void* reader, StrRef h)
             CallThis(FUN_4a36c0, &key);
             if (it == g_resourcesEnd68cc0c)
                 AiError(356, 1, s_mainFile, s_mainId, 3061, "Resource not found", Ref_Text(&id), &g_aiEmpty);
-            int idx = (int)(it - g_resources68cc08) / 12;
+            int idx = (int)(it - g_resources68cc08) / 24;
             F(DWORD, o, idx * 16) |= CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &n));
             CallThis(FUN_4a36c0, &n);
             CallThis(FUN_4a36c0, &id);
