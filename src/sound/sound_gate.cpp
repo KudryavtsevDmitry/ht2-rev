@@ -1070,9 +1070,9 @@ extern "C" void __cdecl Static723d98_Destroy(void) { q238_VecB_FreeStorage((BYTE
 // === a received network block (FUN_600c60)
 
 extern "C" void FUN_4836f0(); KING_ALIAS("_FUN_4836f0", "_Bytes_Clone@12")
-ASM_PROC(FUN_62aaa0)    // a script value from bytes (p, n)
-ASM_PROC(FUN_62abc0)    // calls value v with handler h
-ASM_PROC(FUN_62a950)    // releases a script value (&v)
+extern "C" void FUN_62aaa0(); KING_ALIAS("_FUN_62aaa0", "_Gz_MemStreamNew")    // a memory stream over (p, n)
+extern "C" void FUN_62abc0(); KING_ALIAS("_FUN_62abc0", "_Gz_Decompress")      // gunzips stream v into stream h
+extern "C" void FUN_62a950(); KING_ALIAS("_FUN_62a950", "_Gz_StreamClose")     // deletes a stream (&v)
 extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
 
 // empties byte vector v, keeping room for at least 2048 bytes
@@ -1608,7 +1608,7 @@ extern "C" void Ng32_CopyBytes(); KING_ALIAS("_Ng32_CopyBytes", "_CopyBytes")
 extern "C" void Ng32_Clone(); KING_ALIAS("_Ng32_Clone", "_Bytes_Clone@12")
 extern "C" void Ng32_PoolFree(); KING_ALIAS("_Ng32_PoolFree", "_Ai_PoolFree")
 extern "C" void Ng32_Insert(); KING_ALIAS("_Ng32_Insert", "@CharVec_InsertRange@20")
-ASM_PROC(FUN_62ab60)    // packs script value v with handler h
+extern "C" void FUN_62ab60(); KING_ALIAS("_FUN_62ab60", "_Gz_Compress")        // gzips stream v into stream h
 KING_VAR(BYTE, ng32_pack723de4, 723de4)
 KING_VAR(char, ng32_tag683cb0, 683cb0)
 KING_VAR(char, ng32_tagEnd683cb4, 683cb4)
