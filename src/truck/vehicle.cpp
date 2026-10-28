@@ -1202,7 +1202,7 @@ extern "C" void __fastcall Car_Effects(BYTE* s, void*);
 extern "C" void FUN_551970(); KING_ALIAS("_FUN_551970", "@Car_Effects@8")
 extern "C" void __fastcall MovingItem_Frame(BYTE* s);
 extern "C" void __fastcall Vehicle_RecordState(BYTE* self, void*);
-ASM_FUNC(FUN_546240, @Vehicle_RecordState@8)
+extern "C" void FUN_546240(); KING_ALIAS("_FUN_546240", "@Vehicle_RecordState@8")
 extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void __fastcall Body_ClearMode(BYTE* self, void*);              // carphys.cpp
 extern "C" void __fastcall Progress_SetStep(BYTE* self, void*, int step);  // movingb.cpp

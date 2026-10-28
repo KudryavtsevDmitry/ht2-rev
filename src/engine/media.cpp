@@ -4009,7 +4009,7 @@ extern "C" void __cdecl Span_FillRowsU(int mode, int c)
 
 extern "C" void __cdecl Span_SelectTextured(int mode, int alt);
 extern "C" void __cdecl Span_DrawTextured(BYTE* dst, int count, int u, int v, int du, int dv, int z, int dz, WORD* zbuf, int light, int dlight);
-ASM_FUNC(FUN_5fee7c, _Span_DrawTextured)
+extern "C" void FUN_5fee7c(); KING_ALIAS("_FUN_5fee7c", "_Span_DrawTextured")
 KING_VAR(int, g_q58_702e90, 702e90)
 KING_VAR(int, g_q58_72007c, 72007c)
 KING_VAR(DWORD, g_q58_702e8c, 702e8c)

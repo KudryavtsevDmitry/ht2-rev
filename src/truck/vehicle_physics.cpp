@@ -792,7 +792,7 @@ extern "C" void __fastcall Car_CountType(BYTE* self, void*)
 extern "C" int __fastcall Car_RandomStep(BYTE* s, void*, int k);
 extern "C" void FUN_4ebbe0(); KING_ALIAS("_FUN_4ebbe0", "@Car_RandomStep@12")
 extern "C" void __fastcall Part_NextTime(BYTE* self, void*);
-ASM_FUNC(FUN_4eb2f0, @Part_NextTime@8)
+extern "C" void FUN_4eb2f0(); KING_ALIAS("_FUN_4eb2f0", "@Part_NextTime@8")
 KING_VAR(AsmLabel, g_697608, 697608)
 KING_VAR(AsmLabel, g_6975b8, 6975b8)
 KING_VAR(int, g_697658, 697658)
@@ -910,7 +910,7 @@ static BYTE* Vehphy_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 extern "C" BYTE* __fastcall Vehphy4eb2d0_DeletingDestructor(BYTE* s, void*, int flags) { return Vehphy_DeleteAfter(s, flags, FUN_530190); }
 
 extern "C" BYTE* __fastcall Part_Construct(BYTE* self, void* edx, BYTE** p, int mean, int c, int b);
-ASM_FUNC(FUN_4eb260, @Part_Construct@24)
+extern "C" void FUN_4eb260(); KING_ALIAS("_FUN_4eb260", "@Part_Construct@24")
 
 // [FUN_4eb3c0] a new 40-byte part (FUN_4eb260 (self, a, +4, b))
 extern "C" int __fastcall Phys4eb3c0_NewPart(BYTE* s, void*, int a, int b)

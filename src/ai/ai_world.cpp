@@ -642,11 +642,11 @@ extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
 extern "C" void __fastcall Rec410e40_FreeVectors(BYTE* self, int);
 extern "C" void FUN_410e40(); KING_ALIAS("_FUN_410e40", "@Rec410e40_FreeVectors@8")
 extern "C" BYTE* __cdecl Rec24_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
-ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // uninitialized copy of 24-byte records
+extern "C" void FUN_466200(); KING_ALIAS("_FUN_466200", "_Rec24_UninitCopy")    // uninitialized copy of 24-byte records
 extern "C" StrRef* __cdecl Str_Member32(StrRef* out, const StrRef* h);
 extern "C" int __cdecl Sch_ErrorCode(int code, int severity);
 extern "C" double __cdecl Ai_Clock();
-ASM_FUNC(FUN_401000, _Ai_Clock)    // the AI clock, returns double
+extern "C" void FUN_401000(); KING_ALIAS("_FUN_401000", "_Ai_Clock")    // the AI clock, returns double
 extern "C" BYTE __cdecl Player_UpdateFlagsGet(BYTE* p);
 extern "C" void FUN_417530(); KING_ALIAS("_FUN_417530", "_Player_Leave")
 extern "C" void __cdecl displayScreenMessage(const char* message);
@@ -706,7 +706,7 @@ extern "C" void FUN_45d370(); KING_ALIAS("_FUN_45d370", "@Vec4b_InsertD@16")
 extern "C" void __fastcall AI_Nop458910(void* self, int);
 extern "C" void FUN_458910(); KING_ALIAS("_FUN_458910", "@AI_Nop458910@8")    // destructor of a 1592-byte record
 extern "C" BYTE* __cdecl Rec16_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
-ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // uninitialized copy of 16-byte records
+extern "C" void FUN_466300(); KING_ALIAS("_FUN_466300", "_Rec16_UninitCopy")    // uninitialized copy of 16-byte records
 KING_VAR(AsmLabel, g_vtbl64b600, 64b600)
 KING_VAR(AsmLabel, g_vtbl64b62c, 64b62c)
 
@@ -729,7 +729,7 @@ extern "C" void FUN_40a580(); KING_ALIAS("_FUN_40a580", "@Pair_Set@16")
 extern "C" int __cdecl Vehicle_Exists(int id);
 extern "C" void FUN_4d8a40(); KING_ALIAS("_FUN_4d8a40", "_Vehicle_Exists")
 
-ASM_FUNC(FUN_45b190, _Find_ByHandle104)
+extern "C" void FUN_45b190(); KING_ALIAS("_FUN_45b190", "_Find_ByHandle104")
 extern "C" void FUN_45adc0(); KING_ALIAS("_FUN_45adc0", "_List_FindKey8")
 extern "C" void FUN_45b220(); KING_ALIAS("_FUN_45b220", "_List_FindNear")
 extern "C" void FUN_45ddb0(); KING_ALIAS("_FUN_45ddb0", "_List_FindKey24")
@@ -2831,7 +2831,7 @@ extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src)
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<double>::operator=
 extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // vector of 16-byte records: allocate and copy (n, first, last)
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
-ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // copy-construct 16-byte records (first, last, dest, -)
+extern "C" void FUN_466300(); KING_ALIAS("_FUN_466300", "_Rec16_UninitCopy")    // copy-construct 16-byte records (first, last, dest, -)
 extern "C" int __cdecl MsgBuf_FreeThunk(BYTE* p);
 extern "C" void FUN_460d10(); KING_ALIAS("_FUN_460d10", "_MsgBuf_FreeThunk")    // destroy a 16-byte record
 extern "C" BYTE* __fastcall Rec16_DeletingDestructor(BYTE* s, void*, int flags);   // aistl.cpp
@@ -3005,7 +3005,7 @@ extern "C" void FUN_4592b0(); KING_ALIAS("_FUN_4592b0", "@Hash_NewNode@12")    /
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector of 24-byte records: allocate and copy (n, first, last)
 extern "C" int __cdecl Rec_DestroyThunk46c490(BYTE* p);
 extern "C" void FUN_466c50(); KING_ALIAS("_FUN_466c50", "_Rec24b_Copy")    // copy 24-byte records (first, last, dest, -, 0)
-ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // copy-construct 24-byte records (first, last, dest, -)
+extern "C" void FUN_466200(); KING_ALIAS("_FUN_466200", "_Rec24_UninitCopy")    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" double __cdecl Order_Value(const int* o);        // aiordr.cpp
 extern "C" double __cdecl Order_FullValue(const int* o);
 
@@ -5185,7 +5185,7 @@ BYTE* __cdecl Recs104_PickRandom(BYTE* first, BYTE* last, DWORD value, DWORD mas
 
 }
 
-ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // uninitialized copy of 16-byte records
+extern "C" void FUN_466300(); KING_ALIAS("_FUN_466300", "_Rec16_UninitCopy")    // uninitialized copy of 16-byte records
 
 extern "C" {
 
@@ -5960,7 +5960,7 @@ extern "C" void** __fastcall Vec_Construct(void** self, void*, int);
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" BYTE* __fastcall Sch_Construct(BYTE* self, void*, const char* startup, const char* name);
 extern "C" BYTE* __fastcall Ai_ListConstruct(BYTE* self);
-ASM_FUNC($L_401b90, @Ai_ListConstruct@4)
+extern "C" void $L_401b90(); KING_ALIAS("_$L_401b90", "@Ai_ListConstruct@4")
 extern "C" BYTE* __fastcall HashTable_Construct(BYTE* self, void*);
 extern "C" void $L_447d50(); KING_ALIAS("_$L_447d50", "@HashTable_Construct@8")
 KING_VAR(char, g_init68a830, 68a830)
@@ -6795,8 +6795,8 @@ extern "C" int __cdecl Rec_ActivateOnly(BYTE* r)
 }
 
 KING_VAR(char, s_type66ce4c, 66ce4c)
-ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // copy-constructs 16-byte records (first, last, dest, -)
-ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // copy-constructs 24-byte records (first, last, dest, -)
+extern "C" void FUN_466300(); KING_ALIAS("_FUN_466300", "_Rec16_UninitCopy")    // copy-constructs 16-byte records (first, last, dest, -)
+extern "C" void FUN_466200(); KING_ALIAS("_FUN_466200", "_Rec24_UninitCopy")    // copy-constructs 24-byte records (first, last, dest, -)
 extern "C" void __fastcall Rec40cc50_Destroy(BYTE* self, int);
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // destroys a 24-byte element
 
@@ -7726,7 +7726,7 @@ extern "C" BYTE** __cdecl Players_SelectBmw(BYTE** out, BYTE** first, BYTE** las
 // placing the presents
 
 extern "C" void FUN_45dbb0(); KING_ALIAS("_FUN_45dbb0", "_Objects_RandomFar")    // the first road node matching a 40-byte spot predicate (first, last, pred, rng)
-ASM_FUNC(FUN_471780, _Order_RouteCost)    // an order's route for a position (order, PositionId32)
+extern "C" void FUN_471780(); KING_ALIAS("_FUN_471780", "_Order_RouteCost")    // an order's route for a position (order, PositionId32)
 extern "C" void __fastcall OrderVec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x);
 extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")    // vector<order>::insert_aux (thiscall pos, order)
 extern "C" void FUN_41b320(); KING_ALIAS("_FUN_41b320", "_Goods_SetDistance")    // a cargo present's place (cargo, PositionId32)
@@ -16995,14 +16995,14 @@ extern "C" void __cdecl Ai_NewPlayerAt(PositionId pos)
 extern "C" BYTE* __cdecl SchString_FromChars(const char* src, unsigned len);
 extern "C" void FUN_459150(); KING_ALIAS("_FUN_459150", "_SchString_FromChars")    // a rope leaf with a copy of (s, len)
 extern "C" BYTE* __cdecl Rope_ConcatCharIter(BYTE* r, const char* s, unsigned len);
-ASM_FUNC(FUN_45a2b0, _Rope_ConcatCharIter)    // rope::_S_concat_char_iter (r, s, len)
+extern "C" void FUN_45a2b0(); KING_ALIAS("_FUN_45a2b0", "_Rope_ConcatCharIter")    // rope::_S_concat_char_iter (r, s, len)
 extern "C" BYTE* __cdecl SchString_Concat(BYTE* s, const char* b, unsigned len);
 extern "C" void FUN_462700(); KING_ALIAS("_FUN_462700", "_SchString_Concat")    // rope::_S_leaf_concat_char_iter (leaf, s, len)
 extern "C" unsigned __cdecl Str_Rounded(unsigned n);
 extern "C" BYTE** __cdecl CopyN(BYTE** out, BYTE* first, int n, BYTE* dest);
 extern "C" void FUN_466560(); KING_ALIAS("_FUN_466560", "_CopyN")    // uninitialized_copy_n (out pair, s, n, dest, -)
 extern "C" BYTE* __cdecl Rope_TreeConcat(BYTE* left, BYTE* right);
-ASM_FUNC(FUN_45a5e0, _Rope_TreeConcat)    // rope::_S_tree_concat (left, right)
+extern "C" void FUN_45a5e0(); KING_ALIAS("_FUN_45a5e0", "_Rope_TreeConcat")    // rope::_S_tree_concat (left, right)
 extern "C" void __fastcall Rope_FreeTree(BYTE* n, void*);
 extern "C" void FUN_44f1b0(); KING_ALIAS("_FUN_44f1b0", "@Rope_FreeTree@8")    // frees a rope node (thiscall)
 extern "C" const unsigned* __cdecl LowerBound(const unsigned* first, const unsigned* last, const unsigned* key);
@@ -23466,7 +23466,7 @@ BYTE** __cdecl Player_RandomPartner(BYTE** out, BYTE* first, BYTE* last, BYTE* m
 // === stable_sort by nearness (FUN_45cf80)
 
 extern "C" int* __fastcall TempBuf4_Construct(int* self, void*, DWORD* first, DWORD* last);
-ASM_FUNC(FUN_462340, @TempBuf4_Construct@16)    // a temporary buffer of pointers for [first, last)
+extern "C" void FUN_462340(); KING_ALIAS("_FUN_462340", "@TempBuf4_Construct@16")    // a temporary buffer of pointers for [first, last)
 extern "C" void __cdecl Near_StableSort(BYTE** f, BYTE** l, int ctx);   // ai_containers.cpp
 
 extern "C" {

@@ -704,7 +704,7 @@ extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b)
 
 extern "C" char* __cdecl strerror(int e);
 extern "C" void __cdecl Joy_DateText(char* out);
-ASM_FUNC(FUN_576d70, _Joy_DateText)    // the DirectInput version text
+extern "C" void FUN_576d70(); KING_ALIAS("_FUN_576d70", "_Joy_DateText")    // the DirectInput version text
 extern "C" int __cdecl Joy_Open(int n, int wnd, float range, FILE* log);
 extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")    // opens joystick n
 extern "C" void FUN_6303a0(); KING_ALIAS("_FUN_6303a0", "_DirectInputCreateA@16")    // DirectInputCreateA
@@ -756,7 +756,7 @@ extern "C" const unsigned char* const g_joystickObjects[] = {
     (const unsigned char*)0x0, (const unsigned char*)0x4e, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
     (const unsigned char*)0x0, (const unsigned char*)0x4f, (const unsigned char*)0x80ffff0c, (const unsigned char*)0x0,
 };
-ASM_FUNC(Joy_EnumCallback, _Joy_EnumDevice@8)
+extern "C" void Joy_EnumCallback(); KING_ALIAS("_Joy_EnumCallback", "_Joy_EnumDevice@8")
 typedef char JoyLabel[1];
 KING_VAR(JoyLabel, g_joyEnabled6f34e8, 6f34e8)        // 10 ints
 KING_VAR(JoyLabel, g_joyRecords, 6f3528)              // 10 records of 568 bytes

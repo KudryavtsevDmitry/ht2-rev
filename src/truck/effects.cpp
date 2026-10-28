@@ -5194,8 +5194,8 @@ KING_VAR(AsmLabel, g_fiNames71e820, 71e820)
 KING_VAR(AsmLabel, g_fiVtbl64c26c, 64c26c)
 extern "C" int __cdecl Ground_Below(BYTE* o, const float* p, float* at, float* n);
 extern "C" int __cdecl LampGlows_Draw(void*, BYTE* view, BYTE* node);
-ASM_VAR(AsmLabel, g_fiCb4cbec0, _Fx_ScrapeSpark)
-ASM_VAR(AsmLabel, g_fiCb4cbfd0, _Fx_ReflectionQuad)
+extern "C" AsmLabel g_fiCb4cbec0; KING_ALIAS("_g_fiCb4cbec0", "_Fx_ScrapeSpark")
+extern "C" AsmLabel g_fiCb4cbfd0; KING_ALIAS("_g_fiCb4cbfd0", "_Fx_ReflectionQuad")
 KING_VAR(AsmLabel, s_fi672688, 672688)
 KING_VAR(AsmLabel, s_fi66cd44, 66cd44)
 KING_VAR(AsmLabel, s_fi672678, 672678)

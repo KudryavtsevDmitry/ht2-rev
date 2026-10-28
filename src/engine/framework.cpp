@@ -37,7 +37,7 @@ extern "C" void __cdecl Bmp_Write(FILE* f, BITMAPINFO* bi, HBITMAP hbm, HDC dc);
 extern "C" void FUN_5e9d40(); KING_ALIAS("_FUN_5e9d40", "_Bmp_Write")
 KING_VAR(int, g_721754, 721754)
 KING_VAR(void*, g_67fb7c, 67fb7c)
-ASM_VAR(AsmLabel, g_start603800, _Effect_Zero)
+extern "C" AsmLabel g_start603800; KING_ALIAS("_g_start603800", "_Effect_Zero")
 KING_VAR(BYTE*, g_7208fc, 7208fc)
 KING_VAR(AsmLabel, s_683538, 683538)
 extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx);
@@ -2133,7 +2133,7 @@ extern "C" void FUN_5d8b30(); KING_ALIAS("_FUN_5d8b30", "@Fw5d8b30_Destroy@4")
 extern "C" void __fastcall RoomWindow_Destroy(BYTE* s);
 extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
 extern "C" void FUN_5ddb40(); KING_ALIAS("_FUN_5ddb40", "@MainView_Destroy@4")
-ASM_FUNC(FUN_5dd2d0, @Fw_FrameDestruct@4)
+extern "C" void FUN_5dd2d0(); KING_ALIAS("_FUN_5dd2d0", "@Fw_FrameDestruct@4")
 extern "C" int __fastcall Window_RootSurface(BYTE* self, void*);
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
 extern "C" int __cdecl fprintf(FILE*, const char*, ...);

@@ -2076,7 +2076,7 @@ extern "C" void __cdecl Span_FillRowsUVZ(int unused, int mode, int a3)
 
 // === affine textured span fill (FUN_5d1c50)
 
-ASM_FUNC(FUN_5fee7c, _Span_DrawTextured)
+extern "C" void FUN_5fee7c(); KING_ALIAS("_FUN_5fee7c", "_Span_DrawTextured")
 KING_VAR(int, g_q223_72007c, 72007c)
 
 // fills the spans of the rows 71e7dc..71e7d8 with u and v (+12, +16 of the edges) stepped by the
@@ -2126,7 +2126,7 @@ extern "C" void __cdecl Span_FillRowsAffineFast(int unused, int mode) { Span_Aff
 
 // === filling a polygon's spans (FUN_5d1a80)
 
-ASM_FUNC(Sf_Span, _Span_DrawTextured)
+extern "C" void Sf_Span(); KING_ALIAS("_Sf_Span", "_Span_DrawTextured")
 KING_VAR(int, g_sf71e7dc, 71e7dc)    // the first row
 KING_VAR(int, g_sf71e7d8, 71e7d8)    // the last row
 KING_VAR(int, g_sf71e7bc, 71e7bc)    // the colour buffer's pitch

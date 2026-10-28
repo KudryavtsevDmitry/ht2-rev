@@ -1143,7 +1143,7 @@ extern "C" int* __cdecl Reader_NextItem(int* out, int a, BYTE* r)
 }
 
 extern "C" void FUN_4abe80(); KING_ALIAS("_FUN_4abe80", "@SchItem_Value@12")
-ASM_FUNC(FUN_4ac0b0, @Deque_InsertRange@32)
+extern "C" void FUN_4ac0b0(); KING_ALIAS("_FUN_4ac0b0", "@Deque_InsertRange@32")
 struct Val207_It { char* cur; char* first; char* last; char** node; };
 extern "C" char* __cdecl fgets(char*, int, void*);
 // [$L_4b5e60] the next character of file reader s (-1 at the end): when its buffer (the deque at +24, current +32,

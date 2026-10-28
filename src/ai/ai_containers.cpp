@@ -788,7 +788,7 @@ extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // cop
 extern "C" BYTE* __cdecl Rec16_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector<24-byte record>: allocate and copy (n, first, last)
 extern "C" BYTE* __cdecl Rec24_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
-ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // copy-construct 24-byte records (first, last, dest, -)
+extern "C" void FUN_466200(); KING_ALIAS("_FUN_466200", "_Rec24_UninitCopy")    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
 extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src);
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
@@ -2892,7 +2892,7 @@ BYTE* __cdecl OrderInfos_UninitCopy(const BYTE* first, const BYTE* last, BYTE* d
 
 extern "C" void Uc33_Reserve1(); KING_ALIAS("_Uc33_Reserve1", "@Vec1_Reserve@16")
 extern "C" BYTE* __cdecl Copy1(const BYTE* first, const BYTE* last, BYTE* dest);
-ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // uninitialized copy of 24-byte items (first, last, dest, -)
+extern "C" void FUN_466200(); KING_ALIAS("_FUN_466200", "_Rec24_UninitCopy")    // uninitialized copy of 24-byte items (first, last, dest, -)
 
 // the shared head (object +0 with its count at +4, value +4, flags +8; flag 0x10000 means a plain value)
 static void Uc33_CopyHead(BYTE* d, const BYTE* s)
@@ -3002,7 +3002,7 @@ extern "C" void Is33_Middle(); KING_ALIAS("_Is33_Middle", "_Road_MiddleOfThree")
 extern "C" void Is33_Partition(); KING_ALIAS("_Is33_Partition", "_Holders_PartitionByDistance")
 extern "C" void Is33_MakeHeap(); KING_ALIAS("_Is33_MakeHeap", "_MakeHeap4A")
 extern "C" void __cdecl Holders_SortHeap469bc0(BYTE** first, BYTE** last, Is33_Pt pt);
-ASM_FUNC(FUN_469bc0, _Holders_SortHeap469bc0)    // sort_heap by distance (first, last, point)
+extern "C" void FUN_469bc0(); KING_ALIAS("_FUN_469bc0", "_Holders_SortHeap469bc0")    // sort_heap by distance (first, last, point)
 
 extern "C" {
 

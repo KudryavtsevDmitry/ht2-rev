@@ -788,7 +788,7 @@ extern "C" void FUN_4bac00(); KING_ALIAS("_FUN_4bac00", "_Effects_Shutdown")
 extern "C" void __fastcall Fw_Clear5e0180(BYTE* self, void*);
 extern "C" void __cdecl World_FreeAll();
 extern "C" void __cdecl Startup_Call53fd30();
-ASM_FUNC(FUN_53fd30, _Startup_Call53fd30)
+extern "C" void FUN_53fd30(); KING_ALIAS("_FUN_53fd30", "_Startup_Call53fd30")
 extern "C" int __fastcall Media_ObjectMessage(BYTE* s, void*, int id, BYTE* msg, int);
 extern "C" void FUN_56d0f0(); KING_ALIAS("_FUN_56d0f0", "_CopterNet_Handle")
 extern "C" void FUN_586d90(); KING_ALIAS("_FUN_586d90", "_SceneObj_DispatchCommand")

@@ -52,7 +52,7 @@ extern "C" void FUN_5b0810(); KING_ALIAS("_FUN_5b0810", "@Material_SetStages@20"
 extern "C" void __fastcall Clip_Pop(BYTE* self, void*);
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 extern "C" void __cdecl Span_Fill16(WORD* d, WORD v, unsigned n);
-ASM_FUNC(FUN_5feace, _Span_Fill16)    // fills words
+extern "C" void FUN_5feace(); KING_ALIAS("_FUN_5feace", "_Span_Fill16")    // fills words
 extern "C" void __fastcall Surface_Create(BYTE* s, void*, int w, int h, int bpp, DWORD flags);
 extern "C" void FUN_5b6770(); KING_ALIAS("_FUN_5b6770", "@Surface_Create@24")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
@@ -2190,14 +2190,14 @@ extern "C" void __fastcall Surface_Prepare(BYTE* s)
 extern "C" void __cdecl Window_DrawLine(BYTE* w, int x0, int y0, int x1, int y1, DWORD c, int rgb);
 extern "C" void FUN_5b73a0(); KING_ALIAS("_FUN_5b73a0", "_Window_DrawLine")
 extern "C" void __cdecl Span_Shade8(const BYTE* table, BYTE* d, BYTE shade, int n);
-ASM_FUNC(FUN_5fe9b3, _Span_Shade8)
+extern "C" void FUN_5fe9b3(); KING_ALIAS("_FUN_5fe9b3", "_Span_Shade8")
 extern "C" void __cdecl Span_Shade16(const BYTE* table, WORD* d, BYTE shade, int n);
-ASM_FUNC(FUN_5fea6c, _Span_Shade16)
+extern "C" void FUN_5fea6c(); KING_ALIAS("_FUN_5fea6c", "_Span_Shade16")
 extern "C" void __cdecl Span_Blend32(DWORD a, BYTE* d, DWORD colour, int n);
-ASM_FUNC(FUN_5feb12, _Span_Blend32)
-ASM_FUNC(FUN_5feace, _Span_Fill16)
+extern "C" void FUN_5feb12(); KING_ALIAS("_FUN_5feb12", "_Span_Blend32")
+extern "C" void FUN_5feace(); KING_ALIAS("_FUN_5feace", "_Span_Fill16")
 extern "C" void __cdecl Span_Fill32(DWORD* d, DWORD v, unsigned n);
-ASM_FUNC(FUN_5feafa, _Span_Fill32)
+extern "C" void FUN_5feafa(); KING_ALIAS("_FUN_5feafa", "_Span_Fill32")
 extern "C" int __fastcall Window_RootSurface(BYTE* self, void*);
 extern "C" void FUN_5b64c0(); KING_ALIAS("_FUN_5b64c0", "@Window_RootSurface@8")
 extern "C" int __fastcall Rows_Get(BYTE* self, void*, int i);
@@ -2347,11 +2347,11 @@ extern "C" void __cdecl Surface_VLine(BYTE* s, int x, int y1, int y2, int color,
 // Drawing run-length images.
 
 extern "C" void __cdecl Span_BlitRle8(const BYTE* src, BYTE* row, int, int width, int rows, int pitch);
-ASM_FUNC(FUN_5feff3, _Span_BlitRle8)
+extern "C" void FUN_5feff3(); KING_ALIAS("_FUN_5feff3", "_Span_BlitRle8")
 extern "C" void __cdecl Span_Table16(const BYTE* table, WORD* d, const BYTE* s, int n);
-ASM_FUNC(FUN_5fea03, _Span_Table16)
+extern "C" void FUN_5fea03(); KING_ALIAS("_FUN_5fea03", "_Span_Table16")
 extern "C" void __cdecl Span_Table8(const BYTE* table, BYTE* d, const BYTE* s, int n);
-ASM_FUNC(FUN_5fe860, _Span_Table8)
+extern "C" void FUN_5fe860(); KING_ALIAS("_FUN_5fe860", "_Span_Table8")
 KING_VAR(unsigned, g_q153_702e8c, 702e8c)
 // [FUN_5b8720] draws run-length image img (w +4, h +6, data +16: a byte with bit 7 skips that many pixels, else
 // copies that many) at x, y on dst; blend mode 2 (+80) with an alpha other than 1 goes through the palette's
@@ -3085,13 +3085,13 @@ KING_VAR(double, g_blZero64b678, 64b678)
 extern "C" void FUN_5b64c0(); KING_ALIAS("_FUN_5b64c0", "@Window_RootSurface@8")
 extern "C" int __cdecl Dd_Blit7(int a, int b, int c, int d, int e, int f, int unused, int g);
 extern "C" void __cdecl Span_Shift8(BYTE* d, const BYTE* s, int n);
-ASM_FUNC(FUN_5fe814, _Span_Shift8)
+extern "C" void FUN_5fe814(); KING_ALIAS("_FUN_5fe814", "_Span_Shift8")
 extern "C" void __cdecl Span_Shift16(BYTE* d, const BYTE* s, int n);
-ASM_FUNC(FUN_5fe837, _Span_Shift16)
-ASM_FUNC(FUN_5fe860, _Span_Table8)
+extern "C" void FUN_5fe837(); KING_ALIAS("_FUN_5fe837", "_Span_Shift16")
+extern "C" void FUN_5fe860(); KING_ALIAS("_FUN_5fe860", "_Span_Table8")
 extern "C" void __cdecl Span_ShadeIndexed8(const BYTE* table, BYTE* d, const BYTE* s, int n, BYTE shade);
-ASM_FUNC(FUN_5fe8d4, _Span_ShadeIndexed8)
-ASM_FUNC(FUN_5fea03, _Span_Table16)
+extern "C" void FUN_5fe8d4(); KING_ALIAS("_FUN_5fe8d4", "_Span_ShadeIndexed8")
+extern "C" void FUN_5fea03(); KING_ALIAS("_FUN_5fea03", "_Span_Table16")
 
 static __declspec(noinline) int Bl_Int(double d)
 {
@@ -3372,8 +3372,8 @@ KING_VAR(AsmLabel, g_cm7025f0, 7025f0)
 // [$L_5ae530] [$L_5ae540] empty atexit handlers
 extern "C" void __cdecl Render_AtexitNop530() {}
 extern "C" void __cdecl Render_AtexitNop540() {}
-ASM_VAR(AsmLabel, g_cm5ae540, _Render_AtexitNop540)
-ASM_VAR(AsmLabel, g_cm5ae530, _Render_AtexitNop530)
+extern "C" AsmLabel g_cm5ae540; KING_ALIAS("_g_cm5ae540", "_Render_AtexitNop540")
+extern "C" AsmLabel g_cm5ae530; KING_ALIAS("_g_cm5ae530", "_Render_AtexitNop530")
 KING_VAR(double, g_cm64b5a0, 64b5a0)
 KING_VAR(double, g_cm64b678, 64b678)
 extern "C" void __fastcall Render_SetDeviceView(BYTE* s);
@@ -3614,11 +3614,11 @@ int __fastcall Texture_Create(BYTE* t, void*, unsigned flags)
 KING_VAR(float, g_fr64c458, 64c458)
 extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
 extern "C" void FUN_5ba3f0(); KING_ALIAS("_FUN_5ba3f0", "@Palette_Color@12")
-ASM_FUNC(FUN_5fe9b3, _Span_Shade8)
-ASM_FUNC(FUN_5fea6c, _Span_Shade16)
-ASM_FUNC(FUN_5feace, _Span_Fill16)
-ASM_FUNC(FUN_5feafa, _Span_Fill32)
-ASM_FUNC(FUN_5feb12, _Span_Blend32)
+extern "C" void FUN_5fe9b3(); KING_ALIAS("_FUN_5fe9b3", "_Span_Shade8")
+extern "C" void FUN_5fea6c(); KING_ALIAS("_FUN_5fea6c", "_Span_Shade16")
+extern "C" void FUN_5feace(); KING_ALIAS("_FUN_5feace", "_Span_Fill16")
+extern "C" void FUN_5feafa(); KING_ALIAS("_FUN_5feafa", "_Span_Fill32")
+extern "C" void FUN_5feb12(); KING_ALIAS("_FUN_5feb12", "_Span_Blend32")
 
 extern "C" {
 
@@ -3714,11 +3714,11 @@ void __cdecl Surface_FillRect(BYTE* s, const int* r, DWORD color, int raw)
 KING_VAR(AsmLabel, s_gd67f104, 67f104)
 extern "C" void __cdecl Surface_DrawRle(BYTE* dst, int x, int y, BYTE* img);
 extern "C" void FUN_5b8720(); KING_ALIAS("_FUN_5b8720", "_Surface_DrawRle")
-ASM_FUNC(FUN_5fe887, _Span_MaskedShade8)
+extern "C" void FUN_5fe887(); KING_ALIAS("_FUN_5fe887", "_Span_MaskedShade8")
 extern "C" void __cdecl Span_Table8Z(const BYTE* table, BYTE* d, const BYTE* s, int n, WORD* zb, unsigned z);
-ASM_FUNC(FUN_5fe906, _Span_Table8Z)
+extern "C" void FUN_5fe906(); KING_ALIAS("_FUN_5fe906", "_Span_Table8Z")
 extern "C" void __cdecl Span_Copy8Z(BYTE* d, const BYTE* s, int n, WORD* zb, unsigned z);
-ASM_FUNC(FUN_5fe943, _Span_Copy8Z)
+extern "C" void FUN_5fe943(); KING_ALIAS("_FUN_5fe943", "_Span_Copy8Z")
 
 extern "C" {
 

@@ -12,7 +12,7 @@
 typedef char AsmLabel[1];
 
 extern "C" int __cdecl Mixer_Probe(HWND);
-ASM_FUNC(FUN_6047d0, _Mixer_Probe)
+extern "C" void FUN_6047d0(); KING_ALIAS("_FUN_6047d0", "_Mixer_Probe")
 KING_VAR(AsmLabel, g_vtbl652e20, 652e20)
 extern "C" int __cdecl Ds_Open();
 extern "C" void FUN_604b40(); KING_ALIAS("_FUN_604b40", "_Ds_Open")
@@ -533,7 +533,7 @@ BYTE* __fastcall StreamPlay_Construct(BYTE* self, void*, int idx, int a, int b, 
 typedef void (__cdecl* PlayDoneFn)(int);
 KING_VAR(PlayDoneFn, g_playDoneCb724178, 724178)
 extern "C" int __fastcall Snd_CreateBuffer(BYTE* self, void*);
-ASM_FUNC(FUN_605310, @Snd_CreateBuffer@8)
+extern "C" void FUN_605310(); KING_ALIAS("_FUN_605310", "@Snd_CreateBuffer@8")
 
 // [FUN_6055e0] updates all sounds, deleting finished ones, then gives free buffers to waiting sounds
 extern "C" void __cdecl Play_UpdateAll()
@@ -699,7 +699,7 @@ extern "C" void __cdecl DirInit_605750() { g_dir7241ac = (float)((double)g_dir65
 
 extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
 extern "C" void FUN_6051b0(); KING_ALIAS("_FUN_6051b0", "_Streams_Collect")
-ASM_FUNC(FUN_605310, @Snd_CreateBuffer@8)
+extern "C" void FUN_605310(); KING_ALIAS("_FUN_605310", "@Snd_CreateBuffer@8")
 extern "C" void FUN_604a70(); KING_ALIAS("_FUN_604a70", "_Mixer_Unlock")
 extern "C" void __fastcall Play_UpdateVolume(BYTE* self, void*);
 extern "C" void FUN_6052c0(); KING_ALIAS("_FUN_6052c0", "@Play_UpdateVolume@8")
@@ -942,7 +942,7 @@ extern "C" void __cdecl Mixer_SetState1();
 extern "C" void FUN_604e80(); KING_ALIAS("_FUN_604e80", "_Mixer_SetState1")
 extern "C" void Dir_VecDtor(); KING_ALIAS("_Dir_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 KING_VAR(BYTE*, g_q52_724164, 724164)
-ASM_VAR(AsmLabel, g_q52_604e00, @Wave_Free@8)
+extern "C" AsmLabel g_q52_604e00; KING_ALIAS("_g_q52_604e00", "@Wave_Free@8")
 // [FUN_604e10] releases the channels: state 1, stops and deletes the sounds, destroys the 24-byte channel array
 // 724164 (count before it) and clears it
 extern "C" void __cdecl Channels_Release(void)
@@ -990,7 +990,7 @@ extern "C" const char* __cdecl Sound_ErrorText(int kind)
 
 extern "C" void Dir_VecCtor(); KING_ALIAS("_Dir_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
 KING_VAR(WORD, g_q54_724168, 724168)
-ASM_VAR(AsmLabel, g_q54_604de0, @Wave_Clear@4)
+extern "C" AsmLabel g_q54_604de0; KING_ALIAS("_g_q54_604de0", "@Wave_Clear@4")
 // [FUN_604d70] creates the n 24-byte channels (724164, count 724168) unless they exist: 1 when created
 extern "C" int __cdecl Channels_Create(int n)
 {

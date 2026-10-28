@@ -22,7 +22,7 @@ extern "C" void FUN_46d0b0(); KING_ALIAS("_FUN_46d0b0", "_Far_AdjustHeap2")
 extern "C" void __cdecl Heap504_Adjust(BYTE** a, int hole, int len, int val, int extra);
 extern "C" void FUN_46c190(); KING_ALIAS("_FUN_46c190", "_Heap504_Adjust")
 extern "C" void __cdecl PopHeapAux4(DWORD* first, DWORD* last, DWORD* result, DWORD value, DWORD pred, int);
-ASM_FUNC(FUN_46ad50, _PopHeapAux4)
+extern "C" void FUN_46ad50(); KING_ALIAS("_FUN_46ad50", "_PopHeapAux4")
 extern "C" void FUN_46cc00(); KING_ALIAS("_FUN_46cc00", "_Mult46cc00")
 extern "C" void FUN_4870e0(); KING_ALIAS("_FUN_4870e0", "_Player_ReplanToNode")
 extern "C" void FUN_529880(); KING_ALIAS("_FUN_529880", "_Carat_MarkKey")
