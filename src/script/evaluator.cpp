@@ -23,14 +23,14 @@ extern "C" void __cdecl Sch4ab570_Construct(BYTE* d, const BYTE* s);
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 extern "C" void __fastcall Elems44_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x);
 extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")    // vector<44 bytes>::insert_aux
-ASM_FUNC(FUN_4ace70, _Deque_CopyCharsTag)    // copy (first, last, deque iterator, tag)
+extern "C" void FUN_4ace70(); KING_ALIAS("_FUN_4ace70", "_Deque_CopyCharsTag")    // copy (first, last, deque iterator, tag)
 extern "C" BYTE* __stdcall ValueList_MakeNode(const DWORD* v);
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")
 extern "C" BYTE* __cdecl Items44_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*);
 extern "C" void FUN_4abd20(); KING_ALIAS("_FUN_4abd20", "_Items44_UninitCopy")
 extern "C" BYTE* __fastcall SchMap_CopySubtree(BYTE* tree, void*, const BYTE* x, BYTE* p);
-ASM_FUNC(FUN_4a4950, @SchMap_CopySubtree@16)
+extern "C" void FUN_4a4950(); KING_ALIAS("_FUN_4a4950", "@SchMap_CopySubtree@16")
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
 KING_VAR(AsmLabel, s_errNotSymbolList, 67115c)
 extern "C" int __cdecl Sch_Error(int code, int level, const char* a, const char* b);
@@ -1421,7 +1421,7 @@ DequeIt* __cdecl Deque4acd70(DequeIt* out, int c, int d, DequeIt a, DequeIt b, D
 
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")    // uninitialized copy of 12-byte values (first, last, to)
 extern "C" void __fastcall Deque_AllocPages512(BYTE* self, void*, char** first, char** last);
-ASM_FUNC(FUN_4ac330, @Deque_AllocPages512@16)    // deque<char>: allocate the pages of [first, last)
+extern "C" void FUN_4ac330(); KING_ALIAS("_FUN_4ac330", "@Deque_AllocPages512@16")    // deque<char>: allocate the pages of [first, last)
 extern "C" BYTE* __fastcall Vec44_At(BYTE* self, void*, int i);
 extern "C" void __cdecl Sch_DumpFrame(BYTE* s, BYTE* e, DWORD p0, DWORD p1, DWORD p2);
 extern "C" void FUN_4a55c0(); KING_ALIAS("_FUN_4a55c0", "_Sch_DumpFrame")

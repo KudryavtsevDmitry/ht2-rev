@@ -68,7 +68,7 @@ extern "C" void FUN_4cd730(); KING_ALIAS("_FUN_4cd730", "_Vehicle_Value4cd730") 
 extern "C" void __fastcall Player_SaveRecord(BYTE* p, void*, BYTE** v);
 extern "C" void FUN_4754d0(); KING_ALIAS("_FUN_4754d0", "@Player_SaveRecord@12")
 extern "C" int* __cdecl Player_FromId(int* io);
-ASM_FUNC(FUN_477b60, _Player_FromId)
+extern "C" void FUN_477b60(); KING_ALIAS("_FUN_477b60", "_Player_FromId")
 KING_VAR(DWORD, g_tagPLYX, 66fa60)
 KING_VAR(double, g_zero64b678, 64b678)
 KING_VAR(double, g_one64b670, 64b670)

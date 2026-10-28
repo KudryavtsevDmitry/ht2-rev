@@ -2913,7 +2913,6 @@ extern "C" void __fastcall Shell_NetCommand(BYTE* s, void*, int cmd)
 
 KING_VAR(AsmLabel, g_q21_68d1c0, 68d1c0)
 KING_VAR(AsmLabel, g_q21_64dcb8, 64dcb8)
-ASM_VAR(AsmLabel, s_q21_x, $L_x)
 KING_VAR(AsmLabel, s_q21_6762c4, 6762c4)
 KING_VAR(AsmLabel, s_q21_6762bc, 6762bc)
 KING_VAR(AsmLabel, s_q21_6762b0, 6762b0)
@@ -3963,7 +3962,7 @@ extern "C" int __cdecl Dp_FirstProvider(BYTE* out);
 extern "C" void __cdecl Providers_Rebuild();
 extern "C" int __cdecl Shell_SkinScrollBar(BYTE* c, int h);
 extern "C" void FUN_50f300(); KING_ALIAS("_FUN_50f300", "_Shell_SkinScrollBar")
-ASM_VAR(AsmLabel, g_q38_601260, @Sg_Clear601260@4)
+extern "C" AsmLabel g_q38_601260; KING_ALIAS("_g_q38_601260", "@Sg_Clear601260@4")
 KING_VAR(AsmLabel, g_q38_64e2e4, 64e2e4)
 KING_VAR(AsmLabel, g_q38_64e2a4, 64e2a4)
 KING_VAR(AsmLabel, g_q38_675ab4, 675ab4)

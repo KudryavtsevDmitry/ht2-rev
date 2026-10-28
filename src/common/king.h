@@ -1,30 +1,21 @@
-// king.h - declarations shared by the C++ code that is linked into king.exe
-// together with the reassembled king.masm.
+// king.h - declarations shared by the C++ code of king.exe.
 //
-// How the two halves reach each other:
+// Names: a function keeps the name it got when it was rewritten. Older code
+// may still call it under its original label (FUN_xxxxxx, $L_xxxxxx); such a
+// label is bound to the function with KING_ALIAS, the linker's
+// /alternatename (x86 C names carry a leading underscore; fastcall ones are
+// @name@bytes, stdcall ones _name@bytes). Those calls go through CallC,
+// CallStd, CallThis: the label is declared void() and the call states the
+// argument and return types.
 //
-//  * C++ -> asm. A procedure or variable of king.exe is bound to a C++ name
-//    with /alternatename (x86 C names carry a leading underscore, the masm
-//    labels don't). PROC labels are public already; data labels and labels
-//    inside a PROC must be in the PUBLIC list at the top of king.exe.
-//      ASM_PROC(label)            procedure, called through CallC/CallStd/
-//                                 CallThis (C++ can't declare free thiscall
-//                                 functions, so all of them go this way)
-//      ASM_FUNC(name, label)      the same under a readable name
-//      ASM_VAR(type, name, label) variable
-//
-//  * asm -> C++. A rewritten thiscall method is exported as an extern "C"
-//    __fastcall function with an unused second parameter: fastcall passes it
-//    in EDX, so for the callee fastcall(this, edx, args) is exactly
-//    thiscall(this, args). king.masm assembles the original PROC only with
-//    the switch of its group (ASM_MAINLOOP, ASM_GAMEAPP, ...) defined;
-//    otherwise its label is pointed at the export, e.g.
-//    $L_5dd440 TEXTEQU <@CGameApp_OnIdle@12>
-//    The C++ code calls rewritten functions directly, never through their
-//    labels: a label doesn't exist in the builds where its function is C++.
+// thiscall: C++ can't declare free thiscall functions, so a method is an
+// extern "C" __fastcall function with an unused second parameter: fastcall
+// passes it in EDX, so for the callee fastcall(this, edx, args) is exactly
+// thiscall(this, args). Callers pass 0 for it.
 //
 // Comments: +N is a byte offset into an object, vtbl+N a byte offset into
-// its vtable, [FUN_xxxxxx] / [$L_xxxxxx] a label in king.masm.
+// its vtable, [FUN_xxxxxx] / [$L_xxxxxx] the original procedure's label
+// (tag last-masm).
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
@@ -33,13 +24,10 @@
 #include <stddef.h>
 
 #define KING_ALIAS(cname, label) __pragma(comment(linker, "/alternatename:" cname "=" label))
-#define ASM_PROC(label) extern "C" void label(); KING_ALIAS("_" #label, #label)
-#define ASM_FUNC(name, label) extern "C" void name(); KING_ALIAS("_" #name, #label)
-#define ASM_VAR(type, name, label) extern "C" type name; KING_ALIAS("_" #name, #label)
 // The program's data is owned by C++: the original _RDATA, _DATA and _BSS are
-// KingRdata, KingData (data_image.cpp) and KingBss (data.cpp); src\asm reaches
-// them as _KingData+offset etc. KING_VAR(type, name, address) is the variable
-// at an original address (hex digits without 0x).
+// KingRdata, KingData (data_image.cpp) and KingBss (data.cpp). KING_VAR(type,
+// name, address) is the variable at an original address (hex digits
+// without 0x).
 #define KING_RDATA_BASE 0x64b000
 #define KING_DATA_BASE 0x66c000
 #define KING_BSS_BASE 0x68a820
@@ -504,8 +492,8 @@ KING_VAR(float, g_presentTime, 72174c)
 typedef void (__cdecl* FatalHook)();
 KING_VAR(FatalHook, g_pfnOnFatal, 67fb7c)
 KING_VAR(FatalHook, g_pfnPrevOnFatal, 7217a0) // CGameApp's predecessor
-ASM_FUNC(CGameApp_OnFatal, _CGameApp_Fatal)          // stops the sound, then the predecessor
-ASM_FUNC(CGameApp_OnNoMemory, _CGameApp_NoMemory)       // new handler: fatal "Out of memory <size>"
+extern "C" void CGameApp_OnFatal(); KING_ALIAS("_CGameApp_OnFatal", "_CGameApp_Fatal")          // stops the sound, then the predecessor
+extern "C" void CGameApp_OnNoMemory(); KING_ALIAS("_CGameApp_OnNoMemory", "_CGameApp_NoMemory")       // new handler: fatal "Out of memory <size>"
 
 KING_VAR(int, g_deviceIndex, 7208e4)         // [ENV] numdev - 1
 KING_VAR(int, g_zres, 7208e8)                // [ENV] zres

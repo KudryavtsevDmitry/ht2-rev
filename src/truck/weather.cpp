@@ -636,7 +636,7 @@ KING_VAR(AsmLabel, g_wea651548, 651548)
 KING_VAR(AsmLabel, g_wea651358, 651358)
 KING_VAR(AsmLabel, g_wea65130c, 65130c)
 KING_VAR(AsmLabel, g_wea6515dc, 6515dc)
-ASM_VAR(AsmLabel, g_wea5a3df0, @Wo_Free20@4)
+extern "C" AsmLabel g_wea5a3df0; KING_ALIAS("_g_wea5a3df0", "@Wo_Free20@4")
 
 // [FUN_5a4e90] (vtables 651390, 6513b0 at +32)
 extern "C" void __fastcall Wea5a4e90_Destroy(BYTE* s)
@@ -1256,7 +1256,7 @@ KING_VAR(double, g_wo651650, 651650)
 KING_VAR(double, g_wo651648, 651648)
 KING_VAR(BYTE*, g_wo7025b8, 7025b8)
 KING_VAR(AsmLabel, g_wo6fb3d0, 6fb3d0)
-ASM_FUNC(FUN_5a6890, @WeatherKind31_Construct@44)
+extern "C" void FUN_5a6890(); KING_ALIAS("_FUN_5a6890", "@WeatherKind31_Construct@44")
 
 static BYTE* Wo_Find(const char* prefix, const char* suffix)
 {

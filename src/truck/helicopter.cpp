@@ -2935,7 +2935,7 @@ KING_VAR(int, g_ws_carTypes, 6ce34c)
 KING_VAR(void*, g_ws_prevCreate, 6f3418)     // the create hook replaced by Game_CreateObject
 KING_VAR(DWORD, g_ws_prevHook2, 6f341c)
 extern "C" int __cdecl MissionObj_Event(int* e, int a);
-ASM_VAR(AsmLabel, g_ws_569550, _Terrain_RayCallback)
+extern "C" AsmLabel g_ws_569550; KING_ALIAS("_g_ws_569550", "_Terrain_RayCallback")
 KING_VAR(AsmLabel, s_ws_iniFile, 672998)
 KING_VAR(char*, g_ws_iniPath, 696868)
 KING_VAR(int, g_ws_696900, 696900)

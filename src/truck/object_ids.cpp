@@ -250,7 +250,7 @@ extern "C" void __fastcall Placement_Init(BYTE* self, void*);
 extern "C" void FUN_57cfc0(); KING_ALIAS("_FUN_57cfc0", "@Placement_Init@8")
 extern "C" void FUN_57d860(); KING_ALIAS("_FUN_57d860", "@MovingItem_Init0@24")
 extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
-ASM_FUNC(FUN_5c6170, @SceneObj_Construct@88)
+extern "C" void FUN_5c6170(); KING_ALIAS("_FUN_5c6170", "@SceneObj_Construct@88")
 extern "C" void FUN_5c5f60(); KING_ALIAS("_FUN_5c5f60", "@NetMoving_Construct@88")
 extern "C" void FUN_5c32f0(); KING_ALIAS("_FUN_5c32f0", "@List_Add6@20")
 extern "C" BYTE* __fastcall Node_Init(BYTE* self, void*);

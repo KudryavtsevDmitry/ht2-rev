@@ -1119,7 +1119,7 @@ extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
 extern "C" void __fastcall Slots_Call48(BYTE* self, void*, int i, int a, int b);
 extern "C" void Movbod_qsort(); KING_ALIAS("_Movbod_qsort", "_qsort")
-ASM_VAR(AsmLabel, g_movbodCmp592fe0, _Rec_CompareF4)
+extern "C" AsmLabel g_movbodCmp592fe0; KING_ALIAS("_g_movbodCmp592fe0", "_Rec_CompareF4")
 
 // [$L_593100] sorts the children (+48 list) by their depth for b: they are taken off, sorted (+56, 8-byte
 // pairs of node and depth) and linked back in order, then slot 0 is drawn

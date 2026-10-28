@@ -36,8 +36,8 @@ extern "C" void FUN_5f4a90(); KING_ALIAS("_FUN_5f4a90", "@Value_Free@4")
 extern "C" void __fastcall Obj5e5cb0_Init(BYTE* self, void*);
 extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s);
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
-ASM_VAR(AsmLabel, g_dtor5a3df0, @Wo_Free20@4)
-ASM_VAR(AsmLabel, g_dtor5e57a0, @Fw5e57a0_Destroy@4)
+extern "C" AsmLabel g_dtor5a3df0; KING_ALIAS("_g_dtor5a3df0", "@Wo_Free20@4")
+extern "C" AsmLabel g_dtor5e57a0; KING_ALIAS("_g_dtor5e57a0", "@Fw5e57a0_Destroy@4")
 KING_VAR(AsmLabel, g_vtbl65282c, 65282c)
 KING_VAR(AsmLabel, g_vtbl64d81c, 64d81c)
 KING_VAR(AsmLabel, g_vtbl652840, 652840)
@@ -1952,7 +1952,7 @@ extern "C" void __cdecl Slots723aa8_Destroy(int i)
 // Freeing a typed value.
 
 extern "C" void Sce108_VecDtor(); KING_ALIAS("_Sce108_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
-ASM_FUNC($L_5f4b20, @Sce_FreeBuf4@4)
+extern "C" void $L_5f4b20(); KING_ALIAS("_$L_5f4b20", "@Sce_FreeBuf4@4")
 // [FUN_5f4a90] frees the data (+8) of value s by its type (+0): 1-5 and 7 a plain block, 6 an array of 48-byte
 // records (count before it) each freeing its +4
 extern "C" void __fastcall Value_Free(int* s)
@@ -2628,7 +2628,7 @@ extern "C" void __fastcall Fw_Read5e5720(BYTE* self, void*, FILE* f);
 extern "C" void Sce_VecCtorEh(); KING_ALIAS("_Sce_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" int __fastcall Polygon_Read(BYTE* s, void*, void* f);
 extern "C" void g_sd5e6980(); KING_ALIAS("_g_sd5e6980", "@Rec5e6980_Clear@8")    // its constructor
-ASM_VAR(AsmLabel, g_sd5f4b20, @Sce_FreeBuf4@4)    // its destructor
+extern "C" AsmLabel g_sd5f4b20; KING_ALIAS("_g_sd5f4b20", "@Sce_FreeBuf4@4")    // its destructor
 KING_VAR(char, s_sd683bcc, 683bcc)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 

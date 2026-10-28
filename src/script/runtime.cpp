@@ -38,7 +38,7 @@ extern "C" WORD* __cdecl BigInt_FromUnsigned(WORD* p, unsigned v);
 extern "C" void FUN_48ae10(); KING_ALIAS("_FUN_48ae10", "_BigInt_FromUnsigned")
 extern "C" WORD* __cdecl WStr_Assign(WORD* dst, const WORD* src);
 extern "C" BYTE** __cdecl NodePool_Get(BYTE** out, BYTE* pool, DWORD value);
-ASM_FUNC(FUN_491420, _NodePool_Get)
+extern "C" void FUN_491420(); KING_ALIAS("_FUN_491420", "_NodePool_Get")
 extern "C" WORD* __cdecl BigInt_Gcd(WORD* a, WORD* b);
 extern "C" void FUN_48c260(); KING_ALIAS("_FUN_48c260", "_BigInt_Gcd")
 KING_VAR(AsmLabel, s_bigint, 670408)
@@ -49,7 +49,7 @@ KING_VAR(AsmLabel, g_vtbl64bf24, 64bf24)
 extern "C" void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" char** __fastcall CharVec_Construct(char** self, void*, const char* s);
 extern "C" void FUN_4897b0(); KING_ALIAS("_FUN_4897b0", "@List_NewNode@12")    // list: a new node
-ASM_FUNC(FUN_491750, @List16_NewNode@12)
+extern "C" void FUN_491750(); KING_ALIAS("_FUN_491750", "@List16_NewNode@12")
 extern "C" void __fastcall RoadSet_Destroy(BYTE** s);
 extern "C" void FUN_488450(); KING_ALIAS("_FUN_488450", "@RoadSet_Destroy@4")
 extern "C" void __fastcall Vec24_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x);

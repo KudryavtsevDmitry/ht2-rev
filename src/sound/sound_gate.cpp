@@ -26,7 +26,7 @@ extern "C" void __cdecl Ai_Report(int a1, int level, int a3, int a4, int a5, int
 extern "C" int __cdecl Gate_Send(DWORD to, const BYTE* buf, int size);
 extern "C" void FUN_601ff0(); KING_ALIAS("_FUN_601ff0", "_Gate_Send")
 extern "C" int __cdecl Gate_Players(DWORD* out, BYTE** list);
-ASM_FUNC(FUN_602320, _Gate_Players)
+extern "C" void FUN_602320(); KING_ALIAS("_FUN_602320", "_Gate_Players")
 extern "C" int __cdecl Tsc_Calibrate(int);
 typedef void (*VFn)();
 extern "C" void __fastcall Gate_FreeBuffers(BYTE* self, int);
@@ -40,7 +40,7 @@ extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")
 KING_VAR(DWORD*, g_providerIds, 723de8)
 KING_VAR(AsmLabel, g_683ca0, 683ca0)
-ASM_VAR(AsmLabel, g_enumProvider, _Sg_EnumProvider@24)
+extern "C" AsmLabel g_enumProvider; KING_ALIAS("_g_enumProvider", "_Sg_EnumProvider@24")
 KING_VAR(AsmLabel, g_vtbl652de0, 652de0)
 KING_VAR(AsmLabel, g_clsidFilterGraph, 6554c0)
 KING_VAR(AsmLabel, g_iidGraphBuilder, 6554d0)
@@ -751,7 +751,7 @@ extern "C" void FUN_600660(); KING_ALIAS("_FUN_600660", "_DxError_Name")
 extern "C" void FUN_602b60(); KING_ALIAS("_FUN_602b60", "@Blob_Set@16")
 extern "C" void FUN_603b30(); KING_ALIAS("_FUN_603b30", "@Music_Close@8")
 extern "C" BYTE** __fastcall Sg_ListConstruct(BYTE** self);
-ASM_FUNC($L_602410, @Sg_ListConstruct@4)
+extern "C" void $L_602410(); KING_ALIAS("_$L_602410", "@Sg_ListConstruct@4")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 KING_VAR(char, g_723d90, 723d90)
 KING_VAR(char, g_723d60, 723d60)
@@ -1115,7 +1115,7 @@ void __cdecl Net_OnBlock(BYTE** v, const BYTE* b, int n)
 extern "C" double __cdecl Tsc_Now();
 KING_VAR(BYTE, g_rm723d48, 723d48)
 KING_VAR(AsmLabel, g_rm723d70, 723d70)    // the receive buffer (a byte vector)
-ASM_VAR(AsmLabel, g_rm601250, _Sg_Exit601250)    // its destructor
+extern "C" AsmLabel g_rm601250; KING_ALIAS("_g_rm601250", "_Sg_Exit601250")    // its destructor
 KING_VAR(AsmLabel, s_rm684250, 684250)
 extern "C" int __cdecl atexit(void (__cdecl*)(void));
 
@@ -1367,7 +1367,7 @@ int __cdecl Dp_Connect(DWORD sp0, DWORD sp1, DWORD sp2, DWORD sp3, int host, int
 // === inserting a DirectPlay record (FUN_6027b0)
 
 extern "C" BYTE* __cdecl DpRecords_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
-ASM_FUNC(FUN_602ad0, _DpRecords_UninitCopy)    // uninitialized copy of records (first, last, dest, -)
+extern "C" void FUN_602ad0(); KING_ALIAS("_FUN_602ad0", "_DpRecords_UninitCopy")    // uninitialized copy of records (first, last, dest, -)
 
 extern "C" {
 

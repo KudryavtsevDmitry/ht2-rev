@@ -2456,7 +2456,7 @@ void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
 // === a car's clutch, gear choice and drive force for the frame (FUN_4ff800, running on through $L_5006aa)
 
 extern "C" double __fastcall Car_SlipRatio(BYTE* s, void*);
-ASM_FUNC(FUN_4ff660, @Car_SlipRatio@8)
+extern "C" void FUN_4ff660(); KING_ALIAS("_FUN_4ff660", "@Car_SlipRatio@8")
 extern "C" float __fastcall Car_WheelSpeed(Car* s, void*, int i);
 extern "C" void __fastcall Car_UpdateTach(BYTE* s, void*, const float* rpm);
 extern "C" double __fastcall Car_TorqueAt(BYTE* self, void*, float rpm);
