@@ -11,10 +11,13 @@
 
 typedef char AsmLabel[1];
 
+extern "C" int __cdecl Mixer_Probe(HWND);
 ASM_FUNC(FUN_6047d0, _Mixer_Probe)
 KING_VAR(AsmLabel, g_vtbl652e20, 652e20)
+extern "C" int __cdecl Ds_Open();
 extern "C" void FUN_604b40(); KING_ALIAS("_FUN_604b40", "_Ds_Open")
 extern "C" void FUN_604410(); KING_ALIAS("_FUN_604410", "@Wave_Open@16")    // play a table entry (a, b)
+extern "C" void __cdecl Play_Stop(int id);
 extern "C" void FUN_6041b0(); KING_ALIAS("_FUN_6041b0", "_Play_Stop")    // stop sound id
 
 KING_VAR(int, g_72411c, 72411c)
@@ -41,6 +44,7 @@ static __forceinline void Release(BYTE* com)
     (*(void(__stdcall**)(BYTE*))(*(BYTE**)com + 8))(com);
 }
 
+extern "C" void __cdecl Play_UpdateAll();
 extern "C" void FUN_6055e0(); KING_ALIAS("_FUN_6055e0", "_Play_UpdateAll")
 KING_VAR(BYTE*, g_streams, 72412c)
 
@@ -285,7 +289,7 @@ int __cdecl Mixer_Open(int a, HWND w)
     g_mixerWindow = w;
     if (g_mixerResult < 0 || g_mixerOpenFlag != 1) {
         g_mixerOpenFlag = 1;
-        g_mixerResult = CallC<int>(FUN_6047d0, w);
+        g_mixerResult = Mixer_Probe(w);
     }
     return g_mixerResult;
 }
@@ -314,7 +318,7 @@ int __cdecl Mixer_Start()
         return 0;
     InitializeCriticalSection(&g_playLock);
     g_mixerState = 2;
-    int r = CallC<int>(FUN_604b40);
+    int r = Ds_Open();
     g_mixerResult = r;
     g_mixerUsers++;
     if (!r)
@@ -354,7 +358,7 @@ void __cdecl Channel_Stop(int id)
     if (id == -1)
         Play_StopAll();
     else
-        CallC(FUN_6041b0, id);
+        Play_Stop(id);
 }
 
 // [FUN_605000]
@@ -447,7 +451,7 @@ void __cdecl Streams_Collect()
         }
         s = F(BYTE*, s, 8);
     }
-    CallC(FUN_6055e0);
+    Play_UpdateAll();
 }
 
 // [FUN_6052c0] volume and pan in hundredths of decibels from the two
@@ -528,6 +532,7 @@ BYTE* __fastcall StreamPlay_Construct(BYTE* self, void*, int idx, int a, int b, 
 
 typedef void (__cdecl* PlayDoneFn)(int);
 KING_VAR(PlayDoneFn, g_playDoneCb724178, 724178)
+extern "C" int __fastcall Snd_CreateBuffer(BYTE* self, void*);
 ASM_FUNC(FUN_605310, @Snd_CreateBuffer@8)
 
 // [FUN_6055e0] updates all sounds, deleting finished ones, then gives free buffers to waiting sounds
@@ -549,12 +554,14 @@ extern "C" void __cdecl Play_UpdateAll()
         n = F(BYTE*, n, 16);
     }
     while (BYTE* p = Play_BestWaiting(0xffff))
-        CallThis(FUN_605310, p);
+        Snd_CreateBuffer(p, 0);
 }
 
 // ---------------------------------------------------------------------------
+extern "C" void __cdecl Play_StopEntry(int idx);
 extern "C" void FUN_604300(); KING_ALIAS("_FUN_604300", "_Play_StopEntry")
 extern "C" void __cdecl Streams_StopId(int id);
+extern "C" void __fastcall Wave_Free(BYTE* self, void*);
 extern "C" void FUN_604590(); KING_ALIAS("_FUN_604590", "@Wave_Free@8")
 KING_VAR(DWORD, g_ds724168, 724168)
 KING_VAR(BYTE*, g_ds724164, 724164)
@@ -565,9 +572,9 @@ extern "C" void __cdecl Snd_Free(int i)
 {
     if (i >= (int)(g_ds724168 & 0xffff) || !F(int, g_ds724164, i * 24))
         return;
-    CallC(FUN_604300, i);
+    Play_StopEntry(i);
     Streams_StopId(i);
-    CallThis(FUN_604590, g_ds724164 + i * 24);
+    Wave_Free(g_ds724164 + i * 24, 0);
 }
 
 // [FUN_604120] the base destructor body: sets the vtable
@@ -575,8 +582,11 @@ extern "C" void __fastcall Play_DestructBase(BYTE* self, void*) { F(void*, self,
 
 
 // ---------------------------------------------------------------------------
+extern "C" BYTE* __cdecl Play_Find(int id);
 extern "C" void FUN_6042e0(); KING_ALIAS("_FUN_6042e0", "_Play_Find")
+extern "C" void __cdecl Mixer_Lock();
 extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
+extern "C" void __cdecl Mixer_Unlock();
 extern "C" void FUN_604a70(); KING_ALIAS("_FUN_604a70", "_Mixer_Unlock")
 KING_VAR(BYTE*, g_ds724128, 724128)
 KING_VAR(BYTE*, g_ds724124, 724124)
@@ -584,10 +594,10 @@ KING_VAR(BYTE*, g_ds724124, 724124)
 // [FUN_6041b0] stops a playing sound by id, unlinks it (+16 prev, +20 next; list 724124..724128) and deletes it
 extern "C" void __cdecl Play_Stop(int id)
 {
-    BYTE* p = CallC<BYTE*>(FUN_6042e0, id);
+    BYTE* p = Play_Find(id);
     if (!p)
         return;
-    CallC(FUN_604a60);
+    Mixer_Lock();
     F(int, p, 40) = 0;
     CallVirt(p, 24);
     if (p != g_ds724128)
@@ -598,14 +608,17 @@ extern "C" void __cdecl Play_Stop(int id)
         F(BYTE*, F(BYTE*, p, 20), 16) = F(BYTE*, p, 16);
     else
         g_ds724124 = F(BYTE*, p, 16);
-    CallC(FUN_604a70);
+    Mixer_Unlock();
     CallVirt(p, 0, 1);
 }
 
 
 // ---------------------------------------------------------------------------
+extern "C" void __fastcall Play_Delete(BYTE* self, void*);
 extern "C" void FUN_604230(); KING_ALIAS("_FUN_604230", "@Play_Delete@8")
+extern "C" BYTE* __fastcall StreamPlay_Construct(BYTE* self, void*, int idx, int a, int b, int c, int priority, int d);
 extern "C" void FUN_605200(); KING_ALIAS("_FUN_605200", "@StreamPlay_Construct@32")
+extern "C" void __cdecl Streams_Collect();
 extern "C" void FUN_6051b0(); KING_ALIAS("_FUN_6051b0", "_Streams_Collect")
 KING_VAR(AsmLabel, g_ds724130, 724130)    // the wave format
 
@@ -640,7 +653,7 @@ extern "C" int __cdecl Snd_Start(int i, int id, int a3, int a4, int a5, int a6)
 {
     if (i < (int)(g_ds724168 & 0xffff) && id != -1 && F(int, g_ds724164, i * 24))
     {
-        BYTE* p = CallC<BYTE*>(FUN_6042e0, id);
+        BYTE* p = Play_Find(id);
         if (p)
         {
             if (CallVirt<int>(p, 28))
@@ -648,15 +661,15 @@ extern "C" int __cdecl Snd_Start(int i, int id, int a3, int a4, int a5, int a6)
             CallVirt(p, 24);
             if (F(int, p, 40))
                 goto fail;
-            CallThis(FUN_604230, p);
+            Play_Delete(p, 0);
         }
         BYTE* o = (BYTE*)operator new(72);
         if (o)
-            o = CallThis<BYTE*>(FUN_605200, o, i, id, a3, a4, a5, a6);
+            o = StreamPlay_Construct(o, 0, i, id, a3, a4, a5, a6);
         return CallVirt<int>(o, 4);
     }
 fail:
-    CallC(FUN_6051b0);
+    Streams_Collect();
     return 0;
 }
 
@@ -664,6 +677,7 @@ fail:
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
+extern "C" void __fastcall Play_DestructBase(BYTE* self, void*);
 extern "C" void FUN_604120(); KING_ALIAS("_FUN_604120", "@Play_DestructBase@8")
 extern "C" void FUN_6052b0(); KING_ALIAS("_FUN_6052b0", "@Play6052b0_Destruct@8")
 KING_VAR(float, g_dir652e40, 652e40)
@@ -687,6 +701,7 @@ extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
 extern "C" void FUN_6051b0(); KING_ALIAS("_FUN_6051b0", "_Streams_Collect")
 ASM_FUNC(FUN_605310, @Snd_CreateBuffer@8)
 extern "C" void FUN_604a70(); KING_ALIAS("_FUN_604a70", "_Mixer_Unlock")
+extern "C" void __fastcall Play_UpdateVolume(BYTE* self, void*);
 extern "C" void FUN_6052c0(); KING_ALIAS("_FUN_6052c0", "@Play_UpdateVolume@8")
 extern "C" void FUN_6054f0(); KING_ALIAS("_FUN_6054f0", "@Play_Arbitrate@8")
 KING_VAR(int, g_dir6843ec, 6843ec)
@@ -762,11 +777,11 @@ extern "C" int __fastcall Dir_IsPlaying(BYTE* s)
 extern "C" int __fastcall Dir_605460(BYTE* s)
 {
     CallThis(FUN_604a60, s);
-    CallC(FUN_6051b0);
-    int r = CallThis<int>(FUN_605310, s);
+    Streams_Collect();
+    int r = Snd_CreateBuffer(s, 0);
     if (r)
         g_dir6843ec = 3;
-    CallC(FUN_604a70);
+    Mixer_Unlock();
     return r;
 }
 
@@ -776,7 +791,7 @@ extern "C" int __fastcall Dir_Reformat(BYTE* s, void*, int a, int b, WORD w)
     F(int, s, 32) = b;
     F(int, s, 28) = a;
     F(WORD, s, 36) = w;
-    CallThis(FUN_6052c0, s);
+    Play_UpdateVolume(s, 0);
     if (F(void*, s, 56)) {
         Dir_Com(F(void*, s, 56), 64, F(int, s, 64));
         Dir_Com(F(void*, s, 56), 60, F(int, s, 68));
@@ -815,12 +830,13 @@ KING_VAR(AsmLabel, g_q46_652e20, 652e20)
 extern "C" void __fastcall Play6052b0_Destruct(BYTE* s, void*)
 {
     F(void*, s, 0) = g_q46_652e20;
-    CallThis(FUN_604120, s);
+    Play_DestructBase(s, 0);
 }
 
 // ---------------------------------------------------------------------------
 // Small static setup and teardown procs, destructors and thunks.
 
+extern "C" void __cdecl Play_StopAll();
 extern "C" void FUN_604290(); KING_ALIAS("_FUN_604290", "_Play_StopAll")
 extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
 extern "C" unsigned __int64 __rdtsc(void);
@@ -832,7 +848,7 @@ KING_VAR(BYTE*, g_q47_72412c, 72412c)
 // [$L_6043d0] under the mixer lock, stops (slot 12) and deletes each sound of the 72412c list
 extern "C" void __cdecl Play_DeleteAll(void)
 {
-    CallC(FUN_604a60);
+    Mixer_Lock();
     while (g_q47_72412c) {
         CallVirt(g_q47_72412c, 12);
         if (!g_q47_72412c)
@@ -844,7 +860,7 @@ extern "C" void __cdecl Play_DeleteAll(void)
 // [FUN_604e70] stops all sounds, then deletes them
 extern "C" void __cdecl Play_StopAndDeleteAll(void)
 {
-    CallC(FUN_604290);
+    Play_StopAll();
     Play_DeleteAll();
 }
 // [FUN_6056f0] the EFLAGS bits that changed on toggling bit 21: nonzero when CPUID is available
@@ -867,8 +883,11 @@ extern "C" void __cdecl Cpu_ReadTsc(unsigned* t)
 // ---------------------------------------------------------------------------
 // Small setup procs: static vectors, a light array, the race start, a stream read.
 
+extern "C" void __cdecl Channels_Release(void);
 extern "C" void FUN_604e10(); KING_ALIAS("_FUN_604e10", "_Channels_Release")
+extern "C" void __cdecl Mixer_Clear724120();
 extern "C" void FUN_603ff0(); KING_ALIAS("_FUN_603ff0", "_Mixer_Clear724120")
+extern "C" void __cdecl Mixer_Stop();
 extern "C" void FUN_605090(); KING_ALIAS("_FUN_605090", "_Mixer_Stop")
 extern "C" void FUN_6050b0(); KING_ALIAS("_FUN_6050b0", "_Mixer_SetVolume")
 KING_VAR(int, g_q48_72418c, 72418c)
@@ -876,17 +895,18 @@ KING_VAR(int, g_q48_6843fc, 6843fc)
 // [FUN_605050] shuts the mixer down: 604e10, clears it, sets the 72418c volume keeping 6843fc, stops it
 extern "C" void __cdecl Mixer_Shutdown(void)
 {
-    CallC(FUN_604e10);
-    CallC(FUN_603ff0);
+    Channels_Release();
+    Mixer_Clear724120();
     int keep = g_q48_6843fc;
     CallC(FUN_6050b0, g_q48_72418c);
     g_q48_6843fc = keep;
-    CallC(FUN_605090);
+    Mixer_Stop();
 }
 
 // ---------------------------------------------------------------------------
 // Small methods and static helpers: guarded static construction, releases, frees.
 
+extern "C" void __cdecl Mixer_Unload();
 extern "C" void FUN_6049f0(); KING_ALIAS("_FUN_6049f0", "_Mixer_Unload")
 KING_VAR(int, g_q49_684404, 684404)
 // [$L_604a40] once: shuts the mixer down and unloads it (684404 = -1)
@@ -895,7 +915,7 @@ extern "C" void __cdecl Mixer_ShutdownOnce(void)
     if (g_q49_684404)
         return;
     Mixer_Shutdown();
-    CallC(FUN_6049f0);
+    Mixer_Unload();
     g_q49_684404 = -1;
 }
 
@@ -918,6 +938,7 @@ extern "C" int __cdecl Cpu_HasTsc(void)
 // ---------------------------------------------------------------------------
 // Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
 
+extern "C" void __cdecl Mixer_SetState1();
 extern "C" void FUN_604e80(); KING_ALIAS("_FUN_604e80", "_Mixer_SetState1")
 extern "C" void Dir_VecDtor(); KING_ALIAS("_Dir_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 KING_VAR(BYTE*, g_q52_724164, 724164)
@@ -927,7 +948,7 @@ ASM_VAR(AsmLabel, g_q52_604e00, @Wave_Free@8)
 extern "C" void __cdecl Channels_Release(void)
 {
     if (g_q52_724164) {
-        CallC(FUN_604e80);
+        Mixer_SetState1();
         Play_StopAndDeleteAll();
         if (g_q52_724164) {
             BYTE* a = g_q52_724164;
@@ -1070,8 +1091,8 @@ extern "C" void __cdecl Streams_StopId(int id)
 
 // === DirectSound opened with its primary buffer playing (FUN_604b40)
 
-extern "C" void Do_Release(); KING_ALIAS("_Do_Release", "_Mixer_ReleaseBuffers")
-extern "C" void Do_Primary(); KING_ALIAS("_Do_Primary", "_Ds_CreatePrimary")
+extern "C" void __cdecl Mixer_ReleaseBuffers();
+extern "C" int __cdecl Ds_CreatePrimary(void* ds, void** buf, DWORD* size, HWND wnd);
 KING_VAR(BYTE*, g_do724190, 724190)
 KING_VAR(int, g_do7241a4, 7241a4)
 KING_VAR(int, g_do72416c, 72416c)
@@ -1082,7 +1103,7 @@ KING_VAR(DWORD, g_do6843f4, 6843f4)
 // play lock and returns e
 static int Do_Fail()
 {
-    CallC(Do_Release);
+    Mixer_ReleaseBuffers();
     DeleteCriticalSection(&g_playLock);
     return 4;
 }
@@ -1101,7 +1122,7 @@ int __cdecl Ds_Open()
         g_do724190 = 0;
         return Do_Fail();
     }
-    if (!CallC<int>(Do_Primary, g_do724190, &g_dsPrimary, &g_do6843f0, g_do7241a4))
+    if (!Ds_CreatePrimary(g_do724190, (void**)&g_dsPrimary, &g_do6843f0, (HWND)g_do7241a4))
     {
         Com(g_do724190, 8);
         g_do724190 = 0;

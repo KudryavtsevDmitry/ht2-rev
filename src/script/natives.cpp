@@ -11,14 +11,10 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.cpp
 
-extern "C" void FUN_4a36f0(); KING_ALIAS("_FUN_4a36f0", "@HandlePair_Destroy@8")    // destructor of the value holders (map and list entries)
-extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
-extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // the AI's allocator: allocate (size)
-extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
-extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
-extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")    // vector<44 bytes>::insert_aux
-ASM_FUNC(FUN_4ace70, _Deque_CopyCharsTag)    // copy (first, last, deque iterator, tag)
-extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
+extern "C" void __fastcall HandlePair_Destroy(BYTE* self, int);
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+extern "C" int __cdecl Sch_ErrorCode(int code, int severity);
 
 KING_VAR(int, g_69224c, 69224c)
 KING_VAR(AsmLabel, g_strImmediate, 671104)    // "<IMMEDIATE>"
@@ -39,8 +35,8 @@ KING_VAR(AsmLabel, g_vtbl64bff8, 64bff8)
 KING_VAR(AsmLabel, g_vtbl64c00c, 64c00c)
 KING_VAR(AsmLabel, g_vtbl64c020, 64c020)
 
-static void AiFree(void* p, int size) { CallC(FUN_44b4a0, p, size); }
-static void SchError(int code) { CallC(FUN_4a52e0, code, 1); }
+static void AiFree(void* p, int size) { Ai_PoolFree(p, size); }
+static void SchError(int code) { Sch_ErrorCode(code, 1); }
 
 // A value of the scripts: an object with its reference count at +4 (vtbl+4
 // its name, vtbl+12 the deleting destructor), or with SCH_IMMEDIATE in the
@@ -112,10 +108,10 @@ typedef struct _iobuf FILE;
 extern "C" int __cdecl fprintf(FILE* f, const char* format, ...);
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 
-extern "C" void FUN_4a5380(); KING_ALIAS("_FUN_4a5380", "_Sch_ErrorText")    // the format of an error (code, level)
-extern "C" void FUN_4a59f0(); KING_ALIAS("_FUN_4a59f0", "_Sch_MessageText")    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
+extern "C" void __cdecl Sch4a5800_Dump(BYTE* s);
 extern "C" void FUN_4a5800(); KING_ALIAS("_FUN_4a5800", "_Sch4a5800_Dump")
+extern "C" void __fastcall SchHandle_Release(void** h, int);
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor
 extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // vector<value>: allocate and copy (n, first, last)
 extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const SchValue* from);
@@ -187,7 +183,7 @@ static int ShowMessage(BYTE* p, const char* text)
 {
     typedef int (__cdecl* Show)(const char*, ValueArg);
     ((Show)FUN_4b1450)(text, NodeValue(p));
-    CallC(FUN_4a5800, p);
+    Sch4a5800_Dump(p);
     int r = ((Show)FUN_4b1450)(text, NodeValue(p));
     F(int, p, 120) = 1;
     return r;
@@ -280,7 +276,7 @@ extern "C" void __fastcall Deque_ReallocMap(int* d, void*, unsigned add, char fr
     } else {
         unsigned big = (unsigned)d[1] < add ? add : (unsigned)d[1];
         unsigned size = d[1] + big + 2;
-        int** map = size ? CallC<int**>(FUN_44b740, size * 4) : 0;
+        int** map = size ? (int**)Stl_Allocate(size * 4) : 0;
         nstart = map + ((size - want) >> 1) + shift;
         int** to = nstart;
         int** from = (int**)d[5];
@@ -326,16 +322,18 @@ extern "C" int __cdecl Sch_Args2(BYTE* p, SchValue* a, SchValue* b, BYTE** args,
 // ---------------------------------------------------------------------------
 // SchValue constructors: allocate a typed object, type-check, refcount
 
-extern "C" void FUN_4b61c0(); KING_ALIAS("_FUN_4b61c0", "@BytesNode4b61c0_Construct@12")    // SchString: construct from char*
-extern "C" void FUN_4b6400(); KING_ALIAS("_FUN_4b6400", "@BytesNode4b6400_Construct@12")    // SchIdentifier: construct from char*
-extern "C" void FUN_4b6160(); KING_ALIAS("_FUN_4b6160", "@SchBuf4b6160_Construct@8")
-extern "C" void FUN_4b6670(); KING_ALIAS("_FUN_4b6670", "@SchItem4b6670_Construct@12")
+extern "C" BYTE* __fastcall BytesNode4b61c0_Construct(BYTE* self, void*, BYTE* const* src);
+extern "C" BYTE* __fastcall BytesNode4b6400_Construct(BYTE* self, void*, BYTE* const* src);
+extern "C" BYTE* __fastcall SchBuf4b6160_Construct(BYTE* self, void*);
+extern "C" BYTE* __fastcall SchItem4b6670_Construct(BYTE* self, void*, BYTE* owner);
+extern "C" BYTE* __fastcall SchScope_Construct(BYTE* self, void*, BYTE* outer);
 extern "C" void FUN_4a2d10(); KING_ALIAS("_FUN_4a2d10", "@SchScope_Construct@12")    // SchEnvironment: construct from SchValue*
+extern "C" void* __cdecl Ai_OperatorNew(unsigned n);
 extern "C" void FUN_4581a0(); KING_ALIAS("_FUN_4581a0", "_Ai_OperatorNew")    // allocation failure handler
-extern "C" void FUN_4b1120(); KING_ALIAS("_FUN_4b1120", "@Node4b1120_Construct@20")
-extern "C" void FUN_4b1090(); KING_ALIAS("_FUN_4b1090", "@SchItem4b1090_Construct@12")
-extern "C" void FUN_4b0b60(); KING_ALIAS("_FUN_4b0b60", "@SchNumber_FromInt@16")
-extern "C" void FUN_4b0b90(); KING_ALIAS("_FUN_4b0b90", "@SchNumber_FromUnsigned@16")
+extern "C" BYTE* __fastcall Node4b1120_Construct(BYTE* self, void*, BYTE* p, const BYTE* a, const BYTE* b);
+extern "C" BYTE* __fastcall SchItem4b1090_Construct(BYTE* self, void*, BYTE* owner);
+extern "C" BYTE* __fastcall SchNumber_FromInt(BYTE* self, void*, int exact, int v);
+extern "C" BYTE* __fastcall SchNumber_FromUnsigned(BYTE* self, void*, int exact, unsigned v);
 
 static SchValue* SchValue_WrapNew(SchValue* out, BYTE* obj, int expectedType, const char* typeName)
 {
@@ -361,7 +359,7 @@ static SchValue* SchValue_WrapNew(SchValue* out, BYTE* obj, int expectedType, co
 extern "C" SchValue* __cdecl SchValue_MakeString(SchValue* out, int, const char* s)
 {
     BYTE* obj = (BYTE*)operator new(24);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b61c0, obj, s) : 0;
+    BYTE* p = obj ? BytesNode4b61c0_Construct(obj, 0, (BYTE* const*)s) : 0;
     return SchValue_WrapNew(out, p, 3, "String");
 }
 KING_ALIAS("_SchValue_MakeString", "FUN_4a1e30")
@@ -370,7 +368,7 @@ KING_ALIAS("_SchValue_MakeString", "FUN_4a1e30")
 extern "C" SchValue* __cdecl SchValue_MakeStringB(SchValue* out, int)
 {
     BYTE* obj = (BYTE*)operator new(24);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b6160, obj) : 0;
+    BYTE* p = obj ? SchBuf4b6160_Construct(obj, 0) : 0;
     return SchValue_WrapNew(out, p, 3, "String");
 }
 KING_ALIAS("_SchValue_MakeStringB", "FUN_4a2400")
@@ -379,7 +377,7 @@ KING_ALIAS("_SchValue_MakeStringB", "FUN_4a2400")
 extern "C" SchValue* __cdecl SchValue_MakeIdent(SchValue* out, int, const char* s)
 {
     BYTE* obj = (BYTE*)operator new(24);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b6400, obj, s) : 0;
+    BYTE* p = obj ? BytesNode4b6400_Construct(obj, 0, (BYTE* const*)s) : 0;
     return SchValue_WrapNew(out, p, 9, "Identifier");
 }
 KING_ALIAS("_SchValue_MakeIdent", "FUN_4a2230")
@@ -388,7 +386,7 @@ KING_ALIAS("_SchValue_MakeIdent", "FUN_4a2230")
 extern "C" SchValue* __cdecl SchValue_MakePair(SchValue* out, int unused, void* a, void* b, void* c)
 {
     BYTE* obj = (BYTE*)Pool44_New(44);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b1120, obj, a, b, c) : 0;
+    BYTE* p = obj ? Node4b1120_Construct(obj, 0, (BYTE*)a, (const BYTE*)b, (const BYTE*)c) : 0;
     return SchValue_WrapNew(out, p, 2, "Pair");
 }
 KING_ALIAS("_SchValue_MakePair", "FUN_4a2140")
@@ -397,7 +395,7 @@ KING_ALIAS("_SchValue_MakePair", "FUN_4a2140")
 extern "C" SchValue* __cdecl SchValue_MakePairB(SchValue* out, int, void* a)
 {
     BYTE* obj = (BYTE*)Pool44_New(44);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b1090, obj, a) : 0;
+    BYTE* p = obj ? SchItem4b1090_Construct(obj, 0, (BYTE*)a) : 0;
     return SchValue_WrapNew(out, p, 2, "Pair");
 }
 KING_ALIAS("_SchValue_MakePairB", "FUN_4a28c0")
@@ -406,7 +404,7 @@ KING_ALIAS("_SchValue_MakePairB", "FUN_4a28c0")
 extern "C" SchValue* __cdecl SchValue_MakeNumber(SchValue* out, int, const int* a, const int* b)
 {
     BYTE* obj = (BYTE*)Pool32_New(32);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b0b60, obj, *a, *b) : 0;
+    BYTE* p = obj ? SchNumber_FromInt(obj, 0, *a, *b) : 0;
     return SchValue_WrapNew(out, p, 6, "Number");
 }
 KING_ALIAS("_SchValue_MakeNumber", "FUN_4a2310")
@@ -415,7 +413,7 @@ KING_ALIAS("_SchValue_MakeNumber", "FUN_4a2310")
 extern "C" SchValue* __cdecl SchValue_MakeNumberU(SchValue* out, int, const int* a, const unsigned* b)
 {
     BYTE* obj = (BYTE*)Pool32_New(32);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b0b90, obj, *a, *b) : 0;
+    BYTE* p = obj ? SchNumber_FromUnsigned(obj, 0, *a, *b) : 0;
     return SchValue_WrapNew(out, p, 6, "Number");
 }
 KING_ALIAS("_SchValue_MakeNumberU", "FUN_4a24e0")
@@ -424,7 +422,7 @@ KING_ALIAS("_SchValue_MakeNumberU", "FUN_4a24e0")
 extern "C" SchValue* __cdecl SchValue_MakeVector(SchValue* out, int, int n)
 {
     BYTE* obj = (BYTE*)operator new(32);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4b6670, obj, n) : 0;
+    BYTE* p = obj ? SchItem4b6670_Construct(obj, 0, (BYTE*)n) : 0;
     return SchValue_WrapNew(out, p, 10, "Vector");
 }
 KING_ALIAS("_SchValue_MakeVector", "FUN_4a2700")
@@ -433,7 +431,7 @@ KING_ALIAS("_SchValue_MakeVector", "FUN_4a2700")
 extern "C" SchValue* __cdecl SchValue_MakeEnv(SchValue* out, int, void* parent)
 {
     BYTE* obj = (BYTE*)operator new(160);
-    BYTE* p = obj ? CallThis<BYTE*>(FUN_4a2d10, obj, parent) : 0;
+    BYTE* p = obj ? SchScope_Construct(obj, 0, (BYTE*)parent) : 0;
     return SchValue_WrapNew(out, p, 12, "Environment");
 }
 KING_ALIAS("_SchValue_MakeEnv", "FUN_4a27e0")
@@ -480,7 +478,7 @@ extern "C" void __stdcall Deque_AllocPages(int** first, int** last)
 {
     while (first != last) {
         void* p = malloc(512);
-        if (!p) { CallC(FUN_4581a0, 512); }
+        if (!p) { Ai_OperatorNew(512); }
         *first = (int*)p;
         first++;
     }
@@ -511,7 +509,6 @@ static SchValue* SchInput_WrapNew(SchValue* out, BYTE* object, int type, const c
     return out;
 }
 
-extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
 
 extern "C" {
 
@@ -539,7 +536,8 @@ void __fastcall IntDeque_Construct(int* self, void*, unsigned n)
 
 }
 
-extern "C" void FUN_4b66f0(); KING_ALIAS("_FUN_4b66f0", "@SchVector_Construct@28")
+extern "C" BYTE* __fastcall SchVector_Construct(BYTE* s, void*, BYTE* owner, unsigned n, DWORD v0, DWORD v1, DWORD v2);
+extern "C" int __cdecl Sch_Error(int code, int level, const char* a, const char* b);
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // script type error (code, level, got, expected)
 
 extern "C" {
@@ -567,7 +565,7 @@ DWORD* __cdecl Sch_MakeVector4a25d0(DWORD* out, int unused, int a, const int* b,
                 c[2] = 0;
             }
         }
-        v = CallThis<BYTE*>(FUN_4b66f0, o, a, *b, c[0], c[1], c[2]);
+        v = SchVector_Construct(o, 0, (BYTE*)a, *b, c[0], c[1], c[2]);
     }
     out[0] = out[1] = out[2] = 0;
     if (!v) {
@@ -577,7 +575,7 @@ DWORD* __cdecl Sch_MakeVector4a25d0(DWORD* out, int unused, int a, const int* b,
     }
     if (CallVirt<int>(v, 0) != 10) {
         const char* name = CallVirt<const char*>(v, 4);
-        CallC(FUN_4a54e0, 2, 1, name, "Vector");
+        Sch_Error(2, 1, name, "Vector");
         return out;
     }
     out[0] = (DWORD)v;
@@ -620,10 +618,10 @@ BYTE* __fastcall SchScope_Construct(BYTE* self, void*, BYTE* outer)
         int n = (v[1] - v[0]) / 12;
         BYTE* p = CallThis<BYTE*>(FUN_4a4540, v, 8, v[0], v[1]);
         for (BYTE* e = v[0]; e != v[1]; e += 12)
-            CallThis(FUN_4a36c0, e);
+            SchHandle_Release((void**)e, 0);
         int cap = (v[2] - v[0]) / 12;
         if (cap)
-            CallC(FUN_44b4a0, v[0], cap * 12);
+            Ai_PoolFree(v[0], cap * 12);
         v[0] = p;
         v[1] = p + n * 12;
         v[2] = p + 96;
@@ -634,7 +632,7 @@ BYTE* __fastcall SchScope_Construct(BYTE* self, void*, BYTE* outer)
 }
 
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // reports a script error
-extern "C" void FUN_4a2a80(); KING_ALIAS("_FUN_4a2a80", "@Deque_ReallocMap@16")    // deque: reallocates the map (n, at front)
+extern "C" void __fastcall Deque_ReallocMap(int* d, void*, unsigned add, char front);
 extern "C" void FUN_4581a0(); KING_ALIAS("_FUN_4581a0", "_Ai_OperatorNew")    // malloc retrying through the new handler
 KING_VAR(char, s_type6708e4, 6708e4)
 
@@ -652,7 +650,7 @@ extern "C" void** __fastcall Handle10_Init(void** self, int, void** v)
     }
     if (CallVirt<int>(obj, 0) != 10) {
         int name = CallVirt<int>(v[0], 4);
-        CallC(FUN_4a54e0, 2, 1, name, &s_type6708e4);
+        Sch_Error(2, 1, (const char*)name, &s_type6708e4);
         return self;
     }
     self[0] = v[0];
@@ -666,10 +664,10 @@ extern "C" void __fastcall DequeDw_PushBackAux(BYTE* self, int, const DWORD* x)
 {
     DWORD v = *x;
     if ((unsigned)(F(int, self, 4) - ((F(BYTE*, self, 36) - F(BYTE*, self, 0)) >> 2)) < 2)
-        CallThis(FUN_4a2a80, self, 1, 0);
+        Deque_ReallocMap((int*)self, 0, 1, 0);
     void* p = malloc(512);
     if (!p)
-        p = CallC<void*>(FUN_4581a0, 512);
+        p = Ai_OperatorNew(512);
     F(void**, self, 36)[1] = p;
     DWORD* cur = F(DWORD*, self, 24);
     if (cur)
@@ -702,11 +700,11 @@ extern "C" int __fastcall Nat_4a2ec0(BYTE* s) { return (int)g_nat67060c; }
 extern "C" BYTE* __fastcall Nat4a2ed0_DeletingDestructor(BYTE* s, void*, int flags) { return Nat_DeleteAfter(s, flags, FUN_4a3fd0); }
 
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
-extern "C" void FUN_4abea0(); KING_ALIAS("_FUN_4abea0", "@Sch_Copy16@12")
+extern "C" DWORD* __fastcall Sch_Copy16(DWORD* self, void*, const DWORD* from);
 static DequeIt Nat201_Copy(const DequeIt& s)
 {
     DequeIt r;
-    CallThis(FUN_4abea0, &r, &s);
+    Sch_Copy16((DWORD*)&r, 0, (const DWORD*)&s);
     return r;
 }
 // [FUN_4a2ce0] copies of the iterators a and b handed to an empty call
@@ -732,15 +730,16 @@ extern "C" void __cdecl DequeIt_Pass0(DequeIt a, DequeIt b)
 // The number natives: number? complex? real? rational? integer? exact?
 // inexact?, the comparison chains = < > <= >= and +.
 
-extern "C" void FUN_491c00(); KING_ALIAS("_FUN_491c00", "_Sch_SecondArg")
+extern "C" int __cdecl Sch_SecondArg(BYTE* p, SchValue* out, BYTE** args, int where);
+extern "C" DWORD* __cdecl SchValue_Make10007(DWORD* out, int unused, DWORD v);
 extern "C" void FUN_492250(); KING_ALIAS("_FUN_492250", "_SchValue_Make10007")      // an immediate value (out, 0, v)
 extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")          // value assignment
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")   // value copy constructor
-extern "C" void FUN_4556d0(); KING_ALIAS("_FUN_4556d0", "@NumberHandle_From@12")   // a number handle from a value
-extern "C" void FUN_4574e0(); KING_ALIAS("_FUN_4574e0", "_Number_Make")
-extern "C" void FUN_4954c0(); KING_ALIAS("_FUN_4954c0", "@SchEmbd_Copy@12")        // number = number
-extern "C" void FUN_4b0ef0(); KING_ALIAS("_FUN_4b0ef0", "@SchNumber_Add@12")       // number += number
-extern "C" void FUN_4a5b50(); KING_ALIAS("_FUN_4a5b50", "_Sch_Message2")
+extern "C" DWORD* __fastcall NumberHandle_From(DWORD* self, void*, const DWORD* v);
+extern "C" DWORD* __cdecl Number_Make(DWORD* out, int unused, const int* a, const int* b);
+extern "C" BYTE* __fastcall SchEmbd_Copy(BYTE* self, void*, const BYTE* o);
+extern "C" void __fastcall SchNumber_Add(BYTE* self, void*, const BYTE* o);
+extern "C" int __cdecl Sch_Message2(BYTE* p, int code, int a, int b);
 extern "C" void FUN_4b0eb0(); KING_ALIAS("_FUN_4b0eb0", "@SchNumber_IsReal@8")
 extern "C" void FUN_4b0ed0(); KING_ALIAS("_FUN_4b0ed0", "@SchNumber_IsInexact@8")
 extern "C" void FUN_4b0ee0(); KING_ALIAS("_FUN_4b0ee0", "@SchNumber_IsExact@8")
@@ -763,12 +762,12 @@ KING_VAR(AsmLabel, s_nNumber, 66ca60)       // "Number"
 
 static SchValue* Nat_Bool(SchValue* out, int v)
 {
-    return CallC<SchValue*>(FUN_492250, out, 0, v);
+    return (SchValue*)SchValue_Make10007((DWORD*)out, 0, v);
 }
 
 static void Nat_Release(SchValue* v)
 {
-    CallThis(FUN_4a36c0, v);
+    SchHandle_Release((void**)v, 0);
 }
 
 static int Nat_Count(BYTE** args)
@@ -780,7 +779,7 @@ static int Nat_Count(BYTE** args)
 static SchValue* Nat_IsNumber(SchValue* out, BYTE* p, BYTE** args, const char* where)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+    if (Sch_SecondArg(p, &v, args, (int)where)) {
         out->obj = 0;
         out->m_4 = 0;
         out->flags = 0;
@@ -794,7 +793,7 @@ static SchValue* Nat_IsNumber(SchValue* out, BYTE* p, BYTE** args, const char* w
 static SchValue* Nat_NumberTest(SchValue* out, BYTE* p, BYTE** args, const char* where, void (*test)())
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+    if (Sch_SecondArg(p, &v, args, (int)where)) {
         out->obj = 0;
         out->m_4 = 0;
         out->flags = 0;
@@ -807,12 +806,12 @@ static SchValue* Nat_NumberTest(SchValue* out, BYTE* p, BYTE** args, const char*
                 flags = v.flags;
                 F(int, n, 4)++;
             } else
-                CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(v.obj, 4), (const char*)s_nNumber);
+                Sch_Error(2, 1, CallVirt<const char*>(v.obj, 4), (const char*)s_nNumber);
         }
         if (!n)
-            CallC(FUN_4a52e0, 0, 1);
+            Sch_ErrorCode(0, 1);
         if (flags & SCH_IMMEDIATE)
-            CallC(FUN_4a52e0, 4, 1);
+            Sch_ErrorCode(4, 1);
         Nat_Bool(out, CallThis<int>(test, n));
         if (!(flags & SCH_IMMEDIATE) && n && --F(int, n, 4) == 0)
             CallVirt(n, 12, 1);
@@ -849,8 +848,8 @@ static SchValue* Nat_Chain(SchValue* out, BYTE** args, void (*stop)())
             break;
         }
         SchValue hb, ha;
-        CallThis(FUN_4556d0, &hb, &b);
-        CallThis(FUN_4556d0, &ha, &a);
+        NumberHandle_From((DWORD*)&hb, 0, (const DWORD*)&b);
+        NumberHandle_From((DWORD*)&ha, 0, (const DWORD*)&a);
         if (CallC<char>(stop, hb.obj, ha.obj)) {
             Nat_Bool(out, 0);
             Nat_Release(&ha);
@@ -901,7 +900,7 @@ SchValue* __cdecl Nat_Plus(SchValue* out, BYTE* p, BYTE** args)
     SchValue a = {0, 0, 0, 0};
     SchValue s;
     int zero1 = 0, zero2 = 0;
-    CallC(FUN_4574e0, &s, 0, &zero2, &zero1);
+    Number_Make((DWORD*)&s, 0, &zero2, &zero1);
     if (Nat_Count(args) == 1) {
         CopyRef(out, &s);
         Nat_Release(&s);
@@ -919,7 +918,7 @@ SchValue* __cdecl Nat_Plus(SchValue* out, BYTE* p, BYTE** args)
                     h.flags = a.flags;
                     F(int, a.obj, 4)++;
                 } else
-                    CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(a.obj, 4), (const char*)s_nNumber);
+                    Sch_Error(2, 1, CallVirt<const char*>(a.obj, 4), (const char*)s_nNumber);
             } else {
                 h.obj = 0;
                 h.flags = 0;
@@ -930,24 +929,24 @@ SchValue* __cdecl Nat_Plus(SchValue* out, BYTE* p, BYTE** args)
             SchValue_Release(&a);
             return out;
         }
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nPlus);
+        Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)((const char*)s_nPlus));
     } else {
         if ((BYTE)a.flags == 6) {
             SchValue h;
-            CallThis(FUN_4556d0, &h, &a);
-            CallThis(FUN_4954c0, s.obj, h.obj);
+            NumberHandle_From((DWORD*)&h, 0, (const DWORD*)&a);
+            SchEmbd_Copy(s.obj, 0, h.obj);
             Nat_Release(&h);
         } else
-            CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nPlus);
+            Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)((const char*)s_nPlus));
         for (int i = 2; i != Nat_Count(args); i++) {
             CallThis(FUN_40c100, &a, args[0] + i * 12);
             if ((BYTE)a.flags == 6) {
                 SchValue h;
-                CallThis(FUN_4556d0, &h, &a);
-                CallThis(FUN_4b0ef0, s.obj, h.obj);
+                NumberHandle_From((DWORD*)&h, 0, (const DWORD*)&a);
+                SchNumber_Add(s.obj, 0, h.obj);
                 Nat_Release(&h);
             } else
-                CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nPlus);
+                Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)((const char*)s_nPlus));
         }
     }
     CallThis(FUN_454580, out, &s);
@@ -962,28 +961,33 @@ SchValue* __cdecl Nat_Plus(SchValue* out, BYTE* p, BYTE** args)
 // More natives: * and /, the unimplemented number functions (they return an
 // empty value), number<->string, pairs, symbols and characters.
 
-extern "C" void FUN_491aa0(); KING_ALIAS("_FUN_491aa0", "_Sch_Args2")
+extern "C" int __cdecl Sch_Args2(BYTE* p, SchValue* a, SchValue* b, BYTE** args, int where);
 extern "C" void FUN_4b1070(); KING_ALIAS("_FUN_4b1070", "_Sch_Zero12")             // an empty value (out, ...)
 extern "C" void FUN_4b0f30(); KING_ALIAS("_FUN_4b0f30", "@SchNumber_Mul@12")
 extern "C" void FUN_4b0f60(); KING_ALIAS("_FUN_4b0f60", "@SchNumber_Div@12")
-extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
-extern "C" void FUN_4b0c70(); KING_ALIAS("_FUN_4b0c70", "@Number_Write@12")       // writes a number's text (vector)
-extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
+extern "C" void** __fastcall Vec_Construct(void** self, void*, int);
+extern "C" void __fastcall Number_Write(BYTE* s, void*, BYTE** v);
+extern "C" void __fastcall Vec1_Free(BYTE** v, int);
 extern "C" void FUN_4a1e30(); KING_ALIAS("_FUN_4a1e30", "_SchValue_MakeString")
 extern "C" void FUN_4a2230(); KING_ALIAS("_FUN_4a2230", "_SchValue_MakeIdent")
+extern "C" SchValue* __cdecl SchValue_MakePair(SchValue* out, int unused, void* a, void* b, void* c);
 extern "C" void FUN_4a2140(); KING_ALIAS("_FUN_4a2140", "_SchValue_MakePair")
 extern "C" void FUN_4a2310(); KING_ALIAS("_FUN_4a2310", "_SchValue_MakeNumber")
-extern "C" void FUN_4a1900(); KING_ALIAS("_FUN_4a1900", "@SchEmbd4a1900_Construct@16")    // deque<int> constructor
-extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
+extern "C" BYTE* __fastcall SchEmbd4a1900_Construct(BYTE* self, void*, int unused, int a);
+extern "C" void __cdecl Construct4(DWORD* d, const DWORD* s);
+extern "C" void __fastcall DequeDw_PushBackAux(BYTE* self, int, const DWORD* x);
 extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")
 extern "C" void FUN_4b20d0(); KING_ALIAS("_FUN_4b20d0", "_Sch_ParseNumber")    // a number parsed from a deque of characters (out, p, deque)
+extern "C" void __fastcall Deque_Destroy(BYTE* d);
 extern "C" void FUN_4a1710(); KING_ALIAS("_FUN_4a1710", "@Deque_Destroy@4")    // deque<int> destructor
 extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")           // a pair's car (out, value)
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")           // a pair's cdr (out, value)
-extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
+extern "C" int __cdecl Sch_Message1(BYTE* p, int code, int a);
+extern "C" SchValue* __fastcall SchValue_AsChar(SchValue* self, void*, const SchValue* src);
 extern "C" void FUN_4a19c0(); KING_ALIAS("_FUN_4a19c0", "@SchValue_AsChar@12")
+extern "C" DWORD* __cdecl SchValue_Make10008(DWORD* out, int unused, DWORD v);
 extern "C" void FUN_49c210(); KING_ALIAS("_FUN_49c210", "_SchValue_Make10008")
-extern "C" void FUN_4b0ea0(); KING_ALIAS("_FUN_4b0ea0", "@Value_ToInt@8")
+extern "C" int __fastcall Value_ToInt(BYTE* self, void*);
 KING_VAR(AsmLabel, s_nTimes, 6706b4)
 KING_VAR(AsmLabel, s_nDivide, 670570)
 KING_VAR(AsmLabel, s_nQuotient, 6706b8)
@@ -1053,7 +1057,7 @@ static void Nat_Typed(SchValue* h, const SchValue* v, int type, const char* type
             h->flags = v->flags;
             F(int, v->obj, 4)++;
         } else
-            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(v->obj, 4), typeName);
+            Sch_Error(2, 1, CallVirt<const char*>(v->obj, 4), typeName);
     } else {
         h->obj = 0;
         h->flags = 0;
@@ -1064,16 +1068,16 @@ static void Nat_Typed(SchValue* h, const SchValue* v, int type, const char* type
 static void Nat_Check(const SchValue* h)
 {
     if (!h->obj)
-        CallC(FUN_4a52e0, 0, 1);
+        Sch_ErrorCode(0, 1);
     if (h->flags & SCH_IMMEDIATE)
-        CallC(FUN_4a52e0, 4, 1);
+        Sch_ErrorCode(4, 1);
 }
 
 // type?: the argument's type is kind
 static SchValue* Nat_IsKind(SchValue* out, BYTE* p, BYTE** args, const char* where, int kind)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where))
+    if (Sch_SecondArg(p, &v, args, (int)where))
         Nat_Zero3(out);
     else
         Nat_Bool(out, (BYTE)v.flags == kind);
@@ -1088,7 +1092,7 @@ static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* wher
     SchValue a = {0, 0, 0, 0};
     SchValue s;
     int one = start, zero = 0;
-    CallC(FUN_4574e0, &s, 0, &zero, &one);
+    Number_Make((DWORD*)&s, 0, &zero, &one);
     if (Nat_Count(args) == 1) {
         CopyRef(out, &s);
         Nat_Release(&s);
@@ -1108,7 +1112,7 @@ static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* wher
                 SchValue_Release(&a);
                 return out;
             }
-            CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+            Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)where);
         } else {
             if ((BYTE)a.flags == 6) {
                 SchValue h;
@@ -1117,7 +1121,7 @@ static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* wher
                 CallThis(op, s.obj, h.obj);
                 Nat_Release(&h);
             } else
-                CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+                Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)where);
             CopyRef(out, &s);
             Nat_Release(&s);
             SchValue_Release(&a);
@@ -1126,20 +1130,20 @@ static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* wher
     } else {
         if ((BYTE)a.flags == 6) {
             SchValue h;
-            CallThis(FUN_4556d0, &h, &a);
-            CallThis(FUN_4954c0, s.obj, h.obj);
+            NumberHandle_From((DWORD*)&h, 0, (const DWORD*)&a);
+            SchEmbd_Copy(s.obj, 0, h.obj);
             Nat_Release(&h);
         } else
-            CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+            Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)where);
         for (int i = 2; i != Nat_Count(args); i++) {
             CallThis(FUN_40c100, &a, args[0] + i * 12);
             if ((BYTE)a.flags == 6) {
                 SchValue h;
-                CallThis(FUN_4556d0, &h, &a);
+                NumberHandle_From((DWORD*)&h, 0, (const DWORD*)&a);
                 CallThis(op, s.obj, h.obj);
                 Nat_Release(&h);
             } else
-                CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+                Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)where);
         }
     }
     CallThis(FUN_454580, out, &s);
@@ -1152,7 +1156,7 @@ static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* wher
 static SchValue* Nat_Number1(SchValue* out, BYTE* p, BYTE** args, const char* where)
 {
     SchValue v = {0, 0, 0, 0}, h;
-    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+    if (Sch_SecondArg(p, &v, args, (int)where)) {
         Nat_Zero3(&h);
         Nat_Zero3(out);
         Nat_Release(&h);
@@ -1164,7 +1168,7 @@ static SchValue* Nat_Number1(SchValue* out, BYTE* p, BYTE** args, const char* wh
         Nat_Release(&t);
         Nat_Release(&h);
     } else {
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+        Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)where);
         CallThis(FUN_4bd4d0, &h);
         CallThis(FUN_454580, out, &h);
         Nat_Release(&h);
@@ -1177,7 +1181,7 @@ static SchValue* Nat_Number1(SchValue* out, BYTE* p, BYTE** args, const char* wh
 static SchValue* Nat_Number2(SchValue* out, BYTE* p, BYTE** args, const char* where)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, where)) {
+    if (Sch_Args2(p, &x, &y, args, (int)where)) {
         SchValue h;
         CallThis(FUN_4bd4d0, &h);
         CopyRef(out, &h);
@@ -1197,7 +1201,7 @@ static SchValue* Nat_Number2(SchValue* out, BYTE* p, BYTE** args, const char* wh
         Nat_Release(&hy);
         Nat_Release(&hx);
     } else {
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+        Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)where);
         SchValue t;
         CallThis(FUN_4bd4d0, &t);
         CallThis(FUN_454580, out, &t);
@@ -1213,7 +1217,7 @@ static SchValue* Nat_PairPart(SchValue* out, BYTE* p, BYTE** args, const char* w
 {
     BYTE* a = args[0];
     if ((args[1] - a) / 12 != 2) {
-        CallC(FUN_4a5a60, p, 33, where);
+        Sch_Message1(p, 33, (int)where);
         Nat_Zero3(out);
         return out;
     }
@@ -1221,7 +1225,7 @@ static SchValue* Nat_PairPart(SchValue* out, BYTE* p, BYTE** args, const char* w
         CallC(get, out, a + 12);
         return out;
     }
-    CallC(FUN_4a5b50, p, 15, (const char*)s_nPair, where);
+    Sch_Message2(p, 15, (int)((const char*)s_nPair), (int)where);
     Nat_Zero3(out);
     return out;
 }
@@ -1230,7 +1234,7 @@ static SchValue* Nat_PairPart(SchValue* out, BYTE* p, BYTE** args, const char* w
 static SchValue* Nat_PairSet(SchValue* out, BYTE* p, BYTE** args, const char* where, int off)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0}, h;
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, where)) {
+    if (Sch_Args2(p, &x, &y, args, (int)where)) {
         Nat_Zero3(&h);
         Nat_Zero3(out);
         Nat_Release(&h);
@@ -1245,7 +1249,7 @@ static SchValue* Nat_PairSet(SchValue* out, BYTE* p, BYTE** args, const char* wh
         CallThis(FUN_40c100, h.obj + off, &y);
         Nat_Release(&h);
     } else
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nPair, where);
+        Sch_Message2(p, 15, (int)((const char*)s_nPair), (int)where);
     Nat_Zero3(out);
     SchValue_Release(&y);
     Nat_Release(&x);
@@ -1257,7 +1261,7 @@ static SchValue* Nat_Convert(SchValue* out, BYTE* p, BYTE** args, const char* wh
                              void (*make)())
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where))
+    if (Sch_SecondArg(p, &v, args, (int)where))
         Nat_Zero3(out);
     else if ((BYTE)v.flags == type) {
         SchValue h = {0, 0, 0, 0}, t;
@@ -1267,7 +1271,7 @@ static SchValue* Nat_Convert(SchValue* out, BYTE* p, BYTE** args, const char* wh
         Nat_Release(&t);
         Nat_Release(&h);
     } else {
-        CallC(FUN_4a5b50, p, 15, typeName, where);
+        Sch_Message2(p, 15, (int)typeName, (int)where);
         Nat_Zero3(out);
     }
     SchValue_Release(&v);
@@ -1278,7 +1282,7 @@ static SchValue* Nat_Convert(SchValue* out, BYTE* p, BYTE** args, const char* wh
 static SchValue* Nat_CharCmp(SchValue* out, BYTE* p, BYTE** args, const char* where, int op)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, where)) {
+    if (Sch_Args2(p, &x, &y, args, (int)where)) {
         SchValue h;
         Nat_Zero3(&h);
         Nat_Zero3(out);
@@ -1289,8 +1293,8 @@ static SchValue* Nat_CharCmp(SchValue* out, BYTE* p, BYTE** args, const char* wh
     }
     if ((BYTE)x.flags == 8 && (BYTE)y.flags == 8) {
         SchValue cx, cy;
-        CallThis(FUN_4a19c0, &cx, &x);
-        CallThis(FUN_4a19c0, &cy, &y);
+        SchValue_AsChar(&cx, 0, &x);
+        SchValue_AsChar(&cy, 0, &y);
         int a = (int)cx.obj, b = (int)cy.obj, r;
         switch (op) {
         case 0: r = a == b; break;
@@ -1353,7 +1357,7 @@ SchValue* __cdecl Nat_ToExact(SchValue* out, BYTE* p, BYTE** args) { return Nat_
 SchValue* __cdecl Nat_NumberToString(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0}, h;
-    if (CallC<int>(FUN_491c00, p, &v, args, s_nNumToStr)) {
+    if (Sch_SecondArg(p, &v, args, (int)s_nNumToStr)) {
         Nat_Zero3(&h);
         Nat_Zero3(out);
         Nat_Release(&h);
@@ -1364,16 +1368,16 @@ SchValue* __cdecl Nat_NumberToString(SchValue* out, BYTE* p, BYTE** args)
         CallThis(FUN_4bd4d0, &h);
         Nat_Typed(&h, &v, 6, s_nNumber);
         BYTE text[12];
-        CallThis(FUN_487730, text, &args);
+        Vec_Construct((void**)text, 0, (int)&args);
         Nat_Check(&h);
-        CallThis(FUN_4b0c70, h.obj, text);
+        Number_Write(h.obj, 0, (BYTE**)text);
         SchValue t;
         CopyRef(out, CallC<SchValue*>(FUN_4a1e30, &t, 0, text));
         Nat_Release(&t);
-        CallThis(FUN_44b090, text);
+        Vec1_Free((BYTE**)text, 0);
         Nat_Release(&h);
     } else {
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nNumToStr);
+        Sch_Message2(p, 15, (int)((const char*)s_nNumber), (int)((const char*)s_nNumToStr));
         SchValue t;
         CallThis(FUN_4bd4d0, &t);
         CallThis(FUN_454580, out, &t);
@@ -1387,7 +1391,7 @@ SchValue* __cdecl Nat_NumberToString(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_StringToNumber(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0}, h;
-    if (CallC<int>(FUN_491c00, p, &v, args, s_nStrToNum)) {
+    if (Sch_SecondArg(p, &v, args, (int)s_nStrToNum)) {
         Nat_Zero3(&h);
         Nat_Zero3(out);
         Nat_Release(&h);
@@ -1398,7 +1402,7 @@ SchValue* __cdecl Nat_StringToNumber(SchValue* out, BYTE* p, BYTE** args)
         CallThis(FUN_4bd4d0, &h);
         Nat_Typed(&h, &v, 3, s_nString);
         BYTE dq[40];
-        CallThis(FUN_4a1900, dq, &args, 0);
+        SchEmbd4a1900_Construct(dq, 0, (int)&args, 0);
         Nat_Check(&h);
         for (BYTE* c = F(BYTE*, h.obj, 12);; c++) {
             Nat_Check(&h);
@@ -1406,19 +1410,19 @@ SchValue* __cdecl Nat_StringToNumber(SchValue* out, BYTE* p, BYTE** args)
                 break;
             int ch = (signed char)*c;
             if (F(BYTE*, dq, 24) == F(BYTE*, dq, 32) - 4)
-                CallThis(FUN_4a20a0, dq, &ch);
+                DequeDw_PushBackAux(dq, 0, (const DWORD*)&ch);
             else {
-                CallC(FUN_4611c0, F(BYTE*, dq, 24), &ch);
+                Construct4((DWORD*)(F(BYTE*, dq, 24)), (const DWORD*)&ch);
                 F(BYTE*, dq, 24) += 4;
             }
         }
         SchValue t;
         CopyRef(out, CallC<SchValue*>(FUN_4b20d0, &t, p, dq));
         Nat_Release(&t);
-        CallThis(FUN_4a1710, dq);
+        Deque_Destroy(dq);
         Nat_Release(&h);
     } else {
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nString, (const char*)s_nStrToNum);
+        Sch_Message2(p, 15, (int)((const char*)s_nString), (int)((const char*)s_nStrToNum));
         SchValue t;
         CallThis(FUN_4bd4d0, &t);
         CallThis(FUN_454580, out, &t);
@@ -1435,12 +1439,12 @@ SchValue* __cdecl Nat_PairP(SchValue* out, BYTE* p, BYTE** args) { return Nat_Is
 SchValue* __cdecl Nat_Cons(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0}, t;
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, s_nCons)) {
+    if (Sch_Args2(p, &x, &y, args, (int)s_nCons)) {
         Nat_Zero3(&t);
         Nat_Zero3(out);
         Nat_Release(&t);
     } else {
-        CopyRef(out, CallC<SchValue*>(FUN_4a2140, &t, 0, p, &x, &y));
+        CopyRef(out, SchValue_MakePair(&t, 0, p, &x, &y));
         Nat_Release(&t);
     }
     SchValue_Release(&y);
@@ -1478,11 +1482,11 @@ SchValue* __cdecl Nat_CharGe(SchValue* out, BYTE* p, BYTE** args) { return Nat_C
 SchValue* __cdecl Nat_CharToInteger(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, s_nCharToInt))
+    if (Sch_SecondArg(p, &v, args, (int)s_nCharToInt))
         Nat_Zero3(out);
     else if ((BYTE)v.flags == 8) {
         SchValue c, t;
-        CallThis(FUN_4a19c0, &c, &v);
+        SchValue_AsChar(&c, 0, &v);
         int zero = 0;
         CopyRef(out, CallC<SchValue*>(FUN_4a2310, &t, 0, &zero, &c.obj));
         Nat_Release(&t);
@@ -1497,13 +1501,13 @@ SchValue* __cdecl Nat_CharToInteger(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_IntegerToChar(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, s_nIntToChar))
+    if (Sch_SecondArg(p, &v, args, (int)s_nIntToChar))
         Nat_Zero3(out);
     else if ((BYTE)v.flags == 6) {
         SchValue h = {0, 0, 0, 0};
         Nat_Typed(&h, &v, 6, s_nNumber);
         Nat_Check(&h);
-        CallC(FUN_49c210, out, 0, CallThis<int>(FUN_4b0ea0, h.obj));
+        SchValue_Make10008((DWORD*)out, 0, Value_ToInt(h.obj, 0));
         if (!(h.flags & SCH_IMMEDIATE) && h.obj && --F(int, h.obj, 4) == 0)
             CallVirt(h.obj, 12, 1);
     } else
@@ -1517,18 +1521,26 @@ SchValue* __cdecl Nat_IntegerToChar(SchValue* out, BYTE* p, BYTE** args)
 // ---------------------------------------------------------------------------
 // Strings, vectors, procedures and ports.
 
-extern "C" void FUN_4918c0(); KING_ALIAS("_FUN_4918c0", "_Sch_Args3")
+extern "C" int __cdecl Sch_Args3(BYTE* p, SchValue* a, SchValue* b, SchValue* c, BYTE** args, int where);
+extern "C" SchValue* __cdecl SchValue_MakeNumberU(SchValue* out, int, const int* a, const unsigned* b);
 extern "C" void FUN_4a24e0(); KING_ALIAS("_FUN_4a24e0", "_SchValue_MakeNumberU")
+extern "C" BYTE* __fastcall SchValue_Object(const SchValue* self, void*);
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+extern "C" DWORD* __cdecl Sch_MakeVector4a25d0(DWORD* out, int unused, int a, const int* b, const DWORD* h);
 extern "C" void FUN_4a25d0(); KING_ALIAS("_FUN_4a25d0", "_Sch_MakeVector4a25d0")
-extern "C" void FUN_4a5910(); KING_ALIAS("_FUN_4a5910", "_Sch_Message0")
+extern "C" int __cdecl Sch_Message0(BYTE* p, int code);
+extern "C" SchValue* __cdecl SchValue_MakeVector(SchValue* out, int, int n);
 extern "C" void FUN_4a2700(); KING_ALIAS("_FUN_4a2700", "_SchValue_MakeVector")
+extern "C" void __fastcall Vec12_PushBackRef(BYTE* self, void*, const DWORD* x);
 extern "C" void FUN_4a16d0(); KING_ALIAS("_FUN_4a16d0", "@Vec12_PushBackRef@12")
+extern "C" SchValue* __cdecl SchValue_MakeEnv(SchValue* out, int, void* parent);
 extern "C" void FUN_4a27e0(); KING_ALIAS("_FUN_4a27e0", "_SchValue_MakeEnv")
-extern "C" void FUN_4557f0(); KING_ALIAS("_FUN_4557f0", "_Port_MakeA")
+extern "C" DWORD* __cdecl Port_MakeA(DWORD* out, int unused, const int* a, const int* b);
 extern "C" void FUN_4a2be0(); KING_ALIAS("_FUN_4a2be0", "_Values_Copy")
+extern "C" SchValue* __cdecl SchValue_MakeStringB(SchValue* out, int);
 extern "C" void FUN_4a2400(); KING_ALIAS("_FUN_4a2400", "_SchValue_MakeStringB")
-extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
+extern "C" void __fastcall CharVec_InsertRange44c220(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
+extern "C" void __fastcall SchValues_InsertRange(BYTE** v, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void FUN_4a1a40(); KING_ALIAS("_FUN_4a1a40", "@SchValues_InsertRange@20")    // vector<value>::insert(pos, first, last)
 extern "C" void FUN_4b4c20(); KING_ALIAS("_FUN_4b4c20", "_Port_ReadDatum")    // read (out, p, port by value)
 extern "C" void FUN_4b8070(); KING_ALIAS("_FUN_4b8070", "_Sch4b8070")    // write (out, p, value by value, port by value)
@@ -1571,7 +1583,7 @@ static SchValue* Nat_Length(SchValue* out, BYTE* p, BYTE** args, const char* whe
                             int (*len)(BYTE*))
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where))
+    if (Sch_SecondArg(p, &v, args, (int)where))
         Nat_Zero3(out);
     else if ((BYTE)v.flags == type) {
         SchValue h = {0, 0, 0, 0}, t;
@@ -1579,7 +1591,7 @@ static SchValue* Nat_Length(SchValue* out, BYTE* p, BYTE** args, const char* whe
         Nat_Check(&h);
         int zero = 0;
         unsigned n = len(h.obj);
-        CopyRef(out, CallC<SchValue*>(FUN_4a24e0, &t, 0, &zero, &n));
+        CopyRef(out, SchValue_MakeNumberU(&t, 0, &zero, &n));
         Nat_Release(&t);
         Nat_Release(&h);
     } else
@@ -1592,7 +1604,7 @@ static SchValue* Nat_Length(SchValue* out, BYTE* p, BYTE** args, const char* whe
 static SchValue* Nat_IsProcedure(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nProcP))
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nProcP)))
         Nat_Zero3(out);
     else
         Nat_Bool(out, (BYTE)v.flags == 4 || (BYTE)v.flags == 5);
@@ -1604,7 +1616,7 @@ static SchValue* Nat_IsProcedure(SchValue* out, BYTE* p, BYTE** args)
 static SchValue* Nat_PortIs(SchValue* out, BYTE* p, BYTE** args, const char* where, int mask)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+    if (Sch_SecondArg(p, &v, args, (int)where)) {
         Nat_Zero3(out);
         SchValue_Release(&v);
         return out;
@@ -1626,13 +1638,13 @@ static SchValue* Nat_PortIs(SchValue* out, BYTE* p, BYTE** args, const char* whe
 static SchValue* Nat_OpenFile(SchValue* out, BYTE* p, BYTE** args, const char* where, int mode)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+    if (Sch_SecondArg(p, &v, args, (int)where)) {
         Nat_Zero3(out);
         SchValue_Release(&v);
         return out;
     }
     if ((BYTE)v.flags != 3) {
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nString, where);
+        Sch_Message2(p, 15, (int)((const char*)s_nString), (int)where);
         CallThis(FUN_4bd4d0, out);
         Nat_Release(&v);
         return out;
@@ -1642,7 +1654,7 @@ static SchValue* Nat_OpenFile(SchValue* out, BYTE* p, BYTE** args, const char* w
     Nat_Typed(&hs, &v, 3, s_nString);
     Nat_Check(&hs);
     char* name = F(char*, hs.obj, 12);
-    SchValue* r = CallC<SchValue*>(FUN_4557f0, &t, 0, &name, &mode);
+    SchValue* r = (SchValue*)Port_MakeA((DWORD*)&t, 0, (const int*)&name, &mode);
     CallThis(FUN_4bd4d0, &hp);
     if (r->obj) {
         if (CallVirt<int>(r->obj, 0) == 11) {
@@ -1650,7 +1662,7 @@ static SchValue* Nat_OpenFile(SchValue* out, BYTE* p, BYTE** args, const char* w
             hp.flags = r->flags;
             F(int, r->obj, 4)++;
         } else
-            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(r->obj, 4), (const char*)s_nPort);
+            Sch_Error(2, 1, CallVirt<const char*>(r->obj, 4), (const char*)s_nPort);
     } else {
         hp.obj = 0;
         hp.flags = 0;
@@ -1659,7 +1671,7 @@ static SchValue* Nat_OpenFile(SchValue* out, BYTE* p, BYTE** args, const char* w
     Nat_Check(&hp);
     if (CallVirt<int>(hp.obj, 40)) {
         Nat_Check(&hs);
-        CallC(FUN_4a5a60, p, 8, F(char*, hs.obj, 12));
+        Sch_Message1(p, 8, (int)(F(char*, hs.obj, 12)));
         Nat_Zero3(out);
         Nat_Release(&hp);
         Nat_Release(&hs);
@@ -1677,7 +1689,7 @@ static SchValue* Nat_OpenFile(SchValue* out, BYTE* p, BYTE** args, const char* w
 static SchValue* Nat_ClosePort(SchValue* out, BYTE* p, BYTE** args, const char* where)
 {
     SchValue v = {0, 0, 0, 0};
-    if (!CallC<int>(FUN_491c00, p, &v, args, where) && (BYTE)v.flags == 11) {
+    if (!Sch_SecondArg(p, &v, args, (int)where) && (BYTE)v.flags == 11) {
         SchValue h = {0, 0, 0, 0};
         Nat_Typed(&h, &v, 11, s_nPort);
         Nat_Check(&h);
@@ -1700,7 +1712,7 @@ static SchValue* Nat_PortGet(SchValue* out, BYTE* p, BYTE** args, const char* wh
         return out;
     }
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+    if (Sch_SecondArg(p, &v, args, (int)where)) {
         Nat_Zero3(out);
         SchValue_Release(&v);
         return out;
@@ -1715,7 +1727,7 @@ static SchValue* Nat_PortGet(SchValue* out, BYTE* p, BYTE** args, const char* wh
         return out;
     }
     if (report)
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nPort, where);
+        Sch_Message2(p, 15, (int)((const char*)s_nPort), (int)where);
     SchValue_Release(&v);
     Nat_Zero3(out);
     return out;
@@ -1740,7 +1752,7 @@ SchValue* __cdecl Nat_StringLength(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_StringRef(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, (const char*)s_nStrRef)) {
+    if (Sch_Args2(p, &x, &y, args, (int)((const char*)s_nStrRef))) {
         Nat_Zero3(out);
         SchValue_Release(&y);
         SchValue_Release(&x);
@@ -1753,21 +1765,21 @@ SchValue* __cdecl Nat_StringRef(SchValue* out, BYTE* p, BYTE** args)
         CallThis(FUN_4bd4d0, &hn);
         Nat_Typed(&hn, &y, 6, s_nNumber);
         Nat_Check(&hn);
-        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
+        unsigned i = Value_ToInt(hn.obj, 0);
         Nat_Check(&hs);
         if (i >= (unsigned)Nat_StrLen(hs.obj)) {
-            CallC(FUN_4a5a60, p, 23, (const char*)s_nStrRef);
+            Sch_Message1(p, 23, (int)((const char*)s_nStrRef));
             Nat_Release(&hn);
             Nat_Release(&hs);
             Nat_Zero3(out);
         } else {
             Nat_Check(&hs);
-            CallC(FUN_49c210, out, 0, (int)F(signed char*, hs.obj, 12)[i]);
+            SchValue_Make10008((DWORD*)out, 0, (int)F(signed char*, hs.obj, 12)[i]);
             Nat_Release(&hn);
             Nat_Release(&hs);
         }
     } else {
-        CallC(FUN_4a5a60, p, 10, (const char*)s_nStrRef);
+        Sch_Message1(p, 10, (int)((const char*)s_nStrRef));
         Nat_Zero3(out);
     }
     Nat_Release(&y);
@@ -1779,7 +1791,7 @@ SchValue* __cdecl Nat_StringRef(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_StringSet(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0}, c = {0, 0, 0, 0};
-    if (CallC<int>(FUN_4918c0, p, &a, &b, &c, args, (const char*)s_nStrSet)) {
+    if (Sch_Args3(p, &a, &b, &c, args, (int)((const char*)s_nStrSet))) {
         Nat_Zero3(out);
         SchValue_Release(&c);
         SchValue_Release(&b);
@@ -1792,18 +1804,18 @@ SchValue* __cdecl Nat_StringSet(SchValue* out, BYTE* p, BYTE** args)
         Nat_Typed(&hs, &a, 3, s_nString);
         CallThis(FUN_4bd4d0, &hn);
         Nat_Typed(&hn, &b, 6, s_nNumber);
-        CallThis(FUN_4a19c0, &ch, &c);
+        SchValue_AsChar(&ch, 0, &c);
         Nat_Check(&hn);
-        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
-        if (i >= (unsigned)Nat_StrLen(CallThis<BYTE*>(FUN_4aa430, &hs)))
-            CallC(FUN_4a5a60, p, 23, (const char*)s_nStrSet);
+        unsigned i = Value_ToInt(hn.obj, 0);
+        if (i >= (unsigned)Nat_StrLen(SchValue_Object(&hs, 0)))
+            Sch_Message1(p, 23, (int)((const char*)s_nStrSet));
         else
             F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hs), 12)[i] = (BYTE)(DWORD)ch.obj;
         Nat_Release(&ch);
         Nat_Release(&hn);
         Nat_Release(&hs);
     } else
-        CallC(FUN_4a5a60, p, 10, (const char*)s_nStrSet);
+        Sch_Message1(p, 10, (int)((const char*)s_nStrSet));
     Nat_Zero3(out);
     Nat_Release(&c);
     Nat_Release(&b);
@@ -1820,7 +1832,7 @@ SchValue* __cdecl Nat_MakeVector(SchValue* out, BYTE* p, BYTE** args)
     SchValue n = {0, 0, 0, 0};
     CopyRef(&n, (SchValue*)(args[0] + 12));
     if ((BYTE)n.flags != 6) {
-        CallC(FUN_4a5910, p, 21);
+        Sch_Message0(p, 21);
         Nat_Zero3(out);
         SchValue_Release(&n);
         return out;
@@ -1832,13 +1844,13 @@ SchValue* __cdecl Nat_MakeVector(SchValue* out, BYTE* p, BYTE** args)
         want = 3;
     }
     if (want != Nat_Count(args))
-        CallC(FUN_4a5a60, p, 33, (const char*)s_nMakeVector);
+        Sch_Message1(p, 33, (int)((const char*)s_nMakeVector));
     SchValue h, t;
     CallThis(FUN_4bd4d0, &h);
     Nat_Typed(&h, &n, 6, s_nNumber);
     Nat_Check(&h);
-    int k = CallThis<int>(FUN_4b0ea0, h.obj);
-    CallC(FUN_4a25d0, &t, 0, p, &k, &fill);
+    int k = Value_ToInt(h.obj, 0);
+    Sch_MakeVector4a25d0((DWORD*)&t, 0, (int)p, &k, (const DWORD*)&fill);
     CallThis(FUN_454580, out, &t);
     Nat_Release(&t);
     Nat_Release(&h);
@@ -1851,29 +1863,29 @@ SchValue* __cdecl Nat_MakeVector(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_ListToVector(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nListToVector)) {
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nListToVector))) {
         Nat_Zero3(out);
         SchValue_Release(&v);
         return out;
     }
     if ((BYTE)v.flags != 2) {
-        CallC(FUN_4a5a60, p, 21, (const char*)s_nListToVector);
+        Sch_Message1(p, 21, (int)((const char*)s_nListToVector));
         Nat_Zero3(out);
         SchValue_Release(&v);
         return out;
     }
     SchValue vec, cur;
-    CallC(FUN_4a2700, &vec, 0, p);
+    SchValue_MakeVector(&vec, 0, (int)p);
     CopyRef(&cur, &v);
     while (cur.flags || cur.obj) {
         if ((BYTE)cur.flags == 2) {
             SchValue car;
             SchValue* c = CallC<SchValue*>(FUN_407f00, &car, &cur);
             Nat_Check(&vec);
-            CallThis(FUN_4a16d0, vec.obj + 20, c);
+            Vec12_PushBackRef(vec.obj + 20, 0, (const DWORD*)c);
             Nat_Release(&car);
         } else
-            CallC(FUN_4a5a60, p, 17, (const char*)s_nListToVector);
+            Sch_Message1(p, 17, (int)((const char*)s_nListToVector));
         SchValue cdr;
         CallThis(FUN_40c100, &cur, CallC<SchValue*>(FUN_4090a0, &cdr, &cur));
         SchValue_Release(&cdr);
@@ -1895,7 +1907,7 @@ SchValue* __cdecl Nat_VectorLength(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_VectorRef(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, (const char*)s_nVecRef)) {
+    if (Sch_Args2(p, &x, &y, args, (int)((const char*)s_nVecRef))) {
         Nat_Zero3(out);
         SchValue_Release(&y);
         SchValue_Release(&x);
@@ -1908,7 +1920,7 @@ SchValue* __cdecl Nat_VectorRef(SchValue* out, BYTE* p, BYTE** args)
         CallThis(FUN_4bd4d0, &hn);
         Nat_Typed(&hn, &y, 6, s_nNumber);
         Nat_Check(&hn);
-        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
+        unsigned i = Value_ToInt(hn.obj, 0);
         Nat_Check(&hv);
         if (i < (unsigned)Nat_VecLen(hv.obj)) {
             Nat_Check(&hv);
@@ -1919,11 +1931,11 @@ SchValue* __cdecl Nat_VectorRef(SchValue* out, BYTE* p, BYTE** args)
             Nat_Release(&x);
             return out;
         }
-        CallC(FUN_4a5a60, p, 23, (const char*)s_nVecRef);
+        Sch_Message1(p, 23, (int)((const char*)s_nVecRef));
         Nat_Release(&hn);
         Nat_Release(&hv);
     } else
-        CallC(FUN_4a5a60, p, 10, (const char*)s_nVecRef);
+        Sch_Message1(p, 10, (int)((const char*)s_nVecRef));
     CallThis(FUN_4bd4d0, out);
     Nat_Release(&y);
     Nat_Release(&x);
@@ -1934,7 +1946,7 @@ SchValue* __cdecl Nat_VectorRef(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_VectorSet(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0}, c = {0, 0, 0, 0};
-    if (CallC<int>(FUN_4918c0, p, &a, &b, &c, args, (const char*)s_nVecSet)) {
+    if (Sch_Args3(p, &a, &b, &c, args, (int)((const char*)s_nVecSet))) {
         Nat_Zero3(out);
         SchValue_Release(&c);
         SchValue_Release(&b);
@@ -1948,16 +1960,16 @@ SchValue* __cdecl Nat_VectorSet(SchValue* out, BYTE* p, BYTE** args)
         CallThis(FUN_4bd4d0, &hn);
         Nat_Typed(&hn, &b, 6, s_nNumber);
         Nat_Check(&hn);
-        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
+        unsigned i = Value_ToInt(hn.obj, 0);
         Nat_Check(&hv);
         if (i >= (unsigned)Nat_VecLen(hv.obj))
-            CallC(FUN_4a5a60, p, 23, (const char*)s_nVecSet);
+            Sch_Message1(p, 23, (int)((const char*)s_nVecSet));
         else
             CallThis(FUN_40c100, F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hv), 20) + i * 12, &c);
         Nat_Release(&hn);
         Nat_Release(&hv);
     } else
-        CallC(FUN_4a5a60, p, 10, (const char*)s_nVecSet);
+        Sch_Message1(p, 10, (int)((const char*)s_nVecSet));
     CallThis(FUN_4bd4d0, out);
     Nat_Release(&c);
     Nat_Release(&b);
@@ -1977,7 +1989,7 @@ SchValue* __cdecl Nat_Field84(SchValue* out, BYTE* p) { return Nat_Field(out, p,
 SchValue* __cdecl Nat_MakeEnv(SchValue* out, BYTE* p)
 {
     SchValue t;
-    CopyRef(out, CallC<SchValue*>(FUN_4a27e0, &t, 0, p));
+    CopyRef(out, SchValue_MakeEnv(&t, 0, p));
     SchValue_Release(&t);
     return out;
 }
@@ -2000,11 +2012,11 @@ SchValue* __cdecl Nat_PeekChar(SchValue* out, BYTE* p, BYTE** args) { return Nat
 SchValue* __cdecl Nat_EofObjectP(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nEofP))
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nEofP)))
         Nat_Zero3(out);
     else if ((BYTE)v.flags == 8) {
         SchValue c;
-        CallThis(FUN_4a19c0, &c, &v);
+        SchValue_AsChar(&c, 0, &v);
         Nat_Bool(out, (int)c.obj == -1);
         SchValue_Release(&c);
     } else
@@ -2022,18 +2034,18 @@ SchValue* __cdecl Nat_WriteChar(SchValue* out, BYTE* p, BYTE** args)
     BYTE* first = args[0];
     int n = Nat_Count(args);
     if ((unsigned)n < 2)
-        CallC(FUN_4a5a60, p, 33, (const char*)s_nWriteChar);
+        Sch_Message1(p, 33, (int)((const char*)s_nWriteChar));
     else if (F(BYTE, first, 20) != 8)
-        CallC(FUN_4a5b50, p, 15, (const char*)s_nChar, (const char*)s_nWriteChar);
+        Sch_Message2(p, 15, (int)((const char*)s_nChar), (int)((const char*)s_nWriteChar));
     else if (n == 2) {
         SchValue c;
-        CallThis(FUN_4a19c0, &c, first + 12);
+        SchValue_AsChar(&c, 0, (const SchValue*)(first + 12));
         Nat_Check((SchValue*)(p + 84));
         CallVirt(F(BYTE*, p, 84), 28, c.obj);
         Nat_Release(&c);
     } else if (n == 3) {
         SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0};
-        if (CallC<int>(FUN_491aa0, p, &a, &b, args, (const char*)s_nWriteChar)) {
+        if (Sch_Args2(p, &a, &b, args, (int)((const char*)s_nWriteChar))) {
             Nat_Zero3(out);
             SchValue_Release(&b);
             SchValue_Release(&a);
@@ -2041,7 +2053,7 @@ SchValue* __cdecl Nat_WriteChar(SchValue* out, BYTE* p, BYTE** args)
         }
         if ((BYTE)b.flags == 11) {
             SchValue c, h;
-            CallThis(FUN_4a19c0, &c, &a);
+            SchValue_AsChar(&c, 0, &a);
             CallThis(FUN_4bd4d0, &h);
             Nat_Typed(&h, &b, 11, s_nPort);
             Nat_Check(&h);
@@ -2049,11 +2061,11 @@ SchValue* __cdecl Nat_WriteChar(SchValue* out, BYTE* p, BYTE** args)
             Nat_Release(&h);
             Nat_Release(&c);
         } else
-            CallC(FUN_4a5b50, p, 15, (const char*)s_nPort, (const char*)s_nWriteChar);
+            Sch_Message2(p, 15, (int)((const char*)s_nPort), (int)((const char*)s_nWriteChar));
         SchValue_Release(&b);
         Nat_Release(&a);
     } else
-        CallC(FUN_4a5a60, p, 33, (const char*)s_nWriteChar);
+        Sch_Message1(p, 33, (int)((const char*)s_nWriteChar));
     Nat_Zero3(out);
     return out;
 }
@@ -2068,7 +2080,7 @@ SchValue* __cdecl Nat_Read(SchValue* out, BYTE* p, BYTE** args)
         return out;
     }
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nRead)) {
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nRead))) {
         Nat_Zero3(out);
         SchValue_Release(&v);
         return out;
@@ -2108,7 +2120,7 @@ SchValue* __cdecl Nat_Write(SchValue* out, BYTE* p, BYTE** args)
             CallC(FUN_4b8070, &t, p, val, port);
             SchValue_Release(&t);
         } else
-            CallC(FUN_4a5a60, p, 33, (const char*)s_nWrite);
+            Sch_Message1(p, 33, (int)((const char*)s_nWrite));
     } else {
         SchValue12 port, val;
         CallThis(FUN_454580, &port, p + 84);
@@ -2126,7 +2138,7 @@ SchValue* __cdecl Nat_Write(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_MacroExpand(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nMacroExpand))
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nMacroExpand)))
         Nat_Zero3(out);
     else
         CopyRef(out, &v);
@@ -2142,10 +2154,10 @@ SchValue* __cdecl Nat_SetValues(SchValue* out, BYTE* p, BYTE** args)
     BYTE* end = vec[1];
     BYTE* e = vec[1];
     for (BYTE* q = CallC<BYTE*>(FUN_4a2be0, end, end, begin, args, 0); q != e; q += 12)
-        CallThis(FUN_4a36c0, q);
+        SchHandle_Release((void**)q, 0);
     vec[1] = vec[1] - (end - begin) / 12 * 12;
-    CallThis(FUN_4a1a40, vec, vec[1], args[0] + 12, args[1]);
-    CallC(FUN_4a5910, p, 1);
+    SchValues_InsertRange(vec, 0, vec[1], args[0] + 12, args[1]);
+    Sch_Message0(p, 1);
     Nat_Zero3(out);
     return out;
 }
@@ -2154,7 +2166,7 @@ SchValue* __cdecl Nat_SetValues(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_StringAppend(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &a, &b, args, (const char*)s_nStrAppend)) {
+    if (Sch_Args2(p, &a, &b, args, (int)((const char*)s_nStrAppend))) {
         Nat_Zero3(out);
         SchValue_Release(&b);
         SchValue_Release(&a);
@@ -2166,25 +2178,25 @@ SchValue* __cdecl Nat_StringAppend(SchValue* out, BYTE* p, BYTE** args)
         Nat_Typed(&ha, &a, 3, s_nString);
         CallThis(FUN_4bd4d0, &hb);
         Nat_Typed(&hb, &b, 3, s_nString);
-        CallC(FUN_4a2400, &r, 0);
+        SchValue_MakeStringB(&r, 0);
         Nat_Check(&ha);
         BYTE* last = F(BYTE*, ha.obj, 16);
         Nat_Check(&ha);
         BYTE* first = F(BYTE*, ha.obj, 12);
         Nat_Check(&r);
         BYTE* pos = F(BYTE*, r.obj, 16);
-        CallThis(FUN_44c220, CallThis<BYTE*>(FUN_4aa430, &r) + 12, pos, first, last);
+        CharVec_InsertRange44c220((BYTE**)(SchValue_Object(&r, 0) + 12), 0, pos, first, last);
         F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &r), 16) -= 1;
         last = F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hb), 16);
         first = F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hb), 12);
         pos = F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &r), 16);
-        CallThis(FUN_44c220, CallThis<BYTE*>(FUN_4aa430, &r) + 12, pos, first, last);
+        CharVec_InsertRange44c220((BYTE**)(SchValue_Object(&r, 0) + 12), 0, pos, first, last);
         CallThis(FUN_454580, out, &r);
         Nat_Release(&r);
         Nat_Release(&hb);
         Nat_Release(&ha);
     } else {
-        CallC(FUN_4a5a60, p, 10, (const char*)s_nStrAppend);
+        Sch_Message1(p, 10, (int)((const char*)s_nStrAppend));
         CallThis(FUN_4bd4d0, out);
     }
     Nat_Release(&b);
@@ -2198,6 +2210,7 @@ SchValue* __cdecl Nat_StringAppend(SchValue* out, BYTE* p, BYTE** args)
 // not, null?, list and caar .. cddr.
 
 extern "C" void FUN_409070(); KING_ALIAS("_FUN_409070", "_Str_Same")
+extern "C" SchValue* __cdecl SchValue_MakePairB(SchValue* out, int, void* a);
 extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
 KING_VAR(AsmLabel, s_nNot, 670a04)
 KING_VAR(AsmLabel, s_nNullP, 670a08)
@@ -2229,7 +2242,7 @@ static SchValue* Nat_Cxxr(SchValue* out, BYTE* p, BYTE** args, const char* where
 {
     BYTE* a = args[0];
     if ((args[1] - a) / 12 != 2) {
-        CallC(FUN_4a5a60, p, 33, where);
+        Sch_Message1(p, 33, (int)where);
         Nat_Zero3(out);
         return out;
     }
@@ -2243,7 +2256,7 @@ static SchValue* Nat_Cxxr(SchValue* out, BYTE* p, BYTE** args, const char* where
             return out;
         }
     }
-    CallC(FUN_4a5b50, p, 15, (const char*)s_nPair, where);
+    Sch_Message2(p, 15, (int)((const char*)s_nPair), (int)where);
     Nat_Zero3(out);
     return out;
 }
@@ -2254,7 +2267,7 @@ extern "C" {
 SchValue* __cdecl Nat_Not(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nNot))
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nNot)))
         Nat_Zero3(out);
     else
         Nat_Bool(out, (BYTE)v.flags == 7 ? v.obj == 0 : 0);
@@ -2266,7 +2279,7 @@ SchValue* __cdecl Nat_Not(SchValue* out, BYTE* p, BYTE** args)
 SchValue* __cdecl Nat_NullP(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nNullP))
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nNullP)))
         Nat_Zero3(out);
     else
         Nat_Bool(out, !v.obj && !v.flags && !v.m_4);
@@ -2280,17 +2293,17 @@ SchValue* __cdecl Nat_List(SchValue* out, BYTE* p, BYTE** args)
     SchValue acc = {0, 0, 0, 0};
     for (int i = Nat_Count(args) - 1; i; i--) {
         SchValue pr;
-        CallC(FUN_4a28c0, &pr, 0, p);
+        SchValue_MakePairB(&pr, 0, p);
         BYTE* e = args[0] + i * 12;
         if (!pr.obj)
-            CallC(FUN_4a52e0, 0, 1);
+            Sch_ErrorCode(0, 1);
         if (pr.flags & SCH_IMMEDIATE)
-            CallC(FUN_4a52e0, 4, 1);
+            Sch_ErrorCode(4, 1);
         Nat_AssignSame((SchValue*)(pr.obj + 20), (const SchValue*)e);
         if (!pr.obj)
-            CallC(FUN_4a52e0, 0, 1);
+            Sch_ErrorCode(0, 1);
         if (pr.flags & SCH_IMMEDIATE)
-            CallC(FUN_4a52e0, 4, 1);
+            Sch_ErrorCode(4, 1);
         Nat_AssignStr((SchValue*)(pr.obj + 32), &acc);
         CallThis(FUN_40c100, &acc, &pr);
         Nat_Release(&pr);
@@ -2311,9 +2324,12 @@ SchValue* __cdecl Nat_Cddr(SchValue* out, BYTE* p, BYTE** args) { return Nat_Cxx
 // ---------------------------------------------------------------------------
 // eq?
 
+extern "C" void** __fastcall Handle9_Init(void** self, int, void** v);
 extern "C" void FUN_44ca00(); KING_ALIAS("_FUN_44ca00", "@Handle9_Init@12")         // an identifier handle from a value
-extern "C" void FUN_455760(); KING_ALIAS("_FUN_455760", "@StringHandle_From@12")
+extern "C" DWORD* __fastcall StringHandle_From(DWORD* self, void*, const DWORD* v);
+extern "C" DWORD* __fastcall CharHandle_From(DWORD* self, void*, const DWORD* v);
 extern "C" void FUN_4921d0(); KING_ALIAS("_FUN_4921d0", "@CharHandle_From@12")
+extern "C" int __cdecl SchNumber_Eq(const BYTE* a, const BYTE* b);
 extern "C" void FUN_4b0fb0(); KING_ALIAS("_FUN_4b0fb0", "_SchNumber_Eq")
 KING_VAR(AsmLabel, s_nEqP, 670658)
 
@@ -2324,7 +2340,7 @@ extern "C" {
 SchValue* __cdecl Nat_EqP(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, (const char*)s_nEqP)) {
+    if (Sch_Args2(p, &x, &y, args, (int)((const char*)s_nEqP))) {
         Nat_Zero3(out);
         SchValue_Release(&y);
         SchValue_Release(&x);
@@ -2357,8 +2373,8 @@ SchValue* __cdecl Nat_EqP(SchValue* out, BYTE* p, BYTE** args)
         Nat_Release(&x);
         return out;
     case 9:
-        CallThis(FUN_44ca00, &hx, &x);
-        CallThis(FUN_44ca00, &hy, &y);
+        Handle9_Init((void**)&hx, 0, (void**)&x);
+        Handle9_Init((void**)&hy, 0, (void**)&y);
         {
             const char* sy = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hy), 12);
             const char* sx = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hx), 12);
@@ -2368,8 +2384,8 @@ SchValue* __cdecl Nat_EqP(SchValue* out, BYTE* p, BYTE** args)
         Nat_Release(&hx);
         break;
     case 3:
-        CallThis(FUN_455760, &hx, &x);
-        CallThis(FUN_455760, &hy, &y);
+        StringHandle_From((DWORD*)&hx, 0, (const DWORD*)&x);
+        StringHandle_From((DWORD*)&hy, 0, (const DWORD*)&y);
         {
             const char* sy = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hy), 12);
             const char* sx = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hx), 12);
@@ -2379,16 +2395,16 @@ SchValue* __cdecl Nat_EqP(SchValue* out, BYTE* p, BYTE** args)
         Nat_Release(&hx);
         break;
     case 8:
-        CallThis(FUN_4921d0, &hx, &x);
-        CallThis(FUN_4921d0, &hy, &y);
+        CharHandle_From((DWORD*)&hx, 0, (const DWORD*)&x);
+        CharHandle_From((DWORD*)&hy, 0, (const DWORD*)&y);
         Nat_Bool(out, hx.obj == hy.obj);
         Nat_Release(&hy);
         Nat_Release(&hx);
         break;
     case 6:
-        CallThis(FUN_4556d0, &hx, &x);
-        CallThis(FUN_4556d0, &hy, &y);
-        Nat_Bool(out, CallC<BYTE>(FUN_4b0fb0, hx.obj, hy.obj));
+        NumberHandle_From((DWORD*)&hx, 0, (const DWORD*)&x);
+        NumberHandle_From((DWORD*)&hy, 0, (const DWORD*)&y);
+        Nat_Bool(out, (BYTE)SchNumber_Eq(hx.obj, hy.obj));
         Nat_Release(&hy);
         Nat_Release(&hx);
         break;
@@ -2408,8 +2424,8 @@ SchValue* __cdecl Nat_EqP(SchValue* out, BYTE* p, BYTE** args)
 
 extern "C" void FUN_407f60(); KING_ALIAS("_FUN_407f60", "_Str_Member20Checked")
 extern "C" void FUN_407ff0(); KING_ALIAS("_FUN_407ff0", "_Str_Member32Checked")
-extern "C" void FUN_44cab0(); KING_ALIAS("_FUN_44cab0", "@PairHandle_From@12")
-extern "C" void FUN_4a16c0(); KING_ALIAS("_FUN_4a16c0", "@Vec12_At@12")
+extern "C" DWORD* __fastcall PairHandle_From(DWORD* self, void*, const DWORD* v);
+extern "C" BYTE* __fastcall Vec12_At(BYTE** self, void*, int i);
 
 // a value as the compiler passes it by value: the callee releases it
 struct SchArg {
@@ -2423,14 +2439,14 @@ extern "C" int __cdecl Sch_Equal(SchArg a, SchArg b, int extra);
 static int Equal_Elems(SchValue* ha, SchValue* hb, int i, int extra)
 {
     SchArg ea, eb;
-    CallThis(FUN_454580, &eb, CallThis<BYTE*>(FUN_4a16c0, CallThis<BYTE*>(FUN_4aa430, hb) + 20, i));
-    CallThis(FUN_454580, &ea, CallThis<BYTE*>(FUN_4a16c0, CallThis<BYTE*>(FUN_4aa430, ha) + 20, i));
+    CallThis(FUN_454580, &eb, Vec12_At((BYTE**)(SchValue_Object(hb, 0) + 20), 0, i));
+    CallThis(FUN_454580, &ea, Vec12_At((BYTE**)(SchValue_Object(ha, 0) + 20), 0, i));
     return Sch_Equal(ea, eb, extra);
 }
 
 static int Vec_Len(SchValue* h)
 {
-    BYTE* o = CallThis<BYTE*>(FUN_4aa430, h);
+    BYTE* o = SchValue_Object(h, 0);
     return (F(BYTE*, o, 24) - F(BYTE*, o, 20)) / 12;
 }
 
@@ -2461,8 +2477,8 @@ int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
         r = (ha.obj != 0) == (hb.obj != 0);
         break;
     case 9:
-        CallThis(FUN_44ca00, &hb, pa);
-        CallThis(FUN_44ca00, &ha, pb);
+        Handle9_Init((void**)&hb, 0, (void**)pa);
+        Handle9_Init((void**)&ha, 0, (void**)pb);
         {
             const char* sa = F(const char*, CallThis<BYTE*>(FUN_4aa430, &ha), 12);
             const char* sb = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hb), 12);
@@ -2470,8 +2486,8 @@ int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
         }
         break;
     case 3:
-        CallThis(FUN_455760, &hb, pa);
-        CallThis(FUN_455760, &ha, pb);
+        StringHandle_From((DWORD*)&hb, 0, (const DWORD*)pa);
+        StringHandle_From((DWORD*)&ha, 0, (const DWORD*)pb);
         {
             const char* sa = F(const char*, CallThis<BYTE*>(FUN_4aa430, &ha), 12);
             const char* sb = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hb), 12);
@@ -2479,8 +2495,8 @@ int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
         }
         break;
     case 8:
-        CallThis(FUN_4921d0, &ha, pa);
-        CallThis(FUN_4921d0, &hb, pb);
+        CharHandle_From((DWORD*)&ha, 0, (const DWORD*)pa);
+        CharHandle_From((DWORD*)&hb, 0, (const DWORD*)pb);
         r = ha.obj == hb.obj;
         break;
     case 10:
@@ -2493,8 +2509,8 @@ int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
         }
         break;
     case 2:
-        CallThis(FUN_44cab0, &ha, pa);
-        CallThis(FUN_44cab0, &hb, pb);
+        PairHandle_From((DWORD*)&ha, 0, (const DWORD*)pa);
+        PairHandle_From((DWORD*)&hb, 0, (const DWORD*)pb);
         {
             SchArg ca, cb;
             CallC(FUN_407f60, &cb, &hb);
@@ -2507,9 +2523,9 @@ int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
         }
         break;
     case 6:
-        CallThis(FUN_4556d0, &ha, pa);
-        CallThis(FUN_4556d0, &hb, pb);
-        r = CallC<BYTE>(FUN_4b0fb0, ha.obj, hb.obj);
+        NumberHandle_From((DWORD*)&ha, 0, (const DWORD*)pa);
+        NumberHandle_From((DWORD*)&hb, 0, (const DWORD*)pb);
+        r = (BYTE)SchNumber_Eq(ha.obj, hb.obj);
         break;
     default:
         Nat_Release(pa);
@@ -2528,7 +2544,7 @@ int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
 // === eqv? (FUN_491ce0)
 
 KING_VAR(AsmLabel, s_eq670640, 670640)
-extern "C" void FUN_492150(); KING_ALIAS("_FUN_492150", "@BoolHandle_From@12")
+extern "C" DWORD* __fastcall BoolHandle_From(DWORD* self, void*, const DWORD* v);
 extern "C" void FUN_4921d0(); KING_ALIAS("_FUN_4921d0", "@CharHandle_From@12")
 extern "C" void FUN_44ca00(); KING_ALIAS("_FUN_44ca00", "@Handle9_Init@12")
 extern "C" void FUN_4b0fb0(); KING_ALIAS("_FUN_4b0fb0", "_SchNumber_Eq")
@@ -2544,7 +2560,7 @@ extern "C" {
 SchValue* __cdecl Nat_Eqv(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &a, &b, args, (const char*)s_eq670640)) {
+    if (Sch_Args2(p, &a, &b, args, (int)((const char*)s_eq670640))) {
         out->obj = 0;
         out->m_4 = 0;
         out->flags = 0;
@@ -2561,40 +2577,40 @@ SchValue* __cdecl Nat_Eqv(SchValue* out, BYTE* p, BYTE** args)
         SchValue ha, hb;
         switch ((BYTE)a.flags) {
         case 7:
-            CallThis(FUN_492150, &ha, &a);
-            CallThis(FUN_492150, &hb, &b);
+            BoolHandle_From((DWORD*)&ha, 0, (const DWORD*)&a);
+            BoolHandle_From((DWORD*)&hb, 0, (const DWORD*)&b);
             r = (ha.obj != 0) == (hb.obj != 0);
             break;
         case 9:
-            CallThis(FUN_44ca00, &hb, &a);
-            CallThis(FUN_44ca00, &ha, &b);
+            Handle9_Init((void**)&hb, 0, (void**)&a);
+            Handle9_Init((void**)&ha, 0, (void**)&b);
             r = _stricmp(F(const char*, CallThis<BYTE*>(FUN_4aa430, &hb), 12),
                          F(const char*, CallThis<BYTE*>(FUN_4aa430, &ha), 12)) == 0;
             break;
         case 8:
-            CallThis(FUN_4921d0, &ha, &a);
-            CallThis(FUN_4921d0, &hb, &b);
+            CharHandle_From((DWORD*)&ha, 0, (const DWORD*)&a);
+            CharHandle_From((DWORD*)&hb, 0, (const DWORD*)&b);
             r = ha.obj == hb.obj;
             break;
         case 6:
-            CallThis(FUN_4556d0, &ha, &a);
-            CallThis(FUN_4556d0, &hb, &b);
-            r = CallC<BYTE>(FUN_4b0fb0, ha.obj, hb.obj);
+            NumberHandle_From((DWORD*)&ha, 0, (const DWORD*)&a);
+            NumberHandle_From((DWORD*)&hb, 0, (const DWORD*)&b);
+            r = (BYTE)SchNumber_Eq(ha.obj, hb.obj);
             break;
         default:
-            CallC(FUN_492250, out, 0, 0);
+            SchValue_Make10007((DWORD*)out, 0, 0);
             Nat_Release(&b);
             Nat_Release(&a);
             return out;
         }
-        CallC(FUN_492250, out, 0, r);
-        CallThis(FUN_4a36c0, &hb);
-        CallThis(FUN_4a36c0, &ha);
+        SchValue_Make10007((DWORD*)out, 0, r);
+        SchHandle_Release((void**)&hb, 0);
+        SchHandle_Release((void**)&ha, 0);
         Nat_Release(&b);
         Nat_Release(&a);
         return out;
     }
-    CallC(FUN_492250, out, 0, r);
+    SchValue_Make10007((DWORD*)out, 0, r);
     SchValue_Release(&b);
     SchValue_Release(&a);
     return out;
@@ -2618,12 +2634,12 @@ SchValue* __cdecl Nat_Minus(SchValue* out, BYTE* p, BYTE** args)
 // === defining a name in an environment (FUN_4a3180)
 
 extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")
-extern "C" void FUN_460910(); KING_ALIAS("_FUN_460910", "_ConstructStrRef")
+extern "C" void __cdecl ConstructStrRef(DWORD* d, const DWORD* s);
 extern "C" void FUN_4a16d0(); KING_ALIAS("_FUN_4a16d0", "@Vec12_PushBackRef@12")
-extern "C" void FUN_4a3650(); KING_ALIAS("_FUN_4a3650", "@SchValue_Copy@12")
-extern "C" void FUN_4a44a0(); KING_ALIAS("_FUN_4a44a0", "@SchPair_Construct@16")
-extern "C" void FUN_4a47a0(); KING_ALIAS("_FUN_4a47a0", "@SchMap_Construct@16")
-extern "C" void FUN_4a4b00(); KING_ALIAS("_FUN_4a4b00", "@SchMap_InsertUnique@16")
+extern "C" SchValue* __fastcall SchValue_Copy(SchValue* self, void*, const SchValue* from);
+extern "C" BYTE* __fastcall SchPair_Construct(BYTE* self, void*, const SchValue* a, const SchValue* b);
+extern "C" DWORD* __fastcall SchMap_Construct(DWORD* self, void*, const BYTE* cmp, int unused);
+extern "C" BYTE* __fastcall SchMap_InsertUnique(BYTE** self, void*, BYTE* out, const SchValue* key);
 
 // the name of symbol value v (checked: set, not immediate)
 static const char* Df_Name(const SchValue* v)
@@ -2634,7 +2650,7 @@ static const char* Df_Name(const SchValue* v)
 
 static void Df_Release(SchValue* v)
 {
-    CallThis(FUN_4a36c0, v);
+    SchHandle_Release((void**)v, 0);
 }
 
 extern "C" {
@@ -2663,7 +2679,7 @@ void __fastcall Env_Define(BYTE* e, void*, BYTE* p, BYTE* n0, int n1, DWORD n2, 
         }
         CallThis(FUN_40c100, e + 36 + F(int, e, 20) * 12, &name);
         if (vals[1] != vals[2]) {
-            CallC(FUN_460910, vals[1], &val);
+            ConstructStrRef((DWORD*)vals[1], (const DWORD*)&val);
             vals[1] += 12;
         } else
             CallThis(FUN_44c710, vals, vals[1], &val);
@@ -2676,7 +2692,7 @@ void __fastcall Env_Define(BYTE* e, void*, BYTE* p, BYTE* n0, int n1, DWORD n2, 
         BYTE* m = (BYTE*)operator new(12);
         BYTE x1, x2;
         if (m)
-            m = CallThis<BYTE*>(FUN_4a47a0, m, &x2, &x1);
+            m = (BYTE*)SchMap_Construct((DWORD*)m, 0, &x2, (int)&x1);
         F(BYTE*, e, 144) = m;
         for (int i = 0; i < F(int, e, 20); i++) {
             DWORD mapped[4];
@@ -2684,9 +2700,9 @@ void __fastcall Env_Define(BYTE* e, void*, BYTE* p, BYTE* n0, int n1, DWORD n2, 
             mapped[3] = i;
             DWORD pair[7];
             CallThis(FUN_454580, pair, e + 36 + i * 12);
-            CallThis(FUN_4a3650, pair + 3, mapped);
+            SchValue_Copy((SchValue*)(pair + 3), 0, (const SchValue*)mapped);
             DWORD res[2];
-            CallThis(FUN_4a4b00, F(BYTE*, e, 144), res, pair);
+            SchMap_InsertUnique((BYTE**)(F(BYTE*, e, 144)), 0, (BYTE*)res, (const SchValue*)pair);
             Df_Release((SchValue*)(pair + 3));
             Df_Release((SchValue*)pair);
             Df_Release((SchValue*)mapped);
@@ -2696,13 +2712,13 @@ void __fastcall Env_Define(BYTE* e, void*, BYTE* p, BYTE* n0, int n1, DWORD n2, 
     CallThis(FUN_454580, mapped, &val);
     mapped[3] = (int)(vals[1] - vals[0]) / 12;
     DWORD pair[7];
-    CallThis(FUN_4a44a0, pair, &name, mapped);
+    SchPair_Construct((BYTE*)pair, 0, &name, (const SchValue*)mapped);
     DWORD res[2];
-    CallThis(FUN_4a4b00, F(BYTE*, e, 144), res, pair);
-    CallThis(FUN_4a36f0, pair);
+    SchMap_InsertUnique((BYTE**)(F(BYTE*, e, 144)), 0, (BYTE*)res, (const SchValue*)pair);
+    HandlePair_Destroy((BYTE*)pair, 0);
     BYTE* node = (BYTE*)res[0];
     if ((BYTE)res[1])
-        CallThis(FUN_4a16d0, vals, &val);
+        Vec12_PushBackRef((BYTE*)vals, 0, (const DWORD*)&val);
     else {
         CallThis(FUN_40c100, node + 28, &val);
         CallThis(FUN_40c100, vals[0] + F(int, node, 40) * 12, &val);
@@ -2718,9 +2734,9 @@ void __fastcall Env_Define(BYTE* e, void*, BYTE* p, BYTE* n0, int n1, DWORD n2, 
 
 KING_VAR(AsmLabel, s_ms670884, 670884)
 extern "C" void FUN_44a490(); KING_ALIAS("_FUN_44a490", "@Vec1_Reserve@16")
-extern "C" void FUN_469410(); KING_ALIAS("_FUN_469410", "_FillBytes")
-extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
-extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" char* __cdecl FillBytes(char* d, unsigned n, const char* v);
+extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src);
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
 extern "C" void FUN_49c560(); KING_ALIAS("_FUN_49c560", "@SchValue_Assign@12")
 extern "C" void FUN_4a2400(); KING_ALIAS("_FUN_4a2400", "_SchValue_MakeStringB")
 
@@ -2732,7 +2748,7 @@ SchValue* __cdecl Nat_MakeString(SchValue* out, BYTE* p, BYTE** args)
     SchValue v;
     CopyRef(&v, (SchValue*)(args[0] + 12));
     if ((BYTE)v.flags != 6) {
-        CallC(FUN_4a5910, p, 21);
+        Sch_Message0(p, 21);
         Nat_Zero3(out);
         Nat_Release(&v);
         return out;
@@ -2742,33 +2758,33 @@ SchValue* __cdecl Nat_MakeString(SchValue* out, BYTE* p, BYTE** args)
     int k = 2;
     if (Nat_Count(args) != 2) {
         SchValue c;
-        CallThis(FUN_4a19c0, &c, args[0] + 24);
+        SchValue_AsChar(&c, 0, (const SchValue*)(args[0] + 24));
         CallThis(FUN_49c560, &ch, &c);
-        CallThis(FUN_4a36c0, &c);
+        SchHandle_Release((void**)&c, 0);
         k = 3;
     }
     if (Nat_Count(args) != k)
-        CallC(FUN_4a5a60, p, 33, (const char*)s_ms670884);
+        Sch_Message1(p, 33, (int)((const char*)s_ms670884));
     SchValue s, num;
-    CallC(FUN_4a2400, &s, 0);
+    SchValue_MakeStringB(&s, 0);
     CallThis(FUN_4bd4d0, &num);
     Nat_Typed(&num, &v, 6, s_nNumber);
     char fill = (!ch.obj && !ch.flags && !ch.m_4) ? ' ' : (char)(int)ch.obj;
     Nat_Check(&num);
-    int len = CallThis<int>(FUN_4b0ea0, num.obj) + 1;
+    int len = Value_ToInt(num.obj, 0) + 1;
     BYTE* tmp[3];
     BYTE alloc;
     CallThis(FUN_44a490, tmp, len, &alloc);
-    tmp[1] = CallC<BYTE*>(FUN_469410, tmp[0], len, &fill);
-    CallThis(FUN_44c160, CallThis<BYTE*>(FUN_4aa430, &s) + 12, tmp);
-    CallThis(FUN_404420, tmp);
-    BYTE* str = CallThis<BYTE*>(FUN_4aa430, &s) + 12;
+    tmp[1] = (BYTE*)FillBytes((char*)tmp[0], len, &fill);
+    PodVec_Assign((BYTE**)(SchValue_Object(&s, 0) + 12), 0, tmp);
+    VecB_FreeStorage(tmp, 0);
+    BYTE* str = SchValue_Object(&s, 0) + 12;
     F(BYTE*, str, 4)[-1] = 0;
     CallThis(FUN_454580, out, &s);
-    CallThis(FUN_4a36c0, &num);
-    CallThis(FUN_4a36c0, &s);
-    CallThis(FUN_4a36c0, &ch);
-    CallThis(FUN_4a36c0, &v);
+    SchHandle_Release((void**)&num, 0);
+    SchHandle_Release((void**)&s, 0);
+    SchHandle_Release((void**)&ch, 0);
+    SchHandle_Release((void**)&v, 0);
     return out;
 }
 
@@ -2807,14 +2823,14 @@ void __fastcall SchValues_InsertRange(BYTE** v, void*, BYTE* pos, BYTE* first, B
     }
     unsigned size = (unsigned)(end - v[0]) / 12;
     unsigned len = size + (size < (unsigned)n ? (unsigned)n : size);
-    BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len * 12) : 0;
+    BYTE* p = len ? (BYTE*)Stl_Allocate(len * 12) : 0;
     BYTE* e = UninitCopyStrRefs(v[0], pos, p);
     e = UninitCopyStrRefs(first, last, e);
     e = UninitCopyStrRefs(pos, v[1], e);
     for (BYTE* q = v[0]; q != v[1]; q += 12)
-        CallThis(FUN_4a36c0, q);
+        SchHandle_Release((void**)q, 0);
     if (int cap = (int)(v[2] - v[0]) / 12)
-        CallC(FUN_44b4a0, v[0], cap * 12);
+        Ai_PoolFree(v[0], cap * 12);
     v[1] = e;
     v[0] = p;
     v[2] = p + len * 12;
@@ -2824,7 +2840,7 @@ void __fastcall SchValues_InsertRange(BYTE** v, void*, BYTE* pos, BYTE* first, B
 
 // === copying a scope (FUN_4a2ef0)
 
-extern "C" void FUN_4a4870(); KING_ALIAS("_FUN_4a4870", "@SchMap_Copy@12")
+extern "C" DWORD* __fastcall SchMap_Copy(DWORD* self, void*, const DWORD* s);
 extern "C" void Nat_VecCtorEh(); KING_ALIAS("_Nat_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
 
 // d = s for script values (12 bytes: object, -, flags); d's old object released unless it is s's
@@ -2872,7 +2888,7 @@ BYTE* __fastcall SchScope_Copy(BYTE* self, void*, BYTE* outer, BYTE* s)
     BYTE** sv = (BYTE**)(s + 132);
     int n = (int)(sv[1] - sv[0]) / 12;
     v[0] = v[1] = v[2] = 0;
-    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 12) : 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 12) : 0;
     v[0] = v[1] = p;
     v[2] = p + n * 12;
     v[1] = UninitCopyStrRefs(sv[0], sv[1], p);
@@ -2896,7 +2912,7 @@ BYTE* __fastcall SchScope_Copy(BYTE* self, void*, BYTE* outer, BYTE* s)
     if (F(BYTE*, s, 144)) {
         BYTE* m = (BYTE*)operator new(12);
         if (m)
-            CallThis(FUN_4a4870, m, F(BYTE*, s, 144));
+            SchMap_Copy((DWORD*)m, 0, (const DWORD*)(F(BYTE*, s, 144)));
         F(BYTE*, self, 144) = m;
     } else
         for (int i = 0; i < F(int, self, 20); i++)
@@ -2928,22 +2944,22 @@ DWORD* __cdecl Sch_Reverse(DWORD* out, BYTE* ctx, DWORD v0, DWORD v1, DWORD v2)
     DWORD acc[3] = {0, 0, 0};
     while (v[2] || v[0]) {
         if ((BYTE)v[2] != 2) {
-            CallC(FUN_4a5a60, ctx, 10, (const char*)s_rv6709ec);
+            Sch_Message1(ctx, 10, (int)((const char*)s_rv6709ec));
             CallThis(FUN_4bd4d0, out);
             out[0] = 0;
             out[2] = 0;
-            CallThis(FUN_4a36c0, acc);
+            SchHandle_Release((void**)acc, 0);
             Rv_Release(v);
             return out;
         }
         DWORD t[3], car[3], cdr[3];
         SchValue_MakePairB((SchValue*)t, 0, ctx);
         CallC(FUN_407f00, car, v);
-        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, t) + 20, car);
-        CallThis(FUN_4a36c0, car);
-        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, t) + 32, acc);
+        CallThis(FUN_40c100, SchValue_Object((const SchValue*)t, 0) + 20, car);
+        SchHandle_Release((void**)car, 0);
+        CallThis(FUN_40c100, SchValue_Object((const SchValue*)t, 0) + 32, acc);
         CallThis(FUN_49c560, acc, t);
-        CallThis(FUN_4a36c0, t);
+        SchHandle_Release((void**)t, 0);
         DWORD* c = CallC<DWORD*>(FUN_4090a0, cdr, v);
         BYTE* o = (BYTE*)v[0];
         if (o && !(v[2] & 0x10000) && --F(int, o, 4) == 0 && !CallC<char>(FUN_409070, v, c) && v[0])
@@ -2964,8 +2980,8 @@ DWORD* __cdecl Sch_Reverse(DWORD* out, BYTE* ctx, DWORD v0, DWORD v1, DWORD v2)
         Rv_Release(cdr);
     }
     CallThis(FUN_454580, out, acc);
-    CallThis(FUN_4a36c0, acc);
-    CallThis(FUN_4a36c0, v);
+    SchHandle_Release((void**)acc, 0);
+    SchHandle_Release((void**)v, 0);
     return out;
 }
 
@@ -2979,14 +2995,14 @@ extern "C" {
 void __fastcall Deque_Destroy(BYTE* d)
 {
     DequeIt a, b;
-    CallThis(FUN_4abea0, &a, d + 8);
+    Sch_Copy16((DWORD*)&a, 0, (const DWORD*)(d + 8));
     memcpy(&b, d + 24, 16);
     DequeIt_Pass0(a, b);
     if (F(void*, d, 0)) {
         for (void** n = F(void**, d, 20); n < F(void**, d, 36) + 1; n++)
             free(*n);
         if (int m = F(int, d, 4))
-            CallC(FUN_44b4a0, F(void*, d, 0), m * 4);
+            Ai_PoolFree(F(void*, d, 0), m * 4);
     }
 }
 
@@ -3002,7 +3018,7 @@ extern "C" {
 SchValue* __cdecl Nat_Reverse(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue v = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nReverse))
+    if (Sch_SecondArg(p, &v, args, (int)((const char*)s_nReverse)))
         Nat_Zero3(out);
     else {
         SchValue c, r;
@@ -3022,7 +3038,7 @@ KING_VAR(char, s_nEqualQ, 67065c)    // "equal?"
 extern "C" SchValue* __cdecl Nat_EqualQ(SchValue* out, BYTE* p, BYTE** args)
 {
     SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
-    if (CallC<int>(FUN_491aa0, p, &x, &y, args, &s_nEqualQ)) {
+    if (Sch_Args2(p, &x, &y, args, (int)&s_nEqualQ)) {
         out->obj = 0;
         out->m_4 = 0;
         out->flags = 0;

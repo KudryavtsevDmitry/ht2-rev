@@ -12,18 +12,12 @@ typedef char AsmLabel[1];
 typedef DWORD Dwords[1];
 extern "C" int __cdecl rand();
 
+extern "C" void __fastcall Node_Unlink(BYTE* self, void*);
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
-extern "C" void FUN_5c2800(); KING_ALIAS("_FUN_5c2800", "_Msavi_CreateStreamingBuffer")    // msavi: create the sound buffer
-extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
-extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
-extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
-extern "C" void FUN_6022a0(); KING_ALIAS("_FUN_6022a0", "_Dp_Shutdown")
-extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
-extern "C" void FUN_5ab160(); KING_ALIAS("_FUN_5ab160", "_File_WriteInt")  // write an int to a file (value, file)
-extern "C" void FUN_5c3f20(); KING_ALIAS("_FUN_5c3f20", "@Media_Construct@12")
-extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
 
 // msavi
 typedef void(__cdecl* WaveRead)(DWORD size, BYTE* buf, DWORD* got, int ctx);
@@ -67,7 +61,7 @@ KING_VAR(AsmLabel, s_treeShadow, 67f9ac)
 
 static __forceinline void Log(const char* s, int v)
 {
-    CallC(FUN_5d2ba0, s, v);
+    Sys_Log(s, v);
 }
 
 static __forceinline void Release(BYTE* com)
@@ -83,12 +77,15 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 
 extern "C" void FUN_5cfb30(); KING_ALIAS("_FUN_5cfb30", "_Poly_Draw")
 extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
-extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in seconds, returns double
+extern "C" double __cdecl Tsc_Now();
+extern "C" void __fastcall Owner_Detach(BYTE* self, void*, BYTE* node);
 extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")
+extern "C" void __fastcall Queue_RemoveKey(BYTE* self, void*, int key);
 extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
+extern "C" BYTE* __fastcall Node_Next(BYTE* self, void*);
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
+extern "C" void __fastcall Queue_RunEvent(BYTE* self, void*, BYTE* ev);
 extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
-extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 KING_VAR(int, g_67faa0, 67faa0)
 KING_VAR(int, g_71e800, 71e800)
 KING_VAR(int, g_71e7d4, 71e7d4)
@@ -320,13 +317,13 @@ void __cdecl Set720080(const char* s)
 // [FUN_5d2fa0]
 void __cdecl Time_NowMs(double* out)
 {
-    *out = CallC<double>(FUN_6037e0) * 1000.0;
+    *out = Tsc_Now() * 1000.0;
 }
 
 // [FUN_5d2fc0] *last becomes the time since *last (not negative), added to *acc
 void __cdecl Time_Delta(double* last, double* acc)
 {
-    double t = CallC<double>(FUN_6037e0) * 1000.0 - *last;
+    double t = Tsc_Now() * 1000.0 - *last;
     if (!(t >= 0.0f))
         t = 0.0f;
     *acc = t + *acc;
@@ -373,7 +370,7 @@ BYTE* __fastcall Event_Construct3(BYTE* self, void*, int a, int b, int c)
 void __fastcall Handle_Release(BYTE* self, void*)
 {
     if (F(BYTE*, self, 12))
-        CallThis(FUN_5d35b0, F(BYTE*, self, 12), self);
+        Owner_Detach(F(BYTE*, self, 12), 0, self);
     F(int, self, 12) = 0;
 }
 
@@ -381,14 +378,14 @@ void __fastcall Handle_Release(BYTE* self, void*)
 void __fastcall Handle_Call3790(BYTE* self, void*)
 {
     if (F(BYTE*, self, 12))
-        CallThis(FUN_5d3790, F(BYTE*, self, 12), self);
+        Queue_RemoveKey(F(BYTE*, self, 12), 0, (int)self);
 }
 
 // [FUN_5d3820] how many queued events have +12 == key
 int __fastcall Queue_Count(BYTE* self, void*, int key)
 {
     int n = 0;
-    for (BYTE* e = F(BYTE*, self, 12); e; e = CallThis<BYTE*>(FUN_5d3080, e))
+    for (BYTE* e = F(BYTE*, self, 12); e; e = Node_Next(e, 0))
         if (F(int, e, 12) == key)
             n++;
     return n;
@@ -404,7 +401,7 @@ int __fastcall Handle_Count(BYTE* self, void*)
 // [FUN_5d3630]
 void __fastcall Queue_Log(BYTE* self, void*)
 {
-    for (BYTE* e = F(BYTE*, self, 12); e; e = CallThis<BYTE*>(FUN_5d3080, e))
+    for (BYTE* e = F(BYTE*, self, 12); e; e = Node_Next(e, 0))
         Log(F(const char*, F(BYTE*, e, 12), 28), F(int, e, 20));
 }
 
@@ -422,9 +419,9 @@ void __fastcall Queue_Tick(BYTE* self, void*)
 {
     BYTE* e;
     while ((e = F(BYTE*, self, 12)) != 0 && F(int, e, 16) <= F(int, self, 0))
-        CallThis(FUN_5d38c0, self, e);
+        Queue_RunEvent(self, 0, e);
     while ((e = F(BYTE*, self, 8)) != 0 && F(int, e, 16) <= Queue_NowMs(self, 0))
-        CallThis(FUN_5d38c0, self, e);
+        Queue_RunEvent(self, 0, e);
     F(int, self, 0) = F(int, self, 0) + 1;
 }
 
@@ -432,9 +429,9 @@ void __fastcall Queue_Tick(BYTE* self, void*)
 void __fastcall Queue_Remove(BYTE* self, void*, BYTE* e)
 {
     if (e == F(BYTE*, self, 12)) {
-        F(BYTE*, self, 12) = CallThis<BYTE*>(FUN_5d3080, e);
+        F(BYTE*, self, 12) = Node_Next(e, 0);
     } else if (e == F(BYTE*, self, 8)) {
-        F(BYTE*, self, 8) = CallThis<BYTE*>(FUN_5d3080, e);
+        F(BYTE*, self, 8) = Node_Next(e, 0);
     } else {
         Node_Unlink(e, 0);
         return;
@@ -534,7 +531,7 @@ void __fastcall Queue_Insert(BYTE* self, void*, BYTE* ev)
         F(BYTE*, self, 12) = ev;
         return;
     }
-    for (; n; n = CallThis<BYTE*>(FUN_5d3080, n))
+    for (; n; n = Node_Next(n, 0))
         if (F(int, n, 12) == F(int, ev, 12) && F(int, n, 16) == F(int, ev, 16) && F(int, n, 20) == F(int, ev, 20)) {
             CallVirt(ev, 0, 1);
             return;
@@ -548,9 +545,9 @@ void __fastcall Queue_Insert(BYTE* self, void*, BYTE* ev)
         return;
     }
     BYTE* q;
-    while ((q = CallThis<BYTE*>(FUN_5d3080, p)) != 0 && F(int, q, 16) < F(int, ev, 16))
+    while ((q = Node_Next(p, 0)) != 0 && F(int, q, 16) < F(int, ev, 16))
         p = q;
-    while ((q = CallThis<BYTE*>(FUN_5d3080, p)) != 0 && F(int, q, 16) == F(int, ev, 16) &&
+    while ((q = Node_Next(p, 0)) != 0 && F(int, q, 16) == F(int, ev, 16) &&
            F(int, F(BYTE*, q, 12), 20) > F(int, F(BYTE*, ev, 12), 20))
         p = q;
     Node_Link(ev, 0, p);
@@ -562,14 +559,20 @@ void __fastcall Queue_Insert(BYTE* self, void*, BYTE* ev)
 // Fatal errors and the event queues' holders (split procs: their code ran on
 // past ENDP after the call to the fatal error function, which never returns).
 
+extern "C" int __cdecl Table71e858_Get(int i);
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")    // a text of the resources
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" BYTE* __fastcall Event_Construct(BYTE* self, void*, int a, int b);
 extern "C" void FUN_5d3090(); KING_ALIAS("_FUN_5d3090", "@Event_Construct@16")
+extern "C" BYTE* __fastcall Event_Construct3(BYTE* self, void*, int a, int b, int c);
 extern "C" void FUN_5d30e0(); KING_ALIAS("_FUN_5d30e0", "@Event_Construct3@20")
+extern "C" void __fastcall Queue_Log(BYTE* self, void*);
 extern "C" void FUN_5d3630(); KING_ALIAS("_FUN_5d3630", "@Queue_Log@8")
 extern "C" void FUN_5d3660(); KING_ALIAS("_FUN_5d3660", "@Queue_Insert@12")
+extern "C" void __fastcall Queue_Remove(BYTE* self, void*, BYTE* e);
 extern "C" void FUN_5d3a60(); KING_ALIAS("_FUN_5d3a60", "@Queue_Remove@12")
+extern "C" DWORD __fastcall Pool_Used(BYTE* self, void*, BYTE* p);
 extern "C" void FUN_5d2b20(); KING_ALIAS("_FUN_5d2b20", "@Pool_Used@12")
 extern "C" void FUN_5d3060(); KING_ALIAS("_FUN_5d3060", "_Pool7200c0_Alloc")    // event pool: allocate (size ignored)
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
@@ -600,7 +603,7 @@ extern "C" void __cdecl Sys_Exit(const char* msg)
     GetLocalTime(&t);
     sprintf(g_text720028, s_67fbe0, t.wDay, t.wMonth, t.wYear % 100, t.wHour, t.wMinute);
     sprintf(g_text71f820, s_67fbd0, (char*)g_text720080, (char*)g_text720028, msg);
-    CallC(FUN_5d2ba0, (char*)g_text71f820, 0);
+    Sys_Log((char*)g_text71f820, 0);
     g_pfnOnFatal();
     _exit(0);
 }
@@ -608,7 +611,7 @@ extern "C" void __cdecl Sys_Exit(const char* msg)
 // [FUN_5d2e70..$L_5d2e9e] the fatal error: formats (fmt, arg) after resource text 0 and ends the program
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg)
 {
-    const char* head = CallC<const char*>(FUN_5d2e50, 0);
+    const char* head = (const char*)Table71e858_Get(0);
     sprintf(g_text71fc20, s_67fbc4, head, fmt, arg);
     Sys_Exit(g_text71fc20);
 }
@@ -633,7 +636,7 @@ extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node)
         F(BYTE*, self, 4) = node;
         return;
     }
-    CallThis(FUN_5d2190, node, head);
+    Node_Link(node, 0, head);
 }
 
 // [FUN_5d2ac0..$L_5d2b0d] frees an element of a fixed-size pool {size, count, base, used flags}; fatal when it isn't one
@@ -655,11 +658,11 @@ static int Queue_PostMade(BYTE* self, int arg, int kind)
     void* m = CallC<void*>(FUN_5d3060, 24);
     BYTE* ev = 0;
     if (m)
-        ev = kind < 0 ? CallThis<BYTE*>(FUN_5d3090, m, self, arg)
-                      : CallThis<BYTE*>(FUN_5d30e0, m, self, arg, kind);
+        ev = kind < 0 ? Event_Construct((BYTE*)m, 0, (int)self, arg)
+                      : Event_Construct3((BYTE*)m, 0, (int)self, arg, kind);
     if (!ev)
     {
-        CallThis(FUN_5d3630, F(void*, self, 12));
+        Queue_Log((BYTE*)(F(void*, self, 12)), 0);
         Sys_Fatal(s_67fbfc, 0);
     }
     return CallThis<int>(FUN_5d3660, F(void*, self, 12), ev);
@@ -688,10 +691,10 @@ static void Queue_DropKey(BYTE* self, BYTE* list, int key)
 {
     for (BYTE* n = list; n; )
     {
-        BYTE* next = CallThis<BYTE*>(FUN_5d3080, n);
+        BYTE* next = Node_Next(n, 0);
         if (F(int, n, 12) == key)
         {
-            CallThis(FUN_5d3a60, self, n);
+            Queue_Remove(self, 0, n);
             if (n)
                 CallVirt(n, 0, 1);
         }
@@ -711,9 +714,9 @@ extern "C" void __fastcall Queue_RemoveKey(BYTE* self, void*, int key)
 // unlinks and deletes every child of list
 static void Owner_DeleteChildren(BYTE* list)
 {
-    for (BYTE* n = CallThis<BYTE*>(FUN_5d3080, list); n; n = CallThis<BYTE*>(FUN_5d3080, list))
+    for (BYTE* n = Node_Next(list, 0); n; n = Node_Next(list, 0))
     {
-        CallThis(FUN_5d21b0, n);
+        Node_Unlink(n, 0);
         if (n)
             CallVirt(n, 0, 1);
     }
@@ -734,7 +737,7 @@ extern "C" void __fastcall Owner_Clear(BYTE* self, void*)
     if (q)
     {
         Owner_DeleteChildren(q);
-        if (!CallThis<int>(FUN_5d2b20, g_pool7200c0, q))
+        if (!(int)Pool_Used((BYTE*)g_pool7200c0, 0, q))
             Sys_Fatal(s_67fc3c, 0);
         CallVirt(q, 0, 1);
         F(BYTE*, self, 8) = 0;
@@ -822,7 +825,7 @@ extern "C" void __fastcall Queue_RunEvent(BYTE* self, void*, BYTE* ev)
     }
     else
     {
-        CallThis(FUN_5d35b0, self, task);
+        Owner_Detach(self, 0, task);
         if (task)
             CallVirt(task, 0, 1);
         return;
@@ -862,7 +865,7 @@ extern "C" BYTE* __fastcall Node_Next(BYTE* self, void*) { return F(BYTE*, self,
 // [FUN_5d35b0] detaches a task from this owner's list (+4 head)
 extern "C" void __fastcall Owner_Detach(BYTE* self, void*, BYTE* node)
 {
-    CallThis(FUN_5d3790, self, node);
+    Queue_RemoveKey(self, 0, (int)node);
     if (node == F(BYTE*, self, 4))
     {
         F(BYTE*, self, 4) = F(BYTE*, node, 8);
@@ -871,7 +874,7 @@ extern "C" void __fastcall Owner_Detach(BYTE* self, void*, BYTE* node)
         F(BYTE*, node, 12) = 0;
         return;
     }
-    CallThis(FUN_5d21b0, node);
+    Node_Unlink(node, 0);
     F(BYTE*, node, 12) = 0;
 }
 
@@ -891,28 +894,32 @@ static BYTE* Cor_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 // [$L_5d31c0]
 extern "C" BYTE* __fastcall Cor5d31c0_DeletingDestructor(BYTE* s, void*, int flags) { return Cor_DeleteAfter(s, flags, FUN_5d3290); }
 
+extern "C" void __fastcall Cor5d2950_Destroy(BYTE* s);
 extern "C" void FUN_5d2950(); KING_ALIAS("_FUN_5d2950", "@Cor5d2950_Destroy@4")
+extern "C" void __cdecl Pool71e830_Free(BYTE* p);
 extern "C" void FUN_5d2a10(); KING_ALIAS("_FUN_5d2a10", "_Pool71e830_Free")
-extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
+extern "C" void __fastcall Light_DestructBase(BYTE* self, void*);
+extern "C" int __cdecl Pool7200c0_Free(void* p);
 extern "C" void FUN_5d3070(); KING_ALIAS("_FUN_5d3070", "_Pool7200c0_Free")
 
 // [$L_5d2930] freed with FUN_5d2a10
 extern "C" BYTE* __fastcall Cor5d2930_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5d2950, s);
+    Cor5d2950_Destroy(s);
     if (flags & 1)
-        CallC(FUN_5d2a10, s);
+        Pool71e830_Free(s);
     return s;
 }
 // [$L_5d30c0] freed with FUN_5d3070
 extern "C" BYTE* __fastcall Cor5d30c0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5ce630, s);
+    Light_DestructBase(s, 0);
     if (flags & 1)
-        CallC(FUN_5d3070, s);
+        Pool7200c0_Free(s);
     return s;
 }
 
+extern "C" void __fastcall Handle_Release(BYTE* self, void*);
 extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
 KING_VAR(AsmLabel, g_cor651ea0, 651ea0)
 KING_VAR(AsmLabel, g_cor651ec8, 651ec8)
@@ -929,7 +936,7 @@ extern "C" void __fastcall Cor5d2950_Destroy(BYTE* s)
 extern "C" void __fastcall Object_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_cor651ec8;
-    CallThis(FUN_5d33b0, s);
+    Handle_Release(s, 0);
     if (F(void*, s, 28))
         operator delete(F(void*, s, 28));
     F(void*, s, 0) = g_cor64d81c;
@@ -1394,10 +1401,10 @@ extern "C" void __cdecl Core_Free71e838(void)
 // Static initializers: construct a global, register its teardown at exit.
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-extern "C" void q197_FUN_5d29b0(); KING_ALIAS("_q197_FUN_5d29b0", "_Pool71e830_Init")
-extern "C" void q197_FUN_5d2b50(); KING_ALIAS("_q197_FUN_5d2b50", "_Static71e820_Construct")
-extern "C" void q197_FUN_5d2c00(); KING_ALIAS("_q197_FUN_5d2c00", "_Messages_Load")
-extern "C" void q197_FUN_5d3010(); KING_ALIAS("_q197_FUN_5d3010", "_Pool7200c0_Init")
+extern "C" void __cdecl Pool71e830_Init();
+extern "C" int __cdecl Static71e820_Construct(void);
+extern "C" void __cdecl Messages_Load();
+extern "C" void __cdecl Pool7200c0_Init();
 extern "C" void q197_L_5d29e0(); KING_ALIAS("_q197_L_5d29e0", "_Core_Free71e838")
 extern "C" void q197_L_5d2b70(); KING_ALIAS("_q197_L_5d2b70", "_Static71e820_Destroy")
 extern "C" void q197_L_5d2e20(); KING_ALIAS("_q197_L_5d2e20", "_Table71e858_FreeAll")
@@ -1407,7 +1414,7 @@ extern "C" int __cdecl Static5d29a0_AtExit(void) { return atexit((void(__cdecl*)
 // [$L_5d29a0] the static initializer: FUN_5d29b0, then the teardown at exit
 extern "C" int __cdecl Static5d29a0_Init(void)
 {
-    CallC(q197_FUN_5d29b0);
+    Pool71e830_Init();
     return Static5d29a0_AtExit();
 }
 // [$L_5d2b60] registers the teardown at exit
@@ -1415,7 +1422,7 @@ extern "C" int __cdecl Static5d2b40_AtExit(void) { return atexit((void(__cdecl*)
 // [$L_5d2b40] the static initializer: FUN_5d2b50, then the teardown at exit
 extern "C" int __cdecl Static5d2b40_Init(void)
 {
-    CallC(q197_FUN_5d2b50);
+    Static71e820_Construct();
     return Static5d2b40_AtExit();
 }
 // [$L_5d2e10] registers the teardown at exit
@@ -1423,7 +1430,7 @@ extern "C" int __cdecl Static5d2bf0_AtExit(void) { return atexit((void(__cdecl*)
 // [$L_5d2bf0] the static initializer: FUN_5d2c00, then the teardown at exit
 extern "C" int __cdecl Static5d2bf0_Init(void)
 {
-    CallC(q197_FUN_5d2c00);
+    Messages_Load();
     return Static5d2bf0_AtExit();
 }
 // [$L_5d3030] registers the teardown at exit
@@ -1431,10 +1438,11 @@ extern "C" int __cdecl Static5d3000_AtExit(void) { return atexit((void(__cdecl*)
 // [$L_5d3000] the static initializer: FUN_5d3010, then the teardown at exit
 extern "C" int __cdecl Static5d3000_Init(void)
 {
-    CallC(q197_FUN_5d3010);
+    Pool7200c0_Init();
     return Static5d3000_AtExit();
 }
 
+extern "C" void __fastcall NameHash_Clear(BYTE* self, void*);
 extern "C" void FUN_5d2370(); KING_ALIAS("_FUN_5d2370", "@NameHash_Clear@8")
 KING_VAR(char, g_q200_71e820, 71e820)
 KING_VAR(void*, g_q200_71e828, 71e828)
@@ -1444,7 +1452,7 @@ KING_VAR(void*, g_q200_7200cc, 7200cc)
 // [$L_5d2b70] clears the name hash 71e820 and frees its table
 extern "C" void __cdecl Static71e820_Destroy(void)
 {
-    CallThis(FUN_5d2370, &g_q200_71e820);
+    NameHash_Clear((BYTE*)&g_q200_71e820, 0);
     operator delete(g_q200_71e828);
     g_q200_71e844 = 0;
 }
@@ -1455,9 +1463,9 @@ extern "C" void __cdecl Pool7200c0_Release(void)
     operator delete(g_q200_7200cc);
 }
 
-ASM_FUNC(FUN_5fedbc, _Span_SelectFlat)
-ASM_FUNC(FUN_5fef04, _Span_DrawFlat)
-extern "C" void FUN_5b94b0(); KING_ALIAS("_FUN_5b94b0", "@Rows_Get@12")
+extern "C" void __cdecl Span_SelectFlat(int mode, int alt);
+extern "C" void __cdecl Span_DrawFlat(BYTE* dst, int count, int light, int dlight, int c, int z, int dz, WORD* zbuf);
+extern "C" int __fastcall Rows_Get(BYTE* self, void*, int i);
 KING_VAR(BYTE*, g_q222_71e7ec, 71e7ec)
 KING_VAR(int, g_q222_71e7f0, 71e7f0)
 KING_VAR(int, g_q222_71e7f8, 71e7f8)
@@ -1470,10 +1478,10 @@ KING_VAR(BYTE*, g_q222_71e7c4, 71e7c4)
 // 71e7c4, pitch 71e7bc, 70f3d8 bytes a pixel) by 5fef04; with flag 1 the row table is chosen by k first
 extern "C" void __cdecl Poly_FillZ(int flags, int c, int, float k)
 {
-    CallC(FUN_5fedbc, flags, 1);
+    Span_SelectFlat(flags, 1);
     if (flags & 1) {
         BYTE* t = g_q222_71e7ec;
-        g_q222_71e7f0 = CallThis<int>(FUN_5b94b0, t, (int)(F(int, t, 796) * k));
+        g_q222_71e7f0 = Rows_Get(t, 0, (int)(F(int, t, 796) * k));
     }
     int y = g_q134_71e7dc;
     int zrow = g_q222_71e7f8 * y * 2;
@@ -1491,18 +1499,17 @@ extern "C" void __cdecl Poly_FillZ(int flags, int c, int, float k)
             x0++;
         }
         if (x0 <= x1)
-            CallC(FUN_5fef04, g_q222_70f3d8 * x0 + g_q222_71e7c4 + row, x1 - x0 + 1, 0, 0, c,
-                  ((sub * dz) >> 6) + e[2], dz >> 2, g_q222_71e7e8 + x0 * 2 + zrow);
+            Span_DrawFlat(g_q222_70f3d8 * x0 + g_q222_71e7c4 + row, x1 - x0 + 1, 0, 0, c, ((sub * dz) >> 6) + e[2], dz >> 2, (WORD*)(g_q222_71e7e8 + x0 * 2 + zrow));
         zrow += g_q222_71e7f8 * 2;
         row += g_q222_71e7bc;
     }
 }
 
-ASM_FUNC(FUN_5fe9b3, _Span_Shade8)
-ASM_FUNC(FUN_5feace, _Span_Fill16)
-ASM_FUNC(FUN_5fea6c, _Span_Shade16)
-ASM_FUNC(FUN_5feafa, _Span_Fill32)
-ASM_FUNC(FUN_5feb12, _Span_Blend32)
+extern "C" void __cdecl Span_Shade8(const BYTE* table, BYTE* d, BYTE shade, int n);
+extern "C" void __cdecl Span_Fill16(WORD* d, WORD v, unsigned n);
+extern "C" void __cdecl Span_Shade16(const BYTE* table, WORD* d, BYTE shade, int n);
+extern "C" void __cdecl Span_Fill32(DWORD* d, DWORD v, unsigned n);
+extern "C" void __cdecl Span_Blend32(DWORD a, BYTE* d, DWORD colour, int n);
 KING_VAR(float, g_q223_64c458, 64c458)
 // [FUN_5d1430] fills the rows 71e7dc..71e7d8 of the walked polygon (edges in 70f3f0 and 31200 bytes on, from the
 // first pixel centre inside) with colour c; the mode is flags with the pixel size (2: 16 bits, 4: 32 bits) added:
@@ -1518,7 +1525,7 @@ extern "C" void __cdecl Poly_Fill(int flags, int c, int a, float k)
     int table = 0;
     if ((flags & 1) && (g_q222_70f3d8 == 1 || g_q222_70f3d8 == 2)) {
         BYTE* t = g_q222_71e7ec;
-        table = CallThis<int>(FUN_5b94b0, t, (int)(F(int, t, 796) * k));
+        table = Rows_Get(t, 0, (int)(F(int, t, 796) * k));
     }
     int y = g_q134_71e7dc;
     if (y > g_q134_71e7d8)
@@ -1530,11 +1537,11 @@ extern "C" void __cdecl Poly_Fill(int flags, int c, int a, float k)
         if (n > 0) {
             switch ((unsigned)flags) {
             case 0: memset(row + x0, (BYTE)c, n); break;
-            case 1: CallC(FUN_5fe9b3, table, row + x0, c, n); break;
-            case 2: CallC(FUN_5feace, row + x0 * 2, c, n); break;
-            case 3: CallC(FUN_5fea6c, table, row + x0 * 2, a, n); break;
-            case 4: CallC(FUN_5feafa, row + x0 * 4, c, n); break;
-            case 5: CallC(FUN_5feb12, (int)(k * g_q223_64c458), row + x0 * 4, a, n); break;
+            case 1: Span_Shade8((const BYTE*)table, row + x0, c, n); break;
+            case 2: Span_Fill16((WORD*)(row + x0 * 2), c, n); break;
+            case 3: Span_Shade16((const BYTE*)table, (WORD*)(row + x0 * 2), a, n); break;
+            case 4: Span_Fill32((DWORD*)(row + x0 * 4), c, n); break;
+            case 5: Span_Blend32((int)(k * g_q223_64c458), row + x0 * 4, a, n); break;
             }
         }
         row += g_q222_71e7bc;
@@ -1544,13 +1551,14 @@ extern "C" void __cdecl Poly_Fill(int flags, int c, int a, float k)
 // ---------------------------------------------------------------------------
 // Software polygon drawing
 
+extern "C" int __fastcall Window_RootSurface(BYTE* self, void*);
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
-extern "C" void FUN_5ba010(); KING_ALIAS("_FUN_5ba010", "@Palette_Shade@16")
-extern "C" void FUN_5ba070(); KING_ALIAS("_FUN_5ba070", "@Palette_Fog@16")
-extern "C" void FUN_5ba170(); KING_ALIAS("_FUN_5ba170", "@Palette_FogColor@12")
-extern "C" void FUN_5ba3f0(); KING_ALIAS("_FUN_5ba3f0", "@Palette_Color@12")
-extern "C" void FUN_5ba5c0(); KING_ALIAS("_FUN_5ba5c0", "@Texture_MipWidth@12")
-extern "C" void FUN_5ba5f0(); KING_ALIAS("_FUN_5ba5f0", "@Texture_MipPixels@12")
+extern "C" int __fastcall Palette_Shade(BYTE* self, void*, int c, int s);
+extern "C" int __fastcall Palette_Fog(BYTE* self, void*, int c, DWORD z);
+extern "C" DWORD __fastcall Palette_FogColor(BYTE* self, void*, int z);
+extern "C" DWORD __fastcall Palette_Color(BYTE* self, void*, int c);
+extern "C" int __fastcall Texture_MipWidth(BYTE* self, void*, int n);
+extern "C" BYTE* __fastcall Texture_MipPixels(BYTE* self, void*, int n);
 extern "C" void FUN_5cf630(); KING_ALIAS("_FUN_5cf630", "_Span_FillRows")
 extern "C" void FUN_5d02b0(); KING_ALIAS("_FUN_5d02b0", "_Span_Edge")
 extern "C" void FUN_5d0400(); KING_ALIAS("_FUN_5d0400", "_Span_EdgeV")
@@ -1560,13 +1568,18 @@ extern "C" void FUN_5d0e40(); KING_ALIAS("_FUN_5d0e40", "_Span_EdgeUV")
 extern "C" void FUN_5d1430(); KING_ALIAS("_FUN_5d1430", "_Poly_Fill")
 extern "C" void FUN_5d15f0(); KING_ALIAS("_FUN_5d15f0", "_Poly_FillZ")
 extern "C" void FUN_5cf480(); KING_ALIAS("_FUN_5cf480", "_Span_FillRowsU")    // shaded rows with z (fog, colour)
-extern "C" void FUN_5cf920(); KING_ALIAS("_FUN_5cf920", "_Span_FillRowsRotated")    // textured rows, rotated (texture, mode)
+extern "C" void __cdecl Span_FillRowsRotated(int unused, int mode);
 extern "C" void FUN_5d0990(); KING_ALIAS("_FUN_5d0990", "_Span_EdgeUVP")    // edge with texture and shade
 extern "C" void FUN_5d1030(); KING_ALIAS("_FUN_5d1030", "_Span_EdgeUVPersp")    // edge with texture
+extern "C" void __cdecl Span_FillRowsUV(int unused, int mode, int a3, int shade);
 extern "C" void FUN_5d1740(); KING_ALIAS("_FUN_5d1740", "_Span_FillRowsUV")    // textured rows (texture, mode, step, level)
+extern "C" void __cdecl Span_FillRowsUVZ(int unused, int mode, int a3);
 extern "C" void FUN_5d18d0(); KING_ALIAS("_FUN_5d18d0", "_Span_FillRowsUVZ")    // textured shaded rows (texture, mode, step)
+extern "C" void __cdecl Spans_Fill(int unused, int flags);
 extern "C" void FUN_5d1a80(); KING_ALIAS("_FUN_5d1a80", "_Spans_Fill")    // textured rows with z (texture, mode)
+extern "C" void __cdecl Span_FillRowsAffine(int unused, int mode);
 extern "C" void FUN_5d1c50(); KING_ALIAS("_FUN_5d1c50", "_Span_FillRowsAffine")    // textured rows, perspective (texture, mode)
+extern "C" void __cdecl Span_FillRowsAffineFast(int unused, int mode);
 extern "C" void FUN_5d1e50(); KING_ALIAS("_FUN_5d1e50", "_Span_FillRowsAffineFast")    // textured rows, perspective, transparent (texture, mode)
 KING_VAR(int, g_spanFogColor71e7b0, 71e7b0)
 KING_VAR(int, g_spanWidth71e7b4, 71e7b4)
@@ -1618,7 +1631,7 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
     g_spanBpp70f3d8 = F(WORD, win, 4);
     g_span71e7bc = F(WORD, win, 6);
     g_span71e7f8 = F(WORD, win, 8);
-    BYTE* s = CallThis<BYTE*>(FUN_5b6700, win);
+    BYTE* s = (BYTE*)Window_RootSurface(win, 0);
     g_spanSurface71e7ec = s;
     if (!s)
         return;
@@ -1629,8 +1642,8 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
     int two = (F(DWORD, mat, 32) >> 1) & 1;
     BYTE* tex = F(BYTE*, mat, 76);
     if (flags & 32) {
-        g_texWidth70f3e4 = CallThis<int>(FUN_5ba5c0, tex, g_71e800);
-        g_texPixels71e7c8 = CallThis<int>(FUN_5ba5f0, F(BYTE*, mat, 76), g_71e800);
+        g_texWidth70f3e4 = Texture_MipWidth(tex, 0, g_71e800);
+        g_texPixels71e7c8 = (int)Texture_MipPixels(F(BYTE*, mat, 76), 0, g_71e800);
         g_tex71e7fc = F(WORD, F(BYTE*, mat, 76), 28);
         g_texShift70f3dc = F(BYTE, F(BYTE*, mat, 76), 26) - (BYTE)g_71e800;
         g_texStep67fa7c = (g_spanWidth71e7b4 != 320) + 4;
@@ -1640,7 +1653,7 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
             g_q134_71e7dc = g_spanHeight71e7b8 - 1;
             Poly_Edges(FUN_5d0e40, v, n);
             if (!Poly_Empty())
-                CallC(FUN_5d1e50, tex, two);
+                Span_FillRowsAffineFast((int)tex, two);
             return;
         }
         if ((flags & 2) && (flags & 1)) {
@@ -1648,7 +1661,7 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
             g_q134_71e7d8 = 0;
             Poly_Edges(FUN_5d0e40, v, n);
             if (!Poly_Empty())
-                CallC(FUN_5d1c50, tex, two | fog);
+                Span_FillRowsAffine((int)tex, two | fog);
             return;
         }
         if (!(flags & 2) && (flags & 1)) {
@@ -1662,7 +1675,7 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
             }
             Poly_Edges(FUN_5d1030, v, n);
             if (!Poly_Empty())
-                CallC(FUN_5cf920, tex, ((((F(DWORD, mat, 32) & 2) | 4) >> 1) | fog));
+                Span_FillRowsRotated((int)tex, ((((F(DWORD, mat, 32) & 2) | 4) >> 1) | fog));
             return;
         }
         g_q134_71e7d8 = 0;
@@ -1670,24 +1683,24 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
         if (flags & 2) {
             Poly_Edges(FUN_5d1030, v, n);
             if (!Poly_Empty())
-                CallC(FUN_5d1a80, tex, two | fog);
+                Spans_Fill((int)tex, two | fog);
             return;
         }
         g_span70f3e0 = F(int, CallThis<BYTE*>(FUN_5b6700, win), 16);
         if (flags & 128) {
             Poly_Edges(FUN_5d0990, v, n);
             if (!Poly_Empty())
-                CallC(FUN_5d18d0, F(BYTE*, mat, 76), two | fog, g_texStep67fa7c);
+                Span_FillRowsUVZ((int)(F(BYTE*, mat, 76)), two | fog, g_texStep67fa7c);
         } else {
             Poly_Edges(FUN_5d1030, v, n);
             if (!Poly_Empty())
-                CallC(FUN_5d1740, F(BYTE*, mat, 76), two | fog, g_texStep67fa7c, level);
+                Span_FillRowsUV((int)(F(BYTE*, mat, 76)), two | fog, g_texStep67fa7c, level);
         }
         return;
     }
     if (flags & 128) {
         if (fog)
-            g_spanFogColor71e7b0 = CallThis<int>(FUN_5ba170, s, g_67faa0);
+            g_spanFogColor71e7b0 = (int)Palette_FogColor(s, 0, g_67faa0);
         int col = F(int, mat, 40);
         g_span71e7d0 = F(int, CallThis<BYTE*>(FUN_5b6700, win), 20);
         g_span70f3e0 = F(int, CallThis<BYTE*>(FUN_5b6700, win), 16);
@@ -1697,7 +1710,7 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
         if (Poly_Empty())
             return;
         if (g_spanBpp70f3d8 != 1)
-            col = CallThis<int>(FUN_5ba3f0, CallThis<BYTE*>(FUN_5b6700, win), col);
+            col = (int)Palette_Color((BYTE*)Window_RootSurface(win, 0), 0, col);
         CallC(z ? FUN_5cf480 : FUN_5cf630, fog, col);
         return;
     }
@@ -1708,11 +1721,11 @@ void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int le
         return;
     int col = F(int, mat, 40);
     if (g_spanBpp70f3d8 != 1 && !(flags & 0x100))
-        col = CallThis<int>(FUN_5ba3f0, g_spanSurface71e7ec, col);
+        col = (int)Palette_Color(g_spanSurface71e7ec, 0, col);
     if ((g_poly702e8c & 64) && level > 10)
-        col = CallThis<int>(FUN_5ba010, g_spanSurface71e7ec, col, level);
+        col = Palette_Shade(g_spanSurface71e7ec, 0, col, level);
     if (fog)
-        col = CallThis<int>(FUN_5ba070, g_spanSurface71e7ec, col, g_67faa0);
+        col = Palette_Fog(g_spanSurface71e7ec, 0, col, g_67faa0);
     int tr = (F(BYTE, mat, 32) & 32) ? 1 : 0;
     CallC(z ? FUN_5d15f0 : FUN_5d1430, tr, col, F(int, mat, 40), F(int, mat, 88));
 }
@@ -1985,10 +1998,11 @@ void __cdecl Messages_Load()
 
 // === textured span fill with u and v (FUN_5d1740)
 
+extern "C" void __cdecl Span_DrawPerspective(int x, int xr, int k, int u1, int v1, int u0, int v0, int dw, int dq, int w, int q, int dst, int mode, int buf, int g, int dg);
 extern "C" void FUN_5cf6f0(); KING_ALIAS("_FUN_5cf6f0", "_Span_DrawPerspective")
-ASM_FUNC(FUN_5feb87, _Span_SelectTextured)
+extern "C" void __cdecl Span_SelectTextured(int mode, int alt);
 KING_VAR(int, g_q223_702e90, 702e90)
-extern "C" void Sp_ShadeRow(); KING_ALIAS("_Sp_ShadeRow", "@Palette_ShadeRow@12")
+extern "C" DWORD __fastcall Palette_ShadeRow(BYTE* self, void*, int s);
 
 // [FUN_5d1740] fills the spans of the rows 71e7dc..71e7d8 with u and v (+8.. +16 of the edges) by FUN_5cf6f0,
 // counting the pixels (702e90); a shade above 50 with 702e8c bit 6 sets the fog colour (71e7b0) and mode bit 2
@@ -1999,10 +2013,10 @@ extern "C" void __cdecl Span_FillRowsUV(int unused, int mode, int a3, int shade)
     int row2 = g_span71e7f8 * y * 2;
     int alt = (g_poly702e8c >> 14) & 1;
     if (shade > 50 && (g_poly702e8c & 64)) {
-        g_spanFogColor71e7b0 = CallThis<int>(Sp_ShadeRow, g_spanSurface71e7ec, shade);
-        CallC(FUN_5feb87, mode | 4, alt);
+        g_spanFogColor71e7b0 = (int)Palette_ShadeRow(g_spanSurface71e7ec, 0, shade);
+        Span_SelectTextured(mode | 4, alt);
     } else
-        CallC(FUN_5feb87, mode, alt);
+        Span_SelectTextured(mode, alt);
     for (y = g_q134_71e7dc; y <= g_q134_71e7d8; y++) {
         int* e = (int*)((BYTE*)g_q134_70f3f0 + y * 24);
         int dw = (e[7800] - e[0]) >> 16;
@@ -2017,8 +2031,7 @@ extern "C" void __cdecl Span_FillRowsUV(int unused, int mode, int a3, int shade)
             x++;
         if (x <= xr) {
             g_q223_702e90 += xr - x + 1;
-            CallC(FUN_5cf6f0, x, xr, a3, e[7803], e[7804], e[3], e[4], dv, du, e[2], 0, g_spanBpp70f3d8 * x + row,
-                mode, g_span71e7e8 + x * 2 + row2, 0, 0);
+            Span_DrawPerspective(x, xr, a3, e[7803], e[7804], e[3], e[4], dv, du, e[2], 0, g_spanBpp70f3d8 * x + row, mode, g_span71e7e8 + x * 2 + row2, 0, 0);
         }
         row2 += g_span71e7f8 * 2;
         row += g_span71e7bc;
@@ -2034,7 +2047,7 @@ extern "C" void __cdecl Span_FillRowsUVZ(int unused, int mode, int a3)
     int y = g_q134_71e7dc;
     int row = y * g_span71e7bc;
     int row2 = g_spanWidth71e7b4 * y * 2;
-    CallC(FUN_5feb87, mode | 2, (g_poly702e8c >> 14) & 1);
+    Span_SelectTextured(mode | 2, (g_poly702e8c >> 14) & 1);
     int f = mode;
     for (y = g_q134_71e7dc; y <= g_q134_71e7d8; y++, row += g_span71e7bc, row2 += g_spanWidth71e7b4 * 2) {
         int* e = (int*)((BYTE*)g_q134_70f3f0 + y * 24);
@@ -2057,8 +2070,7 @@ extern "C" void __cdecl Span_FillRowsUVZ(int unused, int mode, int a3)
         }
         f = (l >> 16) & 15;
         g_q223_702e90 += xr - x + 1;
-        CallC(FUN_5cf6f0, x, xr, a3, e[7803], e[7804], e[3], e[4], dv, du, e[2], 0, g_spanBpp70f3d8 * x + row, mode,
-            g_span71e7e8 + x * 2 + row2, z, dz);
+        Span_DrawPerspective(x, xr, a3, e[7803], e[7804], e[3], e[4], dv, du, e[2], 0, g_spanBpp70f3d8 * x + row, mode, g_span71e7e8 + x * 2 + row2, z, dz);
     }
 }
 
@@ -2075,7 +2087,7 @@ static void Span_Affine(int mode, bool subpixel)
     int y = g_q134_71e7dc;
     int row = y * g_span71e7bc;
     int row2 = g_span71e7f8 * y * 2;
-    CallC(FUN_5feb87, mode, (g_poly702e8c >> 14) & 1);
+    Span_SelectTextured(mode, (g_poly702e8c >> 14) & 1);
     int* m = (int*)((BYTE*)g_q134_70f3f0 + (g_q134_71e7dc + g_q134_71e7d8) / 2 * 24);
     int dw = (m[7800] - m[0]) >> 16;
     int du = 0, dv = 0;
@@ -2099,7 +2111,7 @@ static void Span_Affine(int mode, bool subpixel)
         u += (frac * du) >> 4;
         v += (frac * dv) >> 4;
         if (mode & 4)
-            g_spanFogColor71e7b0 = CallThis<int>(FUN_5ba170, g_spanSurface71e7ec, e[2]);
+            g_spanFogColor71e7b0 = (int)Palette_FogColor(g_spanSurface71e7ec, 0, e[2]);
         CallC(FUN_5fee7c, g_spanBits71e7c4 + g_spanBpp70f3d8 * x + row, xr - x + 1, u, v, du, dv, e[2], 0,
             g_span71e7e8 + row2 + x * 2);
         g_q223_72007c++;
@@ -2114,9 +2126,7 @@ extern "C" void __cdecl Span_FillRowsAffineFast(int unused, int mode) { Span_Aff
 
 // === filling a polygon's spans (FUN_5d1a80)
 
-ASM_FUNC(Sf_Setup, _Span_SelectTextured)
 ASM_FUNC(Sf_Span, _Span_DrawTextured)
-extern "C" void Sf_FogColor(); KING_ALIAS("_Sf_FogColor", "@Palette_FogColor@12")
 KING_VAR(int, g_sf71e7dc, 71e7dc)    // the first row
 KING_VAR(int, g_sf71e7d8, 71e7d8)    // the last row
 KING_VAR(int, g_sf71e7bc, 71e7bc)    // the colour buffer's pitch
@@ -2140,7 +2150,7 @@ void __cdecl Spans_Fill(int unused, int flags)
 {
     int off = g_sf71e7dc * g_sf71e7bc;
     int zoff = g_sf71e7f8 * g_sf71e7dc * 2;
-    CallC(Sf_Setup, flags, (g_sf702e8c >> 14) & 1);
+    Span_SelectTextured(flags, (g_sf702e8c >> 14) & 1);
     int y = g_sf71e7dc;
     if (y > g_sf71e7d8)
         return;
@@ -2169,7 +2179,7 @@ void __cdecl Spans_Fill(int unused, int flags)
         u += (frac * du) >> 4;
         v += (frac * dv) >> 4;
         if (flags & 4)
-            g_sf71e7b0 = CallThis<int>(Sf_FogColor, g_sf71e7ec, F(int, e, -8));
+            g_sf71e7b0 = (int)Palette_FogColor(g_sf71e7ec, 0, F(int, e, -8));
         CallC(Sf_Span, g_sf71e7c4 + at, last - first + 1, u, v, du, dv, F(int, e, -8), 0,
             g_sf71e7e8 + zoff + first * 2);
         g_sf72007c++;

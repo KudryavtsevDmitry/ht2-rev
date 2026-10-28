@@ -16,24 +16,29 @@ extern "C" void __fastcall Engine_4eec20(BYTE* self, void*);            // carph
 extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, float* c, float* d, float* e,
                                            float* f);                    // world.cpp
 
-extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<12 bytes>::insert_aux
-extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
+extern "C" BYTE* __fastcall MovingObj_Construct(BYTE* s, void*, BYTE* w, BYTE* a2, int a3, const BYTE* m, const BYTE* m5, int a6, int a7, int a8, int a9);
 extern "C" void FUN_57d060(); KING_ALIAS("_FUN_57d060", "@MovingObj_Construct@44")
-extern "C" void FUN_52e550(); KING_ALIAS("_FUN_52e550", "@Crowd_Init@12")
-extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
-extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
-extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn);
+extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, int n);
+extern "C" void __fastcall Media_RecordBlock(BYTE* self, void*, BYTE* rec);
+extern "C" void __fastcall MsgBuf_Destroy(BYTE* self, int);
 KING_VAR(AsmLabel, g_vtbl64f198, 64f198)
 KING_VAR(AsmLabel, g_vtbl64f14c, 64f14c)
 KING_VAR(AsmLabel, g_vtbl64f148, 64f148)
 KING_VAR(BYTE*, g_6ef1fc, 6ef1fc)
+extern "C" BYTE* __fastcall Body58b5b0_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11);
 extern "C" void FUN_58b5b0(); KING_ALIAS("_FUN_58b5b0", "@Body58b5b0_Construct@52")
+extern "C" BYTE* __fastcall Body58b720_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11);
 extern "C" void FUN_58b720(); KING_ALIAS("_FUN_58b720", "@Body58b720_Construct@52")
-extern "C" void FUN_52ae30(); KING_ALIAS("_FUN_52ae30", "@Slot_Construct@16")
+extern "C" BYTE* __fastcall Slot_Construct(BYTE* self, void*, int row, int b);
+extern "C" void __fastcall Parked_Setup(BYTE* s, void*, int idx, int m);
 extern "C" void FUN_52b0e0(); KING_ALIAS("_FUN_52b0e0", "@Parked_Setup@16")
-extern "C" void FUN_5465c0(); KING_ALIAS("_FUN_5465c0", "_Vehicle_MakeDamageKeys")
+extern "C" void __cdecl Vehicle_MakeDamageKeys(BYTE** out, int* count);
+extern "C" Matrix* __cdecl Matrix_Multiply(Matrix* out, const Matrix* a, const Matrix* b);
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+extern "C" BYTE* __fastcall MovingObj_ConstructListed(BYTE* s, void*, BYTE* w, BYTE* a2, int a3, const BYTE* m, const BYTE* m5, int a6, int a7, int a8, int a9);
 extern "C" void FUN_57cb70(); KING_ALIAS("_FUN_57cb70", "@MovingObj_ConstructListed@44")
+extern "C" void __fastcall Car_SetModel(BYTE* c, void*, int i, int b);
 extern "C" void FUN_52dc50(); KING_ALIAS("_FUN_52dc50", "@Car_SetModel@16")
 KING_VAR(AsmLabel, g_vtbl64ec88, 64ec88)
 KING_VAR(AsmLabel, g_vtbl64ec3c, 64ec3c)
@@ -48,22 +53,15 @@ KING_VAR(AsmLabel, g_vtbl64f068, 64f068)
 KING_VAR(AsmLabel, g_vtbl64f01c, 64f01c)
 KING_VAR(AsmLabel, g_vtbl64f018, 64f018)
 KING_VAR(AsmLabel, g_7025f0, 7025f0)
-extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
-extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
-extern "C" void FUN_5dbbb0(); KING_ALIAS("_FUN_5dbbb0", "@Fw_ResetRenderer@24")
-extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
 extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
-extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
+extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, int a3);
 extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
 extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
-ASM_FUNC(FUN_4e4d82, _Sound_PlayPannedCos)
+extern "C" void __cdecl Sound_PlayPannedCos(BYTE* sound, float vol, const float* dir, int loop);
+extern "C" int __cdecl Switch_SelectChecked(BYTE* obj, int idx);
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
-extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
-extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
-extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 
 KING_VAR(int, g_6cec68, 6cec68)
 KING_VAR(int, g_6968ac, 6968ac)
@@ -211,7 +209,7 @@ extern "C" void __cdecl Sound_Play3_388(void* s, float v)
     if (!s)
         return;
     float x = Volume(388, v);
-    CallThis(FUN_5fd430, s, x, x, 0);
+    Sound_Play((BYTE*)s, 0, x, x, 0);
 }
 
 extern "C" void __cdecl Sound_Play3_388Pos(void* s, float v, int pos)
@@ -247,8 +245,8 @@ extern "C" void __cdecl Sound_Play390(void* s, float v, int a)
     if (!s)
         return;
     float x = Volume(390, v);
-    CallC(FUN_4e4d82, s, x, a, 0);
-    CallThis(FUN_5fd430, s, x, x, 0);
+    Sound_PlayPannedCos((BYTE*)s, x, (const float*)a, 0);
+    Sound_Play((BYTE*)s, 0, x, x, 0);
 }
 
 extern "C" void __cdecl Sound_Play390If(void* s, float v, int unused, int a)
@@ -262,7 +260,7 @@ extern "C" void __cdecl Sound_Play3_386(void* s, float v)
     if (!s)
         return;
     float x = Volume(386, v);
-    CallThis(FUN_5fd430, s, x, x, 0);
+    Sound_Play((BYTE*)s, 0, x, x, 0);
 }
 
 extern "C" void __cdecl Sound_Start386(void* s, int a, float v, int b)
@@ -280,17 +278,11 @@ extern "C" void __cdecl Sound_Loop386(void* s, int a, float v, int b)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
-extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_55f000(); KING_ALIAS("_FUN_55f000", "_Trailer_HitchCheck")    // whether a vehicle can take another (vehicle, other)
-extern "C" void FUN_4f1180(); KING_ALIAS("_FUN_4f1180", "@Body_SetUpright@4")
-extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
-extern "C" void FUN_55f5f0(); KING_ALIAS("_FUN_55f5f0", "_Truck_HitchTrailer")
-extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
+extern "C" BYTE* __cdecl Objects_Find(const char* name);
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
 extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
-extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 KING_VAR(DWORD, g_702650, 702650)
 KING_VAR(DWORD, g_702654, 702654)
 KING_VAR(DWORD, g_702658, 702658)
@@ -309,12 +301,12 @@ extern "C" void __cdecl Cars_LoadCollision()
     int* rec = &g_carPartUses[0];
     for (int i = 0; i < g_carModelCount; i++, car += 876, rec += 11) {
         sprintf(name, "%s_car_cl", car);
-        rec[-5] = CallC<int>(FUN_5ef3d0, name);
+        rec[-5] = (int)Objects_Find(name);
         rec[0] = 0;
         if (rec[-5] == 0) {
             for (int k = 0; k < 5; k++) {
                 sprintf(name, "%s%d_car_cl", car, k + 1);
-                rec[k - 5] = CallC<int>(FUN_5ef3d0, name);
+                rec[k - 5] = (int)Objects_Find(name);
                 rec[k] = 0;
             }
         } else
@@ -323,10 +315,10 @@ extern "C" void __cdecl Cars_LoadCollision()
                 rec[k] = 0;
             }
         sprintf(name, "hit_%s", car);
-        int hit = CallC<int>(FUN_5ef2b0, 0, name);
+        int hit = (int)Scene_FindObject(0, name);
         rec[5] = 0;
         if (hit)
-            rec[5] = CallC<int>(FUN_5ef2b0, hit, "CollisionKey");
+            rec[5] = (int)Scene_FindObject((BYTE*)hit, "CollisionKey");
     }
 }
 
@@ -372,14 +364,12 @@ extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn)
     F(int, self, 3632) = 0;
     F(int, self, 3576) = 0;
     F(void*, self, 3648) = fn ? fn : (void*)FUN_5e48f0;
-    int h = CallC<int>(FUN_5ef3d0, (const char*)g_strOvation);
+    int h = (int)Objects_Find((const char*)g_strOvation);
     F(int, self, 3640) = 0;
     F(int, self, 3644) = 0;
     F(int, self, 3636) = h;
 }
 
-extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
-extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 KING_VAR(BYTE*, g_effectManager, 6f6910)
 
@@ -388,7 +378,6 @@ KING_VAR(float, g_positionResetThreshold, 650624)
 KING_VAR(AsmLabel, g_setPosition1, 67d4cc)
 KING_VAR(AsmLabel, g_setPosition2, 67d4c0)
 KING_VAR(AsmLabel, g_setPlace, 67d4b4)
-extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 
 KING_VAR(short, g_sceneCommandCode, 67d10a)
 KING_VAR(BYTE*, g_sceneCommandList, 6f653c)
@@ -432,11 +421,10 @@ extern "C" {
 BYTE* __fastcall Car52b5f0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5)
 {
     BYTE* t = CarModel(model);
-    CallThis(FUN_58b5b0, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 100, F(int, t, 200),
-             0x3f000000, t, a5);
-    CallThis(FUN_52ae30, self + 9528, model, 0);
+    Body58b5b0_Construct(self, 0, a1, 0, a2, (int)(t + 120), (int)((void*)g_7025f0), F(int, t, 196), 100, F(int, t, 200), 0x3f000000, (int)t, a5);
+    Slot_Construct(self + 9528, 0, model, 0);
     Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
-    CallThis(FUN_52b0e0, self, model, a4);
+    Parked_Setup(self, 0, model, a4);
     return self;
 }
 
@@ -444,11 +432,10 @@ BYTE* __fastcall Car52b5f0_Construct(BYTE* self, void*, int a1, int a2, int mode
 BYTE* __fastcall Car52b6f0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5, int a6)
 {
     BYTE* t = CarModel(model);
-    CallThis(FUN_58b720, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 100, F(int, t, 200),
-             0x3f000000, a5, a6);
-    CallThis(FUN_52ae30, self + 9528, model, 1);
+    Body58b720_Construct(self, 0, a1, 0, a2, (int)(t + 120), (int)((void*)g_7025f0), F(int, t, 196), 100, F(int, t, 200), 0x3f000000, a5, a6);
+    Slot_Construct(self + 9528, 0, model, 1);
     Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
-    CallThis(FUN_52b0e0, self, model, a4);
+    Parked_Setup(self, 0, model, a4);
     return self;
 }
 
@@ -457,11 +444,11 @@ BYTE* __fastcall Car52b7c0_Construct(BYTE* self, void*, int a1, int a2, int a3, 
 {
     BYTE* t = CarModel(model);
     BYTE m[48];
-    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
-    CallThis(FUN_58b5b0, self, a1, a2, a3, r, a4, F(int, t, 196), 100, F(int, t, 200), 0x3f000000, t + 35, a7);
-    CallThis(FUN_52ae30, self + 9528, model, 0);
+    void* r = (void*)Matrix_Multiply((Matrix*)m, (const Matrix*)(t + 120), (const Matrix*)a4);
+    Body58b5b0_Construct(self, 0, a1, a2, a3, (int)r, a4, F(int, t, 196), 100, F(int, t, 200), 0x3f000000, (int)(t + 35), a7);
+    Slot_Construct(self + 9528, 0, model, 0);
     Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
-    CallThis(FUN_52b0e0, self, model, a6);
+    Parked_Setup(self, 0, model, a6);
     return self;
 }
 
@@ -471,18 +458,18 @@ BYTE* __fastcall Car52b8a0_Construct(BYTE* self, void*, int a1, int a2, int a3, 
 {
     BYTE* t = CarModel(model);
     BYTE m[48];
-    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
-    CallThis(FUN_58b720, self, a1, a2, a3, r, a4, F(int, t, 196), 100, F(int, t, 200), 0x3f000000, a7, a8);
-    CallThis(FUN_52ae30, self + 9528, model, 1);
+    void* r = (void*)Matrix_Multiply((Matrix*)m, (const Matrix*)(t + 120), (const Matrix*)a4);
+    Body58b720_Construct(self, 0, a1, a2, a3, (int)r, a4, F(int, t, 196), 100, F(int, t, 200), 0x3f000000, a7, a8);
+    Slot_Construct(self + 9528, 0, model, 1);
     Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
-    CallThis(FUN_52b0e0, self, model, a6);
+    Parked_Setup(self, 0, model, a6);
     return self;
 }
 
 static void Truck_Finish(BYTE* self)
 {
     Car_SetVtbls(self, g_vtbl64edf0, g_vtbl64eda4, g_vtbl64eda0);
-    CallC(FUN_5465c0, self + 9520, self + 9516);
+    Vehicle_MakeDamageKeys((BYTE**)(self + 9520), (int*)(self + 9516));
 }
 
 // [FUN_52d350]
@@ -537,10 +524,10 @@ BYTE* __fastcall Vehicle52d930_Construct(BYTE* self, void*, int a1, int a2, int 
 {
     BYTE* t = CarModel(model);
     BYTE m[48];
-    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
-    CallThis(FUN_57cb70, self, a1, a2, a3, r, a4, F(int, t, 196), 500, t, a7);
+    void* r = (void*)Matrix_Multiply((Matrix*)m, (const Matrix*)(t + 120), (const Matrix*)a4);
+    MovingObj_ConstructListed(self, 0, (BYTE*)a1, (BYTE*)a2, a3, (const BYTE*)r, (const BYTE*)a4, F(int, t, 196), 500, (int)t, a7);
     Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
-    CallThis(FUN_52dc50, self, model, a6);
+    Car_SetModel(self, 0, model, a6);
     return self;
 }
 
@@ -556,10 +543,10 @@ BYTE* __fastcall Vehicle52da30_Construct(BYTE* self, void*, int a1, int a2, int 
 {
     BYTE* t = CarModel(model);
     BYTE m[48];
-    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
-    CallThis(FUN_57d060, self, a1, a2, a3, r, a4, F(int, t, 196), 500, a7, a8);
+    void* r = (void*)Matrix_Multiply((Matrix*)m, (const Matrix*)(t + 120), (const Matrix*)a4);
+    MovingObj_Construct(self, 0, (BYTE*)a1, (BYTE*)a2, a3, (const BYTE*)r, (const BYTE*)a4, F(int, t, 196), 500, a7, a8);
     Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
-    CallThis(FUN_52dc50, self, model, a6);
+    Car_SetModel(self, 0, model, a6);
     return self;
 }
 
@@ -567,9 +554,9 @@ BYTE* __fastcall Vehicle52da30_Construct(BYTE* self, void*, int a1, int a2, int 
 BYTE* __fastcall Vehicle52daf0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5)
 {
     BYTE* t = CarModel(model);
-    CallThis(FUN_57cb70, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 500, t, a5);
+    MovingObj_ConstructListed(self, 0, (BYTE*)a1, 0, a2, t + 120, (const BYTE*)((void*)g_7025f0), F(int, t, 196), 500, (int)t, a5);
     Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
-    CallThis(FUN_52dc50, self, model, a4);
+    Car_SetModel(self, 0, model, a4);
     return self;
 }
 
@@ -577,9 +564,9 @@ BYTE* __fastcall Vehicle52daf0_Construct(BYTE* self, void*, int a1, int a2, int 
 BYTE* __fastcall Vehicle52dba0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5, int a6)
 {
     BYTE* t = CarModel(model);
-    CallThis(FUN_57d060, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 500, a5, a6);
+    MovingObj_Construct(self, 0, (BYTE*)a1, 0, a2, t + 120, (const BYTE*)((void*)g_7025f0), F(int, t, 196), 500, a5, a6);
     Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
-    CallThis(FUN_52dc50, self, model, a4);
+    Car_SetModel(self, 0, model, a4);
     return self;
 }
 
@@ -589,7 +576,7 @@ static void Bus_Finish(BYTE* self, int v)
     memset(m, 0, 48);
     memcpy(m, g_7025f0, 48);
     Car_SetVtbls(self, g_vtbl64f198, g_vtbl64f14c, g_vtbl64f148);
-    CallThis(FUN_52e550, self, v);
+    Crowd_Init(self, 0, (void*)v);
 }
 
 // [FUN_52e220]
@@ -640,9 +627,9 @@ void __fastcall Car_SendState(BYTE* self, void*, int a)
         size = 16;
     }
     DpMessage_Construct(msg, 0);
-    CallThis(FUN_603110, msg, (int)g_sceneCommandCode, rec, size);
-    CallThis(FUN_5c3630, g_6ef1fc, msg);
-    CallThis(FUN_602e80, msg);
+    Msg_Write120(msg, 0, (int)g_sceneCommandCode, rec, size);
+    Media_RecordBlock(g_6ef1fc, 0, msg);
+    MsgBuf_Destroy(msg, 0);
 }
 
 // [FUN_52e7c0] sends message 10 about the car c with the text name
@@ -659,20 +646,20 @@ void __fastcall Car_SendNamed(BYTE* self, void*, const BYTE* c, int b, const cha
     F(int, rec, 16) = n;
     F(int, rec, 4) = 10;
     memcpy(rec + 20, name, n);
-    CallThis(FUN_603110, msg, (int)g_sceneCommandCode, rec, n + 20);
-    CallThis(FUN_5c3630, g_6ef1fc, msg);
-    CallThis(FUN_602e80, msg);
+    Msg_Write120(msg, 0, (int)g_sceneCommandCode, rec, n + 20);
+    Media_RecordBlock(g_6ef1fc, 0, msg);
+    MsgBuf_Destroy(msg, 0);
 }
 
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_57d580(); KING_ALIAS("_FUN_57d580", "@Item_DrawMarked@16")
+extern "C" int __fastcall Item_DrawMarked(BYTE* s, void*, int a, int b);
 
 // [FUN_52e1f0] 57d580(a, b) on this
 extern "C" int __fastcall Scenery_Call57d580(void* self, void*, int a, int b)
 {
-    return CallThis<int>(FUN_57d580, self, a, b);
+    return Item_DrawMarked((BYTE*)self, 0, a, b);
 }
 
 
@@ -702,13 +689,16 @@ extern "C" void __fastcall Part_Release(BYTE* self, void*)
 
 
 extern "C" void FUN_52bd20(); KING_ALIAS("_FUN_52bd20", "@Scenery_Hit@16")
+extern "C" void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b);
 extern "C" void FUN_52c120(); KING_ALIAS("_FUN_52c120", "@ParkedCar_DrawShadow@16")
-extern "C" void FUN_590d20(); KING_ALIAS("_FUN_590d20", "@Item_DrawBody@16")
+extern "C" int __fastcall Item_DrawBody(BYTE* s, void*, int a, BYTE* ctx);
+extern "C" int __fastcall Scenery_Call57d580(void* self, void*, int a, int b);
 extern "C" void FUN_52e1f0(); KING_ALIAS("_FUN_52e1f0", "@Scenery_Call57d580@16")
 extern "C" void FUN_586240(); KING_ALIAS("_FUN_586240", "@Box_ReceiveHit@20")
 extern "C" void FUN_5864d0(); KING_ALIAS("_FUN_5864d0", "@Box_ReceiveHitSet@32")
 extern "C" void FUN_585fd0(); KING_ALIAS("_FUN_585fd0", "@Cars_ApplyUpdate@12")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
+extern "C" int __fastcall SceneNode5f9b00_Hit(BYTE* s, void*, int flags, BYTE* rec);
 extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
 extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
 KING_VAR(AsmLabel, g_scy6cedc0, 6cedc0)
@@ -719,11 +709,11 @@ extern "C" void __fastcall Scy_Set1204(BYTE* s, void*, int v) { F(int, s, 1204) 
 // [$L_52d5d0] forwarders
 extern "C" int __fastcall Scy_52d5d0(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_52bd20, s, a, b); }
 // [$L_52d630]
-extern "C" int __fastcall Scy_52d630(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_52c120, s, a, b); }
+extern "C" int __fastcall Scy_52d630(BYTE* s, void*, int a, int b) { return (int)ParkedCar_DrawShadow(s, 0, a, b); }
 // [$L_52d700]
-extern "C" int __fastcall Scy_52d700(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_590d20, s, a, b); }
+extern "C" int __fastcall Scy_52d700(BYTE* s, void*, int a, int b) { return Item_DrawBody(s, 0, a, (BYTE*)b); }
 // [$L_52e710]
-extern "C" int __fastcall Scy_52e710(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_52e1f0, s, a, b); }
+extern "C" int __fastcall Scy_52e710(BYTE* s, void*, int a, int b) { return Scenery_Call57d580(s, 0, a, b); }
 // [$L_52d8e0]
 extern "C" int __fastcall Scy_52d8e0(BYTE* s, void*, int a, int b, int c) { return CallThis<int>(FUN_586240, s, a, b, c); }
 // [$L_52d900]
@@ -744,8 +734,8 @@ extern "C" int __fastcall Scy_52e6f0(BYTE* s, void*, int a)
 // [$L_52d5f0] the kind's entry (44-byte records at 6cedc0, index +9288) to FUN_4e480c, then FUN_5f9b00 (a, b)
 extern "C" int __fastcall Scy_52d5f0(BYTE* s, void*, int a, int b)
 {
-    CallC(FUN_4e480c, ((int*)g_scy6cedc0)[F(int, s, 9288) * 11], 1);
-    return CallThis<int>(FUN_5f9b00, s, a, b);
+    Switch_SelectChecked((BYTE*)(((int*)g_scy6cedc0)[F(int, s, 9288) * 11]), 1);
+    return SceneNode5f9b00_Hit(s, 0, a, (BYTE*)b);
 }
 
 // [$L_52f6e0] static initializer: FUN_5ac0c0 (6d1830, -pi/2)
@@ -754,7 +744,8 @@ extern "C" void __cdecl ScyInit_52f6e0() { CallC(FUN_5ac0c0, (BYTE*)g_scy6d1830,
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
-extern "C" void FUN_52fd90(); KING_ALIAS("_FUN_52fd90", "@Obj52fd90_Reset@8")
+extern "C" void* __fastcall Obj52fd90_Reset(BYTE* self, void*);
+extern "C" void __fastcall Scenery_Run(BYTE* s);
 extern "C" void FUN_52e060(); KING_ALIAS("_FUN_52e060", "@Scenery_Run@4")
 KING_VAR(AsmLabel, g_scy6cf4d8, 6cf4d8)
 KING_VAR(AsmLabel, g_scy6d1db8, 6d1db8)
@@ -763,6 +754,7 @@ KING_VAR(AsmLabel, g_scy702650, 702650)
 KING_VAR(BYTE*, g_scy6ef1fc, 6ef1fc)
 KING_VAR(double, g_scy64b660, 64b660)
 
+extern "C" void __cdecl Switch_Select(BYTE* node, int i);
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 
 // [$L_52f6a0] static initializer: the 13 records of 696 bytes at 6cf4d8 and the one at 6d1db8
@@ -770,8 +762,8 @@ extern "C" void __cdecl ScyInit_52f6a0()
 {
     BYTE* p = (BYTE*)g_scy6cf4d8;
     for (int i = 0; i < 13; i++, p += 696)
-        CallThis(FUN_52fd90, p);
-    CallThis(FUN_52fd90, (BYTE*)g_scy6d1db8);
+        Obj52fd90_Reset(p, 0);
+    Obj52fd90_Reset((BYTE*)g_scy6d1db8, 0);
 }
 
 // [$L_52f600] static initializer: 6cf3b0..6cf4b7 zero
@@ -793,10 +785,10 @@ extern "C" void __fastcall Scy_52e630(BYTE* s)
     }
     int c = F(int, s, 3640);
     if (c && F(double, g_scy6ef1fc, 2968) - F(float, s, 3644) > g_scy64b660) {
-        CallC(FUN_5e1a10, c, 0);
+        Switch_Select((BYTE*)c, 0);
         F(int, s, 3640) = 0;
     }
-    CallThis(FUN_52e060, s);
+    Scenery_Run(s);
     if (F(int, s, 896) && F(int, s, 3632) == 2)
         F(int, s, 3632) = 0;
 }
@@ -804,11 +796,13 @@ extern "C" void __fastcall Scy_52e630(BYTE* s)
 // ---------------------------------------------------------------------------
 // More virtual methods.
 
+extern "C" void __fastcall Car_SendNamed(BYTE* self, void*, const BYTE* c, int b, const char* name);
 extern "C" void FUN_52e7c0(); KING_ALIAS("_FUN_52e7c0", "@Car_SendNamed@20")
 extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
+extern "C" void __fastcall Obj52e540_Set3576(BYTE* self, void*, int v);
 extern "C" void FUN_52e540(); KING_ALIAS("_FUN_52e540", "@Obj52e540_Set3576@12")
-extern "C" void FUN_57c9e0(); KING_ALIAS("_FUN_57c9e0", "_Moving_Of")
-extern "C" void FUN_53f7b0(); KING_ALIAS("_FUN_53f7b0", "_Car_53f7b0")
+extern "C" BYTE* __cdecl Moving_Of(BYTE* o);
+extern "C" BYTE* __cdecl Car_53f7b0(BYTE* p);
 
 // [$L_52e970] a message for the object: a named place (kinds 2, 2 with a name) moves it there; a moving body is attached
 extern "C" void __fastcall Scy_Message(BYTE* s, void*, BYTE* p)
@@ -819,7 +813,7 @@ extern "C" void __fastcall Scy_Message(BYTE* s, void*, BYTE* p)
     if (!F(int, p, 116) && m && F(int, m, 0) == 2 && F(int, m, 4) == 2 && F(int, m, 8) && F(BYTE*, m, 12)) {
         int x = *F(int*, m, 12);
         if (F(int, s, 3640))
-            CallC(FUN_5e1a10, F(int, s, 3640), 0);
+            Switch_Select((BYTE*)(F(int, s, 3640)), 0);
         int e = F(int, s, 3576);
         if (e) {
             char buf[101];
@@ -830,28 +824,29 @@ extern "C" void __fastcall Scy_Message(BYTE* s, void*, BYTE* p)
                 n++;
             }
             buf[n] = 0;
-            CallThis(FUN_52e7c0, s, e, x, buf);
+            Car_SendNamed(s, 0, (const BYTE*)e, x, buf);
             CallThis(FUN_52e740, s, F(int, s, 3576), x, buf);
             F(int, s, 3632) = 1;
         }
-        CallThis(FUN_52e540, s, 0);
+        Obj52e540_Set3576(s, 0, 0);
     }
     int t = F(int, p, 116);
     if (t) {
-        int r = CallC<int>(FUN_57c9e0, t);
+        int r = (int)Moving_Of((BYTE*)t);
         if (r)
-            CallThis(FUN_52e540, s, CallC<int>(FUN_53f7b0, r));
+            CallThis(FUN_52e540, s, (int)Car_53f7b0((BYTE*)r));
     }
 }
 
 // ---------------------------------------------------------------------------
 // Scenery object destructor (exception frame dropped).
 
+extern "C" int __cdecl CarType_Number(int t);
 extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
-extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
-extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")
+extern "C" int __fastcall Resources_Get(BYTE** self, void*, int id);
+extern "C" int __fastcall Resources_SetData(BYTE** s, void*, int id, int a, unsigned size, const void* data);
 extern "C" void FUN_57def0(); KING_ALIAS("_FUN_57def0", "@SceneObj_Get800@8")
-extern "C" void FUN_58b870(); KING_ALIAS("_FUN_58b870", "@Body58b870_Destroy@8")
+extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int);
 #include <string.h>
 KING_VAR(AsmLabel, g_q25_64ec88, 64ec88)
 KING_VAR(AsmLabel, g_q25_64ec3c, 64ec3c)
@@ -864,13 +859,13 @@ extern "C" void __fastcall Scenery_Destroy(BYTE* s)
     F(void*, s, 0) = g_q25_64ec88;
     F(void*, s, 256) = g_q25_64ec3c;
     F(void*, s, 376) = g_q25_64ec38;
-    int key = F(int, s, 9548) + (CallC<int>(FUN_52ea90, F(int, s, 9544)) + 200) * 1000;
-    if (CallThis<int>(FUN_5e5370, F(BYTE*, s, 36) + 704, key)) {
+    int key = F(int, s, 9548) + (CarType_Number(F(int, s, 9544)) + 200) * 1000;
+    if (Resources_Get((BYTE**)(F(BYTE*, s, 36) + 704), 0, key)) {
         const char* n1 = F(const char*, F(BYTE*, s, 320), 12);
         const char* n2 = F(const char*, CallThis<BYTE*>(FUN_57def0, s), 12);
         BYTE t[156];
         memset(t, 0, sizeof t);
-        F(int, t, 0) = CallC<int>(FUN_52ea90, F(int, s, 9544));
+        F(int, t, 0) = CarType_Number(F(int, s, 9544));
         F(int, t, 4) = F(int, s, 9548);
         F(int, t, 8) = F(int, s, 372);
         F(int, t, 12) = F(int, s, 1200);
@@ -879,30 +874,32 @@ extern "C" void __fastcall Scenery_Destroy(BYTE* s)
         memcpy(t + 44, s + 500, 48);
         strncpy((char*)t + 92, n2, 31);
         strncpy((char*)t + 124, n1, 31);
-        CallThis(FUN_5e52b0, F(BYTE*, s, 36) + 704, key, F(int, F(BYTE*, s, 292), 60), 156, t);
+        Resources_SetData((BYTE**)(F(BYTE*, s, 36) + 704), 0, key, F(int, F(BYTE*, s, 292), 60), 156, t);
     }
     Part_Release(s ? s + 9528 : 0, 0);
-    CallThis(FUN_58b870, s);
+    Body58b870_Destroy(s, 0);
 }
 
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
+extern "C" void __fastcall Scenery_Destroy(BYTE* s);
 extern "C" void FUN_52bb40(); KING_ALIAS("_FUN_52bb40", "@Scenery_Destroy@4")
 // [$L_52b6d0]
 extern "C" BYTE* __fastcall Dtor52b6d0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_52bb40, s);
+    Scenery_Destroy(s);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" int __fastcall Thunk52d6f0(BYTE* s);
 extern "C" void FUN_52d6f0(); KING_ALIAS("_FUN_52d6f0", "@Thunk52d6f0@4")
 // [$L_52d3e0]
 extern "C" BYTE* __fastcall Dtor52d3e0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_52d6f0, s);
+    Thunk52d6f0(s);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -918,11 +915,12 @@ extern "C" BYTE* __fastcall Dtor52da10_DeletingDestructor(BYTE* s, void*, int fl
     return s;
 }
 
+extern "C" void __fastcall Scy52e520_Destruct(BYTE* s, void*);
 extern "C" void FUN_52e520(); KING_ALIAS("_FUN_52e520", "@Scy52e520_Destruct@8")
 // [$L_52e2e0]
 extern "C" BYTE* __fastcall Dtor52e2e0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_52e520, s);
+    Scy52e520_Destruct(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -989,14 +987,14 @@ extern "C" int __cdecl Cars_Deliver(BYTE* m, int b)
         BYTE* c = n - 376;
         if (F(int, n, 16) == 2 && F(int, c, 3568) == 1) {
             if (F(BYTE*, m, 28) == c ||
-                (CallC<int>(FUN_52ea90, F(int, c, 9544)) + 200) * 1000 + F(int, c, 9548) == F(int, m, 4)) {
+                (CarType_Number(F(int, c, 9544)) + 200) * 1000 + F(int, c, 9548) == F(int, m, 4)) {
                 CallVirt(c, 0, 1);
                 return 1;
             }
         }
         if (F(int, c, 392) == 1) {
             if (F(BYTE*, m, 28) == c ||
-                (CallC<int>(FUN_52ea90, F(int, c, 3568)) + 200) * 1000 + F(int, c, 3572) == F(int, m, 4)) {
+                (CarType_Number(F(int, c, 3568)) + 200) * 1000 + F(int, c, 3572) == F(int, m, 4)) {
                 CallVirt(c, 0, 1);
                 return 1;
             }
@@ -1009,10 +1007,10 @@ extern "C" int __cdecl Cars_Deliver(BYTE* m, int b)
     return 0;
 }
 
-extern "C" void Scy128_4e0200(); KING_ALIAS("_Scy128_4e0200", "@Sta4e0200_Construct@8")
+extern "C" BYTE* __fastcall Sta4e0200_Construct(BYTE* s, void*);
 KING_VAR(AsmLabel, g_q128_6d1cd0, 6d1cd0)
 // [$L_52f5e0] static init: constructs the 6d1cd0 object
-extern "C" BYTE* __cdecl Scy_Init6d1cd0(void) { return CallThis<BYTE*>(Scy128_4e0200, (BYTE*)g_q128_6d1cd0); }
+extern "C" BYTE* __cdecl Scy_Init6d1cd0(void) { return Sta4e0200_Construct((BYTE*)g_q128_6d1cd0, 0); }
 
 // [$L_52d9f0] copies matrix b to a; a
 extern "C" BYTE* __stdcall Matrix52d9f0_Copy(BYTE* a, const BYTE* b, int, int, int)
@@ -1042,9 +1040,9 @@ extern "C" void __fastcall Scenery_StartEvent(BYTE* s, void*, BYTE* o, float t, 
     if (o && !F(int, o, 388))
         ((void(__cdecl*)(BYTE*, double))F(void*, s, 3648))(o, t);
     CallC(FUN_52f9d0, F(int, s, 3636), 1.0f, 1.0f, (void*)g_q215_702620);
-    BYTE* n = CallC<BYTE*>(FUN_5ef2b0, 0, name);
+    BYTE* n = Scene_FindObject(0, name);
     F(BYTE*, s, 3640) = n;
-    CallC(FUN_5e1a10, n, 1);
+    Switch_Select(n, 1);
     F(float, s, 3644) = (float)F(double, g_6ef1fc, 2968);
 }
 
@@ -1144,11 +1142,10 @@ void __fastcall ControlPreset_Default(BYTE* p)
 
 // === placing a car of a model (FUN_52dc50)
 
-extern "C" void FUN_4e497a(); KING_ALIAS("_FUN_4e497a", "_Frame_GetLocalChecked")
-extern "C" void FUN_57e030(); KING_ALIAS("_FUN_57e030", "@SceneObj_57e030@12")
-extern "C" void FUN_57e070(); KING_ALIAS("_FUN_57e070", "@Vehicle_MakeOut@8")
+extern "C" int __cdecl Frame_GetLocalChecked(BYTE* obj, int a);
+extern "C" int __fastcall SceneObj_57e030(BYTE* self, void*, int* out);
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
-extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);
 
 extern "C" {
 
@@ -1175,24 +1172,24 @@ void __fastcall Car_SetModel(BYTE* c, void*, int i, int b)
     memcpy(c + 3288, r + 168, 12);
     F(DWORD, c, 1424) = F(DWORD, r, 200);
     F(DWORD, c, 1428) = F(DWORD, r, 200);
-    F(int, c, 800) = CallThis<int>(FUN_5ef640, c + 256);
+    F(int, c, 800) = (int)Node_Root(c + 256, 0);
     BYTE m[48], t[48];
     memcpy(m, g_7025f0, 48);
-    CallC(FUN_4e497a, F(BYTE*, c, 324), m);
+    Frame_GetLocalChecked(F(BYTE*, c, 324), (int)m);
     memcpy(c + 500, CallC<BYTE*>(FUN_5aba40, t, c + 740, m), 48);
     memcpy(c + 596, CallC<BYTE*>(FUN_5ac2e0, t, c + 500), 48);
     for (int k = 0; k < 3; k++)
         memcpy(c + 416 + k * 12, &g_702650, 12);
     CallVirt(c, 52);
-    CallThis(FUN_57e030, c, c + 3268);
-    CallThis(FUN_57e070, c);
+    SceneObj_57e030(c, 0, (int*)(c + 3268));
+    Vehicle_MakeOut(c, 0);
 }
 
 } // extern "C"
 
 // === a parked car's destructor (FUN_52dec0)
 
-extern "C" void Pc_ItemDestroy(); KING_ALIAS("_Pc_ItemDestroy", "@MovingItem_Destroy@4")
+extern "C" void __fastcall MovingItem_Destroy(BYTE* s);
 
 // [FUN_52dec0] destructor: a parked car (vtables 64f068, 64f01c at +256, 64f018 at +376) saves its 156-byte state
 // in the world's record (key cell +3568 / slot +3572), then the moving item is destroyed
@@ -1205,7 +1202,7 @@ extern "C" void __fastcall ParkedCar_Destroy(BYTE* s)
     const char* n2 = F(const char*, CallThis<BYTE*>(FUN_57def0, s), 12);
     BYTE t[156];
     memset(t, 0, sizeof t);
-    F(int, t, 0) = CallC<int>(FUN_52ea90, F(int, s, 3568));
+    F(int, t, 0) = CarType_Number(F(int, s, 3568));
     F(int, t, 4) = F(int, s, 3572);
     memcpy(t + 20, s + 416, 24);
     memcpy(t + 44, s + 500, 48);
@@ -1214,16 +1211,16 @@ extern "C" void __fastcall ParkedCar_Destroy(BYTE* s)
     F(int, t, 8) = F(int, s, 372);
     F(int, t, 12) = F(int, s, 1200);
     F(int, t, 16) = 0;
-    int key = F(int, s, 3572) + (CallC<int>(FUN_52ea90, F(int, s, 3568)) + 200) * 1000;
-    CallThis(FUN_5e52b0, F(BYTE*, s, 36) + 704, key, F(int, F(BYTE*, s, 292), 60), 156, t);
-    CallThis(Pc_ItemDestroy, s);
+    int key = F(int, s, 3572) + (CarType_Number(F(int, s, 3568)) + 200) * 1000;
+    Resources_SetData((BYTE**)(F(BYTE*, s, 36) + 704), 0, key, F(int, F(BYTE*, s, 292), 60), 156, t);
+    MovingItem_Destroy(s);
 }
 
 // === a hit denting a scenery object (FUN_52bd20)
 
 extern "C" void Dn_Debris(); KING_ALIAS("_Dn_Debris", "_Fx_DebrisBurst")
-extern "C" void Dn_Length(); KING_ALIAS("_Dn_Length", "_Vec3_Length")
-extern "C" void Dn_Normalized(); KING_ALIAS("_Dn_Normalized", "_Vec3_Normalized")
+extern "C" double __cdecl Vec3_Length(const Vec3* v);
+extern "C" Vec3* __cdecl Vec3_Normalized(Vec3* out, const Vec3* v);
 extern "C" void Dn_MulAssign(); KING_ALIAS("_Dn_MulAssign", "@Vec3_MulAssign@16")
 extern "C" void Dn_Advance(); KING_ALIAS("_Dn_Advance", "@Progresses_Advance@24")
 KING_VAR(float, g_dn64c40c, 64c40c)
@@ -1248,7 +1245,7 @@ void __fastcall Scenery_Hit(BYTE* s, void*, const float* p, const float* v)
     if (F(int, s, 372) || !F(int, s, 9520) || !F(int, s, 9516))
         return;
     float vc[3] = {v[0], v[1], v[2]};
-    double L = CallC<double>(Dn_Length, vc) / F(float, s, 396);
+    double L = Vec3_Length((const Vec3*)vc) / F(float, s, 396);
     if (L < g_dn64c40c)
         return;
     L = L - g_dn64c40c;
@@ -1262,7 +1259,7 @@ void __fastcall Scenery_Hit(BYTE* s, void*, const float* p, const float* v)
         F(float, s, 636));
     w[2] = (float)((double)F(float, s, 604) * p[0] + (double)F(float, s, 616) * p[1] + (double)F(float, s, 628) * p[2] +
         F(float, s, 640));
-    const float* nr = CallC<const float*>(Dn_Normalized, nb, w);
+    const float* nr = (const float*)Vec3_Normalized((Vec3*)nb, (const Vec3*)w);
     float n[3] = {nr[0], nr[1], nr[2]};
     if (x87_fabs(w[1]) < w[2] && x87_fabs(w[0]) < w[2])
         return;
@@ -1291,7 +1288,7 @@ void __fastcall Scenery_Hit(BYTE* s, void*, const float* p, const float* v)
     if (fin)
         num += num;
     DWORD speed = 0x3E19999A;
-    float size = (float)CallC<double>(Dn_Length, pos);
+    float size = (float)Vec3_Length((const Vec3*)pos);
     if (fin) {
         speed = 0x3E666667;
         size = (float)((x87_sqrt((double)fin) + g_dn64b670) * size);
@@ -1307,18 +1304,14 @@ void __fastcall Scenery_Hit(BYTE* s, void*, const float* p, const float* v)
 
 // === setting up a parked car from its model (FUN_52b0e0)
 
-extern "C" void Pk_FlagsSet(); KING_ALIAS("_Pk_FlagsSet", "@Flags1196_Set@12")
-extern "C" void Pk_FlagsClear(); KING_ALIAS("_Pk_FlagsClear", "@Flags1196_Clear@12")
-extern "C" void Pk_MoveMode(); KING_ALIAS("_Pk_MoveMode", "@Body_SetMoveMode@12")
-extern "C" void Pk_PointsAdd(); KING_ALIAS("_Pk_PointsAdd", "@Points_Add@20")
-extern "C" void Pk_Plane(); KING_ALIAS("_Pk_Plane", "@Plane_SetWithPoint@12")
-extern "C" void Pk_Records(); KING_ALIAS("_Pk_Records", "@Records_58d290@8")
-extern "C" void Pk_NodeRoot(); KING_ALIAS("_Pk_NodeRoot", "@Node_Root@8")
-extern "C" void Pk_LocalChecked(); KING_ALIAS("_Pk_LocalChecked", "_Frame_GetLocalChecked")
-extern "C" void Pk_ProbeGround(); KING_ALIAS("_Pk_ProbeGround", "@Body_ProbeGround@12")
-extern "C" void Pk_57e030(); KING_ALIAS("_Pk_57e030", "@SceneObj_57e030@12")
-extern "C" void Pk_MakeOut(); KING_ALIAS("_Pk_MakeOut", "@Vehicle_MakeOut@8")
-extern "C" void FUN_58d2b0(); KING_ALIAS("_FUN_58d2b0", "@Body_UpdatePlanes@8")
+extern "C" void __fastcall Flags1196_Set(BYTE* self, void*, int bit);
+extern "C" void __fastcall Flags1196_Clear(BYTE* self, void*, int bit);
+extern "C" void __fastcall Body_SetMoveMode(BYTE* self, void*, int v);
+extern "C" int __fastcall Points_Add(BYTE* self, void*, int second, const Vec3Bits* p, int value);
+extern "C" void __fastcall Plane_SetWithPoint(float* self, void*, const float* p);
+extern "C" void __fastcall Records_58d290(BYTE* self, void*);
+extern "C" void __fastcall Body_ProbeGround(BYTE* s, void*, int a);
+extern "C" void __fastcall Body_UpdatePlanes(BYTE* s, void*);
 
 extern "C" {
 
@@ -1329,9 +1322,9 @@ void __fastcall Parked_Setup(BYTE* s, void*, int idx, int m)
     F(int, s, 9548) = m;
     F(int, s, 9540) = F(int, s, 1188);
     F(int, s, 3568) = 1;
-    CallThis(Pk_FlagsSet, s, 2);
-    CallThis(Pk_FlagsClear, s, 1);
-    CallThis(Pk_MoveMode, s, 3);
+    Flags1196_Set(s, 0, 2);
+    Flags1196_Clear(s, 0, 1);
+    Body_SetMoveMode(s, 0, 3);
     F(int, s, 9544) = idx;
     BYTE* T = (BYTE*)g_carModelNames + idx * 876;
     const float* R = (const float*)(s + 692);
@@ -1354,7 +1347,7 @@ void __fastcall Parked_Setup(BYTE* s, void*, int idx, int m)
         pt[2] = (float)((double)q[1] * R[5] + (double)R[8] * q[2] + (double)R[2] * q[0] + R[11]);
         pt[0] = (float)((double)q[1] * R[3] + (double)R[0] * q[0] + (double)q[2] * R[6] + R[9]);
         pt[1] = (float)y;
-        CallThis(Pk_PointsAdd, s, 0, pt, 0);
+        Points_Add(s, 0, 0, (const Vec3Bits*)pt, 0);
     }
     for (int i = 0; i < F(int, (BYTE*)g_carModelNames + F(int, s, 9544) * 876, 484); i++)
     {
@@ -1363,39 +1356,39 @@ void __fastcall Parked_Setup(BYTE* s, void*, int idx, int m)
         pt[2] = (float)((double)q[1] * R[5] + (double)R[8] * q[2] + (double)q[0] * R[2] + R[11]);
         pt[0] = (float)((double)q[2] * R[6] + (double)R[0] * q[0] + (double)R[3] * q[1] + R[9]);
         pt[1] = (float)y;
-        CallThis(Pk_PointsAdd, s, 1, pt, 0);
+        Points_Add(s, 0, 1, (const Vec3Bits*)pt, 0);
     }
     int np = 0;
     for (; np < F(int, (BYTE*)g_carModelNames + F(int, s, 9544) * 876, 856); np++)
-        CallThis(Pk_Plane, s + 4548 + np * 28, (BYTE*)g_carModelNames + F(int, s, 9544) * 876 + 536 + np * 16);
-    CallThis(Pk_Records, s);
+        Plane_SetWithPoint((float*)(s + 4548 + np * 28), 0, (const float*)((BYTE*)g_carModelNames + F(int, s, 9544) * 876 + 536 + np * 16));
+    Records_58d290(s, 0);
     F(int, s, 5132) = np;
-    CallThis(FUN_58d2b0, s);
+    Body_UpdatePlanes(s, 0);
     F(int, s, 3588) = 0;
-    F(BYTE*, s, 800) = CallThis<BYTE*>(Pk_NodeRoot, s + 256);
+    F(BYTE*, s, 800) = Node_Root(s + 256, 0);
     Matrix local = g_identity, mt;
-    CallC(Pk_LocalChecked, F(BYTE*, s, 324), &local);
+    Frame_GetLocalChecked(F(BYTE*, s, 324), (int)&local);
     memcpy(s + 500, Matrix_Multiply(&mt, (const Matrix*)(s + 740), &local), 48);
     memcpy(s + 596, Matrix_Inverse(&mt, (const Matrix*)(s + 500)), 48);
-    CallThis(Pk_ProbeGround, s, 1);
+    Body_ProbeGround(s, 0, 1);
     F(Vec3, s, 416) = g_zeroVec;
     F(Vec3, s, 428) = g_zeroVec;
     F(Vec3, s, 440) = g_zeroVec;
     CallVirt(s, 52);
-    CallThis(Pk_57e030, s, s + 3268);
-    CallThis(Pk_MakeOut, s);
+    SceneObj_57e030(s, 0, (int*)(s + 3268));
+    Vehicle_MakeOut(s, 0);
 }
 
 } // extern "C"
 
 // === a parked car's draw and shadow (FUN_52c120)
 
-extern "C" void Ps_PointsNext(); KING_ALIAS("_Ps_PointsNext", "@Points_Next@12")
-extern "C" void Ps_ZeroThis(); KING_ALIAS("_Ps_ZeroThis", "@Vec3_ZeroThis@8")
-extern "C" void Ps_NodeInit(); KING_ALIAS("_Ps_NodeInit", "@Node_Init@8")
-extern "C" void Ps_HitObject(); KING_ALIAS("_Ps_HitObject", "_Query_HitObject")
-extern "C" void Ps_Query(); KING_ALIAS("_Ps_Query", "_Query_4e6578")
-extern "C" void Ps_Shadow(); KING_ALIAS("_Ps_Shadow", "_Fx_Shadow")
+extern "C" int __fastcall Points_Next(BYTE* self, void*, Vec3Bits* out);
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
+extern "C" BYTE* __fastcall Node_Init(BYTE* self, void*);
+extern "C" void* __cdecl Query_HitObject(void* obj, const Vec3Bits* p, const Vec3Bits* d);
+extern "C" int __cdecl Query_4e6578(int skip, void* obj, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
+extern "C" void __cdecl Fx_Shadow(int a, int b, int c, int d, int tree);
 KING_VAR(float, g_ps6969f4, 6969f4)               // the camera
 KING_VAR(float, g_ps6969f8, 6969f8)
 KING_VAR(float, g_ps6969fc, 6969fc)
@@ -1452,7 +1445,7 @@ extern "C" {
 // ground under it from its contact points (+4888 + 208 i records of its owner s - 256) or a ray down; the draw's result
 void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
 {
-    void* r = CallThis<void*>(FUN_590d20, s, a, b);
+    void* r = (void*)Item_DrawBody(s, 0, a, (BYTE*)b);
     float dx = (float)((double)g_ps6969f4 - F(float, s, 280));
     float dy = (float)((double)g_ps6969f8 - F(float, s, 284));
     double dz = (double)g_ps6969fc - F(float, s, 288);
@@ -1461,7 +1454,7 @@ void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
     BYTE nodes[20][208];
     for (int k = 0; k < 20; k++)
     {
-        CallThis(Ps_NodeInit, nodes[k]);
+        Node_Init(nodes[k], 0);
         F(Vec3, nodes[k], 52) = g_zeroVec;
         F(Vec3, nodes[k], 64) = g_axisZ;
         F(int, nodes[k], 108) = 0;
@@ -1548,9 +1541,9 @@ void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
     }
     // the ground: the owner's contacts near the points, or a ray down
     Vec3Bits pt;
-    CallThis(Ps_ZeroThis, &pt);
+    Vec3_ZeroThis((Vec3*)&pt, 0);
     BYTE* owner = s - 256;
-    int i = CallThis<int>(Ps_PointsNext, owner, &pt);
+    int i = Points_Next(owner, 0, &pt);
     bool rayDown = true;
     if (i)
     {
@@ -1565,7 +1558,7 @@ void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
                 memcpy(nodes[count], rec + 4888, 208);
                 count++;
             }
-            i = CallThis<int>(Ps_PointsNext, owner, &pt);
+            i = Points_Next(owner, 0, &pt);
         }
         rayDown = count == 0;
     }
@@ -1580,16 +1573,16 @@ void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
         Vec3_Scaled(&c2, &g_axisZ, 10.0f);
         Vec3_Sub(&down, &base, &c2);
         BYTE nd[208];
-        CallThis(Ps_NodeInit, nd);
-        BYTE* hit = CallC<BYTE*>(Ps_HitObject, F(BYTE*, s, 544), s + 280, &up);
-        int q = CallC<int>(Ps_Query, owner, hit, &up, &down, nd);
+        Node_Init(nd, 0);
+        BYTE* hit = (BYTE*)Query_HitObject(F(BYTE*, s, 544), (const Vec3Bits*)(s + 280), (const Vec3Bits*)&up);
+        int q = Query_4e6578((int)owner, hit, (const Vec3Bits*)&up, (const Vec3Bits*)&down, nd);
         if ((q & 1) && !F(int, nd, 116))
         {
             memcpy(nodes[0], nd, 208);
             count = 1;
         }
     }
-    CallC(Ps_Shadow, nodes, count, C, F(int, R, 452), mark ? 1 : 0);
+    Fx_Shadow((int)nodes, count, (int)C, F(int, R, 452), mark ? 1 : 0);
     return r;
 }
 
@@ -1599,13 +1592,13 @@ void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
 // Batch 32: the run steps of falling trees, trash boxes and items
 
 #include "x87.h"
-extern "C" void Sr32_CheckFrame(); KING_ALIAS("_Sr32_CheckFrame", "@MovingItem_CheckFrame@20")
-extern "C" void Sr32_ItemFrame(); KING_ALIAS("_Sr32_ItemFrame", "@MovingItem_Frame@4")
-extern "C" void Sr32_UpdateLying(); KING_ALIAS("_Sr32_UpdateLying", "@Body_UpdateLying@4")
+extern "C" void __fastcall MovingItem_CheckFrame(BYTE* s, void*, const float* m, const char* what, int code);
+extern "C" void __fastcall MovingItem_Frame(BYTE* s);
+extern "C" void __fastcall Body_UpdateLying(BYTE* s);
 extern "C" void Sr32_GroundStep(); KING_ALIAS("_Sr32_GroundStep", "@Body_GroundStep@12")
-extern "C" void Sr32_MulComponents(); KING_ALIAS("_Sr32_MulComponents", "_Vec3_MulComponents")
-extern "C" void Sr32_FrameTime(); KING_ALIAS("_Sr32_FrameTime", "_Game_FrameTime")
-extern "C" void Sr32_Rest(); KING_ALIAS("_Sr32_Rest", "@Item_Rest@4")
+extern "C" Vec3* __cdecl Vec3_MulComponents(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" double __cdecl Game_FrameTime();
+extern "C" void __fastcall Item_Rest(BYTE* s);
 KING_VAR(double, sr32_damp64b780, 64b780)
 KING_VAR(char, sr32_ftree1, 678530)
 KING_VAR(char, sr32_ftree2, 678520)
@@ -1621,20 +1614,20 @@ static void Sr32_Run(BYTE* s, const char* const* names)
 {
     BYTE* m = s + 500;
     if (names)
-        CallThis(Sr32_CheckFrame, s, m, names[0], 0);
+        MovingItem_CheckFrame(s, 0, (const float*)m, names[0], 0);
     if (F(int, s, 372)) {
-        CallThis(Sr32_ItemFrame, s);
+        MovingItem_Frame(s);
         return;
     }
     CallVirt(s, 52);
     if (names) {
-        CallThis(Sr32_UpdateLying, s);
+        Body_UpdateLying(s);
         CallThis(Sr32_GroundStep, s, 0);
     } else {
         CallVirt(s, 56);
     }
     if (F(int, s, 892)) {
-        double k = x87_pow(0.95, CallC<double>(Sr32_FrameTime) * sr32_damp64b780);
+        double k = x87_pow(0.95, Game_FrameTime() * sr32_damp64b780);
         float* v = (float*)(s + 428);
         float vx = (float)(k * v[0]);
         float vy = (float)(k * v[1]);
@@ -1643,7 +1636,7 @@ static void Sr32_Run(BYTE* s, const char* const* names)
         v[1] = vy;
         v[2] = vz;
         float tmp[3];
-        const float* r = CallC<float*>(Sr32_MulComponents, tmp, v, s + 404);
+        const float* r = (float*)Vec3_MulComponents((Vec3*)tmp, (const Vec3*)v, (const Vec3*)(s + 404));
         const float* M = (const float*)m;
         float* w = (float*)(s + 440);
         float wx = (float)(((double)M[3] * r[1] + (double)M[6] * r[2]) + (double)r[0] * M[0]);
@@ -1657,16 +1650,16 @@ static void Sr32_Run(BYTE* s, const char* const* names)
         F(int, s, 3588) = 0;
     F(DWORD, s, 896) = F(DWORD, s, 892);
     F(BYTE, s, 892) &= 0xfa;
-    float ft = (float)CallC<double>(Sr32_FrameTime);
+    float ft = (float)Game_FrameTime();
     CallVirt(s, 80, ft, 0);
     int moving = F(int, s, 896) || F(int, s, 892) ? 1 : 0;
     F(DWORD, s, 900) = F(DWORD, s, 892);
     F(int, s, 896) = moving;
     if (names)
-        CallThis(Sr32_CheckFrame, s, m, names[1], 0);
-    CallThis(Sr32_Rest, s);
+        MovingItem_CheckFrame(s, 0, (const float*)m, names[1], 0);
+    Item_Rest(s);
     if (names)
-        CallThis(Sr32_CheckFrame, s, m, names[2], 0);
+        MovingItem_CheckFrame(s, 0, (const float*)m, names[2], 0);
 }
 
 extern "C" {

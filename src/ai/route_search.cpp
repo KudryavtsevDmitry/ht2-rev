@@ -518,13 +518,14 @@ BYTE** __fastcall Hops_Copy(BYTE** self, void*, BYTE* const* src)
 
 }
 
+extern "C" DWORD* __fastcall Slots8_Construct(DWORD* self, void*, int n);
 extern "C" void FUN_487d20(); KING_ALIAS("_FUN_487d20", "@Slots8_Construct@12")
 KING_VAR(char, g_691cc0, 691cc0)
 
 // [FUN_488320] FUN_487d20(20) on the global at 691cc0
 extern "C" int __cdecl Trce_488320()
 {
-    return CallThis<int>(FUN_487d20, &g_691cc0, 20);
+    return (int)Slots8_Construct((DWORD*)&g_691cc0, 0, 20);
 }
 
 // [FUN_487cc0] copy-constructs a 12-byte record in place (placement new)
@@ -550,7 +551,7 @@ extern "C" void __fastcall Vec12Array_Fill(BYTE* self, int, unsigned count, BYTE
             continue;
         int n = (int)(src[1] - src[0]) / 12;
         e[0] = e[1] = e[2] = 0;
-        BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 12) : 0;
+        BYTE* p = n ? (BYTE*)Stl_Allocate(n * 12) : 0;
         e[0] = p;
         e[1] = p;
         e[2] = p + n * 12;
@@ -593,16 +594,16 @@ extern "C" void __fastcall Vec12Array_FreeAll(BYTE* s, void*)
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 KING_VAR(char, g_q197_691cc0, 691cc0)
-extern "C" void q197_FUN_488320(); KING_ALIAS("_q197_FUN_488320", "_Trce_488320")
-extern "C" void q197_L_487db0(); KING_ALIAS("_q197_L_487db0", "@Thunk487db0@8")
+extern "C" int __cdecl Trce_488320();
+extern "C" int __fastcall Thunk487db0(BYTE* s, void* d);
 // [$L_488340] destroys the static object 691cc0 at exit ($L_487db0)
-extern "C" void __cdecl Static691cc0_Destroy(void) { CallThis(q197_L_487db0, &g_q197_691cc0); }
+extern "C" void __cdecl Static691cc0_Destroy(void) { Thunk487db0((BYTE*)&g_q197_691cc0, 0); }
 // [$L_488330] registers the teardown at exit
 extern "C" int __cdecl Static691cc0_AtExit(void) { return atexit((void(__cdecl*)(void))Static691cc0_Destroy); }
 // [$L_488310] the static initializer: FUN_488320, then the teardown at exit
 extern "C" int __cdecl Static691cc0_Init(void)
 {
-    CallC(q197_FUN_488320);
+    Trce_488320();
     return Static691cc0_AtExit();
 }
 
@@ -610,14 +611,15 @@ extern "C" int __cdecl Static691cc0_Init(void)
 // Searching a route
 
 extern "C" void FUN_484810(); KING_ALIAS("_FUN_484810", "_Route_Waypoints")    // the route from the route tables (out, side, from, to, cost)
-extern "C" void FUN_4593b0(); KING_ALIAS("_FUN_4593b0", "_Vec12b_AllocCopyA@12")
+extern "C" BYTE* __stdcall Vec12b_AllocCopyA(unsigned n, const BYTE* first, const BYTE* last);
 extern "C" void FUN_47c650(); KING_ALIAS("_FUN_47c650", "_Rec12_Copy")
-extern "C" void FUN_45a9b0(); KING_ALIAS("_FUN_45a9b0", "_Copy12s")
+extern "C" BYTE* __cdecl Copy12s(const BYTE* first, const BYTE* last, BYTE* dest);
 extern "C" void FUN_4abce0(); KING_ALIAS("_FUN_4abce0", "@Vec12_Reserve@16")
-extern "C" void FUN_47b790(); KING_ALIAS("_FUN_47b790", "@Vec12_Insert47b790@16")
-extern "C" void FUN_457b50(); KING_ALIAS("_FUN_457b50", "_CopyDwords")
-extern "C" void FUN_487d00(); KING_ALIAS("_FUN_487d00", "@Rec487d00_Delete@12")
-extern "C" void FUN_44aff0(); KING_ALIAS("_FUN_44aff0", "@Vec12_Free@8")
+extern "C" void __fastcall Vec12_Insert47b790(BYTE** v, void*, BYTE* pos, const BYTE* x);
+extern "C" DWORD* __cdecl CopyDwords(const DWORD* first, const DWORD* last, DWORD* dest);
+extern "C" BYTE* __fastcall Rec487d00_Delete(BYTE* self, void*, int flags);
+extern "C" void __fastcall Vec12_Free(BYTE** v, int);
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 
 struct RouteVecs {                  // the routes found so far, one per node
@@ -635,9 +637,9 @@ static void Route_Assign(HopVecFull* v, const HopVecFull* src)
     int n = (int)(last - first) / 12;
     unsigned cap = (int)((BYTE*)v->capacityEnd - (BYTE*)v->begin) / 12;
     if ((unsigned)n > cap) {
-        BYTE* p = CallStd<BYTE*>(FUN_4593b0, n, first, last);
+        BYTE* p = Vec12b_AllocCopyA(n, first, last);
         if (cap)
-            CallC(FUN_44b4a0, v->begin, cap * 12);
+            Ai_PoolFree(v->begin, cap * 12);
         v->begin = (Hop*)p;
         v->capacityEnd = (Hop*)(p + n * 12);
     } else {
@@ -645,7 +647,7 @@ static void Route_Assign(HopVecFull* v, const HopVecFull* src)
         if (have >= (unsigned)n) {
             CallC(FUN_47c650, first, last, v->begin, v->end, 0);
         } else {
-            CallC(FUN_45a9b0, first, first + have * 12, v->begin);
+            Copy12s(first, first + have * 12, (BYTE*)v->begin);
             CallC(FUN_47e3e0, first + have * 12, last, v->end, 0);
         }
     }
@@ -659,7 +661,7 @@ static void Route_Push(HopVecFull* v, const Hop* h)
             *v->end = *h;
         v->end++;
     } else {
-        CallThis(FUN_47b790, v, v->end, h);
+        Vec12_Insert47b790((BYTE**)v, 0, (BYTE*)v->end, (const BYTE*)h);
     }
 }
 
@@ -693,7 +695,7 @@ HopVecFull* __cdecl Road_FindRoute(HopVecFull* out, int side, int from, int to, 
         h.code = 255;
         Route_Push(&v, &h);
         Route_Copy(out, &v);
-        CallThis(FUN_44aff0, &v);
+        Vec12_Free((BYTE**)&v, 0);
         return out;
     }
     if (g_roadNodes[from]->routeTable[side][to] != 255) {
@@ -708,7 +710,7 @@ HopVecFull* __cdecl Road_FindRoute(HopVecFull* out, int side, int from, int to, 
         char a;
         Vec_Construct((void**)&e, 0, (int)&a);
         Vec12Array_Fill((BYTE*)&routes, 0, RoadNodeCount(), (BYTE**)&e);
-        CallThis(FUN_44aff0, &e);
+        Vec12_Free((BYTE**)&e, 0);
     }
     double* costs = g_nodeCosts;
     for (unsigned i = 0; i < RoadNodeCount(); i++)
@@ -737,7 +739,7 @@ HopVecFull* __cdecl Road_FindRoute(HopVecFull* out, int side, int from, int to, 
             *cost = s_noRoute;
             out->begin = out->end = out->capacityEnd = 0;
             for (int i = 0; i < routes.count; i++)
-                CallThis(FUN_487d00, &routes.v[i], 0);
+                Rec487d00_Delete((BYTE*)&routes.v[i], 0, 0);
             return out;
         }
         if (u == to) {
@@ -754,11 +756,11 @@ HopVecFull* __cdecl Road_FindRoute(HopVecFull* out, int side, int from, int to, 
             else
                 out->begin = out->end = out->capacityEnd = 0;
             for (int i = 0; i < routes.count; i++)
-                CallThis(FUN_487d00, &routes.v[i], 0);
+                Rec487d00_Delete((BYTE*)&routes.v[i], 0, 0);
             return out;
         }
         if (best + 1 != open + nOpen)
-            CallC(FUN_457b50, best + 1, open + nOpen, best);
+            CopyDwords((const DWORD*)(best + 1), (const DWORD*)(open + nOpen), (DWORD*)best);
         nOpen--;
         done[u] = 1;
         HopVecFull* ru = &routes.v[u];
@@ -795,12 +797,13 @@ HopVecFull* __cdecl Road_FindRoute(HopVecFull* out, int side, int from, int to, 
 
 // === the route between two positions (FUN_4858b0)
 
-extern "C" void FUN_409aa0(); KING_ALIAS("_FUN_409aa0", "_Ai_EdgePricedLength")    // the priced length of an edge between two positions (side, edge, PositionId32, PositionId32)
-extern "C" void FUN_409660(); KING_ALIAS("_FUN_409660", "_Road_DistanceBetween")    // the distance between two positions on an edge (edge, PositionId32, PositionId32)
-extern "C" void FUN_40a4d0(); KING_ALIAS("_FUN_40a4d0", "@Position_InitNode@12")    // a position at a node
+extern "C" double __cdecl Ai_EdgePricedLength(BYTE* ctx, BYTE* e, PositionId a, PositionId b);
+extern "C" double __cdecl Road_DistanceBetween(BYTE* e, PositionId a, PositionId b);
+extern "C" PositionId* __fastcall Position_InitNode(PositionId* s, void*, int node);
 extern "C" void FUN_47abf0(); KING_ALIAS("_FUN_47abf0", "@Vec12_PushBack@12")    // push_back of a 12-byte record
-extern "C" void FUN_448060(); KING_ALIAS("_FUN_448060", "@Vec12_Clear@8")    // clear of a vector of 12-byte records
-extern "C" void FUN_4867e0(); KING_ALIAS("_FUN_4867e0", "@Waypoint_Make@16")    // a hop (node, edge) with no kind
+extern "C" void __fastcall Vec12_Clear(void* s, void*);
+extern "C" DWORD* __fastcall Waypoint_Make(DWORD* self, void*, DWORD a, DWORD b);
+extern "C" void __fastcall Vec12_InsertRange(BYTE** v, void*, BYTE* pos, const BYTE* first, const BYTE* last);
 extern "C" void FUN_4878b0(); KING_ALIAS("_FUN_4878b0", "@Vec12_InsertRange@20")    // insert of a range of 12-byte records (pos, first, last)
 KING_VAR(double, g_trce64b5b8, 64b5b8)       // 0.1: a position this close to a node is at the node
 
@@ -819,7 +822,7 @@ static PositionId Pos_AtNode(int node)
 
 static double Pos_EdgeLength(int side, RoadEdge* e, PositionId a, PositionId b)
 {
-    return CallC<double>(FUN_409aa0, side, e, a, b);
+    return Ai_EdgePricedLength((BYTE*)side, (BYTE*)e, a, b);
 }
 
 static void Hop_Set(Hop* h, int node, RoadEdge* e)
@@ -856,7 +859,7 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
         Hop_Set(&h, from.node, 0);
         Route_Push(&v, &h);
         Route_Copy(out, &v);
-        CallThis(FUN_44aff0, &v);
+        Vec12_Free((BYTE**)&v, 0);
         return out;
     }
     if (from.road == to.road && from.node == to.node && !(from.t < to.t || from.t > to.t)
@@ -882,8 +885,8 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
         startCost[nStarts] = Pos_EdgeLength(side, e, from, Pos_AtNode(n0));
         if (!(startCost[nStarts++] >= g_trce64b5b8)) {
             Road_FindPositionRoute(out, side, Pos_AtNode(n0), to, cost);
-            CallThis(FUN_44aff0, &v2);
-            CallThis(FUN_44aff0, &v1);
+            Vec12_Free((BYTE**)&v2, 0);
+            Vec12_Free((BYTE**)&v1, 0);
             return out;
         }
         Hop_Set(&h, n1, e);
@@ -892,8 +895,8 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
         startCost[nStarts] = Pos_EdgeLength(side, e, from, Pos_AtNode(n1));
         if (!(startCost[nStarts++] >= g_trce64b5b8)) {
             Road_FindPositionRoute(out, side, Pos_AtNode(n1), to, cost);
-            CallThis(FUN_44aff0, &v2);
-            CallThis(FUN_44aff0, &v1);
+            Vec12_Free((BYTE**)&v2, 0);
+            Vec12_Free((BYTE**)&v1, 0);
             return out;
         }
         Hop_Set(&h, n0, e);
@@ -909,8 +912,8 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
         endCost[nEnds] = Pos_EdgeLength(side, e, Pos_AtNode(n0), to);
         if (!(endCost[nEnds++] >= g_trce64b5b8)) {
             Road_FindPositionRoute(out, side, from, Pos_AtNode(n0), cost);
-            CallThis(FUN_44aff0, &v2);
-            CallThis(FUN_44aff0, &v1);
+            Vec12_Free((BYTE**)&v2, 0);
+            Vec12_Free((BYTE**)&v1, 0);
             return out;
         }
         Hop_Set(&h, n1, 0);
@@ -919,8 +922,8 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
         endCost[nEnds] = Pos_EdgeLength(side, e, Pos_AtNode(n1), to);
         if (!(endCost[nEnds++] >= g_trce64b5b8)) {
             Road_FindPositionRoute(out, side, from, Pos_AtNode(n1), cost);
-            CallThis(FUN_44aff0, &v2);
-            CallThis(FUN_44aff0, &v1);
+            Vec12_Free((BYTE**)&v2, 0);
+            Vec12_Free((BYTE**)&v1, 0);
             return out;
         }
         Hop_Set(&h, n0, 0);
@@ -935,10 +938,10 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
         RoadEdge* e = g_roadEdges[from.road];
         int n0 = e->from->id, n1 = e->to->id;
         *cost = Pos_EdgeLength(side, e, from, to);
-        double d1 = CallC<double>(FUN_409660, g_roadEdges[from.road], from, Pos_AtNode(n1));
+        double d1 = Road_DistanceBetween((BYTE*)g_roadEdges[from.road], from, Pos_AtNode(n1));
         PositionId p;
-        CallThis(FUN_40a4d0, &p, n1);
-        double d2 = CallC<double>(FUN_409660, g_roadEdges[from.road], to, p);
+        Position_InitNode(&p, 0, n1);
+        double d2 = Road_DistanceBetween((BYTE*)g_roadEdges[from.road], to, p);
         if (!(d2 >= d1)) {
             Hop_Set(&h, n0, g_roadEdges[from.road]);
             Route_Push(&r, &h);
@@ -958,15 +961,15 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
             Road_FindRoute(&route, side, starts[i], ends[j], &c);
             c = c + startCost[i] + endCost[j];
             if (!(c >= *cost)) {
-                CallThis(FUN_448060, &r);
+                Vec12_Clear(&r, 0);
                 *cost = c;
                 if (Hops_Count(&v1))
                     CallThis(FUN_47abf0, &r, &v1.begin[i]);
                 if (route.begin == route.end) {
                     Hop w;
-                    CallThis(FUN_47abf0, &r, CallThis<Hop*>(FUN_4867e0, &w, starts[i], 0));
+                    CallThis(FUN_47abf0, &r, (Hop*)Waypoint_Make((DWORD*)&w, 0, starts[i], 0));
                 } else
-                    CallThis(FUN_4878b0, &r, r.end, route.begin, route.end);
+                    Vec12_InsertRange((BYTE**)&r, 0, (BYTE*)r.end, (const BYTE*)route.begin, (const BYTE*)route.end);
                 if (Hops_Count(&v2)) {
                     r.end[-1].edge = g_roadEdges[to.road];
                     CallThis(FUN_47abf0, &r, &v2.begin[j]);
@@ -1106,12 +1109,12 @@ void __fastcall Vec12_InsertRange(BYTE** v, void*, BYTE* pos, const BYTE* first,
     }
     unsigned size = (unsigned)((v[1] - v[0]) / 12);
     unsigned len = size + (size < n ? n : size);
-    BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len * 12) : 0;
+    BYTE* p = len ? (BYTE*)Stl_Allocate(len * 12) : 0;
     BYTE* e = Ri_UninitCopy(v[0], pos, p, pos);
     e = Ri_UninitCopy(first, last, e, pos);
     e = Ri_UninitCopy(pos, v[1], e, pos);
     if (unsigned cap = (unsigned)((v[2] - v[0]) / 12))
-        CallC(FUN_44b4a0, v[0], cap * 12);
+        Ai_PoolFree(v[0], cap * 12);
     v[0] = p;
     v[1] = e;
     v[2] = p + len * 12;

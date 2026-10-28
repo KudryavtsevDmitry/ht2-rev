@@ -7,10 +7,12 @@
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
+extern "C" void __fastcall Trigger_Check(BYTE* self, void*, float x);
 extern "C" void FUN_4eb350(); KING_ALIAS("_FUN_4eb350", "@Trigger_Check@12")
 extern "C" void __fastcall Body_SetLoad(BYTE* self, void*, float load);
 extern "C" void __fastcall Body_UpdateHitch(BYTE* self, void*, int keep);
 extern "C" void FUN_4f2670(); KING_ALIAS("_FUN_4f2670", "@Wheels_StepFrames@36")
+extern "C" int __fastcall Body_SubStep(BYTE* s, void*, int mode);
 extern "C" void FUN_4f8260(); KING_ALIAS("_FUN_4f8260", "@Body_SubStep@12")
 
 struct Vec3Bits { DWORD x, y, z; };
@@ -52,7 +54,7 @@ extern "C" void __fastcall Items_StepAll(BYTE** self, void*)
     if (!n || !(n - 4))
         return;
     for (BYTE* item = (BYTE*)(n - 4);;) {
-        CallThis(FUN_4eb350, item, now);
+        Trigger_Check(item, 0, now);
         n = F(DWORD, item, 8);
         if (!n || !(n - 4))
             return;
@@ -420,9 +422,9 @@ extern "C" float __fastcall Body_Get9508(BYTE* self, void*)
 extern "C" int __fastcall Body_4fc8b0(BYTE* self, void*)
 {
     if (F(int, self, 9784) == 2)
-        return CallThis<int>(FUN_4f8260, self, 0);
+        return Body_SubStep(self, 0, 0);
     if (F(int, self, 9784) == 3)
-        return CallThis<int>(FUN_4f8260, self, 1);
+        return Body_SubStep(self, 0, 1);
     return 0;
 }
 
@@ -444,8 +446,11 @@ extern "C" void __fastcall Body_SetMode(BYTE* self, void*, int mode)
 // ---------------------------------------------------------------------------
 // medium-sized functions of the unit
 
+extern "C" void __fastcall Body_FrameTerms(BYTE* s);
 extern "C" void FUN_4f0800(); KING_ALIAS("_FUN_4f0800", "@Body_FrameTerms@4")
+extern "C" void __fastcall Body_SpinAxis(BYTE* s);
 extern "C" void FUN_4f0530(); KING_ALIAS("_FUN_4f0530", "@Body_SpinAxis@4")
+extern "C" void __fastcall Body_KeepFrame(BYTE* s, void*, const BYTE* d);
 extern "C" void FUN_4f09f0(); KING_ALIAS("_FUN_4f09f0", "@Body_KeepFrame@12")
 
 static inline void Copy3i(BYTE* to, const BYTE* from)
@@ -473,8 +478,8 @@ extern "C" void __fastcall Body_SaveAll(BYTE* self, void*)
 // the wheels' contacts after a step: all on the ground, any on it
 extern "C" void __fastcall Body_UpdateContacts(BYTE* self, void*)
 {
-    CallThis(FUN_4f0800, self);
-    CallThis(FUN_4f0530, self);
+    Body_FrameTerms(self);
+    Body_SpinAxis(self);
     F(BYTE, self, 6580) = 1;
     F(BYTE, self, 6586) = 0;
     for (int i = 0; i < F(int, self, 3540); i++) {
@@ -528,7 +533,7 @@ extern "C" void __fastcall Body_Step(BYTE* self, void*, short* in)
     F(int, self, 13488) = F(int, self, 9792);
     Copy3i(self + 13496, self + 8008);
     F(int, self, 13484) = F(short, self, 10048);
-    CallThis(FUN_4f09f0, self, in);
+    Body_KeepFrame(self, 0, (const BYTE*)in);
     Body_SaveState(self, 0);
     Body_SaveVec88(self, 0);
     F(int, self, 13160) = F(int, self, 6688);
@@ -550,6 +555,7 @@ extern "C" void __fastcall Body_Step(BYTE* self, void*, short* in)
     F(int, self, 13512) = F(int, self, 7196) == 0;
 }
 
+extern "C" void __fastcall Body_PlaceAt(BYTE* s, void*, int a, const Matrix* m);
 extern "C" void FUN_4f0fc0(); KING_ALIAS("_FUN_4f0fc0", "@Body_PlaceAt@16")
 KING_VAR(float, g_quarterPi674408, 674408)
 KING_VAR(double, g_64b6e0, 64b6e0)            // 0.5
@@ -631,7 +637,7 @@ extern "C" void __fastcall Body_SetSpinScaled(BYTE* self, void*, float x, float 
 extern "C" void __fastcall Body_SetOrientation(BYTE* self, void*, int a, const Matrix* m)
 {
     if (F(int, self, 9524) > F(int, self, 9520))
-        CallThis(FUN_4f0fc0, self, a, m);
+        Body_PlaceAt(self, 0, a, m);
     Matrix t1, t2;
     F(Matrix, self, 8868) = *Matrix_Multiply(&t1, m, (const Matrix*)(self + 8820));
     F(Matrix, self, 8964) = *Matrix_Inverse(&t2, (const Matrix*)(self + 16));
@@ -647,6 +653,7 @@ extern "C" void __fastcall Body_SetOrientation(BYTE* self, void*, int a, const M
 }
 #undef FL
 
+extern "C" void __fastcall Wheels_LoadShares(BYTE* s, void*);
 extern "C" void FUN_4ef480(); KING_ALIAS("_FUN_4ef480", "@Wheels_LoadShares@8")
 typedef BYTE Bytes697f9c[1];
 KING_VAR(Bytes697f9c, g_697f9c, 697f9c)     // 2416-byte records by vehicle type
@@ -685,7 +692,7 @@ extern "C" void __fastcall Body_UpdateHitch(BYTE* self, void*, int keep)
 // the weight on the wheels (load: of the trailer, on the rear wheels)
 extern "C" void __fastcall Body_SetLoad(BYTE* self, void*, float load)
 {
-    CallThis(FUN_4ef480, self);
+    Wheels_LoadShares(self, 0);
     FL(10120) = load;
     float m = FL(9792);
     float gy = -g_axisZ.y, gz = -g_axisZ.z;
@@ -759,7 +766,6 @@ extern "C" void __fastcall Body_ResetMotion(BYTE* self, void*)
 
 // ---------------------------------------------------------------------------
 typedef char AsmLabel[1];
-extern "C" void FUN_4ee980(); KING_ALIAS("_FUN_4ee980", "@Body_UpdateHitch@12")
 KING_VAR(AsmLabel, g_carTypeNames, 69809c)
 KING_VAR(AsmLabel, s_67456c, 67456c)
 extern "C" void __cdecl World_Fatal(const char* msg);
@@ -778,12 +784,14 @@ extern "C" void __fastcall Car_CountType(BYTE* self, void*)
         wsprintfA(text, s_67456c, F(int, type, 44), 8);
         World_Fatal(text);
     }
-    CallThis(FUN_4ee980, self, 0);
+    Body_UpdateHitch(self, 0, 0);
 }
 
 
 // ---------------------------------------------------------------------------
+extern "C" int __fastcall Car_RandomStep(BYTE* s, void*, int k);
 extern "C" void FUN_4ebbe0(); KING_ALIAS("_FUN_4ebbe0", "@Car_RandomStep@12")
+extern "C" void __fastcall Part_NextTime(BYTE* self, void*);
 ASM_FUNC(FUN_4eb2f0, @Part_NextTime@8)
 KING_VAR(AsmLabel, g_697608, 697608)
 KING_VAR(AsmLabel, g_6975b8, 6975b8)
@@ -798,10 +806,10 @@ extern "C" void __fastcall Trigger_Check(BYTE* self, void*, float x)
         return;
     if (F(BYTE*, self, 36))
     {
-        int r = CallThis<int>(FUN_4ebbe0, F(BYTE*, self, 36), F(int, self, 28));
+        int r = Car_RandomStep(F(BYTE*, self, 36), 0, F(int, self, 28));
         if (r)
         {
-            CallThis(FUN_4eb2f0, self);
+            Part_NextTime(self, 0);
             if (r == 1)
                 F(int, F(BYTE*, self, 36), 15496) = r;
             return;
@@ -832,19 +840,20 @@ extern "C" void __cdecl Tables_Clear697608()
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // checks a vector (v, name, limit)
+extern "C" void __cdecl World_CheckPoint(float* v, const char* name, float lim);
 extern "C" void FUN_4f0530(); KING_ALIAS("_FUN_4f0530", "@Body_SpinAxis@4")
-extern "C" void FUN_4f0720(); KING_ALIAS("_FUN_4f0720", "@Body_SaveState@8")
+extern "C" void __fastcall Body_SaveState(BYTE* self, void*);
+extern "C" int __fastcall Body_StateStep(BYTE* s);
 extern "C" void FUN_4fef20(); KING_ALIAS("_FUN_4fef20", "@Body_StateStep@4")
 KING_VAR(AsmLabel, s_vp6746e4, 6746e4)
 
 // [FUN_4f1dd0] sets the position (+64) after checking it, then updates the body
 extern "C" void __fastcall Body_SetPosition(BYTE* self, void*, Vec3* p)
 {
-    CallC(FUN_4e2821, p, (char*)s_vp6746e4, 100.0f);
+    World_CheckPoint((float*)p, (char*)s_vp6746e4, 100.0f);
     F(Vec3, self, 64) = *p;
-    CallThis(FUN_4f0530, self);
-    CallThis(FUN_4f0720, self);
+    Body_SpinAxis(self);
+    Body_SaveState(self, 0);
 }
 
 // [FUN_4feee0] copies the pending mode (+10112) to +15500 and clears it; without one runs 4fef20 until it returns 0
@@ -857,13 +866,15 @@ extern "C" void __fastcall Body_TakeMode(BYTE* self, void*)
         F(int, self, 10112) = 0;
         return;
     }
-    while (CallThis<int>(FUN_4fef20, self))
+    while (Body_StateStep(self))
         ;
 }
 
 
 // ---------------------------------------------------------------------------
+extern "C" void __fastcall Body_PutDown(BYTE* s, void*, int mode, int a, const Matrix* m);
 extern "C" void FUN_4f1240(); KING_ALIAS("_FUN_4f1240", "@Body_PutDown@20")
+extern "C" void __fastcall Body_SetVec88(BYTE* s, void*, const float* v);
 extern "C" void FUN_4f1ef0(); KING_ALIAS("_FUN_4f1ef0", "@Body_SetVec88@12")
 
 // [FUN_4fc9b0] switches the control mode (+9784) to 1..3 with (a, b) for 4f1240, a position and 4f1ef0's value; mode 0 just clears it
@@ -877,9 +888,9 @@ extern "C" void __fastcall Body_SetControlMode(BYTE* self, void*, int mode, int 
     if (mode < 0 || mode > 3 || F(int, self, 9784) == mode)
         return;
     F(int, self, 9784) = mode;
-    CallThis(FUN_4f1240, self, 2, a, b);
+    Body_PutDown(self, 0, 2, a, (const Matrix*)b);
     Body_SetPosition(self, 0, pos);
-    CallThis(FUN_4f1ef0, self, v);
+    Body_SetVec88(self, 0, (const float*)v);
 }
 
 
@@ -898,6 +909,7 @@ static BYTE* Vehphy_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 // [$L_4eb2d0]
 extern "C" BYTE* __fastcall Vehphy4eb2d0_DeletingDestructor(BYTE* s, void*, int flags) { return Vehphy_DeleteAfter(s, flags, FUN_530190); }
 
+extern "C" BYTE* __fastcall Part_Construct(BYTE* self, void* edx, BYTE** p, int mean, int c, int b);
 ASM_FUNC(FUN_4eb260, @Part_Construct@24)
 
 // [FUN_4eb3c0] a new 40-byte part (FUN_4eb260 (self, a, +4, b))
@@ -906,7 +918,7 @@ extern "C" int __fastcall Phys4eb3c0_NewPart(BYTE* s, void*, int a, int b)
     BYTE* o = (BYTE*)operator new(40);
     if (!o)
         return 0;
-    return CallThis<int>(FUN_4eb260, o, s, a, F(int, s, 4), b);
+    return (int)Part_Construct(o, 0, (BYTE**)s, a, F(int, s, 4), b);
 }
 
 // ---------------------------------------------------------------------------
@@ -914,6 +926,7 @@ extern "C" int __fastcall Phys4eb3c0_NewPart(BYTE* s, void*, int a, int b)
 
 extern "C" void FUN_4f1240(); KING_ALIAS("_FUN_4f1240", "@Body_PutDown@20")
 extern "C" void FUN_4f1ef0(); KING_ALIAS("_FUN_4f1ef0", "@Body_SetVec88@12")
+extern "C" void __fastcall Body_SetPosition(BYTE* self, void*, Vec3* p);
 extern "C" void FUN_4f1dd0(); KING_ALIAS("_FUN_4f1dd0", "@Body_SetPosition@12")
 // [FUN_4fc930] sets the body mode (+9784): 0, 1, or 2/3 with the frame (a, b), the position c and d
 extern "C" void __fastcall Body4fc930_SetMode(BYTE* s, void*, unsigned mode, int a, int b, int c, int d)
@@ -923,9 +936,9 @@ extern "C" void __fastcall Body4fc930_SetMode(BYTE* s, void*, unsigned mode, int
     case 1: F(int, s, 9784) = 1; break;
     case 2:
     case 3:
-        CallThis(FUN_4f1240, s, 2, a, b);
-        CallThis(FUN_4f1dd0, s, c);
-        CallThis(FUN_4f1ef0, s, d);
+        Body_PutDown(s, 0, 2, a, (const Matrix*)b);
+        Body_SetPosition(s, 0, (Vec3*)c);
+        Body_SetVec88(s, 0, (const float*)d);
         F(int, s, 9784) = mode;
         break;
     }
@@ -934,7 +947,7 @@ extern "C" void __fastcall Body4fc930_SetMode(BYTE* s, void*, unsigned mode, int
 // ---------------------------------------------------------------------------
 // A placed object.
 
-extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" BYTE* __fastcall Node_Init(BYTE* self, void*);
 KING_VAR(AsmLabel, g_q98_702650, 702650)
 KING_VAR(AsmLabel, g_q98_702630, 702630)
 // [$L_4ee4d0] constructor: the node part (+32) initialised, the position and size from the 702650 and 702630
@@ -942,7 +955,7 @@ KING_VAR(AsmLabel, g_q98_702630, 702630)
 extern "C" BYTE* __fastcall Placed4ee4d0_Construct(BYTE* s)
 {
     memset(s, 0, 24);
-    CallThis(FUN_5ef5c0, s + 32);
+    Node_Init(s + 32, 0);
     memcpy(s, (BYTE*)g_q98_702650, 12);
     memcpy(s + 12, (BYTE*)g_q98_702630, 12);
     F(short, s, 24) = 0;
@@ -981,8 +994,8 @@ extern "C" int __fastcall Car_RandomStep(BYTE* s, void*, int k)
 // Re-orthogonalising a body's matrix.
 
 extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")
-extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
-extern "C" void FUN_4f0050(); KING_ALIAS("_FUN_4f0050", "@Body_CheckUpright@8")
+extern "C" BYTE* __cdecl Matrix_FromPose(BYTE* out, double x, double y, double z, double a, double b, double c);
+extern "C" int __fastcall Body_CheckUpright(BYTE* self, void*);
 struct Vp101_Mat { DWORD v[12]; };
 // splits the matrix of body s (+16) into its position and angles
 static void Vp101_Split(BYTE* s, double* d)
@@ -995,8 +1008,8 @@ extern "C" void __fastcall Body_Rebuild(BYTE* s)
     double d[6];
     BYTE m[48];
     Vp101_Split(s, d);
-    memcpy(s + 16, CallC<BYTE*>(FUN_5da950, m, d[0], d[1], d[2], d[3], d[4], d[5]), 48);
-    CallThis(FUN_4f09f0, s, d);
+    memcpy(s + 16, Matrix_FromPose(m, d[0], d[1], d[2], d[3], d[4], d[5]), 48);
+    Body_KeepFrame(s, 0, (const BYTE*)d);
 }
 // [FUN_4f1180] with +13124 set: turns body s upright (its heading kept) and checks it; else 1
 extern "C" int __fastcall Body_SetUpright(BYTE* s)
@@ -1006,14 +1019,14 @@ extern "C" int __fastcall Body_SetUpright(BYTE* s)
     double d[6];
     BYTE m[48];
     Vp101_Split(s, d);
-    CallC(FUN_5da950, m, d[0], d[1], d[2], d[3], 0.0, 0.0);
-    CallThis(FUN_4f1240, s, 2, F(int, s, 244), m);
-    CallThis(FUN_4f0050, s);
+    Matrix_FromPose(m, d[0], d[1], d[2], d[3], 0.0, 0.0);
+    Body_PutDown(s, 0, 2, F(int, s, 244), (const Matrix*)m);
+    Body_CheckUpright(s, 0);
     return 0;
 }
 
-extern "C" void FUN_4e30f4(); KING_ALIAS("_FUN_4e30f4", "_Vec3_MulComponents")
-extern "C" void FUN_4f07e0(); KING_ALIAS("_FUN_4f07e0", "@Body_SaveVec88@8")
+extern "C" Vec3* __cdecl Vec3_MulComponents(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" void __fastcall Body_SaveVec88(BYTE* self, void*);
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 // [FUN_4f1ef0] sets body s's local vector (+88) to v and its world form (+76: v scaled by +8008, turned by the
 // body's axes +16..+48), then saves it
@@ -1021,7 +1034,7 @@ extern "C" void __fastcall Body_SetVec88(BYTE* s, void*, const float* v)
 {
     memcpy(s + 88, v, 12);
     float t[3];
-    const float* r = CallC<const float*>(FUN_4e30f4, t, s + 88, s + 8008);
+    const float* r = (const float*)Vec3_MulComponents((Vec3*)t, (const Vec3*)(s + 88), (const Vec3*)(s + 8008));
     float x = (float)(F(float, s, 28) * r[1] + F(float, s, 40) * r[2] + r[0] * F(float, s, 16));
     float y = (float)(F(float, s, 32) * r[1] + F(float, s, 20) * r[0] + F(float, s, 44) * r[2]);
     float z = (float)(F(float, s, 36) * r[1] + F(float, s, 24) * r[0] + F(float, s, 48) * r[2]);
@@ -1029,7 +1042,7 @@ extern "C" void __fastcall Body_SetVec88(BYTE* s, void*, const float* v)
     F(float, s, 80) = y;
     F(float, s, 84) = z;
     CallThis(FUN_5e48f0, s);
-    CallThis(FUN_4f07e0, s);
+    Body_SaveVec88(s, 0);
 }
 
 // === a physics state's initial values (FUN_4f6cf0)
@@ -1098,7 +1111,7 @@ BYTE* __fastcall PhysState_Init(BYTE* self, void*)
 
 KING_VAR(WORD, g_ec696bda, 696bda)
 KING_VAR(float, g_ec64d970, 64d970)
-extern "C" void FUN_4eba10(); KING_ALIAS("_FUN_4eba10", "@Engine_Reset@8")
+extern "C" void __fastcall Engine_Reset(BYTE* self, void*);
 
 extern "C" {
 
@@ -1155,7 +1168,7 @@ BYTE* __fastcall Engine_Construct(BYTE* e)
         F(int, e, 704 + j * 4) = 0;
     }
     F(int, e, 720) = 0;
-    CallThis(FUN_4eba10, e);
+    Engine_Reset(e, 0);
     return e;
 }
 
@@ -1163,12 +1176,12 @@ BYTE* __fastcall Engine_Construct(BYTE* e)
 
 // === a body's physics frame (FUN_4f6860)
 
-extern "C" void FUN_4e5b22(); KING_ALIAS("_FUN_4e5b22", "_Query_4e5b22")
-extern "C" void FUN_4eb6e0(); KING_ALIAS("_FUN_4eb6e0", "@Ramp_Down@12")
-extern "C" void FUN_4f0000(); KING_ALIAS("_FUN_4f0000", "@Body_IsTipped@8")
-extern "C" void FUN_4f0ce0(); KING_ALIAS("_FUN_4f0ce0", "@Body_UpdateContacts@8")
-extern "C" void FUN_4f6b70(); KING_ALIAS("_FUN_4f6b70", "@Body_Step@12")
-extern "C" void Bf_Length(); KING_ALIAS("_Bf_Length", "_Vec3_Length")
+extern "C" int __cdecl Query_4e5b22(void* obj, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
+extern "C" void __fastcall Ramp_Down(BYTE* self, void*, float dt);
+extern "C" int __fastcall Body_IsTipped(BYTE* self, void*);
+extern "C" void __fastcall Body_UpdateContacts(BYTE* self, void*);
+extern "C" void __fastcall Body_Step(BYTE* self, void*, short* in);
+extern "C" double __cdecl Vec3_Length(const Vec3* v);
 
 extern "C" {
 
@@ -1181,12 +1194,12 @@ void __fastcall Body_PhysicsFrame(BYTE* s)
     double d[6];
     BYTE m[48];
     Vp101_Split(s, d);
-    memcpy(s + 16, CallC<BYTE*>(FUN_5da950, m, d[0], d[1], d[2], d[3], d[4], d[5]), 48);
+    memcpy(s + 16, Matrix_FromPose(m, d[0], d[1], d[2], d[3], d[4], d[5]), 48);
     BYTE node[192];
-    CallThis(FUN_5ef5c0, node);
+    Node_Init(node, 0);
     const float* p = (const float*)(s + 52);
     const float* q = (const float*)(s + 2292);
-    if (CallC<int>(FUN_4e5b22, F(int, s, 6672), q, p, node))
+    if (Query_4e5b22((void*)(F(int, s, 6672)), (const Vec3Bits*)q, (const Vec3Bits*)p, node))
         F(int, s, 244) = F(int, node, 104);
     if (!F(BYTE, s, 6580)) {
         double dx = (double)p[0] - q[0], dy = (double)p[1] - q[1], dz = (double)p[2] - q[2];
@@ -1198,14 +1211,14 @@ void __fastcall Body_PhysicsFrame(BYTE* s)
         e[0] = (float)((double)cy * n[2] - cz * n[1]);
         e[1] = (float)(cz * n[0] - (double)cx * n[2]);
         e[2] = (float)((double)cx * n[1] - (double)cy * n[0]);
-        double len = CallC<double>(Bf_Length, e);
+        double len = Vec3_Length((const Vec3*)e);
         float lf = (float)len;
         F(double, s, 3808) = len + F(double, s, 3808);
-        CallThis(FUN_4eb6e0, s + 16164, lf);
+        Ramp_Down(s + 16164, 0, lf);
     }
-    CallThis(FUN_4f0ce0, s);
-    CallThis(FUN_4f6b70, s, d);
-    if (CallThis<int>(FUN_4f0000, s)) {
+    Body_UpdateContacts(s, 0);
+    Body_Step(s, 0, (short*)d);
+    if (Body_IsTipped(s, 0)) {
         for (int i = 0; i < F(int, s, 3540); i++)
             F(int, s, 3544 + i * 4) = F(int, s, 8092 + i * 4);
         F(int, s, 13124) = 1;
@@ -1229,8 +1242,8 @@ void __fastcall Body_PhysicsFrame(BYTE* s)
 // === integrating a body's momentum (FUN_4fab20)
 
 extern "C" void Bi_RotateBy(); KING_ALIAS("_Bi_RotateBy", "_Vec3_RotateBy")
-extern "C" void Bi_DivComponents(); KING_ALIAS("_Bi_DivComponents", "_Vec3_DivComponents")
-extern "C" void Bi_Length(); KING_ALIAS("_Bi_Length", "_Vec3_Length")
+extern "C" Vec3* __cdecl Vec3_DivComponents(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
 extern "C" void Bi_AddAssign(); KING_ALIAS("_Bi_AddAssign", "@Vec3_AddAssign@16")
 KING_VAR(double, g_bi64b6d0, 64b6d0)
 
@@ -1245,13 +1258,13 @@ void __fastcall Body_Integrate(BYTE* s, void*, const float* f, const float* t)
     float a[3] = {(float)(dt * f[0]), (float)(dt * f[1]), (float)(dt * f[2])};
     float* v = (float*)(s + 9012);
     float tmp[3];
-    CallThis(Bi_AddAssign, v, tmp, a);
+    Vec3_AddAssign((Vec3*)v, 0, (Vec3*)tmp, (const Vec3*)a);
     const float* n = (const float*)(s + 208);
     double c0 = (double)n[1] * v[2] - (double)n[2] * v[1];
     double c1 = (double)n[2] * v[0] - (double)v[2] * n[0];
     double c2 = (double)v[1] * n[0] - (double)n[1] * v[0];
     float w[3] = {(float)(c1 * n[2] - c2 * n[1]), (float)(c2 * n[0] - c0 * n[2]), (float)(c0 * n[1] - c1 * n[0])};
-    double l = CallC<double>(Bi_Length, w);
+    double l = Vec3_Length((const Vec3*)w);
     F(float, s, 3524) = (float)l;
     if (F(float, s, 9500) * g_bi64b6d0 > l && F(int, s, 6844) && !F(BYTE, s, 6586)) {
         double d = (double)v[2] * n[2] + (double)v[1] * n[1] + (double)n[0] * v[0];
@@ -1263,10 +1276,10 @@ void __fastcall Body_Integrate(BYTE* s, void*, const float* f, const float* t)
     double dr = F(float, s, 9508);
     float b[3] = {(float)(dr * t[0]), (float)(dr * t[1]), (float)(dr * t[2])};
     float m[3], tmp2[3], om[3], r[3];
-    CallC(FUN_4e30f4, m, b, s + 8008);
+    Vec3_MulComponents((Vec3*)m, (const Vec3*)b, (const Vec3*)(s + 8008));
     float* lm = (float*)(s + 9036);
-    CallThis(Bi_AddAssign, lm, tmp2, m);
-    CallC(Bi_DivComponents, om, lm, s + 8008);
+    Vec3_AddAssign((Vec3*)lm, 0, (Vec3*)tmp2, (const Vec3*)m);
+    Vec3_DivComponents((Vec3*)om, (const Vec3*)lm, (const Vec3*)(s + 8008));
     F(float, s, 9060) = (float)((double)om[0] - F(float, s, 9048));
     F(float, s, 9064) = (float)((double)om[1] - F(float, s, 9052));
     F(float, s, 9068) = (float)((double)om[2] - F(float, s, 9056));
@@ -1417,7 +1430,6 @@ void __fastcall Body_SlopeLean(BYTE* s)
 
 // === a body's spin axis terms (FUN_4f0530)
 
-extern "C" void Sa_Length(); KING_ALIAS("_Sa_Length", "_Vec3_Length")
 KING_VAR(double, g_sa64b6d0, 64b6d0)
 
 extern "C" {
@@ -1428,7 +1440,7 @@ extern "C" {
 void __fastcall Body_SpinAxis(BYTE* s)
 {
     const float* w = (const float*)(s + 64);
-    double l = CallC<double>(Sa_Length, w);
+    double l = Vec3_Length((const Vec3*)w);
     if (x87_fabs(F(float, s, 3520) - l) > g_sa64b6d0 || l < g_bt64c250) {
         memcpy(s + 3216, (BYTE*)g_q98_702650, 12);
         memcpy(s + 3288, (BYTE*)g_q98_702650, 12);
@@ -1442,7 +1454,7 @@ void __fastcall Body_SpinAxis(BYTE* s)
     d[0] = (float)(c3 * a[1] - c2 * a[2]);
     d[1] = (float)(c1 * a[2] - c3 * a[0]);
     d[2] = (float)(c2 * a[0] - c1 * a[1]);
-    double l2 = CallC<double>(Sa_Length, d);
+    double l2 = Vec3_Length((const Vec3*)d);
     F(float, s, 3524) = (float)l2;
     const float* r = (const float*)(s + 2616);
     double p = (double)d[2] * r[2] + (double)d[1] * r[1] + (double)d[0] * r[0];
@@ -1464,7 +1476,7 @@ void __fastcall Body_SpinAxis(BYTE* s)
 
 // === a body's frame terms (FUN_4f0800)
 
-extern "C" void Bf_NormalizeThis(); KING_ALIAS("_Bf_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void __fastcall Vec3_NormalizeThis(Vec3* self, void*);
 KING_VAR(float, g_bf702620, 702620)
 KING_VAR(float, g_bf702624, 702624)
 KING_VAR(float, g_bf702628, 702628)
@@ -1498,7 +1510,7 @@ void __fastcall Body_FrameTerms(BYTE* s)
     o[0] = (float)(c2 * a[2] - c3 * a[1]);
     o[1] = (float)(c3 * a[0] - c1 * a[2]);
     o[2] = (float)(c1 * a[1] - c2 * a[0]);
-    CallThis(Bf_NormalizeThis, o);
+    Vec3_NormalizeThis((Vec3*)o, 0);
 }
 
 } // extern "C"
@@ -1525,7 +1537,7 @@ void __fastcall Body_PlaceReset(BYTE* s, void*, int a, const Matrix* m)
     l.z = (float)((double)iv[8] * v[2] + (double)iv[2] * v[0] + (double)iv[5] * v[1]);
     F(Vec3, s, 88) = *Vec3_DivComponents(&r, &l, (const Vec3*)(s + 8008));
     F(int, s, 244) = a;
-    CallThis(FUN_4ef480, s);
+    Wheels_LoadShares(s, 0);
     const float* M = (const float*)(s + 16);
     for (int i = 0; i < F(int, s, 3540); i++) {
         const float* q = (const float*)(s + 6212 + i * 12);
@@ -1549,8 +1561,8 @@ void __fastcall Body_PlaceReset(BYTE* s, void*, int a, const Matrix* m)
 
 extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
 extern "C" void Ba_Length(); KING_ALIAS("_Ba_Length", "_Vec3_Length")
-extern "C" void Ba_UpdateGrip(); KING_ALIAS("_Ba_UpdateGrip", "@Body_UpdateGrip@8")
-extern "C" void Ba_Cross(); KING_ALIAS("_Ba_Cross", "_Vec3_Cross")
+extern "C" void __fastcall Body_UpdateGrip(BYTE* self, void*);
+extern "C" Vec3* __cdecl Vec3_Cross(Vec3* out, const Vec3* a, const Vec3* b);
 extern "C" void Ba_DivScalar(); KING_ALIAS("_Ba_DivScalar", "_Vec3_DivScalar")
 extern "C" void Ba_Dot(); KING_ALIAS("_Ba_Dot", "_Vec3_Dot")
 extern "C" void Ba_Scaled(); KING_ALIAS("_Ba_Scaled", "_Vec3_Scaled")
@@ -1585,7 +1597,7 @@ void __fastcall Body_AxisRestart(BYTE* s)
         F(BYTE, s, 6596 + i) = 0;
         F(int, s, 6612 + i * 4) = 0;
     }
-    CallThis(Ba_UpdateGrip, s);
+    Body_UpdateGrip(s, 0);
     F(BYTE, s, 6580) = 0;
     F(BYTE, s, 6581) = 0;
     F(BYTE, s, 6583) = 0;
@@ -1602,11 +1614,11 @@ void __fastcall Body_AxisRestart(BYTE* s)
     Vec3_SetThis(&g, 0, (float)((double)e.y * a[2] - (double)e.z * a[1]), (float)((double)e.z * a[0] - (double)e.x * a[2]),
         (float)((double)e.x * a[1] - (double)e.y * a[0]));
     F(Vec3, s, 2616) = g;
-    CallThis(Bf_NormalizeThis, s + 2616);
+    Vec3_NormalizeThis((Vec3*)(s + 2616), 0);
     F(float, s, 3520) = CallC<float>(Ba_Length, w);
     Vec3_SetThis(&h, 0, (float)((double)w[1] * a[2] - (double)w[2] * a[1]), (float)((double)w[2] * a[0] - (double)a[2] * w[0]),
         (float)((double)w[0] * a[1] - (double)w[1] * a[0]));
-    F(Vec3, s, 2544) = *CallC<Vec3*>(Ba_Cross, &t, a, &h);
+    F(Vec3, s, 2544) = *Vec3_Cross(&t, (const Vec3*)a, &h);
     float l = CallC<float>(Ba_Length, s + 2544);
     F(float, s, 3524) = l;
     if (l > g_ba64b5a0)
@@ -1803,7 +1815,6 @@ double __cdecl Tyre_Grip(int kind, float a, float b)
 
 // === the wheels' tyre forces (FUN_4f4f60)
 
-extern "C" void Tf_AddAssign(); KING_ALIAS("_Tf_AddAssign", "@Vec3_AddAssign@16")
 extern "C" void Tf_CheckPoint(); KING_ALIAS("_Tf_CheckPoint", "_World_CheckPoint")
 KING_VAR(float, g_tf674404, 674404)
 KING_VAR(float, g_tf64c250, 64c250)
@@ -1916,14 +1927,14 @@ void __fastcall Tyre_Forces(BYTE* s, void*, const float* p)
             } else
                 Tf_Zero(fw);
         }
-        CallThis(Tf_AddAssign, s + 3192, t, fw);
+        Vec3_AddAssign((Vec3*)(s + 3192), 0, (Vec3*)t, (const Vec3*)fw);
         float rv[3];
         Tf_Rotate(s, fw, rv);
         const float* arm = (const float*)(s + 6212 + i * 12);
         float q[3] = {(float)((double)rv[2] * arm[1] - (double)rv[1] * arm[2]),
             (float)((double)rv[0] * arm[2] - (double)rv[2] * arm[0]),
             (float)((double)rv[1] * arm[0] - (double)rv[0] * arm[1])};
-        CallThis(Tf_AddAssign, s + 3276, t, q);
+        Vec3_AddAssign((Vec3*)(s + 3276), 0, (Vec3*)t, (const Vec3*)q);
         float k = F(float, s, 9792) * g_tf64d7b8;
         CallC(Tf_CheckPoint, sd, g_tf67479c, *(DWORD*)&k);
     }
@@ -1936,12 +1947,13 @@ void __fastcall Tyre_Forces(BYTE* s, void*, const float* p)
 
 struct Wc_V { float x, y, z; };
 extern "C" void Wc_SetThis(); KING_ALIAS("_Wc_SetThis", "@Vec3_SetThis@20")
-extern "C" void Wc_Normalized(); KING_ALIAS("_Wc_Normalized", "_Vec3_Normalized")
-extern "C" void Wc_Length(); KING_ALIAS("_Wc_Length", "_Vec3_Length")
+extern "C" Vec3* __cdecl Vec3_Normalized(Vec3* out, const Vec3* v);
 extern "C" void Wc_DivAssign(); KING_ALIAS("_Wc_DivAssign", "@Vec3_DivAssign@16")
 extern "C" void Wc_DivScalar(); KING_ALIAS("_Wc_DivScalar", "_Vec3_DivScalar")
-extern "C" void Wc_Dot(); KING_ALIAS("_Wc_Dot", "_Vec3_Dot")
+extern "C" double __cdecl Vec3_Dot(const Vec3* a, const Vec3* b);
+extern "C" Vec3* __cdecl Vec3_Sub(Vec3* out, const Vec3* a, const Vec3* b);
 extern "C" void Wc_Sub(); KING_ALIAS("_Wc_Sub", "_Vec3_Sub")
+extern "C" Vec3* __cdecl Vec3_Add(Vec3* out, const Vec3* a, const Vec3* b);
 extern "C" void Wc_Add(); KING_ALIAS("_Wc_Add", "_Vec3_Add")
 extern "C" void Wc_Scaled(); KING_ALIAS("_Wc_Scaled", "_Vec3_Scaled")
 KING_VAR(float, g_wc702630, 702630)
@@ -1959,7 +1971,7 @@ static void Wc_Set(Wc_V* v, float x, float y, float z)
 
 static double Wc_DotOf(const Wc_V* a, const Wc_V* b)
 {
-    return CallC<double>(Wc_Dot, a, b);
+    return Vec3_Dot((const Vec3*)a, (const Vec3*)b);
 }
 
 // h + dir * t
@@ -1967,7 +1979,7 @@ static void Wc_Along(Wc_V* out, const Wc_V* h, const Wc_V* dir, float t)
 {
     Wc_V a, b;
     CallC(Wc_Scaled, &a, dir, *(DWORD*)&t);
-    *out = *CallC<Wc_V*>(Wc_Add, &b, h, &a);
+    *out = *(Wc_V*)Vec3_Add((Vec3*)&b, (const Vec3*)h, (const Vec3*)&a);
 }
 
 extern "C" {
@@ -1990,19 +2002,19 @@ int __fastcall Wheel_SegmentContact(BYTE* s, void*, Wc_V* at, Wc_V* n, const flo
         (float)((double)q.y * m[5] + (double)q.x * m[2] + (double)q.z * m[8] + m[11]));
     Wc_Set(&ax, g.x - h.x, g.y - h.y, g.z - h.z);
     Wc_V axc = ax;
-    dirA = *CallC<Wc_V*>(Wc_Normalized, &t, &axc);
+    dirA = *(Wc_V*)Vec3_Normalized((Vec3*)&t, (const Vec3*)&axc);
     BYTE* w = s + k * 248;
     Wc_V nA = F(Wc_V, w, 4132), nB = F(Wc_V, w, 260);
     Wc_V d;
     Wc_Set(&d, p1->x - p0->x, p1->y - p0->y, p1->z - p0->z);
-    double L = CallC<double>(Wc_Length, &d);
+    double L = Vec3_Length((const Vec3*)&d);
     Wc_V tmp, tmp2;
     if (L < g_wc64b658) {
         BYTE* w2 = s + (k + 1) * 248;
         Wc_Set(&tmp, F(float, w2, 0) - F(float, w, 4120), F(float, w2, 4) - F(float, w, 4124),
             F(float, w2, 8) - F(float, w, 4128));
         Wc_V e = tmp;
-        d = *CallC<Wc_V*>(Wc_Normalized, &tmp2, &e);
+        d = *(Wc_V*)Vec3_Normalized((Vec3*)&tmp2, (const Vec3*)&e);
         Wc_Set(&tmp, nB.x + nA.x, nB.y + nA.y, nB.z + nA.z);
         Wc_Set(&c, tmp.x * g_wc64c258, tmp.y * g_wc64c258, tmp.z * g_wc64c258);
     } else {
@@ -2012,7 +2024,7 @@ int __fastcall Wheel_SegmentContact(BYTE* s, void*, Wc_V* at, Wc_V* n, const flo
         Wc_Set(&cr, d.y * nA.z - d.z * nA.y, d.z * nA.x - nA.z * d.x, nA.y * d.x - d.y * nA.x);
         Wc_Set(&tmp, cr.y * d.z - cr.z * d.y, cr.z * d.x - cr.x * d.z, cr.x * d.y - cr.y * d.x);
         Wc_V e = tmp;
-        c = *CallC<Wc_V*>(Wc_Normalized, &tmp2, &e);
+        c = *(Wc_V*)Vec3_Normalized((Vec3*)&tmp2, (const Vec3*)&e);
     }
     Wc_V v;
     if (!(x87_fabs((double)dirA.x * c.x + (double)dirA.z * c.z + (double)dirA.y * c.y) < g_wc64b658)) {
@@ -2020,7 +2032,7 @@ int __fastcall Wheel_SegmentContact(BYTE* s, void*, Wc_V* at, Wc_V* n, const flo
         double tn = Wc_DotOf(n, CallC<Wc_V*>(Wc_Sub, &tmp, p1, &h));
         float tt = (float)(tn / Wc_DotOf(n, &dirA));
         Wc_Along(at, &h, &dirA, tt);
-        Wc_V r = *CallC<Wc_V*>(Wc_Sub, &tmp, p1, at);
+        Wc_V r = *(Wc_V*)Vec3_Sub((Vec3*)&tmp, (const Vec3*)p1, (const Vec3*)at);
         double dd = Wc_DotOf(&d, &r);
         if (!(dd < g_wc64b678) && !(dd > L))
             return Wc_DotOf(&dirA, n) < g_wc64b678 ? 1 : 0;
@@ -2070,8 +2082,8 @@ int __fastcall Wheel_SegmentContact(BYTE* s, void*, Wc_V* at, Wc_V* n, const flo
 
 // === limiting a body's velocity and spin changes (FUN_4f4110)
 
-extern "C" void Vl_ResetMotion(); KING_ALIAS("_Vl_ResetMotion", "@Body_ResetMotion@8")
-extern "C" void Vl_MulAssign(); KING_ALIAS("_Vl_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void __fastcall Body_ResetMotion(BYTE* self, void*);
+extern "C" Vec3* __fastcall Vec3_MulAssign(Vec3* self, void*, Vec3* ret, float s);
 KING_VAR(double, g_vl64b678, 64b678)
 KING_VAR(double, g_vl64b5b8, 64b5b8)
 KING_VAR(float, g_vl64c250, 64c250)
@@ -2099,7 +2111,7 @@ static Vec3 Vl_Sum(const Vec3& a, const Vec3& b) { return Vl_Set((double)a.x + b
 static void Vl_Cut(Vec3* v, double a, double b)
 {
     Vec3 t;
-    CallThis(Vl_MulAssign, v, &t, (float)(a / (a - b)));
+    Vec3_MulAssign(v, 0, &t, (float)(a / (a - b)));
 }
 
 extern "C" {
@@ -2119,7 +2131,7 @@ void __fastcall Body_LimitChange(BYTE* s, void*, Vec3* dv, Vec3* dw, Vec3* e, co
             if (m * m * g_vl64b5b8 > v2)
             {
                 *dv = g_zeroVec;
-                CallThis(Vl_ResetMotion, s);
+                Body_ResetMotion(s, 0);
                 *e = g_zeroVec;
                 done = true;
             }
@@ -2215,9 +2227,9 @@ void __fastcall Body_LimitChange(BYTE* s, void*, Vec3* dv, Vec3* dw, Vec3* e, co
 
 // === a body's setup before its steps of the frame (FUN_4f7380)
 
-extern "C" void Vp_floor(); KING_ALIAS("_Vp_floor", "_floor")
-extern "C" void Vp_FrameTime(); KING_ALIAS("_Vp_FrameTime", "_Game_FrameTime")
-extern "C" void Vp_DivAssign(); KING_ALIAS("_Vp_DivAssign", "@Vec3_DivAssign@16")
+extern "C" double __cdecl floor(double);
+extern "C" double __cdecl Game_FrameTime();
+extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);
 KING_VAR(double, g_vp64d9f8, 64d9f8)
 KING_VAR(double, g_vp64b670, 64b670)
 KING_VAR(float, g_vp64da10, 64da10)
@@ -2247,7 +2259,7 @@ static Vec3 Vp_DoubleCross(const float* a, const float* b)
     return Vp_Set(c2 * a[2] - c3 * a[1], c3 * a[0] - c1 * a[2], c1 * a[1] - c2 * a[0]);
 }
 
-static int Vp_Steps(double t, double rate) { return (int)(CallC<double>(Vp_floor, t * rate) + g_vp64b670); }
+static int Vp_Steps(double t, double rate) { return (int)(floor(t * rate) + g_vp64b670); }
 
 extern "C" {
 
@@ -2289,7 +2301,7 @@ void __fastcall Body_PrepareSteps(BYTE* s, void*, int full)
                                            (double)q[2] * E[7] + (double)q[1] * E[4] + (double)E[1] * q[0] + E[10],
                                            (double)E[2] * q[0] + (double)q[2] * E[8] + (double)q[1] * E[5] + E[11]);
     }
-    double dt = CallC<double>(Vp_FrameTime);
+    double dt = Game_FrameTime();
     F(float, s, 9500) = (float)dt;
     F(int, s, 9520) = Vp_Steps(dt, g_vp64d9f8);
     if ((F(WORD, s, 10048) && F(float, s, 9792) < g_vp64da10) || F(int, s, 10092))
@@ -2348,7 +2360,7 @@ void __fastcall Body_PrepareSteps(BYTE* s, void*, int full)
     Vec3 dn = d;
     float len = (float)Vec3_Length(&d);
     if (len != g_vp64c264)
-        CallThis(Vp_DivAssign, &dn, &t, len);
+        Vec3_DivAssign(&dn, 0, &t, len);
     float side = (float)x87_fabs((double)F(float, s, 2624) * dn.z + (double)F(float, s, 2620) * dn.y + (double)F(float, s, 2616) * dn.x);
     const float* M = (const float*)(s + 8868);
     double gx = -(double)g_axisZ.x, gy = -(double)g_axisZ.y, gz = -(double)g_axisZ.z;
@@ -2371,19 +2383,14 @@ void __fastcall Body_PrepareSteps(BYTE* s, void*, int full)
 // === a body's integration step (FUN_4fadb0)
 
 extern "C" void Bi_AddAssign(); KING_ALIAS("_Bi_AddAssign", "@Vec3_AddAssign@16")
-extern "C" void Bi_SetPosition(); KING_ALIAS("_Bi_SetPosition", "@Body_SetPosition@12")
-extern "C" void Bi_SetVelocity(); KING_ALIAS("_Bi_SetVelocity", "@Body_SetVelocity@12")
-extern "C" void Bi_NodeInit(); KING_ALIAS("_Bi_NodeInit", "@Node_Init@8")
-extern "C" void Bi_Query(); KING_ALIAS("_Bi_Query", "_Query_4e5b22")
-extern "C" void Bi_Rebuild(); KING_ALIAS("_Bi_Rebuild", "@Body_Rebuild@4")
-extern "C" void Bi_SaveState(); KING_ALIAS("_Bi_SaveState", "@Body_SaveState@8")
-extern "C" void Bi_SaveVec88(); KING_ALIAS("_Bi_SaveVec88", "@Body_SaveVec88@8")
+extern "C" void __fastcall Body_SetVelocity(BYTE* self, void*, const float* v);
+extern "C" void __fastcall Body_Rebuild(BYTE* s);
 KING_VAR(float, g_bi64c258, 64c258)
 
 static void Bi_Add(void* to, const Vec3& v)
 {
     Vec3 t;
-    CallThis(Bi_AddAssign, to, &t, &v);
+    Vec3_AddAssign((Vec3*)to, 0, &t, &v);
 }
 
 extern "C" {
@@ -2477,16 +2484,16 @@ void __fastcall Body_FrameIntegrate(BYTE* s, void*, float dt)
     F(Vec3, s, 9036) = *Vec3_RotateBy(&r, (const Vec3*)(s + 9024), (const Matrix*)(s + 8964));
     F(Vec3, s, 9048) = *Vec3_DivComponents(&r, (const Vec3*)(s + 9036), (const Vec3*)(s + 8008));
     F(Vec3, s, 9060) = g_zeroVec;
-    CallThis(Bi_SetPosition, s, s + 9012);
-    CallThis(Bi_SetVelocity, s, s + 9024);
+    Body_SetPosition(s, 0, (Vec3*)(s + 9012));
+    Body_SetVelocity(s, 0, (const float*)(s + 9024));
     memcpy(s + 16, s + 8868, 48);
     BYTE node[208];
-    CallThis(Bi_NodeInit, node);
-    if (CallC<int>(Bi_Query, F(int, s, 6672), s + 2292, s + 52, node))
+    Node_Init(node, 0);
+    if (Query_4e5b22((void*)(F(int, s, 6672)), (const Vec3Bits*)(s + 2292), (const Vec3Bits*)(s + 52), node))
         F(int, s, 244) = F(int, node, 104);
-    CallThis(Bi_Rebuild, s);
-    CallThis(Bi_SaveState, s);
-    CallThis(Bi_SaveVec88, s);
+    Body_Rebuild(s);
+    Body_SaveState(s, 0);
+    Body_SaveVec88(s, 0);
 }
 
 } // extern "C"
@@ -2530,7 +2537,7 @@ void __fastcall Wheels_ForceTorque(BYTE* s, void*, Vec3* f, Vec3* t)
             double sx = (double)a.x + c.x;
             float sy = (float)((double)a.y + c.y), sz = (float)((double)a.z + c.z);
             Vec3 sum = Wf_Set(b.x + sx, (double)sy + b.y, (double)sz + b.z);
-            CallThis(Bi_AddAssign, f, &tmp, &sum);
+            Vec3_AddAssign(f, 0, &tmp, &sum);
             Vec3 cr, br;
             Vec3_RotateBy(&cr, &c, (const Matrix*)R);
             Vec3_RotateBy(&br, &b, (const Matrix*)R);
@@ -2549,7 +2556,7 @@ void __fastcall Wheels_ForceTorque(BYTE* s, void*, Vec3* f, Vec3* t)
                               (double)ar.y * p.x - (double)ar.x * p.y);
             Vec3 v108 = Wf_Set((double)v84.x + v120.x, (double)v84.y + v120.y, (double)v84.z + v120.z);
             Vec3 v72 = Wf_Set((double)v108.x + v96.x, (double)v108.y + v96.y, (double)v108.z + v96.z);
-            CallThis(Bi_AddAssign, t, &tmp, &v72);
+            Vec3_AddAssign(t, 0, &tmp, &v72);
         }
         return;
     }
@@ -2563,11 +2570,11 @@ void __fastcall Wheels_ForceTorque(BYTE* s, void*, Vec3* f, Vec3* t)
             b = F(Vec3, s, 8436 + i * 12);
         }
         Vec3 t1, t2, r1, r2, r3, cr;
-        CallThis(Bi_AddAssign, f, &tmp, Vec3_Add(&t2, Vec3_Add(&t1, &a, &c), &b));
+        Vec3_AddAssign(f, 0, &tmp, Vec3_Add(&t2, Vec3_Add(&t1, &a, &c), &b));
         a = *Vec3_RotateBy(&r1, &a, (const Matrix*)R);
         b = *Vec3_RotateBy(&r2, &b, (const Matrix*)R);
         c = *Vec3_RotateBy(&r3, &c, (const Matrix*)R);
-        CallThis(Bi_AddAssign, t, &tmp, Vec3_Cross(&cr, (const Vec3*)(s + 6212 + i * 12), &a));
+        Vec3_AddAssign(t, 0, &tmp, Vec3_Cross(&cr, (const Vec3*)(s + 6212 + i * 12), &a));
     }
     Vec3 acc = g_zeroVec;
     for (int i = 0; i < F(int, s, 3540); i++)
@@ -2576,18 +2583,18 @@ void __fastcall Wheels_ForceTorque(BYTE* s, void*, Vec3* f, Vec3* t)
         if (!F(WORD, s, 6564 + i * 2))
             v = F(Vec3, s, 8436 + i * 12);
         v = *Vec3_RotateBy(&r, &v, (const Matrix*)R);
-        CallThis(Bi_AddAssign, &acc, &tmp, Vec3_Cross(&cr, (const Vec3*)(s + 6212 + i * 12), &v));
+        Vec3_AddAssign(&acc, 0, &tmp, Vec3_Cross(&cr, (const Vec3*)(s + 6212 + i * 12), &v));
     }
     Vec3 q;
     Vec3_DivScalar(&q.x, &acc.x, (float)((double)g_wf674404 * g_wf674404));
-    CallThis(Bi_AddAssign, t, &tmp, &q);
+    Vec3_AddAssign(t, 0, &tmp, &q);
 }
 
 } // extern "C"
 
 // === the wheels on a flat ground (FUN_4f1fa0)
 
-extern "C" void Wg_LineProject(); KING_ALIAS("_Wg_LineProject", "_Line_Project")
+extern "C" Vec3* __cdecl Line_Project(Vec3* out, const Vec3* p2, const Vec3* n, const Vec3* p4, const Vec3* p5);
 KING_VAR(float, g_wg64c2f8, 64c2f8)
 KING_VAR(double, g_wg64d9b8, 64d9b8)
 KING_VAR(float, g_wg64c264, 64c264)
@@ -2652,7 +2659,7 @@ void __fastcall Wheels_OnPlane(BYTE* s, void*, int reset, const Vec3* p, const V
             continue;
         }
         Vec3 hit;
-        F(Vec3, W, -24) = *CallC<const Vec3*>(Wg_LineProject, &hit, p, n, t1, t2);
+        F(Vec3, W, -24) = *(const Vec3*)Line_Project(&hit, p, n, (const Vec3*)t1, (const Vec3*)t2);
         F(WORD, W, 0) = 1;
         F(Vec3, W, -12) = *n;
         F(WORD, W, 2) = 0;
@@ -2681,8 +2688,6 @@ void __fastcall Wheels_OnPlane(BYTE* s, void*, int reset, const Vec3* p, const V
 
 // === the body's frame vectors for a step (FUN_4ef7c0)
 
-extern "C" void Bv_DivScalar(); KING_ALIAS("_Bv_DivScalar", "_Vec3_DivScalar")
-extern "C" void Bv_NormalizeThis(); KING_ALIAS("_Bv_NormalizeThis", "@Vec3_NormalizeThis@8")
 
 static Vec3 Bv_Set(double x, double y, double z)
 {
@@ -2735,7 +2740,7 @@ void __fastcall Body_StepVectors(BYTE* s, void*)
     float dy = (float)((double)cz * N[0] - cx * N[2]);
     float dx = (float)((double)cy * N[2] - (double)cz * N[1]);
     F(Vec3, s, 2616) = Bv_Set(dx, dy, dz);
-    CallThis(Bv_NormalizeThis, s + 2616);
+    Vec3_NormalizeThis((Vec3*)(s + 2616), 0);
     const float* V = (const float*)(s + 64);
     F(float, s, 3520) = (float)Vec3_Length((const Vec3*)V);
     float ez = (float)((double)N[1] * V[0] - (double)N[0] * V[1]);
@@ -2750,7 +2755,7 @@ void __fastcall Body_StepVectors(BYTE* s, void*)
     if (L > g_64b5a0)
     {
         Vec3 t;
-        F(Vec3, s, 2556) = *CallC<const Vec3*>(Bv_DivScalar, &t, &F(Vec3, s, 2544), L);
+        F(Vec3, s, 2556) = *(const Vec3*)Vec3_DivScalar((float*)&t, (const float*)(&F(Vec3, s, 2544)), L);
     }
     else
         F(Vec3, s, 2556) = F(Vec3, s, 2616);
@@ -2764,7 +2769,7 @@ void __fastcall Body_StepVectors(BYTE* s, void*)
 
 // === putting a body down on the ground (FUN_4f1240)
 
-extern "C" void Pd_Query(); KING_ALIAS("_Pd_Query", "_Query_4e6621")
+extern "C" int __cdecl Query_4e6621(int skip, int a, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
 extern "C" int __fastcall Wheels_FindGround(BYTE* s);
 
 extern "C" {
@@ -2793,8 +2798,8 @@ void __fastcall Body_PutDown(BYTE* s, void*, int mode, int a, const Matrix* m)
         float d[3] = {(float)((double)M[9] - ax), (float)((double)M[10] - ay), (float)((double)M[11] - k * Z[2])};
         memcpy(&up, u, 12);
         memcpy(&dn, d, 12);
-        CallThis(FUN_5ef5c0, nd);
-        r = CallC<int>(Pd_Query, F(int, s, 10708), a, &up, &dn, nd);
+        Node_Init(nd, 0);
+        r = Query_4e6621(F(int, s, 10708), a, &up, &dn, nd);
     }
     if (r)
     {
@@ -2853,7 +2858,7 @@ void __fastcall Body_PutDown(BYTE* s, void*, int mode, int a, const Matrix* m)
 
 // === the wheels' contact frames for a step (FUN_4f2670)
 
-extern "C" void Wk_Negated(); KING_ALIAS("_Wk_Negated", "_Vec3_Negated")
+extern "C" Vec3* __cdecl Vec3_Negated(Vec3* out, const Vec3* v);
 KING_VAR(double, g_wk64b658, 64b658)
 KING_VAR(double, g_wk64b670, 64b670)
 KING_VAR(double, g_wk64ca48, 64ca48)
@@ -2964,7 +2969,7 @@ void __fastcall Wheels_StepFrames(BYTE* s, void*, const float* a1, const float* 
                                            (double)T->y * N[0] - (double)N[1] * T->x);
         Vec3 tmp, m;
         if (Vec3_Dot(T, c6404) < g_wk64b678)
-            *T = *CallC<const Vec3*>(Wk_Negated, &tmp, T);
+            *T = *(const Vec3*)Vec3_Negated(&tmp, T);
         Vec3_Cross(&F(Vec3, s, 2820 + i * 12), &F(Vec3, s, 208), T);
         Vec3_Cross(&m, c6404, T);
         float sn = (float)Vec3_Dot(&m, &F(Vec3, s, 208));
@@ -2975,7 +2980,7 @@ void __fastcall Wheels_StepFrames(BYTE* s, void*, const float* a1, const float* 
         if (F(float, s, 6748 + i * 4) < g_wk64ca48)
             F(float, s, 6748 + i * 4) = -1.0f;
         if (F(float, s, 6748 + i * 4) < g_wk64c264)
-            F(Vec3, s, 2820 + i * 12) = *CallC<const Vec3*>(Wk_Negated, &tmp, &F(Vec3, s, 2820 + i * 12));
+            F(Vec3, s, 2820 + i * 12) = *(const Vec3*)Vec3_Negated(&tmp, &F(Vec3, s, 2820 + i * 12));
         F(float, s, 6704 + i * 4) = (float)x87_asin(F(float, s, 6748 + i * 4));
         F(float, s, 3328 + i * 4) = (float)((double)F(float, s, 3360 + i * 4) * F(float, s, 9840 + i * 4));
     }
@@ -3109,19 +3114,14 @@ void __fastcall Body_SetMass(BYTE* s, void*, float m, const Matrix* f, const Vec
 
 // === placing a car on the ground under a frame (FUN_4f17a0)
 
-extern "C" void Bp_SaveAll(); KING_ALIAS("_Bp_SaveAll", "@Body_SaveAll@8")
-extern "C" void Bp_Terms(); KING_ALIAS("_Bp_Terms", "@Body_FrameTerms@4")
-extern "C" void Bp_Rebuild(); KING_ALIAS("_Bp_Rebuild", "@Body_Rebuild@4")
-extern "C" void Bp_Place(); KING_ALIAS("_Bp_Place", "@Body_PlaceReset@16")
-extern "C" void Bp_OnPlane(); KING_ALIAS("_Bp_OnPlane", "@Wheels_OnPlane@20")
-extern "C" void Bp_Step(); KING_ALIAS("_Bp_Step", "@Body_Step@12")
-extern "C" void Bp_Ground(); KING_ALIAS("_Bp_Ground", "@Car_PlaceOnGround@12")
-extern "C" void Bp_Query(); KING_ALIAS("_Bp_Query", "_Query_4e6621")
-extern "C" void Bp_HitObject(); KING_ALIAS("_Bp_HitObject", "_Query_HitObject")
-extern "C" void Bp_NodeInit(); KING_ALIAS("_Bp_NodeInit", "@Node_Init@8")
+extern "C" void __fastcall Body_SaveAll(BYTE* self, void*);
+extern "C" void __fastcall Body_PlaceReset(BYTE* s, void*, int a, const Matrix* m);
+extern "C" void __fastcall Wheels_OnPlane(BYTE* s, void*, int reset, const Vec3* p, const Vec3* n);
+extern "C" const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx);
+extern "C" void* __cdecl Query_HitObject(void* obj, const Vec3Bits* p, const Vec3Bits* d);
 extern "C" void Bp_ToAngles(); KING_ALIAS("_Bp_ToAngles", "_Matrix_ToAngles")
 extern "C" void Bp_FromPose(); KING_ALIAS("_Bp_FromPose", "_Matrix_FromPose")
-extern "C" void Bp_4fca10(); KING_ALIAS("_Bp_4fca10", "@Body_NextFrame@12")
+extern "C" void __fastcall Body_NextFrame(BYTE* s, void*, float* out);
 KING_VAR(Vec3, g_bpUp, 702630)
 KING_VAR(Vec3, g_bpEye, 702650)
 KING_VAR(float, g_bp674414, 674414)
@@ -3135,7 +3135,7 @@ extern "C" {
 // frame re-placed on the object found there, else at m with the wheels on a level plane; then rebuilt and stepped
 void __fastcall Body_PlaceAtFrame(BYTE* b, void*, int o, const Matrix* m, int)
 {
-    CallThis(Bp_SaveAll, b);
+    Body_SaveAll(b, 0);
     F(Vec3, b, 3216) = g_bpEye;
     F(Vec3, b, 3288) = g_bpEye;
     F(Vec3, b, 3228) = g_bpEye;
@@ -3155,8 +3155,8 @@ void __fastcall Body_PlaceAtFrame(BYTE* b, void*, int o, const Matrix* m, int)
         bot.x = (float)((double)m->m[9] - dx);
         bot.y = (float)((double)m->m[10] - dy);
         bot.z = (float)((double)m->m[11] - h * U.z);
-        CallThis(Bp_NodeInit, node);
-        hit = CallC<int>(Bp_Query, F(int, b, 10708), o, &top, &bot, node);
+        Node_Init(node, 0);
+        hit = Query_4e6621(F(int, b, 10708), o, (const Vec3Bits*)&top, (const Vec3Bits*)&bot, node);
     }
     if (hit)
     {
@@ -3183,38 +3183,38 @@ void __fastcall Body_PlaceAtFrame(BYTE* b, void*, int o, const Matrix* m, int)
         M.m[9] = Q.x;
         M.m[10] = Q.y;
         M.m[11] = Q.z;
-        CallThis(Bp_Place, b, o, &M);
-        CallThis(Bp_Terms, b);
-        CallThis(Bp_OnPlane, b, 1, &P, &N);
-        CallThis(Bp_Ground, b, b + 16);
+        Body_PlaceReset(b, 0, o, &M);
+        Body_FrameTerms(b);
+        Wheels_OnPlane(b, 0, 1, &P, &N);
+        Car_PlaceOnGround(b, 0, (const Matrix*)(b + 16));
         int cnt = F(int, b, 3540);
         F(BYTE, b, 6586) = 0;
         if (F(int, b, 10104) == 2)
             cnt--;
         for (int i = 0; i < cnt; i++)
             F(BYTE, b, 6586) = (F(BYTE, b, 6586) || F(short, b, 6564 + 2 * i)) ? 1 : 0;
-        CallThis(Bp_4fca10, b, &L);
-        int obj = CallC<int>(Bp_HitObject, F(int, b, 244), b + 52, &L.m[9]);
-        CallThis(Bp_Place, b, obj, &L);
+        Body_NextFrame(b, 0, (float*)&L);
+        int obj = (int)Query_HitObject((void*)(F(int, b, 244)), (const Vec3Bits*)(b + 52), (const Vec3Bits*)&L.m[9]);
+        Body_PlaceReset(b, 0, obj, &L);
     }
     else
     {
-        CallThis(Bp_Place, b, o, m);
+        Body_PlaceReset(b, 0, o, m);
         double lift = (double)g_bp674414 * F(float, b, 8092) + F(float, b, 7024) - F(float, b, 7364);
         Vec3 v, d;
         v.x = (float)(lift * U.x);
         v.y = (float)(lift * U.y);
         v.z = (float)(lift * U.z);
         Vec3_Sub(&d, &F(Vec3, b, 52), &v);
-        CallThis(Bp_OnPlane, b, 1, &d, &g_bpUp);
+        Wheels_OnPlane(b, 0, 1, &d, &g_bpUp);
     }
-    CallThis(Bp_Terms, b);
-    CallThis(Bp_Rebuild, b);
+    Body_FrameTerms(b);
+    Body_Rebuild(b);
     double a[6];
     CallC(Bp_ToAngles, *(BpMat*)(b + 16), &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
     Matrix Y;
     memcpy(b + 16, CallC<const Matrix*>(Bp_FromPose, &Y, a[0], a[1], a[2], a[3], a[4], a[5]), 48);
-    CallThis(Bp_Step, b, a);
+    Body_Step(b, 0, (short*)a);
 }
 
 } // extern "C"
@@ -3222,30 +3222,22 @@ void __fastcall Body_PlaceAtFrame(BYTE* b, void*, int o, const Matrix* m, int)
 #include "x87.h"
 // === a vehicle's physical body made from its type's table (FUN_4ebd00, running on through $L_4ed6c8)
 
-extern "C" void Pb_List(); KING_ALIAS("_Pb_List", "@List4eb3b0_Construct@8")
-extern "C" void Pb_Engine(); KING_ALIAS("_Pb_Engine", "@Engine_Construct@4")
+extern "C" BYTE* __fastcall List4eb3b0_Construct(BYTE* self, void*);
+extern "C" BYTE* __fastcall Engine_Construct(BYTE* e);
 extern "C" void Pb_History(); KING_ALIAS("_Pb_History", "@History_Construct@24")
-extern "C" void Pb_State(); KING_ALIAS("_Pb_State", "@PhysState_Init@8")
-extern "C" void Pb_ForEach(); KING_ALIAS("_Pb_ForEach", "_Array_ForEach@16")
-extern "C" void Pb_Ramp(); KING_ALIAS("_Pb_Ramp", "@Ramp_Construct@8")
-extern "C" void Pb_Range(); KING_ALIAS("_Pb_Range", "@Ramp_SetRange@24")
-extern "C" void Pb_RampValue(); KING_ALIAS("_Pb_RampValue", "@Ramp_Value@8")
+extern "C" BYTE* __fastcall PhysState_Init(BYTE* self, void*);
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());
+extern "C" BYTE* __fastcall Ramp_Construct(BYTE* self, void*);
+extern "C" void __fastcall Ramp_SetRange(BYTE* self, void*, int i, float lo, float hi, float time);
+extern "C" double __fastcall Ramp_Value(BYTE* self, void*);
 extern "C" void Pb_NewPart(); KING_ALIAS("_Pb_NewPart", "@Phys4eb3c0_NewPart@16")
-extern "C" void Pb_Mass(); KING_ALIAS("_Pb_Mass", "@Body_SetMass@20")
-extern "C" void Pb_Shares(); KING_ALIAS("_Pb_Shares", "@Wheels_LoadShares@8")
-extern "C" void Pb_SetPos(); KING_ALIAS("_Pb_SetPos", "@Body_SetPosition@12")
-extern "C" void Pb_Set88(); KING_ALIAS("_Pb_Set88", "@Body_SetVec88@12")
-extern "C" void Pb_EngReset(); KING_ALIAS("_Pb_EngReset", "@Engine_Reset@8")
-extern "C" void Pb_Restart(); KING_ALIAS("_Pb_Restart", "@Body_AxisRestart@4")
-extern "C" void Pb_PutDown(); KING_ALIAS("_Pb_PutDown", "@Body_PutDown@20")
-extern "C" void Pb_Prepare(); KING_ALIAS("_Pb_Prepare", "@Body_PrepareSteps@12")
-extern "C" void Pb_Step(); KING_ALIAS("_Pb_Step", "@Body_Step@12")
-extern "C" void Pb_AddAssign(); KING_ALIAS("_Pb_AddAssign", "@Vec3_AddAssign@16")
-extern "C" void Pb_MulAssign(); KING_ALIAS("_Pb_MulAssign", "@Vec3_MulAssign@16")
-extern "C" void Pb_Normalize(); KING_ALIAS("_Pb_Normalize", "@Vec3_NormalizeThis@8")
+extern "C" void __fastcall Body_SetMass(BYTE* s, void*, float m, const Matrix* f, const Vec3* in);
+extern "C" void __fastcall Body_AxisRestart(BYTE* s);
+extern "C" void __fastcall Body_PrepareSteps(BYTE* s, void*, int full);
 extern "C" void Pb_Decompose(); KING_ALIAS("_Pb_Decompose", "_Matrix_Decompose6")
 extern "C" void Pb_Compose(); KING_ALIAS("_Pb_Compose", "_World_4e3021")
-extern "C" void Pb_Parts(); KING_ALIAS("_Pb_Parts", "_Query_Parts2")
+extern "C" unsigned __cdecl Query_Parts2(int a, int mode, BYTE* q);
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 extern "C" void Pb_Zero(); KING_ALIAS("_Pb_Zero", "@Vec3_ZeroThis@8")
 extern "C" void Pb_Node(); KING_ALIAS("_Pb_Node", "@Node_Init@8")
 extern "C" void Pb_Elem(); KING_ALIAS("_Pb_Elem", "@Placed4ee4d0_Construct@4")
@@ -3288,9 +3280,9 @@ KING_VAR(double, g_pb64d978, 64d978)
 // a 248-byte contact record: zero point, normal up (+12), flags (+24, +26), its node (+32)
 static void Pb_Contact(BYTE* e)
 {
-    CallThis(Pb_Zero, e);
-    CallThis(Pb_Zero, e + 12);
-    CallThis(Pb_Node, e + 32);
+    Vec3_ZeroThis((Vec3*)e, 0);
+    Vec3_ZeroThis((Vec3*)(e + 12), 0);
+    Node_Init(e + 32, 0);
     memcpy(e, &g_zeroVec, 12);
     memcpy(e + 12, &g_axisZ, 12);
     F(WORD, e, 24) = 0;
@@ -3306,7 +3298,7 @@ static void Pb_Zeros(BYTE* s, int from, int to)
 
 static void Pb_SetRange(BYTE* r, int i, float a, float b, float c)
 {
-    CallThis(Pb_Range, r, i, a, b, c);
+    Ramp_SetRange(r, 0, i, a, b, c);
 }
 
 static float Pb_Len(const float* a, const float* b)
@@ -3346,8 +3338,8 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
     {
         BYTE* e = s + 4120 + 248 * i;
         Pb_Zeros(e, 0, 12);
-        CallThis(Pb_Zero, e + 12);
-        CallThis(Pb_Node, e + 32);
+        Vec3_ZeroThis((Vec3*)(e + 12), 0);
+        Node_Init(e + 32, 0);
         memcpy(e, &g_zeroVec, 12);
         memcpy(e + 12, &g_axisZ, 12);
         F(WORD, e, 24) = 0;
@@ -3364,35 +3356,35 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
     Pb_Zeros(s, 7356, 7452);
     Pb_Zeros(s, 7848, 7944);
     Pb_Zeros(s, 8008, 8032);
-    CallThis(Pb_List, s + 8188);
+    List4eb3b0_Construct(s + 8188, 0);
     memcpy(s + 8196, &g_identity, 48);
     Pb_Zeros(s, 8244, 8736);
-    CallThis(Pb_State, s + 8740);
+    PhysState_Init(s + 8740, 0);
     Pb_Zeros(s, 9908, 9920);
-    CallThis(Pb_Engine, s + 9984);
-    CallStd(Pb_ForEach, s + 10736, 12, 4, Pb_Zero);
+    Engine_Construct(s + 9984);
+    Array_ForEach(s + 10736, 12, 4, Pb_Zero);
     memcpy(s + 10736, &g_identity, 48);
-    CallStd(Pb_ForEach, s + 10784, 12, 4, Pb_Zero);
+    Array_ForEach(s + 10784, 12, 4, Pb_Zero);
     memcpy(s + 10784, &g_identity, 48);
     Pb_Zeros(s, 10832, 10856);
-    CallThis(Pb_Zero, s + 10856);
-    CallThis(Pb_Zero, s + 10868);
-    CallStd(Pb_ForEach, s + 10880, 12, 8, Pb_Zero);
-    CallStd(Pb_ForEach, s + 10976, 12, 8, Pb_Zero);
-    CallThis(Pb_Zero, s + 11072);
-    CallStd(Pb_ForEach, s + 11088, 248, 8, Pb_Elem);
-    CallThis(Pb_Zero, s + 13072);
-    CallThis(Pb_Zero, s + 13228);
-    CallThis(Pb_Zero, s + 13240);
-    CallStd(Pb_ForEach, s + 13252, 12, 8, Pb_Zero);
-    CallThis(Pb_Zero, s + 13496);
-    CallStd(Pb_ForEach, s + 13584, 208, 8, Pb_Node);
-    CallThis(Pb_Zero, s + 15388);
-    CallThis(Pb_Zero, s + 15400);
-    CallThis(Pb_Zero, s + 15452);
-    CallThis(Pb_Zero, s + 15464);
+    Vec3_ZeroThis((Vec3*)(s + 10856), 0);
+    Vec3_ZeroThis((Vec3*)(s + 10868), 0);
+    Array_ForEach(s + 10880, 12, 8, Pb_Zero);
+    Array_ForEach(s + 10976, 12, 8, Pb_Zero);
+    Vec3_ZeroThis((Vec3*)(s + 11072), 0);
+    Array_ForEach(s + 11088, 248, 8, Pb_Elem);
+    Vec3_ZeroThis((Vec3*)(s + 13072), 0);
+    Vec3_ZeroThis((Vec3*)(s + 13228), 0);
+    Vec3_ZeroThis((Vec3*)(s + 13240), 0);
+    Array_ForEach(s + 13252, 12, 8, Pb_Zero);
+    Vec3_ZeroThis((Vec3*)(s + 13496), 0);
+    Array_ForEach(s + 13584, 208, 8, Pb_Node);
+    Vec3_ZeroThis((Vec3*)(s + 15388), 0);
+    Vec3_ZeroThis((Vec3*)(s + 15400), 0);
+    Vec3_ZeroThis((Vec3*)(s + 15452), 0);
+    Vec3_ZeroThis((Vec3*)(s + 15464), 0);
     for (int k = 0; k < 7; k++)
-        CallThis(Pb_Ramp, s + 16060 + 52 * k);
+        Ramp_Construct(s + 16060 + 52 * k, 0);
     F(void*, s, 0) = &g_pbVtbl;
     if (!o)
     {
@@ -3480,12 +3472,12 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
     F(int, s, 16160) = 2;
     Pb_SetRange(s + 16112, 0, 0, l108, l112);
     Pb_SetRange(s + 16112, 1, 0, (float)((double)l108 + l108), (float)((double)l112 + l112));
-    F(float, s, 15480) = (float)CallThis<double>(Pb_RampValue, s + 16112);
+    F(float, s, 15480) = (float)Ramp_Value(s + 16112, 0);
     F(int, s, 15484) = 0;
     F(BYTE*, s, 8192) = s;
     for (int k = 0; k < 4; k++)
         CallThis(Pb_NewPart, s + 8188, 300.0f, k);
-    CallThis(Pb_Mass, s, F(float, L, 96), &g_pbFrames + 344 + F(int, s, 2252) * 1488, L + 412);
+    Body_SetMass(s, 0, F(float, L, 96), (const Matrix*)(&g_pbFrames + 344 + F(int, s, 2252) * 1488), (const Vec3*)(L + 412));
     memcpy(s + 9796, L + 172, 12);
     memcpy(s + 9908, &g_axisZ, 12);
 
@@ -3604,7 +3596,7 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
 
     // the ground below: a ray from twice up to K down from the place, against o's parts
     __declspec(align(8)) BYTE node[208];
-    CallThis(Pb_Node, node);
+    Node_Init(node, 0);
     memcpy(node + 4, &g_identity, 48);
     {
         double ux = (double)g_axisZ.x + g_axisZ.x;
@@ -3624,7 +3616,7 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
     F(int, node, 104) = 0;
     int r;
     if (F(WORD, s, 9992))
-        r = CallC<int>(Pb_Parts, o, 4, node);
+        r = (int)Query_Parts2((int)o, 4, node);
     else
     {
         r = CallVirt<int>(o, 52, 4, node);
@@ -3658,7 +3650,7 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
         float up[3] = {0, 0, 1.0f};
         memcpy(e + 12, up, 12);
         float tmp[3];
-        CallThis(Pb_AddAssign, s + 196, tmp, e + 12);
+        Vec3_AddAssign((Vec3*)(s + 196), 0, (Vec3*)tmp, (const Vec3*)(e + 12));
         float* c = &F(float, s, 3544 + 4 * i);
         c[0] = (float)((double)g_pb674414 * F(float, s, 8092 + 4 * i));
         c[8] = c[0];
@@ -3699,10 +3691,10 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
         float* b = F(float, s, 3608) < F(float, s, 3612) ? &F(float, s, 3612) : &F(float, s, 3608);
         F(float, s, 3640) = *b < *a ? *a : *b;
     }
-    CallThis(Pb_Normalize, s + 196);
+    Vec3_NormalizeThis((Vec3*)(s + 196), 0);
     memcpy(s + 208, s + 196, 12);
     memcpy(s + 7516, s + 7024, 492);
-    CallThis(Pb_Shares, s);
+    Wheels_LoadShares(s, 0);
     for (short i = 0; i < F(int, s, 3540); i++)
     {
         double v = -((double)F(float, s, 3400) * F(float, s, 9808 + 4 * i) * F(float, s, 9792));
@@ -3735,11 +3727,11 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
         F(float, s, 2608) = (float)((double)y[2] * M[7] + (double)y[1] * M[4] + (double)y[0] * M[1]);
         F(float, s, 2612) = (float)((double)y[2] * M[8] + (double)y[1] * M[5] + (double)y[0] * M[2]);
     }
-    CallThis(Pb_SetPos, s, &g_zeroVec);
-    CallThis(Pb_Set88, s, &g_zeroVec);
+    Body_SetPosition(s, 0, &g_zeroVec);
+    Body_SetVec88(s, 0, (const float*)&g_zeroVec);
     F(int, s, 3808) = 0;
     F(int, s, 3812) = 0;
-    CallThis(Pb_EngReset, s + 9984);
+    Engine_Reset(s + 9984, 0);
     F(int, s, 6940) = 0;
     F(int, s, 6936) = 0;
     F(int, s, 6944) = 0;
@@ -3847,10 +3839,10 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
     F(int, s, 15568) = -3;
     for (int i = 0; i < 8; i++)
         F(int, s, 15904 + 20 * i) = 1;
-    CallThis(Pb_Restart, s);
-    CallThis(Pb_SetPos, s, &g_zeroVec);
-    CallThis(Pb_Set88, s, &g_zeroVec);
-    CallThis(Pb_PutDown, s, 2, F(BYTE*, s, 6884), s + 6888);
+    Body_AxisRestart(s);
+    Body_SetPosition(s, 0, &g_zeroVec);
+    Body_SetVec88(s, 0, (const float*)&g_zeroVec);
+    Body_PutDown(s, 0, 2, (int)(F(BYTE*, s, 6884)), (const Matrix*)(s + 6888));
     if (F(WORD, s, 272))
     {
         double a = (double)F(float, s, 52) - F(float, s, 248);
@@ -3861,8 +3853,8 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
     memcpy(s + 8724, &g_zeroVec, 12);
     float tmp[3];
     for (short i = 0; i < F(int, s, 3540); i++)
-        CallThis(Pb_AddAssign, s + 8724, tmp, s + (i + 1) * 248);
-    CallThis(Pb_MulAssign, s + 8724, tmp, 0.25f);
+        Vec3_AddAssign((Vec3*)(s + 8724), 0, (Vec3*)tmp, (const Vec3*)(s + (i + 1) * 248));
+    Vec3_MulAssign((Vec3*)(s + 8724), 0, (Vec3*)tmp, 0.25f);
     F(int, s, 3312) = 0;
     F(int, s, 3316) = 0;
     F(float, s, 3320) = 1000.0f;
@@ -3874,8 +3866,8 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
     F(int, s, 9784) = 1;
     F(int, s, 9780) = -1;
     F(int, s, 9776) = 0;
-    CallThis(Pb_Prepare, s, 1);
-    CallThis(Pb_Step, s, dec);
+    Body_PrepareSteps(s, 0, 1);
+    Body_Step(s, 0, (short*)dec);
     F(int, s, 15448) = 0;
     memcpy(s + 15452, &g_zeroVec, 12);
     F(int, s, 15492) = 0;
@@ -3893,11 +3885,14 @@ BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
 
 // === one step of a body's physics state machine (FUN_4fef20 with its tail $L_4ff139)
 
+extern "C" int __fastcall Body_StartSteps(BYTE* s);
 extern "C" void FUN_4f5820(); KING_ALIAS("_FUN_4f5820", "@Body_StartSteps@4")
+extern "C" void __fastcall Body_EndSteps(BYTE* s, void*, int keep);
 extern "C" void FUN_4fb470(); KING_ALIAS("_FUN_4fb470", "@Body_EndSteps@12")
+extern "C" void __fastcall Body_PlainStep(BYTE* s);
 extern "C" void FUN_4fdc80(); KING_ALIAS("_FUN_4fdc80", "@Body_PlainStep@4")
-extern "C" void Sm_Check(); KING_ALIAS("_Sm_Check", "@Body_4fc8b0@8")
-extern "C" void Sm_Frame(); KING_ALIAS("_Sm_Frame", "@Body_PhysicsFrame@4")
+extern "C" int __fastcall Body_4fc8b0(BYTE* self, void*);
+extern "C" void __fastcall Body_PhysicsFrame(BYTE* s);
 KING_VAR(int, g_sm674460, 674460)
 KING_VAR(float, g_sm64c450, 64c450)
 
@@ -3915,38 +3910,38 @@ int __fastcall Body_StateStep(BYTE* s)
     }
     if (!g_sm674460 || F(int, s, 9784) <= 1)
     {
-        CallThis(FUN_4fdc80, s);
+        Body_PlainStep(s);
         F(int, s, 9776) = 0;
         return 0;
     }
     int st = F(int, s, 9776);
     if (!st)
     {
-        int r = CallThis<int>(FUN_4f5820, s);
+        int r = Body_StartSteps(s);
         F(int, s, 9772) = r;
         if (r == -1)
             return 0;
         if (r)
-            CallThis(Pb_Prepare, s, 1);
+            Body_PrepareSteps(s, 0, 1);
         return ++F(int, s, 9776);
     }
     if (st < 0)
     {
-        CallThis(FUN_4fb470, s, 1);
-        CallThis(Sm_Frame, s);
+        Body_EndSteps(s, 0, 1);
+        Body_PhysicsFrame(s);
         F(int, s, 9776) = 0;
         return 0;
     }
     if (F(int, s, 9772))
     {
-        if (CallThis<int>(Sm_Check, s))
+        if (Body_4fc8b0(s, 0))
             return ++F(int, s, 9776);
         F(int, s, 9776) = -1;
         return -1;
     }
     memcpy(s + 13240, &g_zeroVec, 12);
     float L[12];
-    CallThis(Bp_4fca10, s, L);
+    Body_NextFrame(s, 0, L);
     memcpy(s + 16, L, 48);
     Matrix t;
     const float* inv = (const float*)memcpy(s + 2304, Matrix_Inverse(&t, (const Matrix*)(s + 16)), 48);
@@ -3956,7 +3951,7 @@ int __fastcall Body_StateStep(BYTE* s)
                   (float)((double)inv[5] * ay + (double)inv[8] * az + (double)inv[2] * ax)};
     Vec3 q;
     memcpy(s + 88, Vec3_DivComponents(&q, (const Vec3*)v, (const Vec3*)(s + 8008)), 12);
-    CallThis(Pb_Shares, s);
+    Wheels_LoadShares(s, 0);
     for (int i = 0; i < F(int, s, 3540); i++)
     {
         if (F(WORD, s, 6564 + 2 * i))
@@ -3966,7 +3961,7 @@ int __fastcall Body_StateStep(BYTE* s)
                 (float)((double)F(float, s, 9808 + 4 * i) * F(float, s, 9792) * g_sm64c450);
     }
     F(int, s, 9776) = 0;
-    CallThis(Sm_Frame, s);
+    Body_PhysicsFrame(s);
     F(int, s, 9776) = 0;
     return 0;
 }
@@ -3975,8 +3970,7 @@ int __fastcall Body_StateStep(BYTE* s)
 
 // === a body's frame and speeds rebuilt at the end of its steps (FUN_4fb470 with its tail $L_4fbb7e)
 
-extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")
-extern "C" void Fe_Set(); KING_ALIAS("_Fe_Set", "@Vec3_SetThis@20")
+extern "C" float __cdecl Angle_F2Pi(float x, const char* name);
 KING_VAR(float, g_fe64c258, 64c258)
 KING_VAR(float, g_fe64c304, 64c304)
 KING_VAR(float, g_fe64c264, 64c264)
@@ -3990,8 +3984,7 @@ KING_VAR(char, g_feName, 6747a8)
 // a x b through the asm's SetThis
 static void Fe_Cross(float* out, const float* a, const float* b)
 {
-    CallThis(Fe_Set, out, (float)((double)a[1] * b[2] - (double)a[2] * b[1]),
-             (float)((double)a[2] * b[0] - (double)a[0] * b[2]), (float)((double)a[0] * b[1] - (double)a[1] * b[0]));
+    Vec3_SetThis((Vec3*)out, 0, (float)((double)a[1] * b[2] - (double)a[2] * b[1]), (float)((double)a[2] * b[0] - (double)a[0] * b[2]), (float)((double)a[0] * b[1] - (double)a[1] * b[0]));
 }
 
 extern "C" {
@@ -4063,9 +4056,7 @@ void __fastcall Body_EndSteps(BYTE* s, void*, int keep)
             const float* M = &F(float, s, 8868);
             const float* y = &g_axisY.x;
             float u[3], a1[3], b[3];
-            CallThis(Fe_Set, u, (float)((double)y[2] * M[6] + (double)y[1] * M[3] + (double)y[0] * M[0]),
-                     (float)((double)y[2] * M[7] + (double)y[1] * M[4] + (double)y[0] * M[1]),
-                     (float)((double)y[2] * M[8] + (double)y[1] * M[5] + (double)y[0] * M[2]));
+            Vec3_SetThis((Vec3*)u, 0, (float)((double)y[2] * M[6] + (double)y[1] * M[3] + (double)y[0] * M[0]), (float)((double)y[2] * M[7] + (double)y[1] * M[4] + (double)y[0] * M[1]), (float)((double)y[2] * M[8] + (double)y[1] * M[5] + (double)y[0] * M[2]));
             Fe_Cross(a1, n, u);
             Fe_Cross(b, a1, n);
             Vec3 zz;
@@ -4074,7 +4065,7 @@ void __fastcall Body_EndSteps(BYTE* s, void*, int keep)
             {
                 double ang6[6];
                 CallC(Bp_ToAngles, *(BpMat*)M, &ang6[0], &ang6[1], &ang6[2], &ang6[3], &ang6[4], &ang6[5]);
-                ang6[3] = CallC<double>(FUN_4e41d9, (float)ang6[3], &g_feName);
+                ang6[3] = (double)Angle_F2Pi((float)ang6[3], &g_feName);
                 float yaw = (float)x87_atan2(-(double)b[0], (double)b[1]);
                 int sgn = -1;
                 if (!((double)b[2] * g_axisZ.z + (double)b[1] * g_axisZ.y + (double)b[0] * g_axisZ.x > g_fe64c264))
@@ -4095,8 +4086,7 @@ void __fastcall Body_EndSteps(BYTE* s, void*, int keep)
     memcpy(s + 16, Matrix_Multiply(&W, (const Matrix*)(s + 8868), (const Matrix*)(s + 8772)), 48);
     memcpy(s + 2304, Matrix_Inverse(&Wi, (const Matrix*)(s + 16)), 48);
     float dv[3];
-    CallThis(Fe_Set, dv, (float)((double)F(float, s, 88) - F(float, s, 9048)),
-             (float)((double)F(float, s, 92) - F(float, s, 9052)), (float)((double)F(float, s, 96) - F(float, s, 9056)));
+    Vec3_SetThis((Vec3*)dv, 0, (float)((double)F(float, s, 88) - F(float, s, 9048)), (float)((double)F(float, s, 92) - F(float, s, 9052)), (float)((double)F(float, s, 96) - F(float, s, 9056)));
     float acc[3];
     memcpy(s + 13240, Vec3_DivScalar(acc, dv, (float)Game_FrameTime()), 12);
     memcpy(s + 88, s + 9048, 12);
@@ -4119,8 +4109,7 @@ void __fastcall Body_EndSteps(BYTE* s, void*, int keep)
 
 // === a body's new frame from its supports or its free motion (FUN_4fca10 with its tail $L_4fdb50)
 
-extern "C" void Bf_Set(); KING_ALIAS("_Bf_Set", "@Vec3_SetThis@20")
-extern "C" void Bf_SubAssign(); KING_ALIAS("_Bf_SubAssign", "@Vec3_SubAssign@16")
+extern "C" Vec3* __fastcall Vec3_SubAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
 extern "C" void Bf_Pose(); KING_ALIAS("_Bf_Pose", "_Matrix_FromPose")
 extern "C" void Bf_Reject(); KING_ALIAS("_Bf_Reject", "_Vec3_RejectFrom")
 KING_VAR(float, g_bf674458, 674458)
@@ -4141,7 +4130,7 @@ KING_VAR(double, g_bf64b840, 64b840)
 
 static void Bf_SetV(float* o, double x, double y, double z)
 {
-    CallThis(Bf_Set, o, (float)x, (float)y, (float)z);
+    Vec3_SetThis((Vec3*)o, 0, (float)x, (float)y, (float)z);
 }
 
 // a + b of two float triples as SetThis stores it
@@ -4222,11 +4211,11 @@ void __fastcall Body_NextFrame(BYTE* s, void*, float* out)
             float ax = (float)(t * g_axisZ.x), ay = (float)(t * g_axisZ.y);
             const float* w = &F(float, s, 7356 + 12 * i);
             float p[3] = {(float)((double)w[0] - ax), (float)((double)w[1] - ay), (float)(w[2] - t * g_axisZ.z)};
-            CallThis(Pb_AddAssign, c, tmp, p);
+            Vec3_AddAssign((Vec3*)c, 0, (Vec3*)tmp, (const Vec3*)p);
             sum = (float)((double)sum + F(float, s, 8060 + 4 * i));
         }
         sum = (float)(sum * g_bf64b738);
-        CallThis(Pb_MulAssign, c, tmp, 0.25f);
+        Vec3_MulAssign((Vec3*)c, 0, (Vec3*)tmp, 0.25f);
         const float* g = &F(float, s, 2616);
         if (F(BYTE, s, 6581))
         {
@@ -4312,14 +4301,14 @@ void __fastcall Body_NextFrame(BYTE* s, void*, float* out)
         Vec3 C, R, t1;
         Vec3_Cross(&C, (const Vec3*)m, (const Vec3*)v);
         Vec3_RotateBy(&R, &C, (const Matrix*)(s + 2304));
-        CallThis(Pb_MulAssign, v, &t1, (float)((double)k1 * dt * g_bf64c450));
+        Vec3_MulAssign((Vec3*)v, 0, &t1, (float)((double)k1 * dt * g_bf64c450));
         float k3 = (float)(dt * g_bf64d318);
-        CallThis(Bf_SubAssign, v, tmp, Vec3_Scaled(&t1, (const Vec3*)m, k3));
+        Vec3_SubAssign((Vec3*)v, 0, (Vec3*)tmp, Vec3_Scaled(&t1, (const Vec3*)m, k3));
         if (!(v[2] <= g_bf64c264))
             v[2] = 0;
         if (F(float, s, 3520) < g_bf64c450)
             memcpy(s + 64, Vec3_Add(&t1, (const Vec3*)(s + 2568), (const Vec3*)v), 12);
-        CallThis(Bf_SubAssign, v, tmp, Vec3_Scaled(&t1, (const Vec3*)m, k3));
+        Vec3_SubAssign((Vec3*)v, 0, (Vec3*)tmp, Vec3_Scaled(&t1, (const Vec3*)m, k3));
         float lift = F(float, s, 3640) < g_bf64d2f8 ? (float)((double)g_bf674458 * g_bf64d2f8) : g_bf674458;
         Matrix T, L, LM, W;
         Matrix_Translation(&T, *Vec3_Scaled(&t1, (const Vec3*)v, dt));
@@ -4370,7 +4359,7 @@ void __fastcall Body_NextFrame(BYTE* s, void*, float* out)
         an[5] = ((double)roll0 + roll) * qq + p * an[5];
         Vec3 r, sn;
         memcpy(c, CallC<float*>(Bf_Reject, &r, s + 8724, n, s + 52), 12);
-        CallThis(Pb_AddAssign, c, tmp, Vec3_Scaled(&sn, (const Vec3*)n, F(float, s, 8736)));
+        Vec3_AddAssign((Vec3*)c, 0, (Vec3*)tmp, Vec3_Scaled(&sn, (const Vec3*)n, F(float, s, 8736)));
         float W[12];
         memcpy(res, CallC<float*>(Bf_Pose, W, (double)c[0], (double)c[1], (double)c[2], (double)yaw, an[4], an[5]),
                48);
@@ -4382,12 +4371,11 @@ void __fastcall Body_NextFrame(BYTE* s, void*, float* out)
 
 // === a body's plain frame without sub-steps (FUN_4fdc80 with its tail $L_4fe18e)
 
+extern "C" void __fastcall Car_PedalStep(BYTE* s);
 extern "C" void FUN_500850(); KING_ALIAS("_FUN_500850", "@Car_PedalStep@4")
+extern "C" void __fastcall Wheels_FrameSpin(BYTE* s);
 extern "C" void FUN_4f35f0(); KING_ALIAS("_FUN_4f35f0", "@Wheels_FrameSpin@4")
-extern "C" void Ps_Check(); KING_ALIAS("_Ps_Check", "_World_CheckPoint")
-extern "C" void Ps_Damage(); KING_ALIAS("_Ps_Damage", "@Car_CheckDamage@8")
-extern "C" void Ps_Ground(); KING_ALIAS("_Ps_Ground", "@Car_PlaceOnGround@12")
-extern "C" void Pls_Query(); KING_ALIAS("_Pls_Query", "_Query_4e5b22")
+extern "C" void __fastcall Car_CheckDamage(BYTE* s, void*);
 extern "C" void Ps_Nop(); KING_ALIAS("_Ps_Nop", "_Fw_Nop")
 KING_VAR(int, g_ps697670, 697670)
 KING_VAR(char, g_psCheck1, 6747f0)
@@ -4431,11 +4419,11 @@ extern "C" {
 void __fastcall Body_PlainStep(BYTE* s)
 {
     float* vel = &F(float, s, 64);
-    CallC(Ps_Check, vel, &g_psCheck1, 150.0f);
+    World_CheckPoint(vel, &g_psCheck1, 150.0f);
     float dt = (float)Game_FrameTime();
     F(float, s, 15316) = (float)(Game_Time() - F(float, s, 6112));
-    CallThis(Ps_Damage, s);
-    CallThis(FUN_500850, s);
+    Car_CheckDamage(s, 0);
+    Car_PedalStep(s);
     F(int, s, 15492) = 0;
     F(int, s, 15448) = 0;
     memcpy(s + 15452, &g_zeroVec, 12);
@@ -4463,7 +4451,7 @@ void __fastcall Body_PlainStep(BYTE* s)
         F(int, s, 10716) = 0;
         F(int, s, 10712) = 0x3D4CCCCD;
         F(int, s, 10728) = 0;
-        CallThis(Pb_EngReset, s + 9984);
+        Engine_Reset(s + 9984, 0);
     }
     Body_SaveAll(s, 0);
     Body_UpdateContacts(s, 0);
@@ -4519,13 +4507,13 @@ void __fastcall Body_PlainStep(BYTE* s)
         o[1] = (float)((double)R[1] * e[0] + (double)R[7] * e[2] + (double)R[4] * e[1]);
         o[2] = (float)((double)R[2] * e[0] + (double)R[8] * e[2] + (double)R[5] * e[1]);
     }
-    CallThis(FUN_4f35f0, s);
+    Wheels_FrameSpin(s);
 
     float A[3];
     memcpy(A, &g_zeroVec, 12);
     float tmp[3];
     for (int i = 0; i < F(int, s, 10176); i++)
-        CallThis(Pb_AddAssign, A, tmp, s + 10244 + 12 * i);
+        Vec3_AddAssign((Vec3*)A, 0, (Vec3*)tmp, (const Vec3*)(s + 10244 + 12 * i));
     memcpy(s + 3180, &g_zeroVec, 12);
     memcpy(s + 3264, &g_zeroVec, 12);
     int touch = 0;
@@ -4543,7 +4531,7 @@ void __fastcall Body_PlainStep(BYTE* s)
             memcpy(fb, s + 3848 + 12 * i, 12);
         }
         float t[3] = {(float)((double)fb[0] + fa[0]), (float)((double)fb[1] + fa[1]), (float)((double)fb[2] + fa[2])};
-        CallThis(Pb_AddAssign, s + 3180, tmp, t);
+        Vec3_AddAssign((Vec3*)(s + 3180), 0, (Vec3*)tmp, (const Vec3*)t);
         if (free)
         {
             const float* a = &F(float, s, 8340 + 12 * i);
@@ -4555,7 +4543,7 @@ void __fastcall Body_PlainStep(BYTE* s)
             d[0] = (float)(c1 * r[2] - c2 * r[1]);
             d[1] = (float)(c2 * r[0] - c0 * r[2]);
             d[2] = (float)(c0 * r[1] - c1 * r[0]);
-            CallThis(Pb_AddAssign, s + 3180, tmp, d);
+            Vec3_AddAssign((Vec3*)(s + 3180), 0, (Vec3*)tmp, (const Vec3*)d);
         }
     }
     {
@@ -4602,9 +4590,9 @@ void __fastcall Body_PlainStep(BYTE* s)
         float c0 = (float)((double)b0 + a0), c1 = (float)((double)a1 + b1);
         double c2 = b2 + a2;
         float dv[3] = {(float)((double)c0 * dt), (float)((double)c1 * dt), (float)(c2 * dt)};
-        CallThis(Pb_AddAssign, vel, tmp, dv);
+        Vec3_AddAssign((Vec3*)vel, 0, (Vec3*)tmp, (const Vec3*)dv);
     }
-    CallC(Ps_Check, vel, &g_psCheck2, 150.0f);
+    World_CheckPoint(vel, &g_psCheck2, 150.0f);
     if (!(touch && F(BYTE, s, 6581) && F(BYTE, s, 6583)))
     {
         float t[3];
@@ -4629,25 +4617,25 @@ void __fastcall Body_PlainStep(BYTE* s)
             if (!((double)vel[2] * g[2] + (double)vel[1] * g[1] + (double)g[0] * vel[0] > g_ps64b678))
                 sg = -1.0;
             float q[3], r[3];
-            CallThis(Bf_Set, q, (float)(len * g[0]), (float)(len * g[1]), (float)(len * g[2]));
-            CallThis(Bf_Set, r, (float)(q[0] * sg), (float)(q[1] * sg), (float)(q[2] * sg));
+            Vec3_SetThis((Vec3*)q, 0, (float)(len * g[0]), (float)(len * g[1]), (float)(len * g[2]));
+            Vec3_SetThis((Vec3*)r, 0, (float)(q[0] * sg), (float)(q[1] * sg), (float)(q[2] * sg));
             memcpy(vel, r, 12);
         }
         else
             F(float, s, 3520) = (float)Vec3_Length((const Vec3*)vel);
-        CallC(Ps_Check, vel, &g_psCheck3, 150.0f);
+        World_CheckPoint(vel, &g_psCheck3, 150.0f);
         if (F(int, s, 6844) &&
             (F(float, s, 3524) < g_ps64b5b8 || (double)vel[2] * F(float, s, 2576) + (double)vel[1] * F(float, s, 2572) +
                                                        (double)vel[0] * F(float, s, 2568) < g_ps64b678))
         {
-            CallThis(Pb_Restart, s);
+            Body_AxisRestart(s);
             memcpy(s + 3180, &g_zeroVec, 12);
             memcpy(s + 2580, &g_zeroVec, 12);
         }
     }
 
     Matrix Rm, a, b, c, T;
-    CallStd(Pb_ForEach, &Rm, 12, 4, Pb_Zero);
+    Array_ForEach((BYTE*)&Rm, 12, 4, Pb_Zero);
     memcpy(&Rm, &g_identity, 48);
     const Matrix* R;
     if (F(BYTE, s, 6581))
@@ -4663,9 +4651,7 @@ void __fastcall Body_PlainStep(BYTE* s)
     {
         const float* w = &F(float, s, 3108);
         float q[3];
-        CallThis(Bf_Set, q, (float)((double)inv[6] * w[2] + (double)inv[3] * w[1] + (double)w[0] * inv[0]),
-                 (float)((double)inv[1] * w[0] + (double)inv[7] * w[2] + (double)inv[4] * w[1]),
-                 (float)((double)inv[2] * w[0] + (double)inv[8] * w[2] + (double)inv[5] * w[1]));
+        Vec3_SetThis((Vec3*)q, 0, (float)((double)inv[6] * w[2] + (double)inv[3] * w[1] + (double)w[0] * inv[0]), (float)((double)inv[1] * w[0] + (double)inv[7] * w[2] + (double)inv[4] * w[1]), (float)((double)inv[2] * w[0] + (double)inv[8] * w[2] + (double)inv[5] * w[1]));
         memcpy(s + 88, q, 12);
         Vec3 mc, rr;
         Vec3_MulComponents(&mc, (const Vec3*)(s + 88), (const Vec3*)(s + 8008));
@@ -4682,7 +4668,7 @@ void __fastcall Body_PlainStep(BYTE* s)
     }
     {
         float d[3];
-        CallThis(Bf_Set, d, (float)((double)dt * vel[0]), (float)((double)dt * vel[1]), (float)((double)dt * vel[2]));
+        Vec3_SetThis((Vec3*)d, 0, (float)((double)dt * vel[0]), (float)((double)dt * vel[1]), (float)((double)dt * vel[2]));
         Matrix_Translation(&T, *(const Vec3*)d);
         Matrix rm, w;
         Matrix_Multiply(&rm, &Rm, (const Matrix*)(s + 16));
@@ -4695,7 +4681,7 @@ void __fastcall Body_PlainStep(BYTE* s)
         Vec3_Cross(&q, &p, (const Vec3*)n);
         memcpy(s + 2616, Vec3_Normalized(&nn, &q), 12);
     }
-    CallThis(Ps_Ground, s, s + 16);
+    Car_PlaceOnGround(s, 0, (const Matrix*)(s + 16));
     float nf[12];
     Body_NextFrame(s, 0, nf);
     memcpy(s + 16, nf, 48);
@@ -4713,11 +4699,11 @@ void __fastcall Body_PlainStep(BYTE* s)
     double an[6];
     CallC(Bp_ToAngles, *(const BpMat*)(s + 16), &an[0], &an[1], &an[2], &an[3], &an[4], &an[5]);
     __declspec(align(8)) BYTE node[208];
-    CallThis(Pb_Node, node);
-    if (CallC<int>(Pls_Query, F(BYTE*, s, 6672), s + 2292, s + 52, node))
+    Node_Init(node, 0);
+    if (Query_4e5b22(F(BYTE*, s, 6672), (const Vec3Bits*)(s + 2292), (const Vec3Bits*)(s + 52), node))
         F(int, s, 244) = F(int, node, 104);
     Body_UpdateContacts(s, 0);
-    CallThis(Pb_Step, s, an);
+    Body_Step(s, 0, (short*)an);
     if (Body_IsTipped(s, 0))
     {
         for (int i = 0; i < F(int, s, 3540); i++)
@@ -4729,27 +4715,24 @@ void __fastcall Body_PlainStep(BYTE* s)
     for (int i = 0; i < F(int, s, 10176); i++)
         memcpy(s + 10244 + 12 * i, &g_zeroVec, 12);
     F(int, s, 10176) = 0;
-    CallC(Ps_Check, vel, &g_psCheck4, 150.0f);
+    World_CheckPoint(vel, &g_psCheck4, 150.0f);
 }
 
 } // extern "C"
 
 // === the first of a body's sub-steps (FUN_4f5820 with its tail $L_4f5c77)
 
-extern "C" void Ss_Items(); KING_ALIAS("_Ss_Items", "@Items_StepAll@8")
+extern "C" void __fastcall Items_StepAll(BYTE** self, void*);
 extern "C" void Ss_Setting(); KING_ALIAS("_Ss_Setting", "@Car_SetSetting@16")
-extern "C" void Ss_Steering(); KING_ALIAS("_Ss_Steering", "@Steering_Update@8")
-extern "C" void Ss_Lean(); KING_ALIAS("_Ss_Lean", "@Body_SlopeLean@4")
-extern "C" void Ss_Tyres(); KING_ALIAS("_Ss_Tyres", "@Tyre_Forces@12")
-extern "C" void Ss_Mean30(); KING_ALIAS("_Ss_Mean30", "@Body_Mean1a30@8")
-extern "C" void Ss_Mean38(); KING_ALIAS("_Ss_Mean38", "@Body_Mean1a38@8")
-extern "C" void Ss_Forces(); KING_ALIAS("_Ss_Forces", "@Wheels_ForceTorque@16")
-extern "C" void Ss_Limit(); KING_ALIAS("_Ss_Limit", "@Body_LimitChange@28")
-extern "C" void Ss_ResetMotion(); KING_ALIAS("_Ss_ResetMotion", "@Body_ResetMotion@8")
-extern "C" void Ss_StepVectors(); KING_ALIAS("_Ss_StepVectors", "@Body_StepVectors@8")
-extern "C" void Ss_Slide(); KING_ALIAS("_Ss_Slide", "@Body_SlideMove@8")
-extern "C" void Ss_Ground(); KING_ALIAS("_Ss_Ground", "@Wheels_FindGround@4")
-extern "C" void Ss_floor(); KING_ALIAS("_Ss_floor", "_floor")
+extern "C" void __fastcall Steering_Update(BYTE* self, void*);
+extern "C" void __fastcall Body_SlopeLean(BYTE* s);
+extern "C" void __fastcall Tyre_Forces(BYTE* s, void*, const float* p);
+extern "C" double __fastcall Body_Mean1a30(BYTE* self, void*);
+extern "C" double __fastcall Body_Mean1a38(BYTE* self, void*);
+extern "C" void __fastcall Wheels_ForceTorque(BYTE* s, void*, Vec3* f, Vec3* t);
+extern "C" void __fastcall Body_LimitChange(BYTE* s, void*, Vec3* dv, Vec3* dw, Vec3* e, const Vec3* q, float k);
+extern "C" void __fastcall Body_StepVectors(BYTE* s, void*);
+extern "C" int __fastcall Body_SlideMove(BYTE* s, void*);
 KING_VAR(float, g_ss674444, 674444)
 KING_VAR(double, g_ss64da00, 64da00)
 KING_VAR(double, g_ss64b5a0, 64b5a0)
@@ -4772,7 +4755,7 @@ int __fastcall Body_StartSteps(BYTE* s)
     F(float, s, 12) = (float)(gt - F(float, s, 8));
     F(int, s, 15496) = 0;
     if (F(int, s, 10116))
-        CallThis(Ss_Items, s + 8188);
+        Items_StepAll((BYTE**)(s + 8188), 0);
     F(float, s, 15316) = (float)(Game_Time() - F(float, s, 6112));
     F(int, s, 15492) = 0;
     F(int, s, 15448) = 0;
@@ -4790,8 +4773,8 @@ int __fastcall Body_StartSteps(BYTE* s)
             CallThis(Ss_Setting, s, 3 + i, 1.0f);
         }
     }
-    CallThis(Ps_Damage, s);
-    CallThis(FUN_500850, s);
+    Car_CheckDamage(s, 0);
+    Car_PedalStep(s);
     if (F(int, s, 13124) && !F(WORD, s, 10056))
         return -1;
     {
@@ -4810,7 +4793,7 @@ int __fastcall Body_StartSteps(BYTE* s)
         F(int, s, 10716) = 0;
         F(int, s, 10712) = 0x3D4CCCCD;
         F(int, s, 10728) = 0;
-        CallThis(Pb_EngReset, s + 9984);
+        Engine_Reset(s + 9984, 0);
     }
     Body_SaveAll(s, 0);
     Body_UpdateContacts(s, 0);
@@ -4834,29 +4817,29 @@ int __fastcall Body_StartSteps(BYTE* s)
         o[2] = (float)((double)m[5] * n[1] + (double)m[8] * n[2] + (double)m[2] * n[0]);
     }
     F(float, s, 6688) = (float)Body_SteerAngle(s, 0);
-    CallThis(Ss_Steering, s);
+    Steering_Update(s, 0);
     {
         Matrix L;
         memcpy(s + 8196, Matrix_LookAt(&L, g_zeroVec, *(const Vec3*)n, F(float, s, 6688)), 48);
     }
     Body_4f2630(s, 0, (int)(s + 8196));
     Body_UpdateGrip(s, 0);
-    CallThis(Ss_Lean, s);
+    Body_SlopeLean(s);
     F(int, s, 6676) = 0x47C35000;
     if (x87_fabs(F(float, s, 6688) - g_ss64da00) > g_ss64b5a0)
         F(float, s, 6676) = (float)(x87_sin(F(float, s, 6688)) / x87_cos(F(float, s, 6688)));
-    CallThis(Ss_Tyres, s, s + 3360);
-    F(float, s, 6696) = (float)CallThis<double>(Ss_Mean30, s);
-    F(float, s, 6700) = (float)CallThis<double>(Ss_Mean38, s);
-    CallThis(FUN_4f35f0, s);
+    Tyre_Forces(s, 0, (const float*)(s + 3360));
+    F(float, s, 6696) = (float)Body_Mean1a30(s, 0);
+    F(float, s, 6700) = (float)Body_Mean1a38(s, 0);
+    Wheels_FrameSpin(s);
 
     float Fv[3], T[3], tmp[3];
     memcpy(Fv, &g_zeroVec, 12);
     memcpy(T, &g_zeroVec, 12);
-    CallThis(Ss_Forces, s, Fv, T);
+    Wheels_ForceTorque(s, 0, (Vec3*)Fv, (Vec3*)T);
     {
-        double h = (double)dt / (CallC<double>(Ss_floor, F(float, s, 9500) * g_ss64d9f8) + g_ss64b670);
-        CallThis(Ss_Limit, s, Fv, T, s + 2544, s + 76, (float)h);
+        double h = (double)dt / (floor(F(float, s, 9500) * g_ss64d9f8) + g_ss64b670);
+        Body_LimitChange(s, 0, (Vec3*)Fv, (Vec3*)T, (Vec3*)(s + 2544), (const Vec3*)(s + 76), (float)h);
     }
     if (!F(BYTE, s, 6580))
     {
@@ -4866,18 +4849,18 @@ int __fastcall Body_StartSteps(BYTE* s)
         for (int i = 0; i < F(int, s, 3540); i++)
         {
             load = (float)((double)load + F(float, s, 6500 + 4 * i));
-            CallThis(Pb_AddAssign, sum3, tmp, s + 6308 + 12 * i);
+            Vec3_AddAssign((Vec3*)sum3, 0, (Vec3*)tmp, (const Vec3*)(s + 6308 + 12 * i));
         }
         float len = (float)Vec3_Length((const Vec3*)sum3);
         if (F(int, s, 6844) && F(float, s, 3524) < g_ss64b6e0)
         {
             memcpy(Fv, &g_zeroVec, 12);
-            CallThis(Ss_ResetMotion, s);
+            Body_ResetMotion(s, 0);
         }
         if ((double)len + len < load && x87_fabs(F(float, s, 96)) < g_ss64b6e0)
         {
             memcpy(T, &g_zeroVec, 12);
-            CallThis(Ss_StepVectors, s);
+            Body_StepVectors(s, 0);
         }
     }
     for (int i = 0; i < F(int, s, 3540); i++)
@@ -4897,13 +4880,13 @@ int __fastcall Body_StartSteps(BYTE* s)
     for (int i = 0; i < F(int, s, 3540); i++)
     {
         const float* v = &F(float, s, 8244 + 12 * i);
-        CallThis(Pb_AddAssign, s + 3228, tmp, v);
+        Vec3_AddAssign((Vec3*)(s + 3228), 0, (Vec3*)tmp, (const Vec3*)v);
         double x = (double)m[6] * v[2] + (double)m[0] * v[0] + (double)m[3] * v[1];
         double y = (double)m[1] * v[0] + (double)m[7] * v[2] + (double)m[4] * v[1];
         double z = (double)m[2] * v[0] + (double)v[2] * m[8] + (double)v[1] * m[5];
         const float* w = &F(float, s, 6212 + 12 * i);
         float t[3] = {(float)(z * w[1] - y * w[2]), (float)(x * w[2] - z * w[0]), (float)(y * w[0] - x * w[1])};
-        CallThis(Pb_AddAssign, s + 3300, tmp, t);
+        Vec3_AddAssign((Vec3*)(s + 3300), 0, (Vec3*)tmp, (const Vec3*)t);
     }
     {
         double ax = (double)Fv[0] + F(float, s, 3228);
@@ -4957,7 +4940,7 @@ int __fastcall Body_StartSteps(BYTE* s)
         float a0 = (float)(F(float, s, 3180) / ms), a1 = (float)(F(float, s, 3184) / ms);
         double a2 = F(float, s, 3188) / ms;
         float dv[3] = {(float)((double)a0 * dt), (float)((double)a1 * dt), (float)(a2 * dt)};
-        CallThis(Pb_AddAssign, s + 64, tmp, dv);
+        Vec3_AddAssign((Vec3*)(s + 64), 0, (Vec3*)tmp, (const Vec3*)dv);
     }
     memcpy(s + 3240, s + 3264, 12);
     memcpy(s + 3120, &g_zeroVec, 12);
@@ -4966,14 +4949,10 @@ int __fastcall Body_StartSteps(BYTE* s)
     {
         const float* w = &F(float, s, 76);
         float r[3], q[3], o[3];
-        CallThis(Bf_Set, r, (float)((double)m[6] * w[2] + (double)m[3] * w[1] + (double)w[0] * m[0]),
-                 (float)((double)m[7] * w[2] + (double)m[4] * w[1] + (double)m[1] * w[0]),
-                 (float)((double)m[8] * w[2] + (double)m[5] * w[1] + (double)m[2] * w[0]));
-        CallThis(Bf_Set, q, (float)((double)r[0] + t[0]), (float)((double)t[1] + r[1]), (float)((double)t[2] + r[2]));
+        Vec3_SetThis((Vec3*)r, 0, (float)((double)m[6] * w[2] + (double)m[3] * w[1] + (double)w[0] * m[0]), (float)((double)m[7] * w[2] + (double)m[4] * w[1] + (double)m[1] * w[0]), (float)((double)m[8] * w[2] + (double)m[5] * w[1] + (double)m[2] * w[0]));
+        Vec3_SetThis((Vec3*)q, 0, (float)((double)r[0] + t[0]), (float)((double)t[1] + r[1]), (float)((double)t[2] + r[2]));
         const float* M = &F(float, s, 16);
-        CallThis(Bf_Set, o, (float)((double)q[1] * M[3] + (double)q[2] * M[6] + (double)q[0] * M[0]),
-                 (float)((double)q[1] * M[4] + (double)q[2] * M[7] + (double)q[0] * M[1]),
-                 (float)((double)q[1] * M[5] + (double)q[2] * M[8] + (double)q[0] * M[2]));
+        Vec3_SetThis((Vec3*)o, 0, (float)((double)q[1] * M[3] + (double)q[2] * M[6] + (double)q[0] * M[0]), (float)((double)q[1] * M[4] + (double)q[2] * M[7] + (double)q[0] * M[1]), (float)((double)q[1] * M[5] + (double)q[2] * M[8] + (double)q[0] * M[2]));
         memcpy(s + 76, o, 12);
         Vec3 d;
         memcpy(s + 88, Vec3_DivComponents(&d, (const Vec3*)q, (const Vec3*)(s + 8008)), 12);
@@ -4981,14 +4960,12 @@ int __fastcall Body_StartSteps(BYTE* s)
     if (Body_IsTipped(s, 0))
     {
         F(int, s, 13124) = 1;
-        CallThis(Ss_Slide, s);
+        Body_SlideMove(s, 0);
         return -1;
     }
     {
         float nb[3];
-        CallThis(Bf_Set, nb, (float)((double)m[6] * n[2] + (double)m[3] * n[1] + (double)n[0] * m[0]),
-                 (float)((double)m[1] * n[0] + (double)m[7] * n[2] + (double)m[4] * n[1]),
-                 (float)((double)m[2] * n[0] + (double)m[8] * n[2] + (double)m[5] * n[1]));
+        Vec3_SetThis((Vec3*)nb, 0, (float)((double)m[6] * n[2] + (double)m[3] * n[1] + (double)n[0] * m[0]), (float)((double)m[1] * n[0] + (double)m[7] * n[2] + (double)m[4] * n[1]), (float)((double)m[2] * n[0] + (double)m[8] * n[2] + (double)m[5] * n[1]));
         Vec3 c1, c2, a, b;
         Vec3_Cross(&c1, (const Vec3*)nb, (const Vec3*)(s + 88));
         Vec3_Cross(&c2, &c1, (const Vec3*)nb);
@@ -5009,7 +4986,7 @@ int __fastcall Body_StartSteps(BYTE* s)
         Vec3_RotateBy(&r, (const Vec3*)(s + 76), (const Matrix*)(s + 2304));
         memcpy(s + 88, Vec3_MulComponents(&q, &r, (const Vec3*)(s + 8020)), 12);
     }
-    CallThis(Ss_Ground, s);
+    Wheels_FindGround(s);
     memset(s + 15336, 0, 32);
     F(int, s, 15368) = 0;
     F(int, s, 15372) = 0;
@@ -5024,8 +5001,6 @@ extern "C" Vec3* __cdecl Ct4_DivScalar(Vec3* out, const Vec3* v, float k); KING_
 extern "C" void __cdecl Ct4_Soften(Vec3* v); KING_ALIAS("_Ct4_Soften", "_Vec3_Soften")
 extern "C" int __cdecl Ct4_Report(char* out, int n, const char* name, const Matrix* m, const Vec3* a, const Vec3* b); KING_ALIAS("_Ct4_Report", "_Frame_Report")
 extern "C" void __cdecl Ct4_Fatal(const char* msg); KING_ALIAS("_Ct4_Fatal", "_World_Fatal")
-extern "C" void Ct4_MulA(); KING_ALIAS("_Ct4_MulA", "@Vec3_MulAssign@16")
-extern "C" void Ct4_SubA(); KING_ALIAS("_Ct4_SubA", "@Vec3_SubAssign@16")
 KING_VAR(int, g_ct4zero702650, 702650)
 KING_VAR(int, g_ct4zero702654, 702654)
 KING_VAR(int, g_ct4zero702658, 702658)
@@ -5142,7 +5117,7 @@ void __cdecl Body_MovingPointImpulse(const Vec3* pa, const Vec3* nb, const Matri
                 LI(484) = 0;
             else
                 L(484) = (float)((L(484) - L(488)) / L(484));
-            CallThis(Ct4_MulA, P(92), P(4544), L(484));
+            Vec3_MulAssign(P(92), 0, P(4544), L(484));
             LI(188) = LI(124);
             LI(184) = LI(120);
             LI(180) = LI(116);
@@ -5243,7 +5218,7 @@ void __cdecl Body_MovingPointImpulse(const Vec3* pa, const Vec3* nb, const Matri
             LI(4392) = 0;
         else if (L(4392) != g_ct4_64c264)
             L(4392) = (float)((L(4392) - L(4396)) / L(4392));
-        CallThis(Ct4_MulA, P(92), P(4640), L(4392));
+        Vec3_MulAssign(P(92), 0, P(4640), L(4392));
     }
     Vec3_Scaled(P(4652), P(348), L(4));
     LI(200) = LI(4652);
@@ -5277,7 +5252,7 @@ void __cdecl Body_MovingPointImpulse(const Vec3* pa, const Vec3* nb, const Matri
         float k = (float)(L(4436) - g_ct4_64b5a0);
         L(4720) = k;
         Vec3_Scaled(P(4688), nb, k);
-        CallThis(Ct4_SubA, P(364), P(4700), P(4688));
+        Vec3_SubAssign(P(364), 0, P(4700), P(4688));
         L(4436) = (float)(L(4436) * g_ct4_64d918);
     }
     Ct4_Soften(P(224));
@@ -5307,7 +5282,6 @@ extern "C" BYTE* __cdecl Ct5_DInverse(BYTE* out, const BYTE* m); KING_ALIAS("_Ct
 extern "C" BYTE* __cdecl Ct5_Combine(BYTE* out, BYTE* a, BYTE* b); KING_ALIAS("_Ct5_Combine", "_Rec128_Combine")
 extern "C" Ct5Row* __cdecl Ct5_MulRow(Ct5Row* out, const BYTE* m, const Ct5Row* v); KING_ALIAS("_Ct5_MulRow", "_DMat_MulRow")
 extern "C" int __cdecl Ct5_OutOfBox(const void* v, float lim); KING_ALIAS("_Ct5_OutOfBox", "_Vec3_OutOfBox")
-extern "C" void Ct5_SetThis(); KING_ALIAS("_Ct5_SetThis", "@Vec3_SetThis@20")
 KING_VAR(BYTE, g_ct5Identity7025f0, 7025f0)
 KING_VAR(BYTE, g_ct5Axis702640, 702640)
 KING_VAR(BYTE, g_ct5Axis702620, 702620)
@@ -5427,11 +5401,11 @@ void __cdecl Body_FixedPointImpulse(const Matrix* ma, const Matrix* mb, const Ve
     Vec3_MulComponents(P(16), ic, spin);
     Vec3_RotateBy(P(864), P(16), M(1152));
     Vec3_RotateBy(P(724), vel, M(472));
-    CallThis(Ct5_SetThis, P(800), 0.0f, 0.0f, L(1204));
+    Vec3_SetThis(P(800), 0, 0.0f, 0.0f, L(1204));
     L(256) = (float)(L(856) - (k44 * k36) * (L(716) - L(792)));
     if (L(256) * L(856) <= g_ct4_64c264)
         LI(256) = 0;
-    CallThis(Ct5_SetThis, P(912), 0.0f, 0.0f, L(256));
+    Vec3_SetThis(P(912), 0, 0.0f, 0.0f, L(256));
     double r0 = L(804) * k36;
     Ct5_RowSet((Ct5Row*)(fp - 712), 0, Ct5_Row(1.0, 0.0, 0.0, r0));
     double r1 = -L(804) * k36;
@@ -5520,7 +5494,6 @@ void __cdecl Body_FixedPointImpulse(const Matrix* ma, const Matrix* mb, const Ve
 // === a body's contact impulse, simple form ($L_4e969e with its tail $L_4e96e8; nothing calls it in this build)
 
 extern "C" Vec3* __cdecl Ct6_Negated(Vec3* out, const Vec3* v); KING_ALIAS("_Ct6_Negated", "_Vec3_Negated")
-extern "C" void Ct6_DivA(); KING_ALIAS("_Ct6_DivA", "@Vec3_DivAssign@16")
 extern "C" void __fastcall Ct6_Zero(Vec3* v, void*); KING_ALIAS("@Ct6_Zero@8", "@Vec3_ZeroThis@8")
 KING_VAR(double, g_ct6_64d950, 64d950)
 KING_VAR(double, g_ct6_64c958, 64c958)
@@ -5637,9 +5610,9 @@ void __cdecl Body_ContactImpulseB(const Matrix* ma, const Matrix* mb, const Vec3
         L(272) = L(164) / L(136);
         float k = (float)(L(272) + g_ct4_64b5b8);
         L(568) = k;
-        CallThis(Ct6_DivA, P(256), P(500), k);
+        Vec3_DivAssign(P(256), 0, P(500), k);
         L(572) = k;
-        CallThis(Ct6_DivA, P(148), P(512), k);
+        Vec3_DivAssign(P(148), 0, P(512), k);
     }
     FI(outV, 0) = LI(148);
     FI(outV, 4) = LI(144);
@@ -5661,9 +5634,6 @@ void __cdecl Body_ContactImpulseB(const Matrix* ma, const Matrix* mb, const Vec3
 // === a body's sub-step with its wheels on springs (FUN_4f8260 with its tail $L_4f9489)
 
 extern "C" void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind);
-extern "C" void __fastcall Vec3_NormalizeThis(Vec3* self, void*);
-extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
-extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
 KING_VAR(int, g_sv702650, 702650)
 KING_VAR(int, g_sv702654, 702654)
 KING_VAR(int, g_sv702658, 702658)
@@ -6586,7 +6556,6 @@ void __fastcall Car_PedalStep(BYTE* s)
 
 // === the wheels' spin before the sub-steps (FUN_4f35f0 with its tail $L_4f3620)
 
-extern "C" void Wv_Check(); KING_ALIAS("_Wv_Check", "_Angle_F2Pi")    // a value through the debug hook (value, name)
 KING_VAR(char, g_wvRun1, 67478c)
 KING_VAR(char, g_wvRun2, 67477c)
 KING_VAR(char, g_wvRun3, 674734)
@@ -6607,7 +6576,7 @@ KING_VAR(float, g_wv64d9c0, 64d9c0)
 
 static float Wv_Hook(float v, const char* name)
 {
-    return (float)CallC<double>(Wv_Check, v, name);
+    return (float)(double)Angle_F2Pi(v, name);
 }
 
 extern "C" {
@@ -6665,7 +6634,7 @@ void __fastcall Wheels_FrameSpin(BYTE* s)
         }
         *w = Wv_Hook(*w, &g_wvRun5);
         float* a = (float*)(s + 3740 + 4 * i);
-        double r = CallC<double>(Wv_Check, *a, &g_wvRun6);
+        double r = (double)Angle_F2Pi(*a, &g_wvRun6);
         *a = (float)r;
         *a = Wv_Hook((float)(r + *w), &g_wvRun7);
     }

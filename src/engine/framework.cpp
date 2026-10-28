@@ -22,13 +22,18 @@ extern "C" void __fastcall Node_GetLocal(BYTE* self, void*, void* out);         
 extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);                                  // scene.cpp
 extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);                  // clusters.cpp
 
+extern "C" void __fastcall Surface_Clear(BYTE* self, void*, int color, int argb);
 extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
-extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void __fastcall Node_Unlink(BYTE* self, void*);
+extern "C" int __fastcall Resources_Create(BYTE* self, void*, int id, const char* name);
 extern "C" void FUN_5e5130(); KING_ALIAS("_FUN_5e5130", "@Resources_Create@16")
+extern "C" int __cdecl Effect_Zero();
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
-extern "C" void FUN_5d3b30(); KING_ALIAS("_FUN_5d3b30", "_Video_Height")
-extern "C" void FUN_5d3b20(); KING_ALIAS("_FUN_5d3b20", "_Video_Width")
+extern "C" int __cdecl Video_Height();
+extern "C" int __cdecl Video_Width();
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
+extern "C" void __cdecl Bmp_Write(FILE* f, BITMAPINFO* bi, HBITMAP hbm, HDC dc);
 extern "C" void FUN_5e9d40(); KING_ALIAS("_FUN_5e9d40", "_Bmp_Write")
 KING_VAR(int, g_721754, 721754)
 KING_VAR(void*, g_67fb7c, 67fb7c)
@@ -37,20 +42,31 @@ KING_VAR(BYTE*, g_7208fc, 7208fc)
 KING_VAR(AsmLabel, s_683538, 683538)
 extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx);
 extern "C" int __cdecl Node_ClearLinkByName(BYTE* n, BYTE** ctx);
+extern "C" BYTE* __fastcall Window_ConstructChild(BYTE* self, void*, int a, int b, int c, int d);
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
+extern "C" BYTE* __fastcall Loader_Construct(BYTE* self, void*, int a);
 extern "C" void FUN_5e43e0(); KING_ALIAS("_FUN_5e43e0", "@Loader_Construct@12")
+extern "C" BYTE* __fastcall MainFrame_Construct(BYTE* s);
 extern "C" void FUN_5dd0d0(); KING_ALIAS("_FUN_5dd0d0", "@MainFrame_Construct@4")
 KING_VAR(AsmLabel, g_vtbl652168, 652168)
 KING_VAR(AsmLabel, g_vtbl652738, 652738)
 KING_VAR(AsmLabel, g_vtbl64d81c, 64d81c)
+extern "C" void __fastcall Surface_Prepare(BYTE* s);
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
+extern "C" void __fastcall Surface_Present(BYTE* self, void*);
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
+extern "C" BYTE* __fastcall Window_ConstructSub(BYTE* s, void*, BYTE* p, const int* r, int flags);
 extern "C" void FUN_5d8710(); KING_ALIAS("_FUN_5d8710", "@Window_ConstructSub@20")    // window base constructor (a, rect, b)
+extern "C" BYTE* __cdecl Matrix_FromPose(BYTE* out, double x, double y, double z, double a, double b, double c);
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" void FUN_5dbf00(); KING_ALIAS("_FUN_5dbf00", "_Probe_Walk")
+extern "C" double __cdecl Tsc_Now();
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in ms, returns double
+extern "C" void __cdecl Fw_Nop();
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+extern "C" void __fastcall ResTable_Charge(BYTE* self, void*, BYTE* tab);
 extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
+extern "C" void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* text, DWORD color, int raw);
 extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // draws text
 extern "C" void* __stdcall AfxGetThread_();
 KING_ALIAS("_AfxGetThread_@0", "_Afx_GetThread@0")
@@ -95,15 +111,15 @@ extern "C" {
 void __fastcall Window_Show(BYTE* self, void*, int i)
 {
     if (i >= 0 && (F(BYTE, self, 16) & 1))
-        CallThis(FUN_5b6e00, F(BYTE*, self, 12), i, 0);
+        Surface_Clear(F(BYTE*, self, 12), 0, i, 0);
 }
 
 // [FUN_5d88c0]
 void __fastcall Window_Refresh(BYTE* self, void*)
 {
     if (F(BYTE, self, 16) & 1) {
-        CallThis(FUN_5b6bf0, F(BYTE*, self, 12));
-        CallThis(FUN_5b6b10, F(BYTE*, self, 12));
+        Surface_Prepare(F(BYTE*, self, 12));
+        Surface_Present(F(BYTE*, self, 12), 0);
     }
 }
 
@@ -111,7 +127,7 @@ void __fastcall Window_Refresh(BYTE* self, void*)
 BYTE* __fastcall View_Construct(BYTE* self, void*, int a, BYTE* obj)
 {
     int* r = (int*)(obj + 44);
-    CallThis(FUN_5d8710, self, a, r, 0);
+    Window_ConstructSub(self, 0, (BYTE*)a, r, 0);
     F(void*, self, 0) = g_vtbl652238;
     int x = r[0], y = F(int, obj, 48);
     r[0] = r[0] - x;
@@ -218,13 +234,13 @@ void __cdecl App_CheckThread()
 // [FUN_5de5b0]
 void __fastcall Clock_Start(BYTE* self, void*)
 {
-    F(double, self, 608) = CallC<double>(FUN_6037e0) * 0.001;
+    F(double, self, 608) = Tsc_Now() * 0.001;
 }
 
 // [FUN_5de5d0]
 void __fastcall Clock_Stop(BYTE* self, void*)
 {
-    F(double, self, 600) = CallC<double>(FUN_6037e0) * 0.001 - F(double, self, 608) + F(double, self, 600);
+    F(double, self, 600) = Tsc_Now() * 0.001 - F(double, self, 608) + F(double, self, 600);
 }
 
 // Node helpers by type (+16: 6 a frame, 18 a switch, 12 a light).
@@ -495,7 +511,7 @@ void __fastcall ResTable_Unload(BYTE* self, void*, BYTE* ctx)
     for (int i = 0; i < 1000; i++) {
         BYTE* r = F(BYTE*, self, 12 + i * 4);
         if (r && !(F(BYTE, r, 8) & 1))
-            CallThis(FUN_5e4900, r, ctx);
+            ResTable_Charge(r, 0, ctx);
     }
 }
 
@@ -745,7 +761,7 @@ int __fastcall Font_TextWidth(BYTE* self, void*, const char* s)
 void __cdecl Text_Draw(int a, int b, int c, BYTE* font, const char* s, int d, int e)
 {
     if (font && s)
-        CallC(FUN_5ea1b0, a, b, c, Font_TextWidth(font, 0, s) + 1, font, s, d, e);
+        Font_DrawText((BYTE*)a, b, c, Font_TextWidth(font, 0, s) + 1, font, (const BYTE*)s, d, e);
 }
 
 }
@@ -761,7 +777,7 @@ BYTE* __fastcall Fw5d8650_Construct(BYTE* self, void*, int a, int b, int c, int 
     F(int, self, 8) = 0;
     F(void*, self, 0) = g_vtbl652168;
     BYTE* o = (BYTE*)operator new(124);
-    BYTE* r = o ? CallThis<BYTE*>(FUN_5b6a50, o, a, b, c, d) : 0;
+    BYTE* r = o ? Window_ConstructChild(o, 0, a, b, c, d) : 0;
     F(int, self, 24) = 0;
     F(BYTE*, self, 12) = r;
     F(int, self, 52) = 0;
@@ -777,14 +793,14 @@ void __fastcall Fw_EnsureHelper484(BYTE* self, void*)
     if (F(BYTE*, self, 484))
         return;
     BYTE* o = (BYTE*)operator new(40);
-    F(BYTE*, self, 484) = o ? CallThis<BYTE*>(FUN_5e43e0, o, self) : 0;
+    F(BYTE*, self, 484) = o ? Loader_Construct(o, 0, (int)self) : 0;
 }
 
 // [FUN_5e2730] the application's 196-byte object at +384
 BYTE* __cdecl Fw_NewApp384()
 {
     BYTE* o = (BYTE*)operator new(196);
-    BYTE* r = o ? CallThis<BYTE*>(FUN_5dd0d0, o) : 0;
+    BYTE* r = o ? MainFrame_Construct(o) : 0;
     F(BYTE*, g_app, 384) = r;
     return r;
 }
@@ -837,7 +853,7 @@ extern "C" {
 // [FUN_5d8af0] a framed window: the base with the rectangle in the arguments
 BYTE* __fastcall FrameWindow_Construct(BYTE* self, void*, int a, int x0, int y0, int x1, int y1)
 {
-    CallThis(FUN_5d8710, self, a, &x0, 0);
+    Window_ConstructSub(self, 0, (BYTE*)a, &x0, 0);
     F(void*, self, 0) = g_vtbl652238;
     F(DWORD, self, 16) |= 4;
     F(int, self, 56) = 0;
@@ -870,8 +886,8 @@ int __cdecl Fw_Startup()
     if (g_721754)
         return g_721754;
     ((FwFn)g_67fb7c)();
-    CallC(FUN_4cef50);
-    CallC(FUN_4cef50);
+    Effect_Zero();
+    Effect_Zero();
     return CallC<int>((FwFn)(void*)g_start603800);
 }
 
@@ -892,7 +908,7 @@ int __fastcall Resources_Read(BYTE** self, void*, BYTE* stream)
                 BYTE buf[32];
                 Stream_Read(stream, &len, 4, &got);
                 Stream_Read(stream, buf, len, &got);
-                CallThis(FUN_5e5130, self, t, buf);
+                Resources_Create((BYTE*)self, 0, t, (const char*)buf);
                 Resource_Read((BYTE*)Resources_Get(self, 0, t), 0, stream);
             }
             Stream_Read(stream, &t, 4, &got);
@@ -928,7 +944,7 @@ void __fastcall Resources_FreeAll(BYTE** self, void*)
         do {
             BYTE* next = F(BYTE*, n, 8);
             ResTable_Clear(n, 0);
-            CallThis(FUN_5d21b0, n);
+            Node_Unlink(n, 0);
             if (n)
                 CallVirt(n, 0, 1);
             n = next;
@@ -946,21 +962,21 @@ int __cdecl Screen_GrabToFile(const char* file)
     HDC dc;
     CallStd(F(FwFn, F(BYTE*, surf, 0), 68), surf, &dc);
     HDC mem = CreateCompatibleDC(dc);
-    int h = CallC<int>(FUN_5d3b30);
-    int w = CallC<int>(FUN_5d3b20);
+    int h = Video_Height();
+    int w = Video_Width();
     HBITMAP bmp = CreateCompatibleBitmap(dc, w, h);
     if (!SelectObject(mem, bmp))
-        CallC(FUN_5d2ba0, (const char*)s_683538, 0);
-    h = CallC<int>(FUN_5d3b30);
-    w = CallC<int>(FUN_5d3b20);
+        Sys_Log((const char*)s_683538, 0);
+    h = Video_Height();
+    w = Video_Width();
     BOOL ok = BitBlt(mem, 0, 0, w, h, dc, 0, 0, SRCCOPY);
     if (!ok)
-        CallC(FUN_5d2ba0, (const char*)s_683538, 0);
+        Sys_Log((const char*)s_683538, 0);
     SelectObject(mem, 0);
     BITMAPINFOHEADER* dib = Bitmap_Header24(bmp);
     if (!dib)
         return 0;
-    CallC(FUN_5e9d40, file, dib, bmp, mem);
+    Bmp_Write((FILE*)file, (BITMAPINFO*)dib, bmp, mem);
     surf = g_7208fc;
     CallStd(F(FwFn, F(BYTE*, surf, 0), 104), surf, dc);
     GlobalFree(dib);
@@ -972,14 +988,21 @@ int __cdecl Screen_GrabToFile(const char* file)
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5d27c0(); KING_ALIAS("_FUN_5d27c0", "@NameHash_ResolvePending@8")
-extern "C" void FUN_5ea990(); KING_ALIAS("_FUN_5ea990", "@Room_EachGroup@8")
+extern "C" const char* __fastcall NameHash_ResolvePending(BYTE* self, void*);
+extern "C" void __fastcall Room_EachGroup(BYTE* self, void*);
+extern "C" void __fastcall Resource_Free(BYTE* self, void*);
 extern "C" void FUN_5e4740(); KING_ALIAS("_FUN_5e4740", "@Resource_Free@8")
+extern "C" int __fastcall ResTable_Remove(BYTE* self, void*, BYTE* r);
 extern "C" void FUN_5e48a0(); KING_ALIAS("_FUN_5e48a0", "@ResTable_Remove@12")
+extern "C" BYTE* __fastcall Resources_Find(BYTE* self, void*, const char* name);
 extern "C" void FUN_5e4ec0(); KING_ALIAS("_FUN_5e4ec0", "@Resources_Find@12")
+extern "C" BYTE* __fastcall Resource_Construct(BYTE* self, void*, int a, int unused);
 extern "C" void FUN_5e4660(); KING_ALIAS("_FUN_5e4660", "@Resource_Construct@16")
+extern "C" char* __fastcall App_Path(BYTE* s, void*, const char* name);
 extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")    // (this, a) -> b
+extern "C" BYTE* __fastcall Module_Load(BYTE* s, void*, const char* dir, const char* name, const char* ext);
 extern "C" void FUN_5dae90(); KING_ALIAS("_FUN_5dae90", "@Module_Load@20")    // (this, b, c, d)
+extern "C" int __fastcall Resources_AddTable(BYTE* s, void*, const char* name);
 extern "C" void FUN_5e4f60(); KING_ALIAS("_FUN_5e4f60", "@Resources_AddTable@12")    // resources: load table (this, name)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
@@ -1012,13 +1035,13 @@ extern "C" int __fastcall ResTable_Add(BYTE* self, void*, BYTE* res)
 // [FUN_5dc3e0..$L_5dc417] sets (a, b, c) through 5dc230/5dae90, resolves pending object names (fatal on a missing one) and walks the room's groups
 extern "C" void __fastcall Light_Update(BYTE* self, void*, int a, int b, int c)
 {
-    int x = CallThis<int>(FUN_5dc230, self, a);
-    CallThis(FUN_5dae90, self, x, b, c);
-    const char* missing = CallThis<const char*>(FUN_5d27c0, g_objectNames);
+    int x = (int)App_Path(self, 0, (const char*)a);
+    Module_Load(self, 0, (const char*)x, (const char*)b, (const char*)c);
+    const char* missing = NameHash_ResolvePending((BYTE*)g_objectNames, 0);
     if (missing)
         Sys_Fatal(missing, 0);
     if (F(BYTE*, self, 468))
-        CallThis(FUN_5ea990, F(BYTE*, self, 468));
+        Room_EachGroup(F(BYTE*, self, 468), 0);
 }
 
 // [FUN_5e50d0..$L_5e50ec] allocates row idx (of 400) of 500 cleared slots; 0 when it exists already
@@ -1047,7 +1070,7 @@ extern "C" int __fastcall Resources_Delete(BYTE* self, void*, int id)
     BYTE* r = F(BYTE**, self, row * 4)[slot];
     if (r)
     {
-        CallThis(FUN_5e4740, r);
+        Resource_Free(r, 0);
         operator delete(r);
         F(BYTE**, self, row * 4)[slot] = 0;
     }
@@ -1070,7 +1093,7 @@ extern "C" void __fastcall ResTable_Charge(BYTE* self, void*, BYTE* tab)
     }
     if (F(int, self, 28))
     {
-        CallC(FUN_5d2ba0, (char*)s_683314, F(int, self, 4));
+        Sys_Log((char*)s_683314, F(int, self, 4));
         Sys_Fatal(s_6832fc, 0);
     }
     F(int, self, 0) = 1;
@@ -1090,14 +1113,14 @@ extern "C" int __fastcall Resources_Bind(BYTE* self, void*, const char* name, BY
     if (!res)
         return -1;
     if (F(BYTE*, res, 12))
-        CallThis(FUN_5e48a0, F(BYTE*, res, 12), res);
+        ResTable_Remove(F(BYTE*, res, 12), 0, res);
     if (!name)
         return -1;
-    BYTE* t = CallThis<BYTE*>(FUN_5e4ec0, self, name);
+    BYTE* t = Resources_Find(self, 0, name);
     if (!t)
     {
-        CallThis(FUN_5e4f60, self, name);
-        t = CallThis<BYTE*>(FUN_5e4ec0, self, name);
+        Resources_AddTable(self, 0, name);
+        t = Resources_Find(self, 0, name);
         if (!t)
         {
             char text[84];
@@ -1125,7 +1148,7 @@ extern "C" int __fastcall Resources_Create(BYTE* self, void*, int id, const char
     if (F(BYTE**, self, row * 4)[slot])
         return -2;
     void* m = operator new(32);
-    BYTE* r = m ? CallThis<BYTE*>(FUN_5e4660, m, id, name) : 0;
+    BYTE* r = m ? Resource_Construct((BYTE*)m, 0, id, (int)name) : 0;
     F(BYTE**, self, row * 4)[slot] = r;
     Resources_Bind(self, 0, name, r);
     return F(int, r, 0);
@@ -1134,15 +1157,20 @@ extern "C" int __fastcall Resources_Create(BYTE* self, void*, int id, const char
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5ab790(); KING_ALIAS("_FUN_5ab790", "@Vec3_Read@12")
-extern "C" void FUN_5ab190(); KING_ALIAS("_FUN_5ab190", "_File_ReadFloat")
+extern "C" float __cdecl File_ReadFloat(FILE* f);
+extern "C" void __fastcall ResRef_Release(BYTE* self, void*);
 extern "C" void FUN_5e44a0(); KING_ALIAS("_FUN_5e44a0", "@ResRef_Release@8")
+extern "C" BYTE* __fastcall Scenes_Find(BYTE* self, void*, const char* name);
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void __fastcall Owner_Clear(BYTE* self, void*);
 extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
+extern "C" int __fastcall Window_SetSurface(BYTE* self, void*, int s);
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
 extern "C" void Afx_BeginThread(); KING_ALIAS("_Afx_BeginThread", "_Afx_BeginThread@24")
 extern "C" unsigned __cdecl Fw_LoaderThread(BYTE* p);
+extern "C" void __fastcall Resources_FreeTables(BYTE* self, void*);
 extern "C" void FUN_5e4e00(); KING_ALIAS("_FUN_5e4e00", "@Resources_FreeTables@8")
-extern "C" void FUN_5baa70(); KING_ALIAS("_FUN_5baa70", "_TexPool_Return")
+extern "C" void __cdecl TexPool_Return(void* surf);
 KING_VAR(double, g_652730, 652730)
 KING_VAR(AsmLabel, s_6832bc, 6832bc)
 KING_VAR(AsmLabel, s_683294, 683294)
@@ -1153,16 +1181,16 @@ extern "C" void __fastcall Fw_Read5e5720(BYTE* self, void*, FILE* f)
 {
     CallThis(FUN_5ab790, self, f);
     CallThis(FUN_5ab790, self + 12, f);
-    F(float, self, 28) = CallC<float>(FUN_5ab190, f);
-    F(float, self, 24) = CallC<float>(FUN_5ab190, f);
+    F(float, self, 28) = File_ReadFloat(f);
+    F(float, self, 24) = File_ReadFloat(f);
 }
 
 // [FUN_5e56f0] reads a vector and two floats (+12, +16)
 extern "C" void __fastcall Fw_Read5e56f0(BYTE* self, void*, FILE* f)
 {
     CallThis(FUN_5ab790, self, f);
-    F(float, self, 12) = CallC<float>(FUN_5ab190, f);
-    F(float, self, 16) = CallC<float>(FUN_5ab190, f);
+    F(float, self, 12) = File_ReadFloat(f);
+    F(float, self, 16) = File_ReadFloat(f);
 }
 
 // [FUN_5e43e0] a loader thread on scenes a, with its wake event
@@ -1188,7 +1216,7 @@ extern "C" void __fastcall Loader_Request(BYTE* self, void*, int unused, const c
         return;
     if (F(int, self, 16))
     {
-        CallThis(FUN_5e44a0, self);
+        ResRef_Release(self, 0);
         SetThreadPriority(F(HANDLE, F(BYTE*, self, 32), 40), 0);
         return;
     }
@@ -1200,7 +1228,7 @@ extern "C" void __fastcall Loader_Request(BYTE* self, void*, int unused, const c
         F(double, self, 0) = Timer_Now();
         SetLastError(0);
         if (!SetThreadPriority(F(HANDLE, F(BYTE*, self, 32), 40), 1))
-            CallC(FUN_5d2ba0, (char*)s_6832bc, GetLastError());
+            Sys_Log((char*)s_6832bc, GetLastError());
         return;
     }
     int code = 0, n = 0;
@@ -1210,7 +1238,7 @@ extern "C" void __fastcall Loader_Request(BYTE* self, void*, int unused, const c
         Sys_Fatal(s_683294, name);
     if (F(int, self, 8) == code)
         return;
-    if (CallThis<BYTE*>(FUN_5d9290, F(BYTE*, self, 28), name))
+    if (Scenes_Find(F(BYTE*, self, 28), 0, name))
         return;
     F(int, self, 8) = code;
     if (F(void*, self, 24))
@@ -1225,7 +1253,7 @@ extern "C" void __fastcall Loader_Request(BYTE* self, void*, int unused, const c
     F(DWORD*, self, 24) = p;
     BYTE* t = CallVirt<BYTE*>(F(BYTE*, self, 28), 112);
     if (t)
-        CallThis(FUN_5e4f60, t, name);
+        Resources_AddTable(t, 0, name);
     CallVirt(F(BYTE*, self, 28), 84, name, 0, F(DWORD*, self, 24));
     F(const char*, self, 20) = name;
     F(double, self, 0) = Timer_Now();
@@ -1235,9 +1263,9 @@ extern "C" void __fastcall Loader_Request(BYTE* self, void*, int unused, const c
 // [FUN_5e0180] clears the resources (+704) and the owner at +2992
 extern "C" void __fastcall Fw_Clear5e0180(BYTE* self, void*)
 {
-    CallThis(FUN_5e4e00, self + 704);
+    Resources_FreeTables(self + 704, 0);
     F(int, self, 3040) = 0;
-    CallThis(FUN_5d3460, self + 2992);
+    Owner_Clear(self + 2992, 0);
 }
 
 // [FUN_5e0150] vtbl+68, vtbl+204, 5baa70(0) and no surface for the window at +12
@@ -1245,8 +1273,8 @@ extern "C" void __fastcall Fw_Close5e0150(BYTE* self, void*)
 {
     CallVirt(self, 68);
     CallVirt(self, 204);
-    CallC(FUN_5baa70, 0);
-    CallThis(FUN_5b64e0, F(BYTE*, self, 12), 0);
+    TexPool_Return(0);
+    Window_SetSurface(F(BYTE*, self, 12), 0, 0);
 }
 
 // [FUN_5e27b0] operator delete (stdcall)
@@ -1257,9 +1285,12 @@ extern "C" void __stdcall Fw_Delete(void* p)
 
 
 // ---------------------------------------------------------------------------
+extern "C" void __fastcall Room_Each(BYTE* self, void*, void* a, void* b);
 extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
+extern "C" const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void* f, int kind, const char* path);
 extern "C" void FUN_5ec0f0(); KING_ALIAS("_FUN_5ec0f0", "@Image_ReadResources@24")    // image: read (this, name, file, kind, path)
-extern "C" void FUN_5d2f90(); KING_ALIAS("_FUN_5d2f90", "_Sys_FreeMemory")
+extern "C" int __cdecl Sys_FreeMemory();
+extern "C" const char* __cdecl Image_ErrorText(int code);
 extern "C" void FUN_5e9ff0(); KING_ALIAS("_FUN_5e9ff0", "_Image_ErrorText")
 KING_VAR(AsmLabel, s_682b34, 682b34)
 KING_VAR(AsmLabel, s_682cdc, 682cdc)
@@ -1312,7 +1343,7 @@ extern "C" void __fastcall Fw_LinkRoom(BYTE* self, void*, BYTE* room)
     memset(ctx, 0, sizeof ctx);
     F(BYTE*, ctx, 4) = F(BYTE*, self, 468);
     F(BYTE*, ctx, 8) = room;
-    CallThis(FUN_5ead00, room, (int(__cdecl*)(BYTE*, BYTE*))Fw_LinkOldObject, ctx);
+    Room_Each(room, 0, (int(__cdecl*)(BYTE*, BYTE*))Fw_LinkOldObject, ctx);
 }
 
 // [FUN_5dac90..$L_5dae22] reads an image whose path's extension is tried as 682cdc (kind 3), 6765fc (2), 682cd8 and 682cd4 (1); returns the kind, 0 without an extension
@@ -1353,14 +1384,14 @@ extern "C" int __cdecl Image_LoadAny(BYTE* img, int a2, char* path)
             }
         }
     }
-    int err = CallThis<int>(FUN_5ec0f0, img, a2, f, kind, path);
+    int err = (int)Image_ReadResources(img, 0, (const char*)a2, f, kind, path);
     if (err)
     {
-        if (CallC<int>(FUN_5d2f90) < 150000)
+        if (Sys_FreeMemory() < 150000)
             Sys_Fatal(s_682ca4, 0);
         else
         {
-            sprintf(path, s_682c64, F(char*, img, 60), err, CallC<const char*>(FUN_5e9ff0, g_7218bc));
+            sprintf(path, s_682c64, F(char*, img, 60), err, Image_ErrorText(g_7218bc));
             Sys_Fatal(path, 0);
         }
     }
@@ -1371,7 +1402,7 @@ extern "C" int __cdecl Image_LoadAny(BYTE* img, int a2, char* path)
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
+extern "C" BYTE* __fastcall Room_FindObject(BYTE* self, void*, const char* name);
 extern "C" int __cdecl Room_QueueDelete(BYTE* node, BYTE* ctx);     // room object callback: queue the objects to delete
 KING_VAR(BOOL, g_fwTaskDump, 721768)
 KING_VAR(BYTE*, g_fwTraceData, 71e814)
@@ -1410,7 +1441,7 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
     if (cur)
     {
         BYTE* old = F(BYTE*, cur, 36);
-        CallThis(FUN_5ead00, old, (void*)Room_QueueDelete, ctx);
+        Room_Each(old, 0, (void*)Room_QueueDelete, ctx);
         BYTE** items = (BYTE**)(ctx + 24);
         int& tail = F(int, ctx, 428);
         while (F(int, ctx, 424) != tail)
@@ -1423,22 +1454,22 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
         if (res)
             Resources_Load(res, 0, F(const char*, old, 60));
         Fw_LinkRoom(self, 0, old);
-        CallThis(FUN_5d21b0, old);
+        Node_Unlink(old, 0);
         if (old)
             CallVirt(old, 0, 1);
     }
     BYTE a[80], b[80], c[80];
     CallVirt(self, 88, name, a, b, c);
-    BYTE* room = CallThis<BYTE*>(FUN_5dae90, self, a, b, c);
+    BYTE* room = Module_Load(self, 0, (const char*)a, (const char*)b, (const char*)c);
     if (!room)
         Sys_Fatal(s_682bc8, name);
-    const char* missing = CallThis<const char*>(FUN_5d27c0, g_objectNames);
+    const char* missing = NameHash_ResolvePending((BYTE*)g_objectNames, 0);
     if (missing)
         Sys_Fatal(missing, 0);
     if (res)
     {
         Fw_TraceText(s_682bb8);
-        CallThis(FUN_5e4f60, res, F(const char*, room, 60));
+        Resources_AddTable(res, 0, F(const char*, room, 60));
         Fw_TraceText(s_682ba4);
         CallVirt(self, 92, room);
         Fw_TraceText(s_682b94);
@@ -1447,7 +1478,7 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
     Fw_TraceText(s_682b84);
     CallVirt(self, 80, room);
     Fw_TraceText(s_682b74);
-    F(BYTE*, F(BYTE*, self, 488), 76) = CallThis<BYTE*>(FUN_5ef390, room, module);
+    F(BYTE*, F(BYTE*, self, 488), 76) = Room_FindObject(room, 0, module);
     if (!F(BYTE*, F(BYTE*, self, 488), 76))
         Sys_Fatal(s_682b58, 0);
     F(int, F(BYTE*, self, 484), 8) = -1;
@@ -1455,8 +1486,11 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
 }
 
 // ---------------------------------------------------------------------------
+extern "C" BYTE* __cdecl Image_FromFile(FILE* f, int name, int flags);
 extern "C" void FUN_5e7770(); KING_ALIAS("_FUN_5e7770", "_Image_FromFile")    // image: load (name, 0, 0)
+extern "C" int __cdecl Dd_BitDepth();
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
+extern "C" const char* __cdecl Dd_ErrorText(DWORD hr, const char* where);
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
 KING_VAR(BYTE*, g_fwDevice, 720908)
 KING_VAR(BYTE*, g_fwD3d, 72090c)
@@ -1497,7 +1531,7 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
         f = 0;
     F(int, f, 4) = 0;
     F(int, f, 8) = 255;
-    BYTE* img = CallC<BYTE*>(FUN_5e7770, name, 0, 0);
+    BYTE* img = Image_FromFile((FILE*)name, 0, 0);
     F(int, f, 24) = F(WORD, img, 20) >> 4;
     F(int, f, 32) = -1;
     F(int, f, 20) = (F(WORD, img, 22) >> 4) - 1;
@@ -1539,7 +1573,7 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
     F(DWORD, f, 0) |= 1;
     if (g_fwDevice)
     {
-        int depth = CallC<int>(FUN_5d8350);
+        int depth = Dd_BitDepth();
         DWORD desc[31];
         memset(desc, 0, sizeof desc);
         desc[0] = 124;
@@ -1550,7 +1584,7 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
         BYTE* surf;
         long hr = Fw_ComCall(g_fwD3d, 24, desc, &surf, 0);
         if (hr)
-            Sys_Fatal(CallC<const char*>(FUN_5d4c10, hr, (char*)s_6834b4), 0);
+            Sys_Fatal(Dd_ErrorText(hr, (char*)s_6834b4), 0);
         else
         {
             if (!surf)
@@ -1567,7 +1601,7 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
                 Fw_ComCall(surf, 128, 0);
             }
             else
-                CallC(FUN_5d2ba0, (char*)s_6834d4, 0);
+                Sys_Log((char*)s_6834d4, 0);
             F(BYTE*, f, 36) = surf;
         }
     }
@@ -1579,13 +1613,21 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
 // ---------------------------------------------------------------------------
 typedef void (__cdecl* FwHook2)(int, int);
 KING_VAR(FwHook2, g_fw702f4c, 702f4c)
+extern "C" FILE* __cdecl Files_Open(const char* name, const char* mode);
 extern "C" void FUN_5e6de0(); KING_ALIAS("_FUN_5e6de0", "_Files_Open")    // opens a data file (name, mode)
+extern "C" BYTE* __cdecl Palette_Load(FILE* f);
 extern "C" void FUN_5e6e90(); KING_ALIAS("_FUN_5e6e90", "_Palette_Load")
+extern "C" int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base);
 extern "C" void FUN_5e7930(); KING_ALIAS("_FUN_5e7930", "_Tga_ReadHeader")
+extern "C" int __cdecl Mask_ReadPixels(BYTE* m, FILE* f, long off);
 extern "C" void FUN_5e9690(); KING_ALIAS("_FUN_5e9690", "_Mask_ReadPixels")
+extern "C" int __cdecl Image_Read(BYTE* img, FILE* f, long off);
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
+extern "C" BYTE* __cdecl Texture_ReadFile(FILE* f, int size);
 extern "C" void FUN_5e9360(); KING_ALIAS("_FUN_5e9360", "_Texture_ReadFile")
+extern "C" BYTE* __cdecl Sound_ReadFile(FILE* f, int size);
 extern "C" void FUN_5e9910(); KING_ALIAS("_FUN_5e9910", "_Sound_ReadFile")
+extern "C" int __cdecl Image_SetData(BYTE* img, int unused, int data);
 extern "C" void FUN_5e99a0(); KING_ALIAS("_FUN_5e99a0", "_Image_SetData")
 KING_VAR(AsmLabel, g_fwPath72183c, 72183c)
 extern "C" int __cdecl _stat(const char* path, void* buf);
@@ -1613,7 +1655,7 @@ extern "C" int __fastcall Frame_Ask(BYTE* self, void*, int a)
 // opens a data file with mode 6703e8; 7218bc = 1 when it fails
 static FILE* Fw_OpenData(const char* name)
 {
-    FILE* f = CallC<FILE*>(FUN_5e6de0, name, (char*)s_6703e8);
+    FILE* f = Files_Open(name, (char*)s_6703e8);
     if (!f)
         g_7218bc = 1;
     return f;
@@ -1633,7 +1675,7 @@ extern "C" void* __cdecl Data_Read5e6e90(const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e6e90, f);
+    void* r = (void*)Palette_Load(f);
     fclose(f);
     return r;
 }
@@ -1644,7 +1686,7 @@ extern "C" void* __cdecl Image_LoadFile(const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e7770, f, 0, 0);
+    void* r = (void*)Image_FromFile(f, 0, 0);
     fclose(f);
     return r;
 }
@@ -1655,7 +1697,7 @@ extern "C" void* __cdecl Data_Read5e7930(void* a, const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e7930, a, f, 0);
+    void* r = (void*)Tga_ReadHeader((BYTE*)a, f, 0);
     fclose(f);
     return r;
 }
@@ -1666,7 +1708,7 @@ extern "C" void* __cdecl Data_Read5e9690(void* a, const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e9690, a, f, 0);
+    void* r = (void*)Mask_ReadPixels((BYTE*)a, f, 0);
     fclose(f);
     return r;
 }
@@ -1677,7 +1719,7 @@ extern "C" void* __cdecl Data_Read5e99c0(void* a, const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e99c0, a, f, 0);
+    void* r = (void*)Image_Read((BYTE*)a, f, 0);
     fclose(f);
     return r;
 }
@@ -1688,7 +1730,7 @@ extern "C" void* __cdecl Data_Read5e9360(const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e9360, f, Fw_DataSize());
+    void* r = (void*)Texture_ReadFile(f, Fw_DataSize());
     fclose(f);
     return r;
 }
@@ -1699,7 +1741,7 @@ extern "C" void* __cdecl Data_Read5e9910(const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e9910, f, Fw_DataSize());
+    void* r = (void*)Sound_ReadFile(f, Fw_DataSize());
     fclose(f);
     return r;
 }
@@ -1710,7 +1752,7 @@ extern "C" void* __cdecl Data_Read5e99a0(void* a, const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e99a0, a, f, Fw_DataSize());
+    void* r = (void*)Image_SetData((BYTE*)a, (int)f, Fw_DataSize());
     fclose(f);
     return r;
 }
@@ -1723,7 +1765,9 @@ extern "C" void __cdecl Fw_Nop() {}
 
 
 // ---------------------------------------------------------------------------
+extern "C" int __cdecl Mask_ReadHeader(BYTE* m, FILE* f, int size, int pixels);
 extern "C" void FUN_5e94d0(); KING_ALIAS("_FUN_5e94d0", "_Mask_ReadHeader")
+extern "C" int __cdecl Tga_Read(BYTE* img, FILE* f, long off);
 extern "C" void FUN_5e8160(); KING_ALIAS("_FUN_5e8160", "_Tga_Read")
 
 // [FUN_5e9420] reads a whole data file into a through 5e94d0 (a, file, size, 0)
@@ -1732,7 +1776,7 @@ extern "C" void* __cdecl Data_Read5e94d0(void* a, const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e94d0, a, f, Fw_DataSize(), 0);
+    void* r = (void*)Mask_ReadHeader((BYTE*)a, f, Fw_DataSize(), 0);
     fclose(f);
     return r;
 }
@@ -1743,7 +1787,7 @@ extern "C" void* __cdecl Data_Read5e8160(void* a, const char* name)
     FILE* f = Fw_OpenData(name);
     if (!f)
         return 0;
-    void* r = CallC<void*>(FUN_5e8160, a, f, 0);
+    void* r = (void*)Tga_Read((BYTE*)a, f, 0);
     fclose(f);
     return r;
 }
@@ -1815,12 +1859,15 @@ extern "C" void __fastcall Window_ResetState(BYTE* c, void*)
 
 
 // ---------------------------------------------------------------------------
+extern "C" void __fastcall Worker_Stop(BYTE* self, void*);
 extern "C" void FUN_5e4450(); KING_ALIAS("_FUN_5e4450", "@Worker_Stop@8")
-extern "C" void FUN_5fcf10(); KING_ALIAS("_FUN_5fcf10", "_Sound_Stop")
-extern "C" void FUN_5d2370(); KING_ALIAS("_FUN_5d2370", "@NameHash_Clear@8")
-extern "C" void FUN_5fd250(); KING_ALIAS("_FUN_5fd250", "@SoundFile_Destroy@8")
-extern "C" void FUN_5bbdd0(); KING_ALIAS("_FUN_5bbdd0", "@Bitmap_Destroy@8")
+extern "C" void __cdecl Sound_Stop();
+extern "C" void __fastcall NameHash_Clear(BYTE* self, void*);
+extern "C" void __fastcall SoundFile_Destroy(BYTE* self, void*);
+extern "C" void __fastcall Bitmap_Destroy(BYTE* self, void*);
+extern "C" int __fastcall Resources_Bind(BYTE* self, void*, const char* name, BYTE* res);
 extern "C" void FUN_5e5420(); KING_ALIAS("_FUN_5e5420", "@Resources_Bind@16")
+extern "C" void __fastcall Resource_Load(BYTE* self, void*, BYTE* ctx);
 extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")
 extern "C" void FUN_5e4740(); KING_ALIAS("_FUN_5e4740", "@Resource_Free@8")
 KING_VAR(BYTE*, g_fw721750, 721750)
@@ -1845,7 +1892,7 @@ extern "C" void __fastcall Fw_UnloadRoom(BYTE* self, void*)
     BYTE* p = F(BYTE*, self, 484);
     if (p)
     {
-        CallThis(FUN_5e4450, p);
+        Worker_Stop(p, 0);
         operator delete(p);
     }
     F(BYTE*, self, 484) = 0;
@@ -1855,7 +1902,7 @@ extern "C" void __fastcall Fw_UnloadRoom(BYTE* self, void*)
         return;
     }
     if (F(int, g_fw721750, 344))
-        CallC(FUN_5fcf10);
+        Sound_Stop();
     for (BYTE* c = F(BYTE*, F(BYTE*, self, 468), 8); c; )
     {
         BYTE* next = F(BYTE*, c, 8);
@@ -1866,7 +1913,7 @@ extern "C" void __fastcall Fw_UnloadRoom(BYTE* self, void*)
         CallVirt(F(BYTE*, self, 468), 0, 1);
     F(BYTE*, self, 468) = 0;
     if (g_fw71e844)
-        CallThis(FUN_5d2370, (BYTE*)g_objectNames);
+        NameHash_Clear((BYTE*)g_objectNames, 0);
 }
 
 // [FUN_5e9910] reads a sound (28 bytes, its +4 bytes of data at +8) from a file; 0 on failure
@@ -1883,15 +1930,15 @@ extern "C" BYTE* __cdecl Sound_ReadFile(FILE* f, int size)
         F(int, o, 24) = 0;
         F(int, o, 12) = -1;
     }
-    if (CallC<int>(FUN_5e99a0, o, f, size))
+    if (Image_SetData(o, (int)f, size))
     {
         F(void*, o, 8) = operator new(F(int, o, 4));
-        if (CallC<int>(FUN_5e99c0, o, f, pos))
+        if (Image_Read(o, f, pos))
             return o;
     }
     if (o)
     {
-        CallThis(FUN_5fd250, o);
+        SoundFile_Destroy(o, 0);
         operator delete(o);
     }
     return 0;
@@ -1913,18 +1960,18 @@ extern "C" BYTE* __cdecl Texture_ReadFile(FILE* f, int size)
     F(int, o, 28) = 0;
     F(int, o, 36) = 0;
     long pos = ftell(f);
-    CallC(FUN_5e94d0, o, f, size, 0);
+    Mask_ReadHeader(o, f, size, 0);
     F(void*, o, 16) = operator new(F(int, o, 12));
     if (!F(void*, o, 16))
     {
-        CallThis(FUN_5bbdd0, o);
+        Bitmap_Destroy(o, 0);
         operator delete(o);
         g_7218bc = 2;
         return 0;
     }
-    if (!CallC<int>(FUN_5e9690, o, f, pos))
+    if (!Mask_ReadPixels(o, f, pos))
     {
-        CallThis(FUN_5bbdd0, o);
+        Bitmap_Destroy(o, 0);
         operator delete(o);
         return 0;
     }
@@ -1936,20 +1983,20 @@ extern "C" int __fastcall Resources_AddRecord(BYTE* self, void*, int a, BYTE* re
 {
     if (!rec)
         return -1;
-    int r = CallThis<int>(FUN_5e5420, self, a, rec);
+    int r = Resources_Bind(self, 0, (const char*)a, rec);
     if (r == -1)
         return -1;
     if (r == 1)
     {
         if (!(F(BYTE, rec, 8) & 1))
-            CallThis(FUN_5e4900, rec, self);
+            ResTable_Charge(rec, 0, self);
         return r;
     }
     if (r == 2 && F(int, rec, 0) == 1)
     {
         if (c)
         {
-            CallThis(FUN_5e49d0, rec, self);
+            Resource_Load(rec, 0, self);
             return r;
         }
         F(int, self, 2000) += F(int, rec, 16);
@@ -1975,7 +2022,7 @@ extern "C" void __fastcall Resources_FreeTables(BYTE* self, void*)
             BYTE* q = ((BYTE**)slots[i])[j];
             if (q)
             {
-                CallThis(FUN_5e4740, q);
+                Resource_Free(q, 0);
                 operator delete(q);
             }
         }
@@ -1990,7 +2037,7 @@ extern "C" void __fastcall Resources_FreeTables(BYTE* self, void*)
         BYTE* n;
         while ((n = F(BYTE*, lists[i], 8)) != 0)
         {
-            CallThis(FUN_5d21b0, n);
+            Node_Unlink(n, 0);
             CallVirt(n, 0, 1);
         }
         if (lists[i])
@@ -2001,10 +2048,11 @@ extern "C" void __fastcall Resources_FreeTables(BYTE* self, void*)
 
 
 // ---------------------------------------------------------------------------
+extern "C" BYTE* __cdecl Font_LoadImage(const char* name);
 extern "C" void FUN_5e8e20(); KING_ALIAS("_FUN_5e8e20", "_Font_LoadImage")
+extern "C" BYTE* __cdecl Font_ReadFile(FILE* f);
 extern "C" void FUN_5e8d10(); KING_ALIAS("_FUN_5e8d10", "_Font_ReadFile")
 KING_VAR(AsmLabel, s_6834ac, 6834ac)
-extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" int __cdecl getc(FILE* f);
 
 // [FUN_5e8c60] loads a font file: an image of cells for extension 6834ac, else the font format
@@ -2022,7 +2070,7 @@ extern "C" BYTE* __cdecl Font_LoadFile(const char* name)
             ;
     if (!n)
         return 0;
-    BYTE* r = !strcmp(name + n, s_6834ac) ? CallC<BYTE*>(FUN_5e8e20, f) : CallC<BYTE*>(FUN_5e8d10, f);
+    BYTE* r = !strcmp(name + n, s_6834ac) ? Font_LoadImage((const char*)f) : Font_ReadFile(f);
     fclose(f);
     return r;
 }
@@ -2072,27 +2120,39 @@ extern "C" BYTE* __cdecl Font_ReadFile(FILE* f)
 // Small virtual methods of the framework's windows and their static
 // initializers.
 
+extern "C" void __fastcall Clock_Start(BYTE* self, void*);
 extern "C" void FUN_5de5b0(); KING_ALIAS("_FUN_5de5b0", "@Clock_Start@8")
+extern "C" void __fastcall Clock_Stop(BYTE* self, void*);
 extern "C" void FUN_5de5d0(); KING_ALIAS("_FUN_5de5d0", "@Clock_Stop@8")
+extern "C" void __fastcall Fw_UnloadRoom(BYTE* self, void*);
 extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
+extern "C" void __fastcall Window_Destroy(BYTE* s);
 extern "C" void FUN_5d8850(); KING_ALIAS("_FUN_5d8850", "@Window_Destroy@4")
+extern "C" void __fastcall Fw5d8b30_Destroy(BYTE* s);
 extern "C" void FUN_5d8b30(); KING_ALIAS("_FUN_5d8b30", "@Fw5d8b30_Destroy@4")
+extern "C" void __fastcall RoomWindow_Destroy(BYTE* s);
 extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
 extern "C" void FUN_5ddb40(); KING_ALIAS("_FUN_5ddb40", "@MainView_Destroy@4")
 ASM_FUNC(FUN_5dd2d0, @Fw_FrameDestruct@4)
+extern "C" int __fastcall Window_RootSurface(BYTE* self, void*);
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
 extern "C" int __cdecl fprintf(FILE*, const char*, ...);
+extern "C" void __fastcall Palette_Apply(BYTE* self, void*);
 extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
 extern "C" void FUN_5c06a0(); KING_ALIAS("_FUN_5c06a0", "@Thunk5c06a0@4")
 extern "C" void FUN_5e2e80(); KING_ALIAS("_FUN_5e2e80", "@GdiObject5e2e80_Destroy@4")
 extern "C" void FUN_5e2ee0(); KING_ALIAS("_FUN_5e2ee0", "@GdiObject5e2ee0_Destroy@4")
 extern "C" void FUN_5e2f40(); KING_ALIAS("_FUN_5e2f40", "@Fw5e2f40_Destroy@4")
 extern "C" void FUN_5e4810(); KING_ALIAS("_FUN_5e4810", "@NamedTable_Destroy@8")
+extern "C" BYTE* __fastcall Fw_MakeCluster(BYTE* s, void*, int pal, int items, int images, int masks, int sounds, int bufs, int nodes);
 extern "C" void FUN_5daa30(); KING_ALIAS("_FUN_5daa30", "@Fw_MakeCluster@36")
+extern "C" void __fastcall Camera_Draw(BYTE* self, void*, BYTE* cam, BYTE* scene, BYTE* p, int a, BYTE* r);
 extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
+extern "C" int __fastcall Messages_Take(BYTE* self, void*);
 extern "C" void FUN_5dbe60(); KING_ALIAS("_FUN_5dbe60", "@Messages_Take@8")
+extern "C" int __fastcall Dbg_OnInput(BYTE* s, void*, const short* ev);
 extern "C" void FUN_5e05c0(); KING_ALIAS("_FUN_5e05c0", "@Dbg_OnInput@12")
-extern "C" void FUN_5d3ca0(); KING_ALIAS("_FUN_5d3ca0", "_Video_CreatePalette")
+extern "C" void __cdecl Video_CreatePalette(HDC dc);
 KING_VAR(AsmLabel, s_fw651ee8, 651ee8)
 KING_VAR(AsmLabel, s_fw652130, 652130)
 KING_VAR(AsmLabel, s_fw671204, 671204)
@@ -2102,9 +2162,9 @@ KING_VAR(HDC, g_fw72091c, 72091c)
 KING_VAR(HWND, g_fw720920, 720920)
 
 // [$L_5d9ed0] the clock at +20984
-extern "C" void __fastcall Fw_ClockStart(BYTE* s) { CallThis(FUN_5de5b0, F(BYTE*, s, 20984)); }
+extern "C" void __fastcall Fw_ClockStart(BYTE* s) { Clock_Start(F(BYTE*, s, 20984), 0); }
 // [$L_5d9ee0]
-extern "C" void __fastcall Fw_ClockStop(BYTE* s) { CallThis(FUN_5de5d0, F(BYTE*, s, 20984)); }
+extern "C" void __fastcall Fw_ClockStop(BYTE* s) { Clock_Stop(F(BYTE*, s, 20984), 0); }
 
 // [$L_5da170]
 extern "C" int __fastcall Fw_Zero4(BYTE*, void*, int) { return 0; }
@@ -2123,7 +2183,7 @@ extern "C" int __cdecl Fw_App260() { return F(int, g_fw721750, 260); }
 // [$L_5dd090] unloads the room and clears +488
 extern "C" void __fastcall Fw_Unload(BYTE* s)
 {
-    CallThis(FUN_5da8a0, s);
+    Fw_UnloadRoom(s, 0);
     F(int, s, 488) = 0;
 }
 
@@ -2152,15 +2212,15 @@ extern "C" void __cdecl Fw_ApplyPalette()
     BYTE* w = F(BYTE*, g_fw721750, 252);
     if (!w)
         return;
-    BYTE* r = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, w, 12));
+    BYTE* r = (BYTE*)Window_RootSurface(F(BYTE*, w, 12), 0);
     if (r)
-        CallThis(FUN_5ba3d0, r);
+        Palette_Apply(r, 0);
 }
 
 // [$L_5dc470] forwards 7 arguments
 extern "C" int __fastcall Fw_5dc470(BYTE* s, void*, DWORD a, DWORD b, DWORD c, DWORD d, DWORD e, DWORD f, DWORD g)
 {
-    return CallThis<int>(FUN_5daa30, s, a, b, c, d, e, f, g);
+    return (int)Fw_MakeCluster(s, 0, a, b, c, d, e, f, g);
 }
 
 // [$L_5dff90] draws the camera (+468) when +524 is set
@@ -2168,13 +2228,13 @@ extern "C" void __fastcall Fw_DrawCamera(BYTE* s)
 {
     int v = F(int, s, 524);
     if (v)
-        CallThis(FUN_5eb310, F(BYTE*, s, 468), F(int, s, 488), v, F(int, s, 472), 1, F(int, s, 464));
+        Camera_Draw(F(BYTE*, s, 468), 0, (BYTE*)(F(int, s, 488)), (BYTE*)v, (BYTE*)(F(int, s, 472)), 1, (BYTE*)(F(int, s, 464)));
 }
 
 // [$L_5df670] hands each waiting message to vtbl+72
 extern "C" void __fastcall Fw_DispatchMessages(BYTE* s)
 {
-    for (int m = CallThis<int>(FUN_5dbe60, s); m; m = CallThis<int>(FUN_5dbe60, s))
+    for (int m = Messages_Take(s, 0); m; m = Messages_Take(s, 0))
         CallVirt(s, 72, m);
 }
 
@@ -2193,7 +2253,7 @@ extern "C" int __fastcall Fw_OnKey(BYTE* s, void*, BYTE* ev)
     int k = F(short, ev, 6);
     if (k >= 116) {
         if (k <= 118)
-            return CallThis<int>(FUN_5e05c0, s, ev);
+            return Dbg_OnInput(s, 0, (const short*)ev);
         if (k == 120) {
             g_fw683b54 ^= 1;
             return k;
@@ -2207,7 +2267,7 @@ extern "C" int __fastcall Fw_OnCreate(BYTE* s, void*, int)
 {
     HDC dc = GetDC(F(HWND, s, 28));
     g_fw72091c = dc;
-    CallC(FUN_5d3ca0, dc);
+    Video_CreatePalette(dc);
     g_fw720920 = F(HWND, s, 28);
     F(UINT_PTR, s, 188) = SetTimer(F(HWND, s, 28), 0, 20, 0);
     return 1;
@@ -2258,15 +2318,20 @@ extern "C" BYTE* __fastcall Fw5e47f0_DeletingDestructor(BYTE* s, void*, int flag
 // ---------------------------------------------------------------------------
 // More window methods: camera drawing, key commands, window sizing.
 
+extern "C" void __fastcall Camera_Render(BYTE* self, void*, BYTE* obj, int a, int b, int c);
 extern "C" void FUN_5eb280(); KING_ALIAS("_FUN_5eb280", "@Camera_Render@24")
+extern "C" int __fastcall Rn_Chain5af000(BYTE* self, void*, int a, int v, int c);
 extern "C" void FUN_5b39a0(); KING_ALIAS("_FUN_5b39a0", "@Rn_Chain5af000@20")
+extern "C" BYTE* __fastcall Windows_SetActive(BYTE* self, void*, BYTE* w);
 extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
+extern "C" int __cdecl Video_Get67fcf0();
 extern "C" void FUN_5d3f70(); KING_ALIAS("_FUN_5d3f70", "_Video_Get67fcf0")
+extern "C" int __cdecl Video_Get67fcf4();
 extern "C" void FUN_5d3f80(); KING_ALIAS("_FUN_5d3f80", "_Video_Get67fcf4")
 KING_VAR(AsmLabel, g_fra7025f0, 7025f0)
 
 typedef void (*AsmFn)();
-extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
+extern "C" int __fastcall Texture_Create(BYTE* t, void*, unsigned flags);
 
 // [$L_5df6a0] the room's camera (+76 of +488) gets the matrix 7025f0, then the scene is drawn
 extern "C" void __fastcall Fw_DrawRoom(BYTE* s)
@@ -2274,13 +2339,13 @@ extern "C" void __fastcall Fw_DrawRoom(BYTE* s)
     BYTE* c = F(BYTE*, F(BYTE*, s, 488), 76);
     if (c)
         CallVirt(c, 56, 4, (BYTE*)g_fra7025f0, (BYTE*)g_fra7025f0, F(int, s, 464));
-    CallThis(FUN_5eb280, F(BYTE*, s, 468), F(int, s, 488), F(int, s, 472), 1, F(int, s, 464));
+    Camera_Render(F(BYTE*, s, 468), 0, (BYTE*)(F(int, s, 488)), F(int, s, 472), 1, F(int, s, 464));
 }
 
 // [$L_5d9e60] FUN_5b39a0 (a, b, c), then the hook (+520 of +20976) gets (self, a, result, c)
 extern "C" int __fastcall Fw_5d9e60(BYTE* s, void*, int a, int b, int c)
 {
-    int r = CallThis<int>(FUN_5b39a0, s, a, b, c);
+    int r = Rn_Chain5af000(s, 0, a, b, c);
     AsmFn hook = F(AsmFn, F(BYTE*, s, 20976), 520);
     if (hook)
         return CallC<int>(hook, s, a, r, c);
@@ -2290,13 +2355,13 @@ extern "C" int __fastcall Fw_5d9e60(BYTE* s, void*, int a, int b, int c)
 // [$L_5dae40] after FUN_5b6bf0 of +12 the sound (+92 of +468) restarts when the application wants it
 extern "C" void __fastcall Fw_5dae40(BYTE* s)
 {
-    CallThis(FUN_5b6bf0, F(BYTE*, s, 12));
+    Surface_Prepare(F(BYTE*, s, 12));
     BYTE* o = F(BYTE*, s, 468);
     if (!o || !F(int, o, 88))
         return;
     if (!(F(int, g_fw721750, 268) & 0x800) || !F(int, g_fw721750, 336))
         return;
-    CallThis(FUN_5bae30, *F(BYTE**, o, 92), 0);
+    Texture_Create(*F(BYTE**, o, 92), 0, 0);
 }
 
 // [$L_5e1940] commands 3 and 4 set +3024 / +3036; they and 27 close the dialog (+2856)
@@ -2310,7 +2375,7 @@ extern "C" int __fastcall Fw_5e1940(BYTE* s, void*, int cmd)
         return 0;
     if (F(BYTE*, s, 2856)) {
         CallVirt(F(BYTE*, s, 2856), 32);
-        CallThis(FUN_5e4250, g_fw721750, s);
+        Windows_SetActive(g_fw721750, 0, s);
     }
     return 1;
 }
@@ -2325,8 +2390,8 @@ extern "C" void __fastcall Fw_OnSize(BYTE*, void*, int type, int cx, int cy)
         return;
     if (type != 0 && type != 2)
         return;
-    int w = cx / CallC<int>(FUN_5d3f70);
-    int h = cy / CallC<int>(FUN_5d3f80);
+    int w = cx / Video_Get67fcf0();
+    int h = cy / Video_Get67fcf4();
     w = (w + 1) & ~3;
     app = g_fw721750;
     if (F(BYTE, app, 292) & 16)
@@ -2338,9 +2403,9 @@ extern "C" void __fastcall Fw_OnSize(BYTE*, void*, int type, int cx, int cy)
 // ---------------------------------------------------------------------------
 // Destructors (their exception frames dropped: exceptions are always fatal).
 
-extern "C" void Fw_GdiDelete(); KING_ALIAS("_Fw_GdiDelete", "@GdiObject_DeleteObject@4")
-extern "C" void Fw_FrameWndDtor(); KING_ALIAS("_Fw_FrameWndDtor", "@FrameWnd_Destruct@4")
-extern "C" void FUN_5bda90(); KING_ALIAS("_FUN_5bda90", "@ConGroup_Destroy@4")
+extern "C" BOOL __fastcall GdiObject_DeleteObject(BYTE* self);
+extern "C" void __fastcall FrameWnd_Destruct(BYTE* self);
+extern "C" void __fastcall ConGroup_Destroy(BYTE* s);
 KING_VAR(AsmLabel, g_fra654420, 654420)
 KING_VAR(AsmLabel, g_fra652238, 652238)
 KING_VAR(AsmLabel, g_fra652570, 652570)
@@ -2351,13 +2416,13 @@ KING_VAR(AsmLabel, g_fra6521b0, 6521b0)
 extern "C" void __fastcall GdiObject5e2e80_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_fra654420;
-    CallThis(Fw_GdiDelete, s);
+    GdiObject_DeleteObject(s);
 }
 // [FUN_5e2ee0]
 extern "C" void __fastcall GdiObject5e2ee0_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_fra654420;
-    CallThis(Fw_GdiDelete, s);
+    GdiObject_DeleteObject(s);
 }
 
 // [FUN_5d8b30] (vtable 652238) deletes its child (+56)
@@ -2366,7 +2431,7 @@ extern "C" void __fastcall Fw5d8b30_Destroy(BYTE* s)
     F(void*, s, 0) = g_fra652238;
     if (F(BYTE*, s, 56))
         CallVirt(F(BYTE*, s, 56), 0, 1);
-    CallThis(FUN_5d8850, s);
+    Window_Destroy(s);
 }
 
 // [FUN_5e2f40] a frame window (vtable 652570) deletes its child (+188, vtbl+4)
@@ -2375,7 +2440,7 @@ extern "C" void __fastcall Fw5e2f40_Destroy(BYTE* s)
     F(void*, s, 0) = g_fra652570;
     if (F(BYTE*, s, 188))
         CallVirt(F(BYTE*, s, 188), 4, 1);
-    CallThis(Fw_FrameWndDtor, s);
+    FrameWnd_Destruct(s);
 }
 
 // [FUN_5d89e0] (vtables 6521f0, 6521b0 at +64)
@@ -2384,13 +2449,14 @@ extern "C" void __fastcall Fw5d89e0_Destroy(BYTE* s)
     F(void*, s, 0) = g_fra6521f0;
     F(void*, s, 64) = g_fra6521b0;
     F(int, s, 56) = 0;
-    CallThis(FUN_5bda90, s ? s + 64 : 0);
-    CallThis(FUN_5d8b30, s);
+    ConGroup_Destroy(s ? s + 64 : 0);
+    Fw5d8b30_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Constructors and destructors (exception frames dropped).
 
+extern "C" void __fastcall Window_FreeBuffers(BYTE* self, void*);
 extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 KING_VAR(AsmLabel, g_fra652168, 652168)
@@ -2404,7 +2470,7 @@ extern "C" void __fastcall Window_Destroy(BYTE* s)
     F(void*, s, 0) = g_fra652168;
     BYTE* p = F(BYTE*, s, 12);
     if (p) {
-        CallThis(FUN_5b6a90, p);
+        Window_FreeBuffers(p, 0);
         operator delete(p);
     }
     operator delete(F(void*, s, 48));
@@ -2422,16 +2488,19 @@ extern "C" void __fastcall RoomWindow_Destroy(BYTE* s)
         operator delete(o);
     }
     if (F(int, s, 468) && !(F(BYTE, s, 16) & 8))
-        CallThis(FUN_5da8a0, s);
-    CallThis(FUN_5d8850, s);
+        Fw_UnloadRoom(s, 0);
+    Window_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Constructors and window resizing (exception frames dropped).
 
+extern "C" void __fastcall Rec5e5840_Free(BYTE* self, void*);
 extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
+extern "C" void __fastcall Fw_RemakeSurface(BYTE* s, void*, int a, int b, int c, int d);
 extern "C" void FUN_5da180(); KING_ALIAS("_FUN_5da180", "@Fw_RemakeSurface@24")
 extern "C" void FUN_5ed970(); KING_ALIAS("_FUN_5ed970", "@Renderer_Construct@12")
+extern "C" BYTE* __fastcall SubSurface_Construct(BYTE* s, void*, BYTE* p, int* r, int flags);
 extern "C" void FUN_5b6530(); KING_ALIAS("_FUN_5b6530", "@SubSurface_Construct@20")
 extern "C" void FUN_5d8710(); KING_ALIAS("_FUN_5d8710", "@Window_ConstructSub@20")
 KING_VAR(AsmLabel, g_fra652280, 652280)
@@ -2443,7 +2512,7 @@ extern "C" void __fastcall Fw5e57a0_Destroy(BYTE* s)
     for (int o = 12; o <= 24; o += 4)
         if (F(void*, s, o))
             operator delete(F(void*, s, o));
-    CallThis(FUN_5e5840, s + 52);
+    Rec5e5840_Free(s + 52, 0);
 }
 
 // deletes the room data (+464): its 20 80-byte items at +6224 and the one at +7824
@@ -2466,14 +2535,14 @@ static BYTE* Fw_NewRoomData(BYTE* s, unsigned size)
 // [$L_5da5f0] a new size (FUN_5da180) with new room data
 extern "C" void __fastcall Fw_Resize(BYTE* s, void*, int a, int b, int c, int d)
 {
-    CallThis(FUN_5da180, s, a, b, c, d);
+    Fw_RemakeSurface(s, 0, a, b, c, d);
     Fw_DeleteRoomData(s);
     F(BYTE*, s, 464) = Fw_NewRoomData(s, 20976);
 }
 // [$L_5dba80] the same with the 20992-byte room data of the main view (vtable 652280, owner at +20976, +20984)
 extern "C" void __fastcall Fw_ResizeMain(BYTE* s, void*, int a, int b, int c, int d)
 {
-    CallThis(FUN_5da180, s, a, b, c, d);
+    Fw_RemakeSurface(s, 0, a, b, c, d);
     Fw_DeleteRoomData(s);
     BYTE* m = (BYTE*)operator new(20992);
     if (!m) {
@@ -2496,11 +2565,11 @@ extern "C" void __fastcall Fw_NewSurface(BYTE* s, void*, int a, int b, int c, in
     BYTE* old = F(BYTE*, s, 12);
     int flags = F(int, old, 12);
     if (old) {
-        CallThis(FUN_5b6a90, old);
+        Window_FreeBuffers(old, 0);
         operator delete(old);
     }
     BYTE* m = (BYTE*)operator new(124);
-    F(BYTE*, s, 12) = m ? CallThis<BYTE*>(FUN_5b6530, m, F(int, main, 12), &a, flags & 0x4000) : 0;
+    F(BYTE*, s, 12) = m ? SubSurface_Construct(m, 0, (BYTE*)(F(int, main, 12)), &a, flags & 0x4000) : 0;
     CallVirt(s, 60);
 }
 
@@ -2518,7 +2587,7 @@ extern "C" void __fastcall Fw_NewSurfaceRoom(BYTE* s, void*, int a, int b, int c
 // [FUN_5d9f60] constructor (a, b, c, d) of a room window (vtable 65229c)
 extern "C" BYTE* __fastcall RoomWindow_Construct(BYTE* s, void*, int a, int b, int c, int d)
 {
-    CallThis(FUN_5d8710, s, a, b, F(int, g_fw721750, 268) & 0x4000);
+    Window_ConstructSub(s, 0, (BYTE*)a, (const int*)b, F(int, g_fw721750, 268) & 0x4000);
     F(void*, s, 0) = g_fra65229c;
     F(int, s, 520) = 0;
     F(BYTE*, s, 464) = Fw_NewRoomData(s, 20976);
@@ -2534,23 +2603,24 @@ extern "C" BYTE* __fastcall RoomWindow_Construct(BYTE* s, void*, int a, int b, i
 // ---------------------------------------------------------------------------
 // Constructors, destructors and messages (exception frames dropped).
 
+extern "C" BYTE* __fastcall FrameWindow_Construct(BYTE* self, void*, int a, int x0, int y0, int x1, int y1);
 extern "C" void FUN_5d8af0(); KING_ALIAS("_FUN_5d8af0", "@FrameWindow_Construct@28")
-extern "C" void FUN_5bfde0(); KING_ALIAS("_FUN_5bfde0", "@Panel_ConstructRect@44")
+extern "C" BYTE* __fastcall Panel_ConstructRect(BYTE* self, void*, int a, int b, int w, int c, int x0, int y0, int x1, int y1, int h);
 extern "C" void FUN_5e44a0(); KING_ALIAS("_FUN_5e44a0", "@ResRef_Release@8")
+extern "C" void __fastcall Fw_Close5e0150(BYTE* self, void*);
 extern "C" void FUN_5e0150(); KING_ALIAS("_FUN_5e0150", "@Fw_Close5e0150@8")
-extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
+extern "C" void __fastcall Poly_Destroy(BYTE* self, void*);
+extern "C" void __fastcall TexSets_Free(BYTE* s);
 extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
-extern "C" void FUN_5d3560(); KING_ALIAS("_FUN_5d3560", "@Owner_Clear@8")
-extern "C" void FUN_5e4eb0(); KING_ALIAS("_FUN_5e4eb0", "@Resources_FreeTables@8")
 KING_VAR(AsmLabel, g_fra68d1c0, 68d1c0)
 KING_VAR(AsmLabel, g_fra652310, 652310)
 
 // [FUN_5d8900] constructor (a1, rect a2..a5, a6, a7, a8): a window with its control group (+64, vtable 6521b0)
 extern "C" BYTE* __fastcall ControlWindow_Construct(BYTE* s, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
 {
-    CallThis(FUN_5d8af0, s, a1, a2, a3, a4, a5);
+    FrameWindow_Construct(s, 0, a1, a2, a3, a4, a5);
     BYTE* g = s + 64;
-    CallThis(FUN_5bfde0, g, (BYTE*)g_fra68d1c0, a6, a7, 4, a2, a3, a4, a5, a8);
+    Panel_ConstructRect(g, 0, (int)((BYTE*)g_fra68d1c0), a6, a7, 4, a2, a3, a4, a5, a8);
     F(void*, s, 0) = g_fra6521f0;
     F(void*, g, 0) = g_fra6521b0;
     F(BYTE*, s, 56) = s ? g : 0;
@@ -2564,7 +2634,7 @@ extern "C" BYTE* __fastcall ControlWindow_Construct(BYTE* s, void*, int a1, int 
 // [FUN_5d9cf0] constructor (a, b, view): the main room window with the view's room data (20992 bytes)
 extern "C" BYTE* __fastcall MainRoomWindow_Construct(BYTE* s, void*, int a, int b, BYTE* view)
 {
-    CallThis(FUN_5d8710, s, a, b, F(int, g_fw721750, 268) & 0x4000);
+    Window_ConstructSub(s, 0, (BYTE*)a, (const int*)b, F(int, g_fw721750, 268) & 0x4000);
     F(void*, s, 0) = g_fra65229c;
     F(int, s, 484) = 0;
     F(int, s, 520) = 0;
@@ -2592,32 +2662,34 @@ extern "C" void __fastcall MainView_Destroy(BYTE* s)
     if (t && F(int, t, 20)) {
         while (!F(int, F(BYTE*, s, 484), 16))
             Sleep(10);
-        CallThis(FUN_5e44a0, F(BYTE*, s, 484));
+        ResRef_Release(F(BYTE*, s, 484), 0);
     }
-    CallThis(FUN_5e0150, s);
+    Fw_Close5e0150(s, 0);
     if (F(BYTE*, s, 3912))
         CallVirt(F(BYTE*, s, 3912), 0, 1);
     if (F(void*, s, 640))
         operator delete(F(void*, s, 640));
     BYTE* p = F(BYTE*, s, 2864);
     if (p) {
-        CallThis(FUN_5bc2f0, p);
+        Poly_Destroy(p, 0);
         operator delete(p);
     }
-    CallThis(FUN_5b9520, s + 3096);
-    CallThis(FUN_5d3560, s + 2992);
+    TexSets_Free(s + 3096);
+    Owner_Clear(s + 2992, 0);
     F(void*, s, 2720) = g_fra64d81c;
-    CallThis(FUN_5e4eb0, s + 704);
-    CallThis(FUN_5da790, s);
+    Resources_FreeTables(s + 704, 0);
+    RoomWindow_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Constructors, destructors and setup (exception frames dropped).
 
-extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);
+extern "C" void __fastcall Fw_EnsureHelper484(BYTE* self, void*);
 extern "C" void FUN_5da840(); KING_ALIAS("_FUN_5da840", "@Fw_EnsureHelper484@8")
-extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
-extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
+extern "C" BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind);
+extern "C" void __fastcall Scene_FindSpecial(BYTE* self, void*);
 extern "C" void FUN_5d9f10(); KING_ALIAS("_FUN_5d9f10", "@Scene_FindSpecial@8")
 KING_VAR(AsmLabel, s_fra682f40, 682f40)
 KING_VAR(AsmLabel, g_fra64c7dc, 64c7dc)
@@ -2629,18 +2701,18 @@ extern "C" void __fastcall Fw_SetupRoom(BYTE* s)
     BYTE* r = F(BYTE*, s, 488);
     F(int, s, 616) = r ? F(int, r, 80) : 0;
     if (F(BYTE*, s, 616))
-        CallThis(FUN_5f25c0, F(BYTE*, s, 616), s + 652);
+        Node_GetWorld(F(BYTE*, s, 616), 0, s + 652);
     if (F(BYTE*, s, 488))
         F(int, s, 700) = F(int, F(BYTE*, s, 488), 76);
     if (!F(int, s, 700))
-        CallThis(FUN_5da840, s);
+        Fw_EnsureHelper484(s, 0);
     if (F(BYTE*, s, 532))
         CallVirt(F(BYTE*, s, 532), 0, 1);
-    F(BYTE*, s, 532) = CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_fra682f40);
+    F(BYTE*, s, 532) = Scene_FindObject(0, (const char*)s_fra682f40);
     if (F(BYTE*, s, 532)) {
         BYTE* o = (BYTE*)operator new(88);
         if (o) {
-            CallThis(FUN_5ef6d0, o, 0, 17);
+            Node_Construct(o, 0, 0, 17);
             for (int k = 48; k <= 80; k += 4)
                 F(int, o, k) = 0;
             F(void*, o, 0) = g_fra64c7dc;
@@ -2650,7 +2722,7 @@ extern "C" void __fastcall Fw_SetupRoom(BYTE* s)
         F(int, o, 64) = F(int, s, 532);
         F(BYTE*, s, 532) = o;
     }
-    CallThis(FUN_5d9f10, s);
+    Scene_FindSpecial(s, 0);
     CallVirt(s, 140);
     F(int, s, 3040) = 1;
 }
@@ -2672,13 +2744,13 @@ extern "C" void __fastcall Fw_RemakeSurface(BYTE* s, void*, int a, int b, int c,
     if (p == s) {
         BYTE* o = F(BYTE*, s, 12);
         if (o) {
-            CallThis(FUN_5b6a90, o);
+            Window_FreeBuffers(o, 0);
             operator delete(o);
         }
         BYTE* m = (BYTE*)operator new(124);
-        BYTE* r = m ? CallThis<BYTE*>(FUN_5b6a50, m, a, b, c, d) : 0;
+        BYTE* r = m ? Window_ConstructChild(m, 0, a, b, c, d) : 0;
         F(BYTE*, s, 12) = r;
-        CallThis(FUN_5b6e00, r, 0, 0);
+        Surface_Clear(r, 0, 0, 0);
         return;
     }
     int l[4];
@@ -2717,11 +2789,11 @@ extern "C" void __fastcall Fw_RemakeSurface(BYTE* s, void*, int a, int b, int c,
     }
     BYTE* o = F(BYTE*, s, 12);
     if (o) {
-        CallThis(FUN_5b6a90, o);
+        Window_FreeBuffers(o, 0);
         operator delete(o);
     }
     BYTE* m = (BYTE*)operator new(124);
-    F(BYTE*, s, 12) = m ? CallThis<BYTE*>(FUN_5b6530, m, F(BYTE*, p, 12), l, d & 16384) : 0;
+    F(BYTE*, s, 12) = m ? SubSurface_Construct(m, 0, F(BYTE*, p, 12), l, d & 16384) : 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -2743,7 +2815,7 @@ extern "C" BYTE* __cdecl Image_FromFile(FILE* f, int name, int flags)
     if (!o)
         return 0;
     long pos = ftell(f);
-    CallC(FUN_5e7930, o, f, 0);
+    Tga_ReadHeader(o, f, 0);
     int fl = F(int, o, 52);
     if ((fl & 0x400) && g_q26_720904) {
         F(int, o, 32) = pos;
@@ -2757,7 +2829,7 @@ extern "C" BYTE* __cdecl Image_FromFile(FILE* f, int name, int flags)
         F(void*, o, 12) = operator new(size / 2);
     if (F(BYTE*, o, 8) && (!(F(BYTE, o, 52) & 16) || F(BYTE*, o, 12))) {
         F(int, o, 28) = CallC<int>(FUN_4cef50, F(BYTE*, o, 8), F(WORD, o, 24) * F(WORD, o, 20) * F(WORD, o, 22));
-        if (CallC<int>(FUN_5e8160, o, f, pos))
+        if (Tga_Read(o, f, pos))
             return o;
         CallVirt(o, 0, 1);
         return 0;
@@ -2770,11 +2842,12 @@ extern "C" BYTE* __cdecl Image_FromFile(FILE* f, int name, int flags)
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
+extern "C" void __fastcall Fw5d89e0_Destroy(BYTE* s);
 extern "C" void FUN_5d89e0(); KING_ALIAS("_FUN_5d89e0", "@Fw5d89e0_Destroy@4")
 // [$L_5d88e0]
 extern "C" BYTE* __fastcall Dtor5d88e0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5d89e0, s);
+    Fw5d89e0_Destroy(s);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -2794,19 +2867,20 @@ extern "C" void __fastcall Wnd5d8b90_Notify(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Small methods: message filters, record copies, frees and deleting destructors.
 
+extern "C" void __fastcall Loader_Request(BYTE* self, void*, int unused, const char* name);
 extern "C" void FUN_5e44e0(); KING_ALIAS("_FUN_5e44e0", "@Loader_Request@16")
 // [$L_5dfef0] on a 4095 message, asks the loader l for its +12 item
 extern "C" void __cdecl Loader_OnMessage(int* m, BYTE* l)
 {
     if (m[0] == 4095 && l)
-        CallThis(FUN_5e44e0, l, 4095, m[3]);
+        Loader_Request(l, 0, 4095, (const char*)m[3]);
 }
 
 // ---------------------------------------------------------------------------
 // Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
 
-extern "C" void Mfc_AfxGetThread(); KING_ALIAS("_Mfc_AfxGetThread", "_Afx_GetThread@0")
-extern "C" void Mfc_WndDefault(); KING_ALIAS("_Mfc_WndDefault", "@Wnd_Default@4")
+extern "C" BYTE* __stdcall Afx_GetThread();
+extern "C" LRESULT __fastcall Wnd_Default(BYTE* self);
 KING_VAR(void*, g_q51_72177c, 72177c)
 KING_VAR(int, g_q51_721778, 721778)
 KING_VAR(BYTE*, g_q51_721750, 721750)
@@ -2814,7 +2888,7 @@ KING_VAR(BYTE*, g_q51_721750, 721750)
 extern "C" void* __stdcall App_Thread(int)
 {
     if (!g_q51_72177c)
-        g_q51_72177c = CallStd<void*>(Mfc_AfxGetThread);
+        g_q51_72177c = (void*)Afx_GetThread();
     return g_q51_72177c;
 }
 // [$L_5dd330] on activation (a): stores it in the 721750 frame (+336, +328) and tells its view (+252, slot 60),
@@ -2827,13 +2901,13 @@ extern "C" int __fastcall Frame5dd330_OnActivate(BYTE* s, void*, int a, int)
         if (F(int, g_q51_721750, 328))
             CallVirt(F(BYTE*, g_q51_721750, 252), 60);
     }
-    return CallThis<int>(Mfc_WndDefault, s);
+    return (int)Wnd_Default(s);
 }
 
 // ---------------------------------------------------------------------------
 // Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
 
-extern "C" void Mfc_FrameOnSetCursor(); KING_ALIAS("_Mfc_FrameOnSetCursor", "@FrameWnd_OnSetCursor@20")
+extern "C" BOOL __fastcall FrameWnd_OnSetCursor(BYTE* self, void*, BYTE* wnd, UINT hit, UINT msg);
 // [$L_5dd3a0] hides the cursor while the 721750 frame has flag 0x400 or over the client area, else the default
 extern "C" int __fastcall Frame5dd3a0_OnSetCursor(BYTE* s, void*, void* wnd, unsigned hit, unsigned msg)
 {
@@ -2841,7 +2915,7 @@ extern "C" int __fastcall Frame5dd3a0_OnSetCursor(BYTE* s, void*, void* wnd, uns
         SetCursor(0);
         return 1;
     }
-    return CallThis<int>(Mfc_FrameOnSetCursor, s, wnd, hit, msg);
+    return (int)FrameWnd_OnSetCursor(s, 0, (BYTE*)wnd, hit, msg);
 }
 
 // ---------------------------------------------------------------------------
@@ -2849,11 +2923,12 @@ extern "C" int __fastcall Frame5dd3a0_OnSetCursor(BYTE* s, void*, void* wnd, uns
 
 extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
 extern "C" void FUN_5e3ba0(); KING_ALIAS("_FUN_5e3ba0", "_Fw_Startup")
-extern "C" void FUN_5f33e0(); KING_ALIAS("_FUN_5f33e0", "@Node_Call5f2a40b@12")
-extern "C" void FUN_5f2dd0(); KING_ALIAS("_FUN_5f2dd0", "@Node_Call5f2a40a@12")
+extern "C" void __fastcall Node_Call5f2a40b(BYTE* self, void*, int a);
+extern "C" void __fastcall Node_Call5f2a40a(BYTE* self, void*, int a);
 extern "C" void FUN_5fa910(); KING_ALIAS("_FUN_5fa910", "@Mesh_BuildVertices@12")
+extern "C" void __fastcall Mesh_PrepareDraw(BYTE* s, void*, BYTE* a);
 extern "C" void FUN_5f0b10(); KING_ALIAS("_FUN_5f0b10", "@Mesh_PrepareDraw@12")
-extern "C" void Mfc_AfxEndThread(); KING_ALIAS("_Mfc_AfxEndThread", "_Afx_EndThread@8")
+extern "C" void __stdcall Afx_EndThread(UINT exitCode, BOOL deleteThread);
 extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec);
 KING_VAR(HDC, g_q53_72091c, 72091c)
 // [$L_5d9300] switching the current room (+468) to r: walks r with the 5d9370 visitor and a zeroed 432-byte
@@ -2867,7 +2942,7 @@ extern "C" void __fastcall Wnd5d9300_EnterRoom(BYTE* s, void*, BYTE* r)
         rec[k] = 0;
     rec[1] = F(DWORD, s, 468);
     rec[2] = (DWORD)r;
-    CallThis(FUN_5ead00, r, (void*)Room_LinkDoor, rec);
+    Room_Each(r, 0, (void*)Room_LinkDoor, rec);
 }
 // [$L_5e4390] the loader thread p: every wake (or 30 s) ends when +12 is set, else runs the pending request
 // (+20, once per +16 flag) on the +28 object with +24
@@ -2877,7 +2952,7 @@ extern "C" unsigned __cdecl Fw_LoaderThread(BYTE* p)
         WaitForSingleObject(F(HANDLE, p, 36), 30000);
         if (F(int, p, 12)) {
             F(int, p, 32) = 0;
-            CallStd(Mfc_AfxEndThread, 0, 1);
+            Afx_EndThread(0, 1);
         }
         if (F(int, p, 20) && F(int, p, 16) != 1) {
             CallVirt(F(BYTE*, p, 28), 84, F(int, p, 20), 1, F(int, p, 24));
@@ -2928,17 +3003,17 @@ extern "C" int __cdecl Wnd_FrameExtra(int edge);    // directdraw.cpp
 extern "C" void __fastcall Frame5dd650_OnGetMinMaxInfo(BYTE* s, void*, MINMAXINFO* mm)
 {
     if (!(F(BYTE, g_q51_721750, 292) & 1)) {
-        CallThis(Mfc_WndDefault, s);
+        Wnd_Default(s);
         return;
     }
     mm->ptMaxPosition.x = 0;
     mm->ptMaxPosition.y = 0;
     int sx = F(int, g_q51_721750, 256);
-    int w = CallC<int>(FUN_5d3f70) * sx;
+    int w = Video_Get67fcf0() * sx;
     w += Wnd_FrameExtra(2);
     w += Wnd_FrameExtra(1);
     int sy = F(int, g_q51_721750, 260);
-    int h = CallC<int>(FUN_5d3f80) * sy;
+    int h = Video_Get67fcf4() * sy;
     h += Wnd_FrameExtra(4);
     h += Wnd_FrameExtra(3);
     mm->ptMaxSize.x = w;
@@ -2972,9 +3047,9 @@ extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx)
 extern "C" int __cdecl Node_Dispatch(BYTE* m, int a)
 {
     switch (F(int, m, 16)) {
-    case 1: CallThis(FUN_5f0b10, m, a); break;
-    case 2: CallThis(FUN_5f33e0, m, a); break;
-    case 3: CallThis(FUN_5f2dd0, m, a); break;
+    case 1: Mesh_PrepareDraw(m, 0, (BYTE*)a); break;
+    case 2: Node_Call5f2a40b(m, 0, a); break;
+    case 3: Node_Call5f2a40a(m, 0, a); break;
     case 22: CallThis(FUN_5fa910, m, a); break;
     }
     return -1;
@@ -2988,6 +3063,7 @@ KING_VAR(AsmLabel, s_q72_6766ac, 6766ac)
 KING_VAR(AsmLabel, s_q72_6766a4, 6766a4)
 KING_VAR(char, g_q72_720ad4, 720ad4)
 KING_VAR(char, g_q72_720d8c, 720d8c)
+extern "C" void __fastcall Obj5e5cb0_Init(BYTE* self, void*);
 extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
 
 // [FUN_5dc230] the folder of s (+648, nothing when it is ".") followed by name, in a static buffer
@@ -3035,7 +3111,7 @@ extern "C" BYTE* __fastcall Obj5e5760_Construct(BYTE* s)
     F(int, s, 36) = 0;
     F(int, s, 40) = 0;
     F(int, s, 44) = 0;
-    CallThis(FUN_5e5cb0, s + 52);
+    Obj5e5cb0_Init(s + 52, 0);
     F(short, s, 4) = 0;
     F(short, s, 6) = 0;
     F(int, s, 20) = 0;
@@ -3050,8 +3126,9 @@ extern "C" BYTE* __fastcall Obj5e5760_Construct(BYTE* s)
 // ---------------------------------------------------------------------------
 // Resource records and mask headers.
 
+extern "C" int __cdecl File_ReadShort(FILE* f);
 extern "C" void FUN_5ab0f0(); KING_ALIAS("_FUN_5ab0f0", "_File_ReadShort")
-extern "C" void FUN_5bbeb0(); KING_ALIAS("_FUN_5bbeb0", "@Bitmap_SetPixels@16")
+extern "C" int __fastcall Bitmap_SetPixels(BYTE* self, void*, BYTE* data, int owned);
 
 // [FUN_5e52b0] replaces the data of record id (tables of 1000 at s) with a copy of size bytes of data, marks it
 // loaded (2) and binds it under a; -1 when there is no such record
@@ -3072,7 +3149,7 @@ extern "C" int __fastcall Resources_SetData(BYTE** s, void*, int id, int a, unsi
     F(int, e, 28) = 0;
     memcpy(F(void*, e, 24), data, size);
     F(int, e, 0) = 2;
-    return CallThis<int>(FUN_5e5420, s, a, e);
+    return Resources_Bind((BYTE*)s, 0, (const char*)a, e);
 }
 
 // [FUN_5e94d0] reads a mask header (MASK, MSKR, MS16 or MSK8; R and 8 set +28 bit 7, MS16 is 2 bytes a pixel)
@@ -3095,14 +3172,14 @@ extern "C" int __cdecl Mask_ReadHeader(BYTE* m, FILE* f, int size, int pixels)
         F(unsigned, m, 28) |= 128;
     } else
         return 0;
-    F(short, m, 4) = CallC<short>(FUN_5ab0f0, f);
-    F(short, m, 6) = CallC<short>(FUN_5ab0f0, f);
+    F(short, m, 4) = (short)File_ReadShort(f);
+    F(short, m, 6) = (short)File_ReadShort(f);
     F(int, m, 12) = size - 776;
-    if (CallC<int>(FUN_5d8350) == 2)
+    if (Dd_BitDepth() == 2)
         F(int, m, 12) *= 2;
     F(int, m, 16) = 0;
     if (pixels) {
-        CallThis(FUN_5bbeb0, m, ftell(f) + pixels + 768, 1);
+        Bitmap_SetPixels(m, 0, (BYTE*)(ftell(f) + pixels + 768), 1);
         F(unsigned, m, 28) |= 0x200;
     }
     return 1;
@@ -3111,7 +3188,7 @@ extern "C" int __cdecl Mask_ReadHeader(BYTE* m, FILE* f, int size, int pixels)
 // ---------------------------------------------------------------------------
 // Mask data and room entry.
 
-extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);
 
 // [FUN_5e9690] reads the pixels of the mask at off in f into m (+16, +12 bytes) after checking its tag (MSKR and
 // MSK8 set +28 bit 7); +28 bit 0 marks it loaded; 0 for an unknown tag
@@ -3130,8 +3207,8 @@ extern "C" int __cdecl Mask_ReadPixels(BYTE* m, FILE* f, long off)
             F(unsigned, m, 28) |= 128;
         }
     }
-    CallC<short>(FUN_5ab0f0, f);
-    CallC<short>(FUN_5ab0f0, f);
+    (short)File_ReadShort(f);
+    (short)File_ReadShort(f);
     fseek(f, off + 776, 0);
     fread(F(void*, m, 16), F(int, m, 12), 1, f);
     F(unsigned, m, 28) |= 1;
@@ -3156,7 +3233,7 @@ extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec)
             break;
     if (!g)
         return -1;
-    Fw_Enumerate5d8c60(F(int, rec, 8), CallThis<int>(FUN_5ef640, n), g);
+    Fw_Enumerate5d8c60(F(int, rec, 8), (int)Node_Root(n, 0), g);
     F(BYTE*, n, 128) = g;
     return -1;
 }
@@ -3164,8 +3241,9 @@ extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec)
 // ---------------------------------------------------------------------------
 // Saving the resource tables; window commands.
 
+extern "C" int __fastcall Resource_Write(BYTE* self, void*, BYTE* stream);
 extern "C" void FUN_5e4700(); KING_ALIAS("_FUN_5e4700", "@Resource_Write@12")
-extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg);
 typedef HRESULT(__stdcall* Fw_StreamWrite)(void*, const void*, ULONG, ULONG*);
 static void Fw_WriteInt(void* st, int v)
 {
@@ -3194,7 +3272,7 @@ extern "C" int __fastcall Resources_Save(BYTE** s, void*, void* st)
                 ULONG len = strlen(name) + 1, n;
                 Fw_WriteInt(st, len);
                 ((Fw_StreamWrite)(*(void***)st)[4])(st, F(const char*, F(BYTE*, e, 12), 4016), len, &n);
-                CallThis(FUN_5e4700, e, st);
+                Resource_Write(e, 0, (BYTE*)st);
             }
         }
         Fw_WriteInt(st, -2);
@@ -3218,7 +3296,7 @@ extern "C" void __fastcall Cmd5de430_Run(BYTE* s)
     case 40: CallVirt(w, 172); break;
     case 400: CallVirt(w, 180); break;
     }
-    CallThis(FUN_5d32f0, s, 1);
+    Queue_PostEvent(s, 0, 1);
 }
 
 // ---------------------------------------------------------------------------
@@ -3236,7 +3314,7 @@ extern "C" void __cdecl Bmp_Write(FILE* f, BITMAPINFO* bi, HBITMAP hbm, HDC dc)
     SetLastError(0);
     if (!GetDIBits(dc, hbm, 0, (WORD)h->biHeight, bits, bi, 0)) {
         GetLastError();
-        CallC(FUN_5d2ba0, (const char*)s_q76_68352c, 0);
+        Sys_Log((const char*)s_q76_68352c, 0);
     }
     BITMAPINFOHEADER t;
     if (h->biBitCount < 24) {
@@ -3278,13 +3356,13 @@ extern "C" void __cdecl Bmp_Write(FILE* f, BITMAPINFO* bi, HBITMAP hbm, HDC dc)
 // Drawing a view.
 
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
-extern "C" void FUN_5ae0e0(); KING_ALIAS("_FUN_5ae0e0", "@Render_SetCamera@16")
+extern "C" void __fastcall Render_SetCamera(BYTE* s, void*, const BYTE* m, const BYTE* proj);
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
-extern "C" void FUN_5b6190(); KING_ALIAS("_FUN_5b6190", "_Device_WaitIdle")
-extern "C" void FUN_5b6180(); KING_ALIAS("_FUN_5b6180", "_Device_BeginScene")
-extern "C" void FUN_5d2fa0(); KING_ALIAS("_FUN_5d2fa0", "_Time_NowMs")
-extern "C" void FUN_5d2fc0(); KING_ALIAS("_FUN_5d2fc0", "_Time_Delta")
-extern "C" void FUN_5adc70(); KING_ALIAS("_FUN_5adc70", "@Render_Set8460@12")
+extern "C" void __cdecl Device_WaitIdle();
+extern "C" void __cdecl Device_BeginScene();
+extern "C" void __cdecl Time_NowMs(double* out);
+extern "C" void __cdecl Time_Delta(double* last, double* acc);
+extern "C" void __fastcall Render_Set8460(BYTE* self, void*, int v);
 extern "C" void FUN_5eb280(); KING_ALIAS("_FUN_5eb280", "@Camera_Render@24")
 KING_VAR(AsmLabel, g_q77_7025f0, 7025f0)
 KING_VAR(AsmLabel, g_q77_71e850, 71e850)
@@ -3297,8 +3375,7 @@ KING_VAR(BYTE*, g_q77_721750, 721750)
 extern "C" BYTE* __fastcall View_CameraMatrix(BYTE* s, void*, BYTE* out)
 {
     BYTE m[48], t[48];
-    memcpy(m, CallC<BYTE*>(FUN_5da950, t, F(double, s, 2904), F(double, s, 2912), F(double, s, 2920),
-                           F(double, s, 2952) + F(double, s, 2928), F(double, s, 2936), F(double, s, 2944)), 48);
+    memcpy(m, Matrix_FromPose(t, F(double, s, 2904), F(double, s, 2912), F(double, s, 2920), F(double, s, 2952) + F(double, s, 2928), F(double, s, 2936), F(double, s, 2944)), 48);
     memcpy(m, CallC<BYTE*>(FUN_5ac2e0, t, m), 48);
     memcpy(out, m, 48);
     return out;
@@ -3313,17 +3390,17 @@ extern "C" void __fastcall View_Draw(BYTE* s)
     memcpy(m2, (BYTE*)g_q77_7025f0, 48);
     memcpy(m1, (BYTE*)g_q77_7025f0, 48);
     if (F(BYTE*, s, 2860)) {
-        CallC(FUN_5b6190);
+        Device_WaitIdle();
         CallVirt(F(BYTE*, s, 2860), 48);
-        CallC(FUN_5b6180);
+        Device_BeginScene();
     }
     if (!F(BYTE*, s, 488))
         return;
     memcpy(m1, View_CameraMatrix(s, 0, t), 48);
     memcpy(m2, m1, 48);
-    CallC(FUN_5d2fa0, (BYTE*)g_q77_71e850);
+    Time_NowMs((double*)((BYTE*)g_q77_71e850));
     if (g_q77_702e8c & 0x100)
-        CallThis(FUN_5adc70, F(BYTE*, s, 464), F(int, s, 548));
+        Render_Set8460(F(BYTE*, s, 464), 0, F(int, s, 548));
     BYTE* r = F(BYTE*, s, 464);
     F(int, r, 8480) = F(int, s, 2960);
     F(int, r, 8484) = F(int, s, 2964);
@@ -3332,26 +3409,28 @@ extern "C" void __fastcall View_Draw(BYTE* s)
     F(int, r, 8492) = F(int, s, 2972);
     BYTE* room = F(BYTE*, s, 488);
     if (room && F(BYTE*, room, 76)) {
-        CallThis(FUN_5ae0e0, F(BYTE*, s, 464), (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
+        Render_SetCamera(F(BYTE*, s, 464), 0, (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
         room = F(BYTE*, s, 488);
         BYTE* o = room ? F(BYTE*, room, 76) : 0;
         CallVirt(o, 56, F(int, g_q77_721750, 344) ? 1 : 5, m2, m1, F(BYTE*, s, 464));
     }
-    CallThis(FUN_5eb280, F(BYTE*, s, 468), F(BYTE*, s, 488), F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+    Camera_Render(F(BYTE*, s, 468), 0, F(BYTE*, s, 488), (int)(F(BYTE*, s, 472)), 1, (int)(F(BYTE*, s, 464)));
     if (F(BYTE*, s, 2860)) {
         F(int, F(BYTE*, s, 464), 8668) = 1;
         BYTE* p = CallC<BYTE*>(FUN_5ac2e0, t, F(BYTE*, s, 2860) + 920);
         memcpy(F(BYTE*, s, 464) + 8564, p, 48);
-        CallThis(FUN_5eb280, F(BYTE*, s, 468), F(BYTE*, s, 488), F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+        Camera_Render(F(BYTE*, s, 468), 0, F(BYTE*, s, 488), (int)(F(BYTE*, s, 472)), 1, (int)(F(BYTE*, s, 464)));
         F(int, F(BYTE*, s, 464), 8668) = 0;
     }
-    CallC(FUN_5d2fc0, (BYTE*)g_q77_71e850, (BYTE*)g_q77_71f808);
+    Time_Delta((double*)((BYTE*)g_q77_71e850), (double*)((BYTE*)g_q77_71f808));
 }
 
 // ---------------------------------------------------------------------------
 // The pause sign.
 
+extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);
 extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
+extern "C" void __cdecl Text_Draw(int a, int b, int c, BYTE* font, const char* s, int d, int e);
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 extern "C" void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int a5, int light, int dark,
@@ -3362,12 +3441,12 @@ extern "C" void __fastcall View_DrawPause(BYTE* s)
 {
     if (!F(BYTE*, s, 2864))
         return;
-    int w = CallThis<int>(FUN_5ea0e0, F(BYTE*, s, 2864), (const char*)s_q78_682f50) + 140;
+    int w = Font_TextWidth(F(BYTE*, s, 2864), 0, (const char*)s_q78_682f50) + 140;
     int h = F(int, F(BYTE*, s, 2864), 20) + 10;
     int r[4] = {130, 90, w, h + 90};
     Ctl_DrawFrame(F(BYTE*, s, 12), r, 513, 2, 0, 4, 0, 0, 0, 0x3f000000, 0, 0);
-    CallC(FUN_5ea170, F(BYTE*, s, 12), 135, h + 85, F(BYTE*, s, 2864), (const char*)s_q78_682f50, 5, 0);
-    CallThis(FUN_5b6b10, F(BYTE*, s, 12));
+    Text_Draw((int)(F(BYTE*, s, 12)), 135, h + 85, F(BYTE*, s, 2864), (const char*)s_q78_682f50, 5, 0);
+    Surface_Present(F(BYTE*, s, 12), 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -3411,6 +3490,7 @@ extern "C" int __fastcall Mmio_Read(BYTE* s, void*, int pos, BYTE* dst, int n)
 // ---------------------------------------------------------------------------
 // Texture chunks.
 
+extern "C" int __cdecl File_ReadInt(FILE* f);
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 extern "C" int __cdecl fgetc(FILE* f);
 // [FUN_5e7f20] reads the chunks of a texture (size bytes of f) into dst: DIMS gives the levels, height and width
@@ -3429,13 +3509,13 @@ extern "C" int __cdecl Texture_ReadChunks(BYTE* dst, FILE* f, int depth, int siz
         tag[1] = (char)fgetc(f);
         tag[2] = (char)fgetc(f);
         tag[3] = (char)fgetc(f);
-        int len = (CallC<int>(FUN_5ab140, f) + 3) & ~3;
+        int len = (File_ReadInt(f) + 3) & ~3;
         int start = ftell(f);
         if (strncmp(tag, "DIMS", 4) == 0) {
-            int a = CallC<int>(FUN_5ab140, f);
+            int a = File_ReadInt(f);
             levels = a;
-            h = CallC<int>(FUN_5ab140, f);
-            w = CallC<int>(FUN_5ab140, f);
+            h = File_ReadInt(f);
+            w = File_ReadInt(f);
             int n = w * h * depth * 4;
             if (a > 1) {
                 levels = 1;
@@ -3474,11 +3554,11 @@ extern "C" int __cdecl Texture_ReadChunks(BYTE* dst, FILE* f, int depth, int siz
 // ---------------------------------------------------------------------------
 // Writing a TGA file.
 
-extern "C" void FUN_5d4200(); KING_ALIAS("_FUN_5d4200", "_Dd_LockBack")
+extern "C" BYTE* __cdecl Dd_LockBack(int* pitch);
 extern "C" void FUN_5d41e0(); KING_ALIAS("_FUN_5d41e0", "_Dd_WaitVsync")
-extern "C" void FUN_5ab110(); KING_ALIAS("_FUN_5ab110", "_File_WriteShort")
+extern "C" void __cdecl File_WriteShort(int v, FILE* f);
 extern "C" int __cdecl fputc(int c, FILE* f);
-extern "C" void FUN_5d3ab0(); KING_ALIAS("_FUN_5d3ab0", "_Mode_TextureLevel")
+extern "C" int __cdecl Mode_TextureLevel(void);
 // [FUN_5e9a10] writes surface s to f as a TGA: 8-bit images with the root palette (BGR), 16-bit ones as
 // uncompressed true colour; a surface on the screen (+116) is read from the locked back buffer, its 565 pixels
 // turned into 555 ones unless the mode is 3
@@ -3489,19 +3569,19 @@ extern "C" void __cdecl Tga_Write(BYTE* s, FILE* f)
     fputc(pal, f);
     int type = F(WORD, s, 4) == 2 ? 2 : 1;
     fputc(type, f);
-    CallC(FUN_5ab110, 0, f);
-    CallC(FUN_5ab110, 256, f);
+    File_WriteShort(0, f);
+    File_WriteShort(256, f);
     fputc(24, f);
-    CallC(FUN_5ab110, 0, f);
-    CallC(FUN_5ab110, 0, f);
+    File_WriteShort(0, f);
+    File_WriteShort(0, f);
     int w = F(WORD, s, 0);
-    CallC(FUN_5ab110, w, f);
+    File_WriteShort(w, f);
     int h = F(WORD, s, 2);
-    CallC(FUN_5ab110, h, f);
+    File_WriteShort(h, f);
     fputc(F(WORD, s, 4) != 2 ? 8 : 16, f);
     fputc(32, f);
     if (pal) {
-        const BYTE* q = CallThis<BYTE*>(FUN_5b6700, s) + 24;
+        const BYTE* q = (BYTE*)Window_RootSurface(s, 0) + 24;
         for (int k = 256; k; k--, q += 3) {
             fputc(q[2], f);
             fputc(q[1], f);
@@ -3520,8 +3600,8 @@ extern "C" void __cdecl Tga_Write(BYTE* s, FILE* f)
         return;
     }
     int pitch;
-    BYTE* p = CallC<BYTE*>(FUN_5d4200, &pitch);
-    if (CallC<int>(FUN_5d3ab0) == 3) {
+    BYTE* p = Dd_LockBack(&pitch);
+    if (Mode_TextureLevel() == 3) {
         for (int y = 0; y < (int)F(WORD, s, 2); y++) {
             fwrite(p, F(WORD, s, 4) * w, 1, f);
             p += pitch;
@@ -3543,8 +3623,10 @@ extern "C" void __cdecl Tga_Write(BYTE* s, FILE* f)
 // ---------------------------------------------------------------------------
 // Resetting the world.
 
+extern "C" void __fastcall Resources_FreeAll(BYTE** self, void*);
 extern "C" void FUN_5e4d30(); KING_ALIAS("_FUN_5e4d30", "@Resources_FreeAll@8")
 extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
+extern "C" void __cdecl Sound_Frame();
 extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
 KING_VAR(double, g_q105_64b658, 64b658)
 KING_VAR(BYTE*, g_q105_721750, 721750)
@@ -3553,12 +3635,12 @@ KING_VAR(BYTE*, g_q105_721750, 721750)
 // reset methods (vtbl+124, +120)
 extern "C" void __fastcall World_Reset(BYTE* s)
 {
-    CallThis(FUN_5e4d30, s + 704);
+    Resources_FreeAll((BYTE**)(s + 704), 0);
     if (BYTE* o = F(BYTE*, s, 484))
         F(int, o, 8) = 0;
     F(int, s, 2968) = 0;
     F(int, s, 2972) = 0;
-    double t = CallC<double>(FUN_6037e0) * g_q105_64b658;
+    double t = Tsc_Now() * g_q105_64b658;
     F(double, s, 2960) = 0.1;
     F(double, s, 2976) = 0.1;
     F(int, s, 600) = 0;
@@ -3569,9 +3651,9 @@ extern "C" void __fastcall World_Reset(BYTE* s)
     F(int, s, 544) = -1;
     F(int, F(BYTE*, s, 468), 140) = 0;
     if (F(int, g_q105_721750, 344))
-        CallC(FUN_5fd160);
+        Sound_Frame();
     F(int, s, 2988) = 0;
-    CallThis(FUN_5d3460, s + 2992);
+    Owner_Clear(s + 2992, 0);
     CallVirt(s, 124);
     CallVirt(s, 120);
     F(int, s, 3024) = 0;
@@ -3581,11 +3663,15 @@ extern "C" void __fastcall World_Reset(BYTE* s)
 // Rendering a frame; camera angles.
 
 extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")
+extern "C" void __fastcall Camera_Follow(BYTE* s, void*, const float* m);
 extern "C" void FUN_5df3d0(); KING_ALIAS("_FUN_5df3d0", "@Camera_Follow@12")
-extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
+extern "C" void __fastcall Surface_ClearRows(BYTE* self, void*);
+extern "C" void __fastcall Render_BeginFrame(BYTE* self, void*, int window);
 extern "C" void FUN_5ae9b0(); KING_ALIAS("_FUN_5ae9b0", "@Render_BeginFrame@12")
+extern "C" void __fastcall Render_EndFrame(BYTE* self, void*);
 extern "C" void FUN_5aea50(); KING_ALIAS("_FUN_5aea50", "@Render_EndFrame@8")
-extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
+extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, int mode);
+extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, const char* module);
 extern "C" void FUN_5d96c0(); KING_ALIAS("_FUN_5d96c0", "@Fw_LoadRoom@16")
 KING_VAR(double, g_q130_71f7f8, 71f7f8)
 KING_VAR(double, g_q130_71f808, 71f808)
@@ -3598,19 +3684,19 @@ extern "C" void __fastcall View_RenderFrame(BYTE* s)
 {
     if (!F(BYTE*, s, 488))
         return;
-    CallThis(FUN_5b6ed0, F(BYTE*, s, 12));
+    Surface_ClearRows(F(BYTE*, s, 12), 0);
     g_q130_71f808 = 0;
     g_q130_71f7f8 = 0;
     g_q130_720020 = 0;
     F(int, F(BYTE*, s, 464), 8452) = F(int, F(BYTE*, s, 468), 148);
     F(int, F(BYTE*, s, 468), 148)++;
-    CallC(FUN_5b6180);
-    CallThis(FUN_5ae9b0, F(BYTE*, s, 464), -1);
+    Device_BeginScene();
+    Render_BeginFrame(F(BYTE*, s, 464), 0, -1);
     CallVirt(s, 104);
     CallVirt(s, 100);
     CallVirt(s, 108);
-    CallThis(FUN_5aea50, F(BYTE*, s, 464));
-    CallC(FUN_5b6190);
+    Render_EndFrame(F(BYTE*, s, 464), 0);
+    Device_WaitIdle();
     F(double, s, 496) = g_q130_71f808 * g_q105_64b658;
     F(double, s, 504) = g_q130_71f7f8 * g_q105_64b658;
     F(double, s, 512) = g_q130_720020 * g_q105_64b658;
@@ -3632,12 +3718,12 @@ extern "C" void __stdcall Matrix_Angles(const Fw130_M* m, float* h, float* p, fl
 extern "C" void __fastcall View_PlaceCamera(BYTE* s)
 {
     if (F(BYTE*, s, 488)) {
-        CallThis(FUN_5f2190, F(BYTE*, s, 616), s + 652, 0);
+        Node_ApplyMatrix(F(BYTE*, s, 616), 0, s + 652, 0);
         F(float, F(BYTE*, s, 488), 88) = (float)F(double, s, 3048);
         F(float, F(BYTE*, s, 488), 84) = (float)F(double, s, 3056);
-        CallThis(FUN_5df3d0, s, s + 652);
+        Camera_Follow(s, 0, (const float*)(s + 652));
         if (!F(int, s, 700))
-            CallThis(FUN_5d96c0, s, F(BYTE*, s, 488) + 12, F(BYTE*, s, 488) + 44);
+            Fw_LoadRoom(s, 0, (const char*)(F(BYTE*, s, 488) + 12), (const char*)(F(BYTE*, s, 488) + 44));
         else
             F(int, F(BYTE*, s, 488), 76) = F(int, s, 700);
     }
@@ -3658,7 +3744,7 @@ extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 // (+2928 z, +2936 x negated, +2944 y) and makes room r the view room's sky (+488's +76)
 extern "C" void __fastcall View_SetCamera(BYTE* s, void*, int r, BYTE* n)
 {
-    CallThis(FUN_5df3d0, s, n);
+    Camera_Follow(s, 0, (const float*)n);
     BYTE m[48], tz[48], tx[48], ty[48], t1[48], t2[48];
     memcpy(m, (BYTE*)g_q77_7025f0, 48);
     BYTE* rz = CallC<BYTE*>(FUN_5ac0c0, tz, (float)F(double, s, 2928));
@@ -3667,7 +3753,7 @@ extern "C" void __fastcall View_SetCamera(BYTE* s, void*, int r, BYTE* n)
     BYTE* a = CallC<BYTE*>(FUN_5aba40, t1, ry, rx);
     memcpy(m, CallC<BYTE*>(FUN_5aba40, t2, a, rz), 48);
     memcpy(m + 36, n + 36, 12);
-    CallThis(FUN_5f2190, F(BYTE*, s, 616), m, 0);
+    Node_ApplyMatrix(F(BYTE*, s, 616), 0, m, 0);
     F(int, F(BYTE*, s, 488), 76) = r;
 }
 
@@ -3684,9 +3770,9 @@ extern "C" void __fastcall View_DrawObject(BYTE* s)
         return;
     memcpy(m1, View_CameraMatrix(s, 0, t), 48);
     memcpy(m2, m1, 48);
-    float t0 = (float)CallC<double>(FUN_6037e0);
+    float t0 = (float)Tsc_Now();
     if (g_q77_702e8c & 0x100)
-        CallThis(FUN_5adc70, F(BYTE*, s, 464), F(int, s, 548));
+        Render_Set8460(F(BYTE*, s, 464), 0, F(int, s, 548));
     BYTE* r = F(BYTE*, s, 464);
     F(int, r, 8480) = F(int, s, 2960);
     F(int, r, 8484) = F(int, s, 2964);
@@ -3694,17 +3780,18 @@ extern "C" void __fastcall View_DrawObject(BYTE* s)
     F(int, r, 8488) = F(int, s, 2968);
     F(int, r, 8492) = F(int, s, 2972);
     if (BYTE* o = F(BYTE*, s, 524)) {
-        CallThis(FUN_5ae0e0, F(BYTE*, s, 464), (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
+        Render_SetCamera(F(BYTE*, s, 464), 0, (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
         CallVirt(F(BYTE*, s, 524), 56, F(int, g_q77_721750, 344) ? 1 : 5, m2, m1, F(BYTE*, s, 464));
     }
     if (F(BYTE*, s, 524))
-        CallThis(FUN_5eb310, F(BYTE*, s, 468), F(BYTE*, s, 488), F(BYTE*, s, 524), F(BYTE*, s, 472), 1,
-                 F(BYTE*, s, 464));
-    g_q132_721210 = (float)(CallC<double>(FUN_6037e0) - t0);
+        Camera_Draw(F(BYTE*, s, 468), 0, F(BYTE*, s, 488), F(BYTE*, s, 524), F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+    g_q132_721210 = (float)(Tsc_Now() - t0);
 }
 
 extern "C" void FUN_5eaf40(); KING_ALIAS("_FUN_5eaf40", "@Backdrop_Place@32")
+extern "C" void __cdecl Frame_Apply(BYTE* node, int mode, const void* m);
 extern "C" void FUN_5e19b0(); KING_ALIAS("_FUN_5e19b0", "_Frame_Apply")
+extern "C" void __cdecl Switch_Select(BYTE* node, int i);
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
 struct Fw133_V3 { float x, y, z; };
@@ -3715,25 +3802,25 @@ extern "C" void __fastcall View_PrepareOverlay(BYTE* s)
 {
     BYTE m[48];
     memcpy(m, (BYTE*)g_q77_7025f0, 48);
-    CallThis(FUN_5f25c0, F(BYTE*, F(BYTE*, s, 488), 80), m);
+    Node_GetWorld(F(BYTE*, F(BYTE*, s, 488), 80), 0, m);
     DWORD v[4];
     DWORD a, b;
     CallVirt(s, 96, m, v, &a, &b);
     BYTE* c = F(BYTE*, s, 472);
     if (F(int, c, 76) >= 0) {
         CallThis(FUN_5eaf40, F(BYTE*, s, 468), F(BYTE*, s, 488), v[0], a, b, F(BYTE*, s, 464), c);
-        CallC(FUN_5e1a10, F(BYTE*, s, 480), F(int, F(BYTE*, s, 472), 76) + 1);
+        Switch_Select(F(BYTE*, s, 480), F(int, F(BYTE*, s, 472), 76) + 1);
     } else
-        CallC(FUN_5e1a10, F(BYTE*, s, 480), 0);
+        Switch_Select(F(BYTE*, s, 480), 0);
     c = F(BYTE*, s, 472);
     Fw133_V3 t;
     t.x = F(float, m, 36);
     t.y = F(float, m, 40);
     t.z = (float)((F(float, m, 44) - F(double, c, 96)) * F(double, c, 104) + F(double, c, 96));
     BYTE tm[48];
-    CallC(FUN_5e19b0, F(BYTE*, s, 476), 0, CallC<BYTE*>(FUN_5abc40, tm, t));
+    Frame_Apply(F(BYTE*, s, 476), 0, CallC<BYTE*>(FUN_5abc40, tm, t));
     if (BYTE* o = F(BYTE*, s, 528))
-        CallThis(FUN_5eb310, F(BYTE*, s, 468), F(BYTE*, s, 488), o, F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+        Camera_Draw(F(BYTE*, s, 468), 0, F(BYTE*, s, 488), o, F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
     if (BYTE* o = F(BYTE*, s, 528))
         CallVirt(o, 56, 4, (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0, F(BYTE*, s, 464));
 }
@@ -3837,7 +3924,7 @@ extern "C" void __fastcall Fw5e5ca0_Nop(BYTE*) {}
 
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
 extern "C" void FUN_5ae9b0(); KING_ALIAS("_FUN_5ae9b0", "@Render_BeginFrame@12")
-extern "C" void FUN_5ba2c0(); KING_ALIAS("_FUN_5ba2c0", "@Palette_Copy@12")
+extern "C" void __fastcall Palette_Copy(BYTE* self, void*, const BYTE* s);
 KING_VAR(double, g_q219_64b658, 64b658)
 KING_VAR(double, g_q219_64d0f0, 64d0f0)
 KING_VAR(double, g_q219_64b678, 64b678)
@@ -3850,7 +3937,7 @@ KING_VAR(int, g_q219_702e8c, 702e8c)
 // up for the world (+468) and the frame flags restored (+3020)
 extern "C" void __fastcall View_BeginFrame(BYTE* s)
 {
-    double t = CallC<double>(FUN_6037e0) * g_q219_64b658;
+    double t = Tsc_Now() * g_q219_64b658;
     int fixed = F(int, s, 3032);
     double e = t - F(double, s, 592);
     F(double, s, 2976) = e;
@@ -3868,7 +3955,7 @@ extern "C" void __fastcall View_BeginFrame(BYTE* s)
     BYTE* r = F(BYTE*, s, 464);
     F(double, s, 600) = 0;
     F(double, s, 592) = t;
-    CallThis(FUN_5ae9b0, r, -1);
+    Render_BeginFrame(r, 0, -1);
     r = F(BYTE*, s, 464);
     F(double, r, 8496) = F(double, s, 3064);
     F(double, r, 8504) = F(double, s, 3072);
@@ -3877,7 +3964,7 @@ extern "C" void __fastcall View_BeginFrame(BYTE* s)
     F(int, w, 148)++;
     g_q219_702e90 = 0;
     w = F(BYTE*, s, 468);
-    CallThis(FUN_5ba2c0, s + 3096, F(int*, w, 100)[F(int, w, 140)]);
+    Palette_Copy(s + 3096, 0, (const BYTE*)(F(int*, w, 100)[F(int, w, 140)]));
     int room = F(int, F(BYTE*, s, 468), 140);
     if (F(int, s, 544) != room) {
         F(int, s, 544) = room;
@@ -3928,17 +4015,17 @@ KING_VAR(AsmLabel, s_q221_682f24, 682f24)
 extern "C" void __fastcall View_EndFrame(BYTE* s)
 {
     if (F(int, s, 3092)) {
-        CallThis(FUN_5ba3d0, s + 3096);
+        Palette_Apply(s + 3096, 0);
         BYTE* w = F(BYTE*, s, 468);
-        CallThis(FUN_5b64e0, F(BYTE*, s, 12), F(int*, w, 100)[F(int, w, 140)]);
+        Window_SetSurface(F(BYTE*, s, 12), 0, F(int*, w, 100)[F(int, w, 140)]);
         F(int, s, 3092) = 0;
     }
-    CallThis(FUN_5aea50, F(BYTE*, s, 464));
+    Render_EndFrame(F(BYTE*, s, 464), 0);
     if (F(int, g_fw721750, 344))
-        CallC(FUN_5fd160);
+        Sound_Frame();
     if (!g_q221_721764)
         return;
-    CallThis(FUN_5de5b0, s);
+    Clock_Start(s, 0);
     FILE* f = fopen((const char*)s_q221_682f34, (const char*)s_q221_67fb80);
     fprintf(f, (const char*)s_q221_682f30, F(double, s, 2968));
     float m[12];
@@ -3946,23 +4033,27 @@ extern "C" void __fastcall View_EndFrame(BYTE* s)
     for (int i = 0; i < 12; i += 3)
         fprintf(f, (const char*)s_q221_682f24, (double)m[i], (double)m[i + 1], (double)m[i + 2]);
     fclose(f);
-    CallThis(FUN_5de5d0, s);
+    Clock_Stop(s, 0);
 }
 
 // ---------------------------------------------------------------------------
 // The main view's constructor
 
+extern "C" BYTE* __fastcall MainRoomWindow_Construct(BYTE* s, void*, int a, int b, BYTE* view);
 extern "C" void FUN_5d9cf0(); KING_ALIAS("_FUN_5d9cf0", "@MainRoomWindow_Construct@20")
+extern "C" void __fastcall Window_ResetState(BYTE* c, void*);
 extern "C" void FUN_5dd720(); KING_ALIAS("_FUN_5dd720", "@Window_ResetState@8")
+extern "C" BYTE* __fastcall Resources_Construct(BYTE* self, void*);
 extern "C" void FUN_5e4af0(); KING_ALIAS("_FUN_5e4af0", "@Resources_Construct@8")
-extern "C" void FUN_5eb1e0(); KING_ALIAS("_FUN_5eb1e0", "@Camera_Init@8")
+extern "C" void __fastcall Camera_Init(BYTE* self, void*);
+extern "C" BYTE* __fastcall Palette_Construct(BYTE* self, void*);
 extern "C" void FUN_5b94e0(); KING_ALIAS("_FUN_5b94e0", "@Palette_Construct@8")
-extern "C" void FUN_5d2100(); KING_ALIAS("_FUN_5d2100", "@MapFile_Open@16")
-extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
-extern "C" void FUN_5d2ef0(); KING_ALIAS("_FUN_5d2ef0", "_Sys_Exit")
-extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")
-extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
-extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")
+extern "C" void __fastcall MapFile_Open(BYTE* self, void*, const char* name, DWORD size);
+extern "C" int __cdecl Table71e858_Get(int i);
+extern "C" void __cdecl Sys_Exit(const char* msg);
+extern "C" char* __cdecl NextToken(char** pp);
+extern "C" int __cdecl Ini_ReadInt(const char* section, const char* key, int def, int* out, const char* file);
+extern "C" int __cdecl Ini_GetDouble(const char* section, const char* key, double def, double* out, const char* file);
 extern "C" double __cdecl atof(const char* s);
 extern "C" long __cdecl atol(const char* s);
 KING_VAR(BYTE, g_mapFile71e808, 71e808)
@@ -4023,7 +4114,7 @@ static bool View_On(BYTE* self, const char* key, const char* def, char* buf)
 
 static void View_RenderDouble(BYTE* self, const char* key, double def, double* out)
 {
-    CallC(FUN_603cb0, &s_RENDER682e68, key, def, out, F(const char*, self, 640));
+    Ini_GetDouble(&s_RENDER682e68, key, def, out, F(const char*, self, 640));
 }
 
 static double View_Bits(DWORD lo, DWORD hi)
@@ -4053,21 +4144,21 @@ extern "C" {
 // home and base directories; leaves the game when home is "__noinst" or setup is "off"
 BYTE* __fastcall MainView_Construct(BYTE* self, void*, int arg)
 {
-    CallThis(FUN_5d9cf0, self, F(int, g_app, 252), arg, self);
+    MainRoomWindow_Construct(self, 0, F(int, g_app, 252), arg, self);
     for (int o = 568; o <= 588; o += 4)
         F(int, self, o) = 0;
     for (int o = 652; o < 700; o += 4)
         F(int, self, o) = 0;
     memcpy(self + 652, &g_fra7025f0, 48);
-    CallThis(FUN_5e4af0, self + 704);
-    CallThis(FUN_5eb1e0, self + 2720);
+    Resources_Construct(self + 704, 0);
+    Camera_Init(self + 2720, 0);
     for (int o = 2992; o <= 3016; o += 4)
         F(int, self, o) = 0;
-    CallThis(FUN_5b94e0, self + 3096);
+    Palette_Construct(self + 3096, 0);
     F(void*, self, 0) = g_fra652310;
     F(char*, self, 640) = View_StrDup(F(const char*, g_app, 280), 0);
     const char* ini = F(const char*, self, 640);
-    CallThis(FUN_5dd720, self);
+    Window_ResetState(self, 0);
     DWORD& flags = F(DWORD, self, 3020);
     if (F(DWORD, g_app, 268) & 256)
         flags |= 256;
@@ -4075,33 +4166,33 @@ BYTE* __fastcall MainView_Construct(BYTE* self, void*, int arg)
         flags |= 32;
 
     int v;
-    CallC(FUN_603b70, &s_ENV6730a0, &s_taskdump682e9c, 0, &v, ini);
+    Ini_ReadInt(&s_ENV6730a0, &s_taskdump682e9c, 0, &v, ini);
     if (v) {
         g_fwTaskDump = 1;
         F(int, self, 3012) = 1;
-        CallThis(FUN_5d2100, &g_mapFile71e808, &s_statedump682e90, 524288);
+        MapFile_Open(&g_mapFile71e808, 0, &s_statedump682e90, 524288);
     }
-    CallC(FUN_603b70, &s_ENV6730a0, &s_debugtime682e84, 0, &v, ini);
+    Ini_ReadInt(&s_ENV6730a0, &s_debugtime682e84, 0, &v, ini);
     F(int, self, 3032) = v;
     char buf[60];
     char* cur = buf;
     GetPrivateProfileStringA(&s_ENV6730a0, &s_stereo682e7c, &s_off6729a8, buf, 60, ini);
-    const char* t = CallC<const char*>(FUN_5ab1b0, &cur);
+    const char* t = (const char*)NextToken(&cur);
     if (t && !strcmp(t, &s_on672994)) {
         F(double, self, 3064) = 2.0;
         F(double, self, 3072) = 0.0;
-        if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0) {
+        if ((t = (const char*)NextToken(&cur)) != 0) {
             F(double, self, 3064) = atof(t);
-            if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0)
+            if ((t = (const char*)NextToken(&cur)) != 0)
                 F(double, self, 3072) = atof(t) * g_stereo64dae0;
         }
     }
 
-    CallC(FUN_603b70, &s_RENDER682e68, &s_skys682e70, 0, F(BYTE*, self, 472) + 80, ini);
-    CallC(FUN_603b70, &s_RENDER682e68, &s_showfacemode682e58, 0, &v, ini);
+    Ini_ReadInt(&s_RENDER682e68, &s_skys682e70, 0, (int*)(F(BYTE*, self, 472) + 80), ini);
+    Ini_ReadInt(&s_RENDER682e68, &s_showfacemode682e58, 0, &v, ini);
     g_showFaceMode721770 = v;
     View_RenderDouble(self, &s_ambient682e50, View_Bits(858993459u, 1070805811u), (double*)(F(BYTE*, self, 472) + 48));
-    CallC(FUN_603b70, &s_RENDER682e68, &s_detail682e48, 100, F(BYTE*, self, 472) + 112, ini);
+    Ini_ReadInt(&s_RENDER682e68, &s_detail682e48, 100, (int*)(F(BYTE*, self, 472) + 112), ini);
     if (View_On(self, &s_intensity682e3c, &s_on672994, buf))
         flags |= 64;
     if (View_On(self, &s_intenmap682e30, &s_off6729a8, buf))
@@ -4116,18 +4207,18 @@ BYTE* __fastcall MainView_Construct(BYTE* self, void*, int arg)
         flags |= 0x4000000;
     GetPrivateProfileStringA(&s_RENDER682e68, &s_fog682e08, &s_off6729a8, buf, 60, ini);
     cur = buf;
-    t = CallC<const char*>(FUN_5ab1b0, &cur);
+    t = (const char*)NextToken(&cur);
     if (t && !strcmp(t, &s_on672994)) {
         flags |= 4;
         BYTE* r = F(BYTE*, self, 472);
         F(double, r, 24) = 304.0;
         F(double, r, 16) = 900.0;
         F(int, r, 72) = 8;
-        if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0) {
+        if ((t = (const char*)NextToken(&cur)) != 0) {
             F(double, F(BYTE*, self, 472), 24) = atof(t);
-            if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0) {
+            if ((t = (const char*)NextToken(&cur)) != 0) {
                 F(double, F(BYTE*, self, 472), 16) = atof(t);
-                if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0)
+                if ((t = (const char*)NextToken(&cur)) != 0)
                     F(int, F(BYTE*, self, 472), 72) = atol(t);
             } else {
                 r = F(BYTE*, self, 472);
@@ -4152,11 +4243,11 @@ BYTE* __fastcall MainView_Construct(BYTE* self, void*, int arg)
     View_RenderDouble(self, &s_xpyramid67e1ac, View_Bits(2576980378u, 1072273817u), (double*)(self + 3048));
     View_RenderDouble(self, &s_ypyramid682da0, View_Bits(858993459u, 1071854387u), (double*)(self + 3056));
     if (!View_InstallDir(self, &s_home67336c, 644, buf))
-        CallC(FUN_5d2ef0, CallC<int>(FUN_5d2e50, 1));
+        Sys_Exit((const char*)(Table71e858_Get(1)));
     View_InstallDir(self, &s_base673374, 648, buf);
     GetPrivateProfileStringA(&s_INSTALL6733c4, &s_setup682d98, &s_on672994, buf, 60, ini);
     if (!strcmp(buf, &s_off6729a8))
-        CallC(FUN_5d2ef0, CallC<int>(FUN_5d2e50, 2));
+        Sys_Exit((const char*)(Table71e858_Get(2)));
     g_q77_702e8c = flags;
     return self;
 }
@@ -4166,15 +4257,14 @@ BYTE* __fastcall MainView_Construct(BYTE* self, void*, int arg)
 // ---------------------------------------------------------------------------
 // Palette files
 
-extern "C" int __cdecl getc(FILE* f);
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
-extern "C" void FUN_5b9740(); KING_ALIAS("_FUN_5b9740", "@Textures_FreeAll@8")
+extern "C" void __fastcall Textures_FreeAll(BYTE* self, void*);
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
-extern "C" void FUN_5b9850(); KING_ALIAS("_FUN_5b9850", "@Fog_BuildTables@16")    // palette: builds the opacity tables (a, b)
-extern "C" void FUN_5b9b60(); KING_ALIAS("_FUN_5b9b60", "@Fade_BuildTables@16")    // palette: builds the fog tables (a, b)
-extern "C" void FUN_5b9e30(); KING_ALIAS("_FUN_5b9e30", "@Dark_BuildTables@12")    // palette: builds the intensity tables (a)
+extern "C" void __fastcall Fog_BuildTables(BYTE* s, void*, int k, int n);
+extern "C" void __fastcall Fade_BuildTables(BYTE* s, void*, int k, int c);
+extern "C" void __fastcall Dark_BuildTables(BYTE* s, void*, int k);
 KING_VAR(char, s_PLM683424, 683424)
 KING_VAR(char, s_PALT68341c, 68341c)
 KING_VAR(char, s_OPAC683414, 683414)
@@ -4184,7 +4274,7 @@ KING_VAR(char, s_FO16683400, 683400)
 KING_VAR(char, s_INTE6833f8, 6833f8)
 KING_VAR(char, s_IN166833f0, 6833f0)
 
-static int Plm_Int(FILE* f) { return CallC<int>(FUN_5ab140, f); }
+static int Plm_Int(FILE* f) { return File_ReadInt(f); }
 
 // a table set of the palette: count at +cnt, pointers at +tab, ids at +tab+4; each table of size bytes, 8-bit
 // tables read byte by byte and given an id, 16-bit ones read whole; false when out of memory (count = i + 1)
@@ -4233,7 +4323,7 @@ BYTE* __cdecl Palette_Load(FILE* f)
         return (BYTE*)(c < 0 ? -1 : 1);
     BYTE* pal = (BYTE*)operator new(816);
     if (pal)
-        pal = CallThis<BYTE*>(FUN_5b94e0, pal);
+        pal = Palette_Construct(pal, 0);
     F(int, pal, 796) = 0;
     F(int, pal, 800) = 0;
     F(int, pal, 0) = 0;
@@ -4282,7 +4372,7 @@ BYTE* __cdecl Palette_Load(FILE* f)
         }
         if (!ok) {
             if (pal) {
-                CallThis(FUN_5b9520, pal);
+                TexSets_Free(pal);
                 operator delete(pal);
             }
             return 0;
@@ -4290,19 +4380,19 @@ BYTE* __cdecl Palette_Load(FILE* f)
         for (int i = padded - size; i; i--)
             getc(f);
     }
-    if (F(int, pal, 808) != CallC<int>(FUN_5d8350)) {
-        CallThis(FUN_5b9740, pal);
-        F(int, pal, 808) = CallC<int>(FUN_5d8350);
-        CallThis(FUN_5b9850, pal, 1, 5);
-        CallThis(FUN_5b9b60, pal, 8, 4);
-        CallThis(FUN_5b9e30, pal, 8);
+    if (F(int, pal, 808) != Dd_BitDepth()) {
+        Textures_FreeAll(pal, 0);
+        F(int, pal, 808) = Dd_BitDepth();
+        Fog_BuildTables(pal, 0, 1, 5);
+        Fade_BuildTables(pal, 0, 8, 4);
+        Dark_BuildTables(pal, 0, 8);
     } else {
         if (!F(BYTE*, pal, 0))
-            CallThis(FUN_5b9850, pal, 1, 5);
+            Fog_BuildTables(pal, 0, 1, 5);
         if (!F(BYTE*, pal, 8))
-            CallThis(FUN_5b9b60, pal, 32, 4);
+            Fade_BuildTables(pal, 0, 32, 4);
         if (!F(BYTE*, pal, 16))
-            CallThis(FUN_5b9e30, pal, 32);
+            Dark_BuildTables(pal, 0, 32);
     }
     return pal;
 }
@@ -4321,19 +4411,18 @@ KING_VAR(AsmLabel, s_tg683428, 683428)
 extern "C" void FUN_5ab0f0(); KING_ALIAS("_FUN_5ab0f0", "_File_ReadShort")    // File_ReadShort
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // File_ReadInt
 extern "C" void FUN_5b94e0(); KING_ALIAS("_FUN_5b94e0", "@Palette_Construct@8")
-extern "C" void FUN_5bad90(); KING_ALIAS("_FUN_5bad90", "@Texture_SetPixels@20")
+extern "C" int __fastcall Texture_SetPixels(BYTE* self, void*, BYTE* data, BYTE* mips, int owned);
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
-extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
 extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
 
 static int Tg_Short(FILE* f)
 {
-    return CallC<int>(FUN_5ab0f0, f);
+    return File_ReadShort(f);
 }
 
 static int Tg_Int(FILE* f)
 {
-    return CallC<int>(FUN_5ab140, f);
+    return File_ReadInt(f);
 }
 
 static void Tg_Tag(char* tag, FILE* f)
@@ -4366,7 +4455,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
     fgetc(f);
     long hdrEnd = ftell(f);
     int alphaOff = 0;
-    switch (CallC<int>(FUN_5d8350)) {
+    switch (Dd_BitDepth()) {
     case 1: F(int, t, 64) = 1; break;
     case 2: F(int, t, 64) = 3; break;
     case 3: F(int, t, 64) = (ebx == 32) + 6; break;
@@ -4389,7 +4478,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
                 if (strncmp(tag, s_tg68347c, 4) == 0) {
                     F(DWORD, t, 52) |= 16;
                     if (base)
-                        CallC(FUN_5d2e70, (const char*)s_tg683460, 0);
+                        Sys_Fatal((const char*)s_tg683460, 0);
                 } else if (strncmp(tag, s_tg683458, 4) == 0) {
                     F(DWORD, t, 52) |= 16;
                     F(int, t, 68) = Tg_Int(f) + 1;
@@ -4426,7 +4515,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
                     if (fmt)
                         F(int, t, 64) = fmt;
                     else
-                        CallC(FUN_5d2e70, F(const char*, t, 4), (const char*)s_tg683430);
+                        Sys_Fatal(F(const char*, t, 4), (const char*)s_tg683430);
                 } else {
                     strncmp(tag, s_tg683428, 4);
                     break;
@@ -4444,7 +4533,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
             return 0;
         if (!F(BYTE*, t, 16)) {
             BYTE* p = (BYTE*)operator new(816);
-            F(BYTE*, t, 16) = p ? CallThis<BYTE*>(FUN_5b94e0, p) : 0;
+            F(BYTE*, t, 16) = p ? Palette_Construct(p, 0) : 0;
         }
         for (int i = 0; i < cmLen; i++) {
             F(BYTE, F(BYTE*, t, 16), 26 + i * 3) = (BYTE)fgetc(f);
@@ -4456,7 +4545,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
     }
     F(WORD, t, 20) = (WORD)width;
     F(WORD, t, 22) = (WORD)height;
-    short depth = (short)CallC<int>(FUN_5d8350);
+    short depth = (short)Dd_BitDepth();
     F(short, t, 24) = depth;
     if (depth == 3 && (F(int, t, 64) == 7 || F(int, t, 64) == 5))
         F(short, t, 24) = 4;
@@ -4471,7 +4560,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
     int palBytes = ebx * cmLen;
     F(int, t, 36) = palBytes - start + hdrEnd + idLen;
     if (base) {
-        CallThis(FUN_5bad90, t, palBytes + hdrEnd + idLen + base, alphaOff + base, 1);
+        Texture_SetPixels(t, 0, (BYTE*)(palBytes + hdrEnd + idLen + base), (BYTE*)(alphaOff + base), 1);
         F(DWORD, t, 52) |= 0x200;
     }
     return 1;
@@ -4516,7 +4605,7 @@ int __fastcall Stats_Draw(BYTE* self, void*, BYTE* view, int y)
         return y;
     BYTE* s = F(BYTE*, view, 12);
 #define LINE(yy, x0, x1, c) CallC(FUN_5b7ce0, F(BYTE*, view, 12), yy, x0, x1, c, 0)
-    CallC(FUN_5ea170, s, 50, y, font, (const char*)s_st682b30, 5, 0);
+    Text_Draw((int)s, 50, y, font, (const char*)s_st682b30, 5, 0);
     int a = St_Int(k * F(double, self, 40));
     int b = St_Int((F(double, self, 24) - F(double, self, 40) - F(double, self, 32)) * k);
     int c = St_Int(k * F(double, self, 24));
@@ -4532,13 +4621,13 @@ int __fastcall Stats_Draw(BYTE* self, void*, BYTE* view, int y)
     b += 110;
     LINE(y - 3, b, c, 5);
     LINE(y - 4, b, c, 5);
-    CallC(FUN_5ea170, s, 50, y - 10, font, (const char*)s_st682b28, 5, 0);
+    Text_Draw((int)s, 50, y - 10, font, (const char*)s_st682b28, 5, 0);
     for (int i = 0; i < 3; i++)
         LINE(y - 10 - i, 100, St_Int((F(double, self, 496) - F(double, self, 504)) * k) + 100, 5);
-    CallC(FUN_5ea170, F(BYTE*, view, 12), 50, y - 20, font, (const char*)s_st682b20, 5, 0);
+    Text_Draw((int)(F(BYTE*, view, 12)), 50, y - 20, font, (const char*)s_st682b20, 5, 0);
     for (int i = 0; i < 3; i++)
         LINE(y - 20 - i, 100, St_Int((F(double, self, 504) - F(double, self, 512)) * k) + 100, 5);
-    CallC(FUN_5ea170, F(BYTE*, view, 12), 50, y - 30, font, (const char*)s_st682b18, 5, 0);
+    Text_Draw((int)(F(BYTE*, view, 12)), 50, y - 30, font, (const char*)s_st682b18, 5, 0);
     for (int i = 0; i < 3; i++)
         LINE(y - 30 - i, 100, St_Int(F(double, self, 512) * k) + 100, 5);
 #undef LINE
@@ -4547,13 +4636,13 @@ int __fastcall Stats_Draw(BYTE* self, void*, BYTE* view, int y)
         const int* v = (const int*)(F(BYTE*, self, 464) + 8280 + i * 36);
         char buf[128];
         sprintf(buf, *fmts[i], v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
-        CallC(FUN_5ea170, F(BYTE*, view, 12), 50, y - 40 - i * 10, font, buf, 7, 0);
+        Text_Draw((int)(F(BYTE*, view, 12)), 50, y - 40 - i * 10, font, buf, 7, 0);
     }
-    CallC(FUN_5ea170, F(BYTE*, view, 12), 50, y - 70, font, (const char*)s_st682a58, 7, 0);
+    Text_Draw((int)(F(BYTE*, view, 12)), 50, y - 70, font, (const char*)s_st682a58, 7, 0);
     BYTE* r = F(BYTE*, self, 464);
     char buf[128];
     sprintf(buf, s_st682a48, F(int, r, 8428), F(double, r, 8432));
-    CallC(FUN_5ea170, F(BYTE*, view, 12), 50, y - 80, font, buf, 7, 0);
+    Text_Draw((int)(F(BYTE*, view, 12)), 50, y - 80, font, buf, 7, 0);
     return y - 100;
 }
 
@@ -4561,7 +4650,7 @@ int __fastcall Stats_Draw(BYTE* self, void*, BYTE* view, int y)
 
 // === the view's room render (FUN_5dfa90)
 
-extern "C" void FUN_5d4450(); KING_ALIAS("_FUN_5d4450", "_Dd_WaitFlip")
+extern "C" void __cdecl Dd_WaitFlip();
 KING_VAR(float, g_vr721744, 721744)
 KING_VAR(AsmLabel, g_vr652538, 652538)
 
@@ -4576,7 +4665,7 @@ void __fastcall View_RenderRoom(BYTE* s)
     memcpy(m, (BYTE*)g_q77_7025f0, 48);
     memcpy(cam2, (BYTE*)g_q77_7025f0, 48);
     memcpy(cam, (BYTE*)g_q77_7025f0, 48);
-    CallC(FUN_5d4450);
+    Dd_WaitFlip();
     BYTE* room = F(BYTE*, s, 488);
     if (!room)
         return;
@@ -4587,13 +4676,13 @@ void __fastcall View_RenderRoom(BYTE* s)
     BYTE tmp[48];
     memcpy(cam, View_CameraMatrix(s, 0, tmp), 48);
     memcpy(cam2, cam, 48);
-    float t0 = (float)CallC<double>(FUN_6037e0);
-    CallThis(FUN_5f25c0, F(BYTE*, F(BYTE*, s, 488), 80), m);
+    float t0 = (float)Tsc_Now();
+    Node_GetWorld(F(BYTE*, F(BYTE*, s, 488), 80), 0, m);
     DWORD v[4];
     DWORD a, b;
     CallVirt(s, 96, m, v, &a, &b);
     if (g_q77_702e8c & 0x100)
-        CallThis(FUN_5adc70, F(BYTE*, s, 464), F(int, s, 548));
+        Render_Set8460(F(BYTE*, s, 464), 0, F(int, s, 548));
     BYTE* c = F(BYTE*, s, 472);
     BYTE copy[136];
     memcpy(copy, c, 136);
@@ -4603,9 +4692,9 @@ void __fastcall View_RenderRoom(BYTE* s)
         F(int, copy, 76) = F(int, F(BYTE*, rc, 56), 24);
     if (F(int, c, 76) >= 0) {
         CallThis(FUN_5eaf40, F(BYTE*, s, 468), F(BYTE*, s, 488), v[0], a, b, F(BYTE*, s, 464), copy);
-        CallC(FUN_5e1a10, F(BYTE*, s, 480), F(int, copy, 76) + 1);
+        Switch_Select(F(BYTE*, s, 480), F(int, copy, 76) + 1);
     } else
-        CallC(FUN_5e1a10, F(BYTE*, s, 480), 0);
+        Switch_Select(F(BYTE*, s, 480), 0);
     BYTE* r = F(BYTE*, s, 464);
     F(int, r, 8480) = F(int, s, 2960);
     F(int, r, 8484) = F(int, s, 2964);
@@ -4617,14 +4706,14 @@ void __fastcall View_RenderRoom(BYTE* s)
     t.y = F(float, m, 40);
     t.z = (float)((F(float, m, 44) - F(double, c, 96)) * F(double, c, 104) + F(double, c, 96));
     BYTE tm[48];
-    CallC(FUN_5e19b0, F(BYTE*, s, 476), 0, CallC<BYTE*>(FUN_5abc40, tm, t));
+    Frame_Apply(F(BYTE*, s, 476), 0, CallC<BYTE*>(FUN_5abc40, tm, t));
     if (BYTE* o = F(BYTE*, s, 528))
-        CallThis(FUN_5eb310, F(BYTE*, s, 468), F(BYTE*, s, 488), o, F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+        Camera_Draw(F(BYTE*, s, 468), 0, F(BYTE*, s, 488), o, F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
     if (BYTE* o = F(BYTE*, s, 528)) {
-        CallThis(FUN_5ae0e0, F(BYTE*, s, 464), (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
+        Render_SetCamera(F(BYTE*, s, 464), 0, (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
         CallVirt(o, 56, F(int, g_q77_721750, 344) ? 1 : 5, cam2, cam, F(BYTE*, s, 464));
     }
-    g_vr721744 = (float)(CallC<double>(FUN_6037e0) - t0);
+    g_vr721744 = (float)(Tsc_Now() - t0);
 }
 
 } // extern "C"
@@ -4633,9 +4722,9 @@ void __fastcall View_RenderRoom(BYTE* s)
 
 KING_VAR(AsmLabel, s_ft6835c0, 6835c0)
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
-extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
-extern "C" void FUN_5ba3f0(); KING_ALIAS("_FUN_5ba3f0", "@Palette_Color@12")
-extern "C" void FUN_5d3b10(); KING_ALIAS("_FUN_5d3b10", "_Video_BitDepth")
+extern "C" DWORD* __fastcall Window_GetRect(BYTE* self, void*, DWORD* r);
+extern "C" DWORD __fastcall Palette_Color(BYTE* self, void*, int c);
+extern "C" int __cdecl Video_BitDepth();
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
 
 extern "C" {
@@ -4650,15 +4739,15 @@ void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* te
     int x0 = x, w0 = w;
     int rowBytes = (F(int, f, 24) - 1) / 8 + 1;
     int glyphBytes = rowBytes * F(int, f, 20);
-    int bpp = CallC<int>(FUN_5d3b10);
+    int bpp = Video_BitDepth();
     DWORD c32 = color;
     if (!raw && F(WORD, s, 4) == 1 && bpp != 1) {
-        if (!CallThis<BYTE*>(FUN_5b6700, s))
+        if (!(BYTE*)Window_RootSurface(s, 0))
             return;
-        c32 = CallThis<DWORD>(FUN_5ba3f0, CallThis<BYTE*>(FUN_5b6700, s), color);
+        c32 = Palette_Color((BYTE*)Window_RootSurface(s, 0), 0, color);
     }
     int rect[4];
-    CallThis(FUN_5b6710, s, rect);
+    Window_GetRect(s, 0, (DWORD*)rect);
     for (; *text; text++) {
         int c = *text;
         int first = F(int, f, 4), last = F(int, f, 8);
@@ -4700,7 +4789,7 @@ void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* te
                         if (sl >= r[2])
                             r[2] = sl + 1;
                         if (int hr = Com(g_7208fc, 20, d, src, r, 0x1008000, fx))
-                            CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, (const char*)s_ft6835c0), 0);
+                            Sys_Log(Dd_ErrorText(hr, (const char*)s_ft6835c0), 0);
                     } else {
                         const BYTE* g = F(BYTE*, f, 28) + (c - first) * glyphBytes;
                         BYTE* bits = F(BYTE*, s, 24 + F(int, s, 16) * 4);
@@ -4749,21 +4838,21 @@ KING_VAR(AsmLabel, s_rp682ef0, 682ef0)
 KING_VAR(AsmLabel, s_rp682ee0, 682ee0)
 KING_VAR(AsmLabel, g_rp652518, 652518)
 KING_VAR(DWORD, g_rp702e8c, 702e8c)
-extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")
-extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
-extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void __fastcall NameHash_Add(BYTE* h, void*, const char* name, void* v);
+extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const char* name);
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
 
 // a render pass object of kind k for world w
 static void Rp_Pass(BYTE* w, int k)
 {
     BYTE* o = (BYTE*)operator new(40);
     if (o) {
-        CallThis(FUN_5d31e0, o, k, (const char*)s_rp682ee0);
+        Object_ConstructKind(o, 0, k, (const char*)s_rp682ee0);
         F(void*, o, 0) = g_rp652518;
         F(BYTE*, o, 32) = w;
         F(int, o, 36) = k;
     }
-    CallThis(FUN_5d3570, w + 2992, o);
+    Owner_Attach(w + 2992, 0, o);
     CallVirt(o, 24, 0);
 }
 
@@ -4773,10 +4862,10 @@ extern "C" {
 // render passes of world w: kinds 400, 0, 20, 30, 10, with hardware flag 0x100 also 21, 31, 11, and 40 when +3044
 void __fastcall World_SetupPasses(BYTE* w)
 {
-    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f14, (void*)Weather_LogPos);
-    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f00, (void*)TreeGen_Draw);
-    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682ef0, (void*)Water_Draw);
-    CallThis(FUN_5d27c0, (BYTE*)g_objectNames);
+    NameHash_Add((BYTE*)g_objectNames, 0, (const char*)s_rp682f14, (void*)Weather_LogPos);
+    NameHash_Add((BYTE*)g_objectNames, 0, (const char*)s_rp682f00, (void*)TreeGen_Draw);
+    NameHash_Add((BYTE*)g_objectNames, 0, (const char*)s_rp682ef0, (void*)Water_Draw);
+    NameHash_ResolvePending((BYTE*)g_objectNames, 0);
     static const int base[] = {400, 0, 20, 30, 10};
     for (int k : base)
         Rp_Pass(w, k);
@@ -4798,6 +4887,7 @@ KING_VAR(void*, g_pw7212b0, 7212b0)
 KING_VAR(void*, g_pw7216bc, 7216bc)
 extern "C" void FUN_5ab950(); KING_ALIAS("_FUN_5ab950", "@Vec3_TransformPoint@12")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" int __fastcall Volume_Contains(DWORD* s, void*, const float* p);
 extern "C" void FUN_5f88d0(); KING_ALIAS("_FUN_5f88d0", "@Volume_Contains@12")
 extern "C" void __cdecl Probe_Walk(BYTE* n);
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
@@ -4815,7 +4905,7 @@ static void Pw_IntoFrame(BYTE* f)
     for (int i = 0; i < 4; i++)
         CallThis(FUN_4bd4d0, m + i * 12);
     memcpy(m, (BYTE*)g_fra7025f0, 48);
-    CallThis(FUN_5f25c0, f, m);
+    Node_GetWorld(f, 0, m);
     CallThis(FUN_5ab950, (BYTE*)g_pw721298, CallC<BYTE*>(FUN_5ac2e0, inv, m));
 }
 
@@ -4850,7 +4940,7 @@ void __cdecl Probe_Walk(BYTE* n)
         Pw_Children(n, CallThis<int>(FUN_5f88d0, n + 56, (BYTE*)g_pw721298) ? 0 : 1);
         break;
     case 9:
-        if (CallThis<int>(FUN_5f88d0, n + 64, (BYTE*)g_pw721298))
+        if (Volume_Contains((DWORD*)(n + 64), 0, (const float*)((BYTE*)g_pw721298)))
             ((void (__cdecl*)(BYTE*, void*))g_pw7216bc)(n + 48, g_pw7212b0);
         break;
     case 17: {
@@ -4879,7 +4969,7 @@ void __cdecl Probe_Walk(BYTE* n)
 extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
 extern "C" void FUN_5ab710(); KING_ALIAS("_FUN_5ab710", "@Vec3_AddAssign@16")
 extern "C" void FUN_5ac6d0(); KING_ALIAS("_FUN_5ac6d0", "@Plane_FromPoints@44")
-extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")
+extern "C" DWORD __fastcall Shade_Assign(DWORD* self, void*, const DWORD* s);
 KING_VAR(AsmLabel, g_pg702650, 702650)
 struct Pg_V3 { float x, y, z; };
 
@@ -4889,7 +4979,7 @@ extern "C" {
 // centre (+8) and the largest distance of a point from it (+24); 1
 int __fastcall Polygon_Read(BYTE* s, void*, void* f)
 {
-    int n = CallC<int>(FUN_5ab140, f) & 0xFFFF;
+    int n = File_ReadInt((FILE*)f) & 0xFFFF;
     F(WORD, s, 2) = (WORD)n;
     BYTE* p = (BYTE*)operator new(n * 12);
     if (p)
@@ -4899,7 +4989,7 @@ int __fastcall Polygon_Read(BYTE* s, void*, void* f)
         CallThis(FUN_5ab790, F(BYTE*, s, 4) + i * 12, f);
     const Pg_V3* q = F(const Pg_V3*, s, 4);
     BYTE pl[16];
-    CallThis(FUN_5cda50, s + 32, CallThis<BYTE*>(FUN_5ac6d0, pl, q[0], q[1], q[2]));
+    Shade_Assign((DWORD*)(s + 32), 0, (const DWORD*)(CallThis<BYTE*>(FUN_5ac6d0, pl, q[0], q[1], q[2])));
     Pg_V3* c = (Pg_V3*)(s + 8);
     memcpy(c, (BYTE*)g_pg702650, 12);
     for (int i = 0; i < F(WORD, s, 2); i++) {
@@ -4995,13 +5085,13 @@ void __cdecl Matrix_ToAngles(Pg_V3 r0, Pg_V3 r1, Pg_V3 r2, Pg_V3 t, double* x, d
 
 // === the main frame window (FUN_5dd0d0)
 
-extern "C" void Mf_FrameCtor(); KING_ALIAS("_Mf_FrameCtor", "@FrameWnd_Construct@4")
-extern "C" void Mf_FrameCreate(); KING_ALIAS("_Mf_FrameCreate", "@FrameWnd_Create@40")
-extern "C" void Mf_SetWindowPos(); KING_ALIAS("_Mf_SetWindowPos", "@Wnd_SetWindowPos@32")
-extern "C" void Mf_LoadString(); KING_ALIAS("_Mf_LoadString", "@String_LoadString@12")
-extern "C" void Mf_StringDtor(); KING_ALIAS("_Mf_StringDtor", "@String_Destruct@4")
-extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "_Afx_GetModuleState@0")
-extern "C" void Mf_FrameExtra(); KING_ALIAS("_Mf_FrameExtra", "_Wnd_FrameExtra")
+extern "C" BYTE* __fastcall FrameWnd_Construct(BYTE* self);
+extern "C" BOOL __fastcall FrameWnd_Create(BYTE* self, void*, const char* cls, const char* name, DWORD style, const RECT* rect, BYTE* parent, const char* menuName, DWORD exStyle, void* context);
+extern "C" BOOL __fastcall Wnd_SetWindowPos(BYTE* self, void*, BYTE* after, int x, int y, int cx, int cy, UINT flags);
+extern "C" BOOL __fastcall String_LoadString(char** self, void*, UINT id);
+extern "C" void __fastcall String_Destruct(char** self);
+extern "C" BYTE* __stdcall Afx_GetModuleState();
+extern "C" int __cdecl Wnd_FrameExtra(int edge);
 KING_VAR(AsmLabel, g_mfVtbl6523e4, 6523e4)
 KING_VAR(const char*, g_mfEmptyString, 685fc0)
 KING_VAR(AsmLabel, g_mfRectDefault, 72db68)
@@ -5014,35 +5104,35 @@ extern "C" {
 // +292 bit 1), shown or hidden as before
 BYTE* __fastcall MainFrame_Construct(BYTE* s)
 {
-    CallThis(Mf_FrameCtor, s);
+    FrameWnd_Construct(s);
     F(void*, s, 0) = (BYTE*)g_mfVtbl6523e4;
     BYTE* app = g_fw721750;
     if (F(DWORD, app, 268) & 0x400) {
-        CallThis(Mf_FrameCreate, s, (const char*)0, (const char*)0, 0x90000000u, (BYTE*)g_mfRectDefault, 0, 0, 0, 0);
-        int h = CallC<int>(FUN_5d3f80) * F(int, g_fw721750, 260);
-        int w = CallC<int>(FUN_5d3f70) * F(int, g_fw721750, 256);
-        CallThis(Mf_SetWindowPos, s, (BYTE*)g_mfWndTop, 0, 0, w, h, 64);
+        FrameWnd_Create(s, 0, (const char*)0, (const char*)0, 0x90000000u, (const RECT*)((BYTE*)g_mfRectDefault), 0, 0, 0, 0);
+        int h = Video_Get67fcf4() * F(int, g_fw721750, 260);
+        int w = Video_Get67fcf0() * F(int, g_fw721750, 256);
+        Wnd_SetWindowPos(s, 0, (BYTE*)g_mfWndTop, 0, 0, w, h, 64);
         SetCursor(0);
         return s;
     }
     const char* title = g_mfEmptyString;
-    CallThis(Mf_LoadString, &title, 130);
-    CallThis(Mf_FrameCreate, s, (const char*)0, title, 0xCF0000u, (BYTE*)g_mfRectDefault, 0, 0, 0, 0);
-    BYTE* ms = CallStd<BYTE*>(Mf_ModuleState);
+    String_LoadString((char**)&title, 0, 130);
+    FrameWnd_Create(s, 0, (const char*)0, title, 0xCF0000u, (const RECT*)((BYTE*)g_mfRectDefault), 0, 0, 0, 0);
+    BYTE* ms = Afx_GetModuleState();
     SetClassLongA(F(HWND, s, 28), -14, (LONG)LoadIconA(F(HINSTANCE, ms, 12), MAKEINTRESOURCEA(130)));
-    int w = CallC<int>(FUN_5d3f70) * F(int, g_fw721750, 256);
-    int h = CallC<int>(FUN_5d3f80) * F(int, g_fw721750, 260);
+    int w = Video_Get67fcf0() * F(int, g_fw721750, 256);
+    int h = Video_Get67fcf4() * F(int, g_fw721750, 260);
     if (!(F(BYTE, g_fw721750, 292) & 2)) {
-        int e2 = CallC<int>(Mf_FrameExtra, 2);
-        w = CallC<int>(Mf_FrameExtra, 1) + w + e2;
-        int e4 = CallC<int>(Mf_FrameExtra, 4);
-        h = CallC<int>(Mf_FrameExtra, 3) + h + e4;
+        int e2 = Wnd_FrameExtra(2);
+        w = Wnd_FrameExtra(1) + w + e2;
+        int e4 = Wnd_FrameExtra(4);
+        h = Wnd_FrameExtra(3) + h + e4;
     }
     DWORD f = F(DWORD, g_fw721750, 292);
     F(DWORD, g_fw721750, 292) = f & ~1u;
-    CallThis(Mf_SetWindowPos, s, (BYTE*)g_mfWndTop, 0, 0, w, h, 128);
+    Wnd_SetWindowPos(s, 0, (BYTE*)g_mfWndTop, 0, 0, w, h, 128);
     F(DWORD, g_fw721750, 292) |= f & 1;
-    CallThis(Mf_StringDtor, &title);
+    String_Destruct((char**)&title);
     return s;
 }
 
@@ -5051,11 +5141,7 @@ BYTE* __fastcall MainFrame_Construct(BYTE* s)
 // === a world frame (5e1750)
 
 extern "C" void __fastcall Queue_Tick(BYTE* self, void*);
-extern "C" void __cdecl Device_BeginScene();
-extern "C" void __cdecl Device_WaitIdle();
-extern "C" void __fastcall Surface_ClearRows(BYTE* self, void*);
 extern "C" void __cdecl Device_ProbeMultitexture(BYTE* a, BYTE* b);
-extern "C" void __cdecl Sound_Frame();
 KING_VAR(double, g_wf71f808, 71f808)
 KING_VAR(double, g_wf71f7f8, 71f7f8)
 KING_VAR(double, g_wf720020, 720020)
@@ -5085,8 +5171,8 @@ void __fastcall World_Frame(BYTE* s)
     Device_BeginScene();
     if (!F(int, s, 2992)) {
         BYTE* room = F(BYTE*, s, 468);
-        CallThis(FUN_5b64e0, F(BYTE*, s, 12), F(BYTE**, room, 100)[F(int, room, 140)]);
-        CallC(FUN_5e48f0);
+        Window_SetSurface(F(BYTE*, s, 12), 0, (int)(F(BYTE**, room, 100)[F(int, room, 140)]));
+        Fw_Nop();
         room = F(BYTE*, s, 468);
         BYTE* m2[2] = {0, 0};
         int k = 0;
@@ -5128,8 +5214,7 @@ void __fastcall World_Frame(BYTE* s)
 
 // === reading a TGA image with level chunks (FUN_5e8160)
 
-extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
-extern "C" void Tga_VideoFlags(); KING_ALIAS("_Tga_VideoFlags", "_Video_Get720898")
+extern "C" int __cdecl Video_Get720898();
 KING_VAR(char, s_tgaLoff, 683484)    // "LOFF"
 KING_VAR(char, s_tgaLvls, 68347c)    // "LVLS"
 KING_VAR(char, s_tgaLvlh, 6834a4)    // "LVLH"
@@ -5143,8 +5228,8 @@ static void Tga_Tag(FILE* f, char* tag)
         tag[i] = (char)fgetc(f);
 }
 
-static int Tga_Int(FILE* f) { return CallC<int>(FUN_5ab140, f); }
-static unsigned Tga_Short(FILE* f) { return CallC<unsigned>(FUN_5ab0f0, f); }
+static int Tga_Int(FILE* f) { return File_ReadInt(f); }
+static unsigned Tga_Short(FILE* f) { return (unsigned)File_ReadShort(f); }
 
 // palette entry c (bytes +24, +25, +26 of the palette record) as a 16-bit pixel: 565 or 555
 static WORD Tga_PalPixel(BYTE* img, int c, bool w565)
@@ -5258,7 +5343,7 @@ int __cdecl Tga_Read(BYTE* img, FILE* f, long off)
             for (unsigned y = 0; y < height; y++)
                 fread(F(BYTE*, img, 8) + (down ? y : height - y - 1) * width, width, 1, f);
         } else if (depth == 2) {
-            F(int, img, 64) = (CallC<BYTE>(Tga_VideoFlags) & 4) ? 3 : 2;
+            F(int, img, 64) = ((BYTE)Video_Get720898() & 4) ? 3 : 2;
             for (unsigned y = 0; y < height; y++)
                 for (unsigned x = 0; x < width; x++) {
                     unsigned ci = fgetc(f);
@@ -5393,13 +5478,13 @@ int __fastcall Face_Read(BYTE* s, void*, void* f, BYTE* pts, BYTE* normals)
         g_fc7217ac = y;
         atexit(Fc_Nop);
     }
-    DWORD fl = CallC<DWORD>(FUN_5ab140, f) ^ 1;
+    DWORD fl = (DWORD)File_ReadInt((FILE*)f) ^ 1;
     F(WORD, s, 0) = (WORD)fl;
     F(WORD, s, 6) = (BYTE)(fl >> 8);
-    F(float, s, 28) = CallC<float>(FUN_5ab190, f);
-    F(WORD, s, 50) = (WORD)CallC<int>(FUN_5ab140, f);
-    F(WORD, s, 48) = (WORD)CallC<int>(FUN_5ab140, f);
-    F(WORD, s, 4) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(float, s, 28) = File_ReadFloat((FILE*)f);
+    F(WORD, s, 50) = (WORD)File_ReadInt((FILE*)f);
+    F(WORD, s, 48) = (WORD)File_ReadInt((FILE*)f);
+    F(WORD, s, 4) = (WORD)File_ReadInt((FILE*)f);
     F(WORD, s, 2) = (WORD)g_fc72006c;
     g_fc72006c++;
     unsigned n = F(WORD, s, 4);
@@ -5420,12 +5505,12 @@ int __fastcall Face_Read(BYTE* s, void*, void* f, BYTE* pts, BYTE* normals)
             F(void*, s, 20) = operator new(F(WORD, s, 4) * 4);
     }
     for (int i = 0; i < F(WORD, s, 4); i++) {
-        F(WORD*, s, 8)[i] = (WORD)CallC<int>(FUN_5ab140, f);
+        F(WORD*, s, 8)[i] = (WORD)File_ReadInt((FILE*)f);
         if (F(BYTE, s, 0) & 2)
             for (int j = 0; j < F(WORD, s, 6); j++) {
                 // as in the original: the layers' values land at i + 2 j
-                F(float*, s, 12)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
-                F(float*, s, 16)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
+                F(float*, s, 12)[i + 2 * j] = File_ReadFloat((FILE*)f);
+                F(float*, s, 16)[i + 2 * j] = File_ReadFloat((FILE*)f);
             }
         w = F(WORD, s, 0);
         if (!(w & 16))
@@ -5441,12 +5526,12 @@ int __fastcall Face_Read(BYTE* s, void*, void* f, BYTE* pts, BYTE* normals)
                 F(float*, s, 20)[i] = (float)((nrm.z * g_fc7217b0 + nrm.y * g_fc7217ac + g_fc7217a8 * nrm.x
                     + g_fc64b670) * g_fc64b6e0);
         } else if (w & 32)
-            F(float*, s, 20)[i] = CallC<float>(FUN_5ab190, f);
+            F(float*, s, 20)[i] = File_ReadFloat((FILE*)f);
     }
     const WORD* ix = F(const WORD*, s, 8);
     BYTE pl[16];
-    CallThis(FUN_5cda50, s + 32, CallThis<BYTE*>(FUN_5ac6d0, pl, *(const Pg_V3*)(pts + ix[0] * 28),
-        *(const Pg_V3*)(pts + ix[1] * 28), *(const Pg_V3*)(pts + ix[2] * 28)));
+    Shade_Assign((DWORD*)(s + 32), 0, (const DWORD*)(CallThis<BYTE*>(FUN_5ac6d0, pl, *(const Pg_V3*)(pts + ix[0] * 28),
+        *(const Pg_V3*)(pts + ix[1] * 28), *(const Pg_V3*)(pts + ix[2] * 28))));
     return 1;
 }
 
@@ -5461,14 +5546,14 @@ extern "C" {
 // i + 2 j as in the original); with flag 2 the texture scale +28 = |xy edge 0-1| / |uv edge 0-1|; 1
 int __fastcall FlatFace_Read(BYTE* s, void*, FILE* f)
 {
-    DWORD fl = CallC<DWORD>(FUN_5ab140, f);
+    DWORD fl = (DWORD)File_ReadInt(f);
     F(WORD, s, 0) = (WORD)fl;
     F(WORD, s, 6) = (BYTE)(fl >> 8);
     DWORD skip;
     fread(&skip, 4, 1, f);
-    F(WORD, s, 34) = (WORD)CallC<int>(FUN_5ab140, f);
-    F(WORD, s, 32) = (WORD)CallC<int>(FUN_5ab140, f);
-    F(WORD, s, 4) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 34) = (WORD)File_ReadInt(f);
+    F(WORD, s, 32) = (WORD)File_ReadInt(f);
+    F(WORD, s, 4) = (WORD)File_ReadInt(f);
     F(WORD, s, 2) = (WORD)g_fc72006c;
     g_fc72006c++;
     F(void*, s, 16) = operator new(F(WORD, s, 4) * 4);
@@ -5479,12 +5564,12 @@ int __fastcall FlatFace_Read(BYTE* s, void*, FILE* f)
         F(void*, s, 12) = operator new(F(WORD, s, 6) * F(WORD, s, 4) * 4);
     }
     for (int i = 0; i < F(WORD, s, 4); i++) {
-        F(float*, s, 16)[i] = CallC<float>(FUN_5ab190, f);
-        F(float*, s, 20)[i] = CallC<float>(FUN_5ab190, f);
+        F(float*, s, 16)[i] = File_ReadFloat(f);
+        F(float*, s, 20)[i] = File_ReadFloat(f);
         if (F(BYTE, s, 0) & 2)
             for (int j = 0; j < F(WORD, s, 6); j++) {
-                F(float*, s, 8)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
-                F(float*, s, 12)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
+                F(float*, s, 8)[i + 2 * j] = File_ReadFloat(f);
+                F(float*, s, 12)[i + 2 * j] = File_ReadFloat(f);
             }
     }
     if (F(BYTE, s, 0) & 2) {
@@ -5552,7 +5637,6 @@ void __fastcall Camera_Follow(BYTE* s, void*, const float* m)
 
 // === a window over part of a parent's surface (FUN_5d8710)
 
-extern "C" void Ww_SubSurface(); KING_ALIAS("_Ww_SubSurface", "@SubSurface_Construct@20")
 
 extern "C" {
 
@@ -5575,13 +5659,13 @@ BYTE* __fastcall Window_ConstructSub(BYTE* s, void*, BYTE* p, const int* r, int 
         rc[2] = F(WORD, surf, 0);
         rc[3] = F(WORD, surf, 2);
         BYTE* n = (BYTE*)operator new(124);
-        F(BYTE*, s, 12) = n ? CallThis<BYTE*>(Ww_SubSurface, n, F(BYTE*, p, 12), rc, flags & 0x4000) : 0;
+        F(BYTE*, s, 12) = n ? SubSurface_Construct(n, 0, F(BYTE*, p, 12), rc, flags & 0x4000) : 0;
         F(int, s, 16) |= 0xf0;
     }
     else
     {
         BYTE* n = (BYTE*)operator new(124);
-        F(BYTE*, s, 12) = n ? CallThis<BYTE*>(Ww_SubSurface, n, F(BYTE*, p, 12), rc, flags & 0x4000) : 0;
+        F(BYTE*, s, 12) = n ? SubSurface_Construct(n, 0, F(BYTE*, p, 12), rc, flags & 0x4000) : 0;
     }
     F(int, s, 24) = 0;
     F(int, s, 28) = 0;
@@ -5612,7 +5696,6 @@ void __fastcall EventRing_Push(BYTE* s, void*, int v)
 // === the debug window's input (FUN_5e05c0)
 
 extern "C" int __cdecl _mkdir(const char*);
-extern "C" void __cdecl Sys_Log(const char* text, int value);
 KING_VAR(BYTE*, g_di721750, 721750)
 KING_VAR(int, g_di721758, 721758)                     // the screenshot number
 KING_VAR(int, g_di72175c, 72175c)                     // the camera dump number
@@ -5884,13 +5967,10 @@ int __fastcall Dbg_OnInput(BYTE* s, void*, const short* ev)
 
 #include "vecmath.h"
 
-extern "C" void Cc_NodeInit(); KING_ALIAS("_Cc_NodeInit", "@Node_Init@8")
-extern "C" void Cc_World(); KING_ALIAS("_Cc_World", "@Node_GetWorld@12")
-extern "C" void Cc_Apply(); KING_ALIAS("_Cc_Apply", "@Node_ApplyMatrix@16")
-extern "C" void Cc_FromPose(); KING_ALIAS("_Cc_FromPose", "_Matrix_FromPose")
-extern "C" void Cc_Point(); KING_ALIAS("_Cc_Point", "@Vec3_TransformPoint@12")
-extern "C" void Cc_Dir(); KING_ALIAS("_Cc_Dir", "@Vec3_TransformDir@12")
-extern "C" void Cc_Transform2(); KING_ALIAS("_Cc_Transform2", "@Matrix_Transform2@12")
+extern "C" BYTE* __fastcall Node_Init(BYTE* self, void*);
+extern "C" void __fastcall Vec3_TransformPoint(Vec3* self, void*, const Matrix* m);
+extern "C" void __fastcall Vec3_TransformDir(Vec3* self, void*, const Matrix* m);
+extern "C" void __fastcall Matrix_Transform2(Matrix* self, void*, const Matrix* by);
 KING_VAR(Matrix, g_cc7025f0, 7025f0)
 KING_VAR(double, g_cc64d338, 64d338)
 KING_VAR(float, g_cc64c304, 64c304)
@@ -5905,26 +5985,25 @@ extern "C" {
 void __fastcall Camera_Collide(BYTE* c, void*)
 {
     __declspec(align(8)) BYTE A[208], B[208], C[208];
-    CallThis(Cc_NodeInit, A);
-    CallThis(Cc_NodeInit, B);
-    CallThis(Cc_NodeInit, C);
+    Node_Init(A, 0);
+    Node_Init(B, 0);
+    Node_Init(C, 0);
     Matrix M1 = g_cc7025f0, M2 = g_cc7025f0, M3 = g_cc7025f0;
     int ticks = 1000;
     if (!F(BYTE*, c, 488))
         return;
     float yaw = (float)F(double, c, 2928), pitch = (float)F(double, c, 2936), roll = (float)F(double, c, 2944);
     CallVirt(c, 176);
-    CallThis(Cc_World, F(BYTE*, c, 616), &M1);
+    Node_GetWorld(F(BYTE*, c, 616), 0, &M1);
     F(Vec3, c, 568) = *(Vec3*)&M1.m[9];
     if (F(DWORD, c, 3020) & 0x40000000)
         M3 = M1;
     else
     {
         Matrix t;
-        M3 = *CallC<const Matrix*>(Cc_FromPose, &t, F(double, c, 2904), F(double, c, 2912), F(double, c, 2920),
-                                   F(double, c, 2952) + F(double, c, 2928), F(double, c, 2936), F(double, c, 2944));
+        M3 = *(const Matrix*)Matrix_FromPose((BYTE*)&t, F(double, c, 2904), F(double, c, 2912), F(double, c, 2920), F(double, c, 2952) + F(double, c, 2928), F(double, c, 2936), F(double, c, 2944));
     }
-    CallThis(Cc_Apply, F(BYTE*, c, 616), &M3, 0);
+    Node_ApplyMatrix(F(BYTE*, c, 616), 0, &M3, 0);
     F(int, B, 100) = 0;
     F(int, B, 116) = 0;
     F(int, B, 120) = 0;
@@ -5934,7 +6013,7 @@ void __fastcall Camera_Collide(BYTE* c, void*)
     {
         for (; it < 10; it++)
         {
-            CallThis(Cc_World, F(BYTE*, c, 616), &M2);
+            Node_GetWorld(F(BYTE*, c, 616), 0, &M2);
             Vec3 p = *(Vec3*)&M2.m[9];
             F(Vec3, c, 580) = p;
             memcpy(A + 4, &g_cc7025f0, 48);
@@ -5948,8 +6027,8 @@ void __fastcall Camera_Collide(BYTE* c, void*)
             r = CallVirt<DWORD>(room, 52, F(int, c, 3028) ? 6 : 0, A);
             Matrix inv;
             Matrix_Inverse(&inv, (const Matrix*)(A + 4));
-            CallThis(Cc_Point, A + 52, &inv);
-            CallThis(Cc_Dir, A + 64, &inv);
+            Vec3_TransformPoint((Vec3*)(A + 52), 0, &inv);
+            Vec3_TransformDir((Vec3*)(A + 64), 0, &inv);
             if (!F(int, c, 3028) || !(r & 1))
                 break;
             bool slide = false;
@@ -5978,7 +6057,7 @@ void __fastcall Camera_Collide(BYTE* c, void*)
                 v.y = (float)(ny * (double)s);
                 v.x = (float)(nx * (double)s);
                 Matrix T;
-                CallThis(Cc_Transform2, &M2, Matrix_Translation(&T, v));
+                Matrix_Transform2(&M2, 0, Matrix_Translation(&T, v));
             }
             else
             {
@@ -5991,12 +6070,12 @@ void __fastcall Camera_Collide(BYTE* c, void*)
                     F(double, c, 2936) = pitch;
                 }
             }
-            CallThis(Cc_Apply, F(BYTE*, c, 616), &M2, 0);
+            Node_ApplyMatrix(F(BYTE*, c, 616), 0, &M2, 0);
         }
         if (it == 10)
         {
             *(Vec3*)&M2.m[9] = *(Vec3*)&M1.m[9];
-            CallThis(Cc_Apply, F(BYTE*, c, 616), &M2, 0);
+            Node_ApplyMatrix(F(BYTE*, c, 616), 0, &M2, 0);
             r = 0;
         }
     }
@@ -6014,7 +6093,7 @@ void __fastcall Camera_Collide(BYTE* c, void*)
         CallVirt(F(BYTE*, C, 116), 32, C);
     }
     CallVirt(c, 152, B);
-    CallThis(Cc_World, F(BYTE*, c, 616), &M2);
+    Node_GetWorld(F(BYTE*, c, 616), 0, &M2);
     F(double, c, 2904) = M2.m[9];
     F(double, c, 2912) = M2.m[10];
     F(double, c, 2920) = M2.m[11];
@@ -6046,18 +6125,15 @@ BYTE* __fastcall Rec5e6980_Clear(BYTE* s, void*)
 // === a cluster's images, masks, sounds and items attached to one memory block ($L_5ee070 with its tails up to
 //     $L_5ee1c3, a vtable entry)
 
-extern "C" void Ca_TexSet(); KING_ALIAS("_Ca_TexSet", "@Texture_SetPixels@20")
-extern "C" void Ca_TexSize(); KING_ALIAS("_Ca_TexSize", "@Texture_Size@8")
-extern "C" void Ca_BmpSet(); KING_ALIAS("_Ca_BmpSet", "@Bitmap_SetPixels@16")
-extern "C" void Ca_BmpBytes(); KING_ALIAS("_Ca_BmpBytes", "@Bitmap_Bytes@8")
-extern "C" void Ca_WavSet(); KING_ALIAS("_Ca_WavSet", "@SoundFile_SetBuffer@12")
-extern "C" void Ca_Fatal(); KING_ALIAS("_Ca_Fatal", "_Sys_Fatal")
+extern "C" int __fastcall Texture_Size(BYTE* self, void*);
+extern "C" int __fastcall Bitmap_Bytes(BYTE* self, void*);
+extern "C" int __fastcall SoundFile_SetBuffer(BYTE* self, void*, int buf);
 
 static void Ca_Twice(const char* fmt, int k, const BYTE* s)
 {
     char buf[84];
     sprintf(buf, fmt, k, F(const char*, s, 36));
-    CallC(Ca_Fatal, buf, 0);
+    Sys_Fatal(buf, 0);
 }
 
 extern "C" {
@@ -6071,21 +6147,21 @@ void __fastcall Cluster_Attach(BYTE* s, void*, BYTE* p)
     for (int k = 0; k < F(int, s, 44); k++)
     {
         BYTE* t = F(BYTE**, s, 68)[k];
-        if (!CallThis<int>(Ca_TexSet, t, at, 0, 0))
+        if (!Texture_SetPixels(t, 0, at, 0, 0))
             Ca_Twice("Twice mapped image.Image %d in cluster %s.", k, s);
         if (p)
-            at += CallThis<int>(Ca_TexSize, F(BYTE**, s, 68)[k]);
+            at += Texture_Size(F(BYTE**, s, 68)[k], 0);
     }
     for (int k = 0; k < F(int, s, 52); k++)
     {
-        if (!CallThis<int>(Ca_BmpSet, F(BYTE**, s, 72)[k], at, 0))
+        if (!Bitmap_SetPixels(F(BYTE**, s, 72)[k], 0, at, 0))
             Ca_Twice("Twice mapped mask.Mask %d in cluster %s.", k, s);
         if (p)
-            at += CallThis<int>(Ca_BmpBytes, F(BYTE**, s, 72)[k]);
+            at += Bitmap_Bytes(F(BYTE**, s, 72)[k], 0);
     }
     for (int k = 0; k < F(int, s, 60); k++)
     {
-        if (!CallThis<int>(Ca_WavSet, F(BYTE**, s, 76)[k], at))
+        if (!SoundFile_SetBuffer(F(BYTE**, s, 76)[k], 0, (int)at))
             Ca_Twice("Twice mapped wav.Wav %d in cluster %s.", k, s);
         if (p)
             at += F(int, F(BYTE**, s, 76)[k], 4);
@@ -6097,16 +6173,15 @@ void __fastcall Cluster_Attach(BYTE* s, void*, BYTE* p)
             at += F(int, F(BYTE**, s, 32)[k], 16);
     }
     if ((DWORD)at > (DWORD)(F(int, s, 16) + (int)p))
-        CallC(Ca_Fatal, "Incorrect attach.", 0);
+        Sys_Fatal("Incorrect attach.", 0);
 }
 
 } // extern "C"
 
 // === a resource table added by its two-letter name (FUN_5e4f60 with its tail $L_5e4fa1)
 
-extern "C" void Rt_Fatal(); KING_ALIAS("_Rt_Fatal", "_Sys_Fatal")
-extern "C" void Rt_Table(); KING_ALIAS("_Rt_Table", "@NamedTable_Construct@12")
-extern "C" void Rt_Link(); KING_ALIAS("_Rt_Link", "@Node_Link@12")
+extern "C" BYTE* __fastcall NamedTable_Construct(BYTE* self, void*, const char* name);
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
 KING_VAR(char, g_rtBadName, 68331c)
 
 extern "C" {
@@ -6116,7 +6191,7 @@ extern "C" {
 int __fastcall Resources_AddTable(BYTE* s, void*, const char* name)
 {
     if (!name || strlen(name) != 2)
-        CallC(Rt_Fatal, &g_rtBadName, name);
+        Sys_Fatal(&g_rtBadName, name);
     if (!name)
         return 0;
     int sum = 0;
@@ -6125,7 +6200,7 @@ int __fastcall Resources_AddTable(BYTE* s, void*, const char* name)
     int h = sum % 100;
     BYTE* t = (BYTE*)operator new(4020);
     if (t)
-        t = CallThis<BYTE*>(Rt_Table, t, name);
+        t = NamedTable_Construct(t, 0, name);
     BYTE*& head = F(BYTE*, s, 1600 + 4 * h);
     if (!head)
     {
@@ -6141,7 +6216,7 @@ int __fastcall Resources_AddTable(BYTE* s, void*, const char* name)
             CallVirt(t, 0, 1);
     }
     else
-        CallThis(Rt_Link, t, e);
+        Node_Link(t, 0, e);
     return 1;
 }
 
@@ -6149,10 +6224,8 @@ int __fastcall Resources_AddTable(BYTE* s, void*, const char* name)
 
 // === a room's objects queued for deleting ($L_5d9a20 with its tail $L_5d9aa1, a node walk's callback)
 
-extern "C" void Rq_Load(); KING_ALIAS("_Rq_Load", "@Resources_Load@12")
-extern "C" void Rq_Link(); KING_ALIAS("_Rq_Link", "@Fw_LinkRoom@12")
-extern "C" void Rq_Unlink(); KING_ALIAS("_Rq_Unlink", "@Node_Unlink@8")
-extern "C" void Rq_Fatal(); KING_ALIAS("_Rq_Fatal", "_Sys_Fatal")
+extern "C" void __fastcall Resources_Load(BYTE* self, void*, const char* name);
+extern "C" void __fastcall Fw_LinkRoom(BYTE* self, void*, BYTE* room);
 
 extern "C" {
 
@@ -6165,13 +6238,13 @@ int __cdecl Room_QueueDelete(BYTE* node, BYTE* ctx)
         return -1;
     BYTE* room = F(BYTE*, F(BYTE*, node, 128), 36);
     if (BYTE* r = CallVirt<BYTE*>(F(BYTE*, ctx, 20), 112))
-        CallThis(Rq_Load, r, F(int, room, 60));
-    CallThis(Rq_Link, F(BYTE*, ctx, 20), room);
-    CallThis(Rq_Unlink, room);
+        Resources_Load(r, 0, (const char*)(F(int, room, 60)));
+    Fw_LinkRoom(F(BYTE*, ctx, 20), 0, room);
+    Node_Unlink(room, 0);
     F(BYTE*, ctx, 24 + 4 * F(int, ctx, 424)) = room;
     F(int, ctx, 424) = (F(int, ctx, 424) + 1) % 100;
     if (F(int, ctx, 424) == F(int, ctx, 428))
-        CallC(Rq_Fatal, "DL Module to delete too many", 0);
+        Sys_Fatal("DL Module to delete too many", 0);
     return -1;
 }
 
@@ -6179,21 +6252,13 @@ int __cdecl Room_QueueDelete(BYTE* node, BYTE* ctx)
 
 // === the framework's observer cluster made (FUN_5daa30 with its tail $L_5dab43)
 
-extern "C" void Ob_Sound(); KING_ALIAS("_Ob_Sound", "_Sound_Start")
-extern "C" void Ob_Palette(); KING_ALIAS("_Ob_Palette", "@Palette_Construct@8")
-extern "C" void Ob_Gray(); KING_ALIAS("_Ob_Gray", "@Palette_Gray@8")
-extern "C" void Ob_Defaults(); KING_ALIAS("_Ob_Defaults", "@Palette_Defaults@8")
-extern "C" void Ob_Fog(); KING_ALIAS("_Ob_Fog", "@Fog_BuildTables@16")
-extern "C" void Ob_Dark(); KING_ALIAS("_Ob_Dark", "@Dark_BuildTables@12")
-extern "C" void Ob_Fade(); KING_ALIAS("_Ob_Fade", "@Fade_BuildTables@16")
-extern "C" void Ob_Cluster(); KING_ALIAS("_Ob_Cluster", "@Cluster_ConstructEmpty@36")
-extern "C" void Ob_Resolve(); KING_ALIAS("_Ob_Resolve", "@NameHash_ResolvePending@8")
-extern "C" void Ob_Fatal(); KING_ALIAS("_Ob_Fatal", "_Sys_Fatal")
-extern "C" void Ob_NodeN(); KING_ALIAS("_Ob_NodeN", "@NodeN_Construct@20")
-extern "C" void Ob_Apply(); KING_ALIAS("_Ob_Apply", "@Node_ApplyMatrix@16")
-extern "C" void Ob_AddNode(); KING_ALIAS("_Ob_AddNode", "@Room_AddNode@12")
-extern "C" void Ob_HashAdd(); KING_ALIAS("_Ob_HashAdd", "@NameHash_Add@16")
-extern "C" void Ob_Push(); KING_ALIAS("_Ob_Push", "@Group_Push@12")
+extern "C" const char* __cdecl Sound_Start();
+extern "C" void __fastcall Palette_Gray(BYTE* self, void*);
+extern "C" void __fastcall Palette_Defaults(BYTE* self, void*);
+extern "C" BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int images, int masks, int sounds, int bufs, int nodes);
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, int n);
+extern "C" void __fastcall Room_AddNode(BYTE* self, void*, BYTE* n);
+extern "C" int __fastcall Group_Push(BYTE* self, void*, int v);
 KING_VAR(BYTE*, g_ob721750, 721750)
 KING_VAR(BYTE, g_ob71e820, 71e820)
 KING_VAR(AsmLabel, g_ob7025f0, 7025f0)
@@ -6209,31 +6274,31 @@ BYTE* __fastcall Fw_MakeCluster(BYTE* s, void*, int pal, int items, int images, 
                                 int nodes)
 {
     if (F(int, g_ob721750, 344))
-        CallC(Ob_Sound);
+        Sound_Start();
     BYTE* own = 0;
     if (pal < 1)
     {
         BYTE* p = (BYTE*)operator new(816);
         if (p)
-            p = CallThis<BYTE*>(Ob_Palette, p);
+            p = Palette_Construct(p, 0);
         own = p;
-        CallThis(Ob_Gray, p);
-        CallThis(Ob_Defaults, p);
-        CallThis(Ob_Fog, p, 4, 8);
-        CallThis(Ob_Dark, p, 32);
-        CallThis(Ob_Fade, p, 32, 4);
+        Palette_Gray(p, 0);
+        Palette_Defaults(p, 0);
+        Fog_BuildTables(p, 0, 4, 8);
+        Dark_BuildTables(p, 0, 32);
+        Fade_BuildTables(p, 0, 32, 4);
         pal = 1;
     }
     BYTE* c = (BYTE*)operator new(180);
     if (c)
-        c = CallThis<BYTE*>(Ob_Cluster, c, pal, items, images, masks, sounds, bufs, nodes);
+        c = Cluster_ConstructEmpty(c, 0, pal, items, images, masks, sounds, bufs, nodes);
     F(BYTE*, s, 468) = c;
-    if (const char* err = CallThis<const char*>(Ob_Resolve, &g_ob71e820))
-        CallC(Ob_Fatal, err, 0);
+    if (const char* err = NameHash_ResolvePending(&g_ob71e820, 0))
+        Sys_Fatal(err, 0);
     BYTE* n = (BYTE*)operator new(112);
     if (n)
     {
-        CallThis(Ob_NodeN, n, &g_obName, 6, 1);
+        NodeN_Construct(n, 0, &g_obName, 6, 1);
         memset(n + 64, 0, 48);
         memcpy(n + 64, &g_ob7025f0, 48);
         F(void*, n, 0) = &g_ob64d7d0;
@@ -6242,8 +6307,8 @@ BYTE* __fastcall Fw_MakeCluster(BYTE* s, void*, int pal, int items, int images, 
     }
     Vec3 at = {0, -10.0f, 0};
     Matrix t;
-    CallThis(Ob_Apply, n, Matrix_Translation(&t, at), 1);
-    CallThis(Ob_AddNode, F(BYTE*, s, 468), n);
+    Node_ApplyMatrix(n, 0, Matrix_Translation(&t, at), 1);
+    Room_AddNode(F(BYTE*, s, 468), 0, n);
     BYTE* o = (BYTE*)operator new(104);
     if (o)
     {
@@ -6261,9 +6326,9 @@ BYTE* __fastcall Fw_MakeCluster(BYTE* s, void*, int pal, int items, int images, 
         F(int, o, 100) = 0;
     }
     F(BYTE*, F(BYTE*, s, 468), 120) = o;
-    CallThis(Ob_HashAdd, &g_ob71e820, &g_obName, n);
+    NameHash_Add(&g_ob71e820, 0, &g_obName, n);
     if (own)
-        CallThis(Ob_Push, F(BYTE*, s, 468), own);
+        Group_Push(F(BYTE*, s, 468), 0, (int)own);
     return F(BYTE*, s, 468);
 }
 
@@ -6271,8 +6336,7 @@ BYTE* __fastcall Fw_MakeCluster(BYTE* s, void*, int pal, int items, int images, 
 
 // === a window resized with its child keeping its margins in proportion ($L_5da410, a vtable entry)
 
-extern "C" void Wr_Next(); KING_ALIAS("_Wr_Next", "@Node_Next@8")
-extern "C" void Wr_Remake(); KING_ALIAS("_Wr_Remake", "@Fw_RemakeSurface@24")
+extern "C" BYTE* __fastcall Node_Next(BYTE* self, void*);
 KING_VAR(double, g_wr64b670, 64b670)
 
 // child c's margin (+44 / +48 by off) against window s's free space (size by vtable slot, less the end +52 / +56),
@@ -6295,12 +6359,12 @@ void __fastcall Wnd_Resize(BYTE* s, void*, int w, int h, int a3, int)
     double kx = 2.0, ky = 2.0;
     BYTE* n = F(BYTE*, s, 56);
     BYTE* c;
-    if (n && F(int, s, 60) && (c = F(BYTE*, n, 288)) != 0 && !CallThis<int>(Wr_Next, c))
+    if (n && F(int, s, 60) && (c = F(BYTE*, n, 288)) != 0 && !(int)Node_Next(c, 0))
     {
         kx = Wr_Ratio(s, 20, c, 44);
         ky = Wr_Ratio(s, 24, c, 48);
     }
-    CallThis(Wr_Remake, s, w, h, a3, 0);
+    Fw_RemakeSurface(s, 0, w, h, a3, 0);
     n = F(BYTE*, s, 56);
     if (!n || !F(int, s, 60))
         return;
@@ -6308,7 +6372,7 @@ void __fastcall Wnd_Resize(BYTE* s, void*, int w, int h, int a3, int)
     n = F(BYTE*, s, 56);
     F(int, n, 56) = F(int, n, 48) + h;
     n = F(BYTE*, s, 56);
-    if ((F(BYTE, n, 32) & 4) || !(c = F(BYTE*, n, 288)) || CallThis<int>(Wr_Next, c))
+    if ((F(BYTE, n, 32) & 4) || !(c = F(BYTE*, n, 288)) || (int)Node_Next(c, 0))
         return;
     int vx = CallVirt<int>(s, 20) + (F(int, c, 44) - F(int, c, 52));
     int x = (int)((double)vx * (kx / (kx + g_wr64b670)));
@@ -6324,7 +6388,7 @@ void __fastcall Wnd_Resize(BYTE* s, void*, int w, int h, int a3, int)
 
 // === the framework's renderer made again for a new surface (FUN_5dbbb0)
 
-extern "C" void Rr_Surface(); KING_ALIAS("_Rr_Surface", "@Fw_NewSurface@24")
+extern "C" void __fastcall Fw_NewSurface(BYTE* s, void*, int a, int b, int c, int d);
 extern "C" void Rr_Nop(); KING_ALIAS("_Rr_Nop", "_Fw_Nop")
 extern "C" void Rr_VecDtor(); KING_ALIAS("_Rr_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 extern "C" void Rr_New(); KING_ALIAS("_Rr_New", "@Renderer_Construct@12")
@@ -6336,7 +6400,7 @@ extern "C" {
 // one's +8452
 void __fastcall Fw_ResetRenderer(BYTE* s, void*, int a, int b, int c, int d)
 {
-    CallThis(Rr_Surface, s, a, b, c, d);
+    Fw_NewSurface(s, 0, a, b, c, d);
     BYTE* r = F(BYTE*, s, 464);
     int keep = F(int, r, 8452);
     if (r)
@@ -6361,11 +6425,11 @@ void __fastcall Fw_ResetRenderer(BYTE* s, void*, int a, int b, int c, int d)
 
 // === a window's bitmap blitted onto a DC ($L_5e27c0, a vtable entry)
 
-extern "C" void Cd_New(); KING_ALIAS("_Cd_New", "@Cdc_Construct@4")
-extern "C" void Cd_Free(); KING_ALIAS("_Cd_Free", "@Cdc_Destruct@4")
-extern "C" void Cd_Attach(); KING_ALIAS("_Cd_Attach", "@Cdc_Attach@12")
-extern "C" void Cd_Select(); KING_ALIAS("_Cd_Select", "_Cdc_SelectGdiObject@8")
-extern "C" void Cd_MapMode(); KING_ALIAS("_Cd_MapMode", "@Cdc_SetMapMode@12")
+extern "C" BYTE* __fastcall Cdc_Construct(BYTE* self);
+extern "C" void __fastcall Cdc_Destruct(BYTE* self);
+extern "C" BOOL __fastcall Cdc_Attach(BYTE* self, void*, HDC h);
+extern "C" BYTE* __stdcall Cdc_SelectGdiObject(HDC dc, HGDIOBJ h);
+extern "C" int __fastcall Cdc_SetMapMode(BYTE* self, void*, int mode);
 
 extern "C" {
 
@@ -6374,17 +6438,17 @@ extern "C" {
 int __fastcall Wnd_BlitTo(BYTE* s, void*, BYTE* to)
 {
     __declspec(align(8)) BYTE dc[16];
-    CallThis(Cd_New, dc);
+    Cdc_Construct(dc);
     if (!F(void*, F(BYTE*, s, 188), 4))
     {
-        CallThis(Cd_Free, dc);
+        Cdc_Destruct(dc);
         return 0;
     }
     HDC mem = CreateCompatibleDC(to ? F(HDC, to, 4) : 0);
-    CallThis(Cd_Attach, dc, mem);
+    Cdc_Attach(dc, 0, mem);
     void* bmp = F(BYTE*, s, 188) ? F(void*, F(BYTE*, s, 188), 4) : 0;
-    CallStd(Cd_Select, F(HDC, dc, 4), bmp);
-    CallThis(Cd_MapMode, dc, GetMapMode(F(HDC, to, 8)));
+    Cdc_SelectGdiObject(F(HDC, dc, 4), bmp);
+    Cdc_SetMapMode(dc, 0, GetMapMode(F(HDC, to, 8)));
     RECT rc;
     GetClientRect(F(HWND, s, 28), &rc);
     SIZE sz = {rc.right - rc.left, rc.bottom - rc.top};
@@ -6392,7 +6456,7 @@ int __fastcall Wnd_BlitTo(BYTE* s, void*, BYTE* to)
     POINT pt = {0, 0};
     DPtoLP(F(HDC, dc, 8), &pt, 1);
     BitBlt(F(HDC, to, 4), pt.x, pt.y, sz.cx, sz.cy, F(HDC, dc, 4), pt.x, pt.y, SRCCOPY);
-    CallThis(Cd_Free, dc);
+    Cdc_Destruct(dc);
     return 1;
 }
 
@@ -6402,7 +6466,7 @@ int __fastcall Wnd_BlitTo(BYTE* s, void*, BYTE* to)
 
 extern "C" void __cdecl Rm_SetDir(const char* dir); KING_ALIAS("_Rm_SetDir", "_Files_SetDir")
 extern "C" void Rm_MmioReset(); KING_ALIAS("_Rm_MmioReset", "@Mmio_Reset@8")
-extern "C" void Rm_MmioOpen(); KING_ALIAS("_Rm_MmioOpen", "@Mmio_Open@12")
+extern "C" int __fastcall Mmio_Open(BYTE* self, void*, char* name);
 extern "C" char* __cdecl Rm_ReadString(char* buf, void* f); KING_ALIAS("_Rm_ReadString", "_File_ReadString")
 extern "C" char* __cdecl Rm_Token(char** cur); KING_ALIAS("_Rm_Token", "_NextToken")
 extern "C" int __cdecl Rm_ReadInt(void* f); KING_ALIAS("_Rm_ReadInt", "_File_ReadInt")
@@ -6412,15 +6476,14 @@ extern "C" int __cdecl Rm_fseek(void* f, long off, int origin); KING_ALIAS("_Rm_
 extern "C" void __cdecl Rm_SoundBuffers(int n); KING_ALIAS("_Rm_SoundBuffers", "_Sound_AllocBuffers")
 extern "C" void* __cdecl Rm_SoundFromFile(void* f, int i, int size, int noload); KING_ALIAS("_Rm_SoundFromFile", "_Sound_CreateFromFile")
 extern "C" void* __cdecl Rm_SoundCreate(const char* name, int i, int noload); KING_ALIAS("_Rm_SoundCreate", "_Sound_Create")
-extern "C" void Rm_HashAdd(); KING_ALIAS("_Rm_HashAdd", "@NameHash_Add@16")
-extern "C" void Rm_SoundCtor(); KING_ALIAS("_Rm_SoundCtor", "@Sound_Construct@20")
-extern "C" void Rm_BitmapData(); KING_ALIAS("_Rm_BitmapData", "@Bitmap_ConstructData@20")
-extern "C" void Rm_BitmapCtor(); KING_ALIAS("_Rm_BitmapCtor", "@Bitmap_Construct@12")
+extern "C" BYTE* __fastcall Sound_Construct(BYTE* self, void*, const char* name, int a, int b);
+extern "C" BYTE* __fastcall Bitmap_ConstructData(BYTE* self, void*, int a, int b, int size);
+extern "C" BYTE* __fastcall Bitmap_Construct(BYTE* self, void*, const char* name);
 extern "C" void __cdecl Rm_MaskHeader(void* o, void* f, int size, void* map); KING_ALIAS("_Rm_MaskHeader", "_Mask_ReadHeader")
 extern "C" void* __cdecl Rm_MaskFromFile(void* f, int size); KING_ALIAS("_Rm_MaskFromFile", "_Texture_ReadFile")
 extern "C" void __cdecl Rm_MaskRead(void* o, const char* name); KING_ALIAS("_Rm_MaskRead", "_Data_Read5e94d0")
 extern "C" void* __cdecl Rm_MaskLoad(const char* name); KING_ALIAS("_Rm_MaskLoad", "_Data_Read5e9360")
-extern "C" void Rm_TexNamed(); KING_ALIAS("_Rm_TexNamed", "@Texture_ConstructNamed@20")
+extern "C" BYTE* __fastcall Texture_ConstructNamed(BYTE* self, void*, const char* name, int a, int b);
 extern "C" void Rm_TexCtor(); KING_ALIAS("_Rm_TexCtor", "@Texture_Construct@12")
 extern "C" void __cdecl Rm_TgaHeader(void* o, void* f, void* map); KING_ALIAS("_Rm_TgaHeader", "_Tga_ReadHeader")
 extern "C" void* __cdecl Rm_ImageFromFile(void* f, const char* name, int flags); KING_ALIAS("_Rm_ImageFromFile", "_Image_FromFile")
@@ -6475,7 +6538,7 @@ static char* Rm_Dup(const char* s)
     return d;
 }
 
-static void Rm_Add(const char* name, void* o) { CallThis(Rm_HashAdd, &g_rmNames, name, o); }
+static void Rm_Add(const char* name, void* o) { NameHash_Add(&g_rmNames, 0, name, o); }
 
 extern "C" {
 
@@ -6509,7 +6572,7 @@ const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void
         if (mm)
             mm = CallThis<BYTE*>(Rm_MmioReset, mm);
         F(BYTE*, s, 52) = mm;
-        CallThis(Rm_MmioOpen, mm, path);
+        Mmio_Open(mm, 0, (char*)path);
     }
     int mode = kind - 1;
     char* cur;
@@ -6607,7 +6670,7 @@ const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void
                 if (o)
                 {
                     int k = atoi(Rm_Token(&cur)) - 1;
-                    o = CallThis<BYTE*>(Rm_SoundCtor, o, name, k, 1);
+                    o = Sound_Construct(o, 0, name, k, 1);
                 }
                 F(void**, s, 116)[i] = o;
                 Rm_Add(name, F(void**, s, 116)[i]);
@@ -6637,7 +6700,7 @@ const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void
                         bool noload = t && strcmp(t, &g_rmNoload) == 0;
                         BYTE* o = (BYTE*)operator new(40);
                         if (o)
-                            o = CallThis<BYTE*>(Rm_BitmapData, o, f, pos, size);
+                            o = Bitmap_ConstructData(o, 0, (int)f, pos, size);
                         F(BYTE**, s, 108)[i] = o;
                         if (F(BYTE, s, 152) & 1)
                             Rm_MaskHeader(F(BYTE**, s, 108)[i], f, size, F(void*, s, 40));
@@ -6657,7 +6720,7 @@ const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void
                 {
                     BYTE* o = (BYTE*)operator new(40);
                     if (o)
-                        o = CallThis<BYTE*>(Rm_BitmapCtor, o, name);
+                        o = Bitmap_Construct(o, 0, name);
                     F(BYTE**, s, 108)[i] = o;
                     Rm_MaskRead(F(BYTE**, s, 108)[i], name);
                 }
@@ -6692,7 +6755,7 @@ const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void
                     {
                         BYTE* o = (BYTE*)operator new(84);
                         if (o)
-                            o = CallThis<BYTE*>(Rm_TexNamed, o, name, f, pos);
+                            o = Texture_ConstructNamed(o, 0, name, (int)f, pos);
                         F(BYTE**, s, 84)[i] = o;
                         if (F(BYTE, s, 152) & 1)
                         {
@@ -6718,7 +6781,7 @@ const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void
                         {
                             BYTE* o = (BYTE*)operator new(84);
                             if (o)
-                                o = CallThis<BYTE*>(Rm_TexNamed, o, name, f, pos);
+                                o = Texture_ConstructNamed(o, 0, name, (int)f, pos);
                             F(BYTE**, s, 84)[i] = o;
                             Rm_TgaHeader(F(BYTE**, s, 84)[i], f, F(void*, s, 40));
                             F(DWORD, F(BYTE**, s, 84)[i], 52) |= flags;
@@ -6844,7 +6907,7 @@ const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void
                     {
                         BYTE* o = (BYTE*)operator new(84);
                         if (o)
-                            o = CallThis<BYTE*>(Rm_TexNamed, o, name, f, pos);
+                            o = Texture_ConstructNamed(o, 0, name, (int)f, pos);
                         F(BYTE**, s, 92)[i] = o;
                         Rm_TgaHeader(F(BYTE**, s, 92)[i], f, 0);
                     }
@@ -7568,7 +7631,7 @@ BYTE* __fastcall Module_Load(BYTE* s, void*, const char* dir, const char* name, 
 
 // === the app's video mode, devices and main window set up (FUN_5e3bc0 with its tail $L_5e3c22)
 
-ASM_FUNC($L_5d7c20, _Dd_TestMode)    // tries a video mode (w, h, cres, flags, 3 outs)
+extern "C" BOOL __cdecl Dd_TestMode(int w, int h, int bytes, DWORD flags, int* result, DWORD* mem, DWORD* freeMem);
 extern "C" BYTE* __cdecl Dm_NewApp(); KING_ALIAS("_Dm_NewApp", "_Fw_NewApp384")
 extern "C" void __cdecl Dm_DefaultMode(int* w, int* h, int* c, int* flags); KING_ALIAS("_Dm_DefaultMode", "_Dd_DefaultMode")
 extern "C" void __cdecl Dm_TexFormat(int kind, int b); KING_ALIAS("_Dm_TexFormat", "_Dd_ChooseTextureFormat")
@@ -7621,8 +7684,7 @@ void __fastcall App_SetupVideo(BYTE* s, void*)
 {
     int m[4];
     Dm_NewApp();
-    if (!CallC<int>($L_5d7c20, F(int, s, 256), F(int, s, 260), F(int, s, 264),
-                    (F(DWORD, s, 268) & 0x1000) << 3 | (F(DWORD, s, 268) & 0x3F00), 0, 0, 0))
+    if (!(int)Dd_TestMode(F(int, s, 256), F(int, s, 260), F(int, s, 264), (F(DWORD, s, 268) & 0x1000) << 3 | (F(DWORD, s, 268) & 0x3F00), 0, 0, 0))
     {
         m[3] = F(DWORD, s, 268) & 0x7F00;
         m[0] = F(int, s, 256);
@@ -7706,9 +7768,9 @@ void __fastcall App_SetupVideo(BYTE* s, void*)
 
 // === the app's start (InitInstance, FUN_5e29b0 with its tail $L_5e2cb0)
 
-extern "C" void Ia_GdiAttach(); KING_ALIAS("_Ia_GdiAttach", "@GdiObject_Attach@12")
-extern "C" void Ia_DialogBkColor(); KING_ALIAS("_Ia_DialogBkColor", "@WinApp_SetDialogBkColor@16")
-extern "C" void Ia_Enable3d(); KING_ALIAS("_Ia_Enable3d", "@WinApp_Enable3dControls@4")
+extern "C" BOOL __fastcall GdiObject_Attach(BYTE* self, void*, HGDIOBJ h);
+extern "C" void __fastcall WinApp_SetDialogBkColor(BYTE* self, void*, COLORREF bk, COLORREF text);
+extern "C" BOOL __fastcall WinApp_Enable3dControls(BYTE* self);
 extern "C" BYTE* __fastcall Ia_BitmapCtor(BYTE* self, void*); KING_ALIAS("@Ia_BitmapCtor@8", "@Obj654420_Construct@8")
 extern "C" void __cdecl Ia_MemoryTouch(int n); KING_ALIAS("_Ia_MemoryTouch", "_Memory_Touch")
 extern "C" const char* __cdecl Ia_DataPath(const char* path); KING_ALIAS("_Ia_DataPath", "_DataPath_Set")
@@ -7739,10 +7801,10 @@ BOOL __fastcall App_InitInstance(BYTE* s, void*)
     BYTE* splash = (BYTE*)operator new(192);
     if (splash)
     {
-        CallThis(Mf_FrameCtor, splash);
+        FrameWnd_Construct(splash);
         RECT rc = { 100, 100, 200, 300 };
         F(void*, splash, 0) = &g_iaSplashVt652570;
-        CallThis(Mf_FrameCreate, splash, 0, 0, 0x80000000, &rc, 0, 0, 0, 0);
+        FrameWnd_Create(splash, 0, 0, 0, 0x80000000, &rc, 0, 0, 0, 0);
         BYTE* bmp = (BYTE*)operator new(8);
         if (bmp)
         {
@@ -7751,8 +7813,8 @@ BOOL __fastcall App_InitInstance(BYTE* s, void*)
         }
         F(BYTE*, splash, 188) = bmp;
         const char* res = F(int, g_iaApp721750, 320) == 1 ? &g_iaTitleBmp : &g_iaTitleBmpE;
-        HBITMAP hb = LoadBitmapA(F(HINSTANCE, CallStd<BYTE*>(Mf_ModuleState), 12), res);
-        CallThis(Ia_GdiAttach, bmp, hb);
+        HBITMAP hb = LoadBitmapA(F(HINSTANCE, Afx_GetModuleState(), 12), res);
+        GdiObject_Attach(bmp, 0, hb);
         int sw = GetSystemMetrics(0);
         int sh = GetSystemMetrics(1);
         int bw = 100, bh = 200;
@@ -7764,7 +7826,7 @@ BOOL __fastcall App_InitInstance(BYTE* s, void*)
             bw = bm.bmWidth;
             bh = bm.bmHeight;
         }
-        CallThis(Mf_SetWindowPos, splash, &g_mfWndTop, (sw - bw) / 2, (sh - bh) / 2, bw, bh, 64);
+        Wnd_SetWindowPos(splash, 0, (BYTE*)&g_mfWndTop, (sw - bw) / 2, (sh - bh) / 2, bw, bh, 64);
     }
     Ia_MemoryTouch(100);
     g_iaApp721750 = s;
@@ -7791,8 +7853,8 @@ BOOL __fastcall App_InitInstance(BYTE* s, void*)
         a++;
         argc++;
     }
-    CallThis(Ia_DialogBkColor, s, 0xC0C0C0, 0);
-    CallThis(Ia_Enable3d, s);
+    WinApp_SetDialogBkColor(s, 0, 0xC0C0C0, 0);
+    WinApp_Enable3dControls(s);
     Ia_SetupVideo(s, 0);
 
     if (F(DWORD, g_iaApp721750, 268) & 0x400)
@@ -7817,7 +7879,7 @@ BOOL __fastcall App_InitInstance(BYTE* s, void*)
     DWORD fl = F(DWORD, g_iaApp721750, 292);
     DWORD bit = fl & 1;
     F(DWORD, g_iaApp721750, 292) = fl & ~1u;
-    CallThis(Mf_SetWindowPos, F(BYTE*, s, 384), &g_mfWndTop, (sw - w) / 2, (sh - h) / 2, w, h, 64);
+    Wnd_SetWindowPos(F(BYTE*, s, 384), 0, (BYTE*)&g_mfWndTop, (sw - w) / 2, (sh - h) / 2, w, h, 64);
     F(DWORD, g_iaApp721750, 292) |= bit;
     CallVirt(s, 156, argc, &g_iaArgv720c04);
     if (splash)
@@ -8139,17 +8201,16 @@ void __fastcall App_UpdateCamera(BYTE* s, void*)
 // [$L_5fa510] reads a flat face set (virtual, thiscall with three stack
 // arguments, only the file used): the plane (+20), a point (+56), then the
 // count (+48) and that many 40-byte faces (+52, new[] with a count prefix)
-extern "C" void Fw_PlaneRead(); KING_ALIAS("_Fw_PlaneRead", "@Plane_Read@12")
-extern "C" void Fw_Vec3Read(); KING_ALIAS("_Fw_Vec3Read", "@Vec3_Read@12")
+extern "C" void __fastcall Plane_Read(Plane* self, void*, FILE* file);
+extern "C" void __fastcall Vec3_Read(Vec3* self, void*, FILE* file);
 extern "C" void Fw_VecCtorEh(); KING_ALIAS("_Fw_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
-extern "C" int __cdecl File_ReadInt(FILE* f);
 extern "C" BYTE* __fastcall FxRec_Init(BYTE* s);
 extern "C" void __fastcall FxRec_Free(BYTE* s);
 int __fastcall FlatFace_Read(BYTE* s, void*, FILE* f);
 extern "C" int __fastcall FaceSet_Read(BYTE* self, void*, FILE* file, int, int)
 {
-    CallThis(Fw_PlaneRead, self + 20, file);
-    CallThis(Fw_Vec3Read, self + 56, file);
+    Plane_Read((Plane*)(self + 20), 0, file);
+    Vec3_Read((Vec3*)(self + 56), 0, file);
     int n = File_ReadInt(file);
     F(int, self, 48) = n;
     int* p = (int*)operator new(n * 40 + 4);
@@ -8173,8 +8234,6 @@ extern "C" int __fastcall FaceSet_Read(BYTE* self, void*, FILE* file, int, int)
 // Returns the room's module (+12), 0 for event 0 and unknown events.
 KING_VAR(BYTE, fw_71e820, 71e820)           // the name hash
 KING_VAR(AsmLabel, fw_s682c00, 682c00)
-extern "C" const char* __fastcall NameHash_ResolvePending(BYTE* self, void*);
-extern "C" void __fastcall Room_Each(BYTE* self, void*, void* a, void* b);
 extern "C" BYTE* __fastcall Room_ModuleEvent(BYTE* self, void*, const char* name, int ev, BYTE* room)
 {
     if (ev == 0) {
@@ -8234,12 +8293,12 @@ KING_VAR(AsmLabel, fw_vtbl6523e4, 6523e4)
 extern "C" void __fastcall Fw_FrameDestruct(BYTE* self)
 {
     F(void*, self, 0) = fw_vtbl6523e4;
-    CallThis(Fw_FrameWndDtor, self);
+    FrameWnd_Destruct(self);
 }
 
 // [$L_5dd380] WM_SYSCOMMAND goes to the frame window's handler
-extern "C" void Fw_OnSysCmd(); KING_ALIAS("_Fw_OnSysCmd", "@FrameWnd_OnSysCommand@16")
-extern "C" void __fastcall Fw_OnSysCommand(BYTE* self, void*, UINT id, LPARAM l) { CallThis(Fw_OnSysCmd, self, id, l); }
+extern "C" void __fastcall FrameWnd_OnSysCommand(BYTE* self, void*, UINT id, LPARAM l);
+extern "C" void __fastcall Fw_OnSysCommand(BYTE* self, void*, UINT id, LPARAM l) { FrameWnd_OnSysCommand(self, 0, id, l); }
 
 // [$L_5e30f0] [$L_5e3116] the new handler: fatal "out of memory" with the size
 KING_VAR(AsmLabel, fw_s683168, 683168)
@@ -8257,7 +8316,6 @@ extern "C" int __cdecl CGameApp_NoMemory(size_t size)
 KING_VAR(BYTE*, fw_721750, 721750)          // the application
 KING_VAR(void*, fw_7217a0, 7217a0)          // the previous hook
 extern "C" float __cdecl Sound_SetVolume(float v);
-extern "C" void __cdecl Sound_Stop();
 extern "C" int __cdecl Sound_Close();
 extern "C" void __cdecl CGameApp_Fatal()
 {
@@ -8271,14 +8329,13 @@ extern "C" void __cdecl CGameApp_Fatal()
 
 // [$L_5ddad0] sets the display mode (w, h, colour bits, flags; -1 keeps the
 // current +264 / +268) and remembers it
-extern "C" void Fw_SetMode5d7c20(); KING_ALIAS("_Fw_SetMode5d7c20", "_Dd_TestMode")
 extern "C" BOOL __fastcall MainWnd_SetMode(BYTE* self, void*, int w, int h, int bits, int flags)
 {
     if (bits == -1)
         bits = F(int, self, 264);
     if (flags == -1)
         flags = F(int, self, 268);
-    if (!CallC<int>(Fw_SetMode5d7c20, w, h, bits, flags & 20224, 0, 0, 0))
+    if (!(int)Dd_TestMode(w, h, bits, flags & 20224, 0, 0, 0))
         return FALSE;
     F(int, self, 268) = flags;
     F(int, self, 264) = bits;
@@ -8291,10 +8348,8 @@ extern "C" BOOL __fastcall MainWnd_SetMode(BYTE* self, void*, int w, int h, int 
 // and in a window centres it on the screen with its frame; finally the
 // texture flag at 71e7d4
 extern "C" void __fastcall CGameApp_SetVideoMode(BYTE* self, void*, int width, int height, int cres, DWORD flags);
-extern "C" int __cdecl Mode_TextureLevel(void);
 extern "C" void __cdecl Set71e7d4(int v);
 KING_VAR(BYTE, fw_72da58, 72da58)               // the window to insert after
-extern "C" BOOL __fastcall Wnd_SetWindowPos(BYTE* self, void*, BYTE* after, int x, int y, int cx, int cy, UINT flags);
 extern "C" BOOL __fastcall MainWnd_SetVideoMode(BYTE* self, void*, int w, int h, int bits, int flags)
 {
     int cur = F(int, self, 268) & 1024;
@@ -8313,8 +8368,8 @@ extern "C" BOOL __fastcall MainWnd_SetVideoMode(BYTE* self, void*, int w, int h,
     }
     CGameApp_SetVideoMode(self, 0, w, h, bits, flags);
     if (!(F(DWORD, self, 268) & 1024)) {
-        int sx = CallC<int>(FUN_5d3f70) * w;
-        int sy = CallC<int>(FUN_5d3f80) * h;
+        int sx = Video_Get67fcf0() * w;
+        int sy = Video_Get67fcf4() * h;
         int fw = Wnd_FrameExtra(2);
         int W = fw + (Wnd_FrameExtra(1) + sx);
         int fh = Wnd_FrameExtra(4);

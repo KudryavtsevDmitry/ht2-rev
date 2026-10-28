@@ -13,23 +13,34 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void __cdecl free(void* p);
 
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
+extern "C" unsigned __fastcall Reader_Fill(BYTE* self, void*, unsigned n);
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
+extern "C" DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d);
 extern "C" void FUN_4b20d0(); KING_ALIAS("_FUN_4b20d0", "_Sch_ParseNumber")
+extern "C" BYTE* __fastcall SchState_Construct(BYTE* self, void*);
 extern "C" void FUN_4b58c0(); KING_ALIAS("_FUN_4b58c0", "@SchState_Construct@8")
+extern "C" void __fastcall SchReader_Close(BYTE* self, int);
 extern "C" void FUN_4b5490(); KING_ALIAS("_FUN_4b5490", "@SchReader_Close@8")
+extern "C" void __fastcall FilePort_Destroy(BYTE* s);
 extern "C" void FUN_4b5b70(); KING_ALIAS("_FUN_4b5b70", "@FilePort_Destroy@4")
-extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")
+extern "C" void* __cdecl Pool32_New(int size);
+extern "C" BYTE* __fastcall Number_ConstructComplex(BYTE* s, void*, int exact, BYTE* re, BYTE* im);
 extern "C" void FUN_4b0be0(); KING_ALIAS("_FUN_4b0be0", "@Number_ConstructComplex@20")
+extern "C" BYTE* __fastcall SchItem4b1390_Construct(BYTE* self, void*);
 extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
+extern "C" void __fastcall CharDeque_Construct(int* self, void*, unsigned n);
 extern "C" void FUN_4abf10(); KING_ALIAS("_FUN_4abf10", "@CharDeque_Construct@12")
 KING_VAR(AsmLabel, s_tNumber, 66ca60)
 KING_VAR(AsmLabel, g_vtbl64c0b0, 64c0b0)
+extern "C" int __cdecl Sch_Error(int code, int level, const char* a, const char* b);
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
-extern "C" void FUN_4b63a0(); KING_ALIAS("_FUN_4b63a0", "@SchBuf4b63a0_Construct@8")
+extern "C" BYTE* __fastcall SchBuf4b63a0_Construct(BYTE* self, void*);
+extern "C" BYTE* __fastcall SchSymbol_Construct(BYTE* self, void*, const char* s);
 extern "C" void FUN_4b6500(); KING_ALIAS("_FUN_4b6500", "@SchSymbol_Construct@12")
-extern "C" void FUN_48c540(); KING_ALIAS("_FUN_48c540", "_BigInt_Negate")
-extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
+extern "C" WORD* __cdecl BigInt_Negate(WORD* a, WORD* r);
+extern "C" WORD* __cdecl WStr_Assign(WORD* dst, const WORD* src);
 KING_VAR(AsmLabel, s_tIdentifier, 66ce4c)
 KING_VAR(AsmLabel, g_vtblString, 64c108)
 KING_VAR(AsmLabel, g_vtblSymbol, 64c118)
@@ -50,7 +61,7 @@ KING_VAR(int, g_smallAllocLock, 68d204)       // a lock object; 0 releases it
 typedef void* FreeLists[1];
 KING_VAR(FreeLists, g_smallFreeLists, 68d1c0) // freed blocks by (size + 7) / 8
 
-static void AiFree(void* p, int size) { CallC(FUN_44b4a0, p, size); }
+static void AiFree(void* p, int size) { Ai_PoolFree(p, size); }
 
 // value: +0 the object (its reference count at +4), +8 flags (0x10000:
 // immediate); obj, m_4 and flags are copied as the copy constructor does
@@ -328,12 +339,12 @@ extern "C" int __cdecl Sch_IsSymbolChar(int c)
 // argument
 extern "C" int __cdecl SchReader_4b2e80(int unused, BYTE* reader)
 {
-    return CallThis<int>(FUN_4b2b60, reader, 1);
+    return (int)Reader_Fill(reader, 0, 1);
 }
 
 extern "C" void __fastcall SchReader_Skip(BYTE* self, void*)
 {
-    CallThis(FUN_4b2b60, self, 1);
+    Reader_Fill(self, 0, 1);
     if (F(BYTE*, self, 8) != F(BYTE*, self, 16) - 4)
         F(BYTE*, self, 8) += 4;
     else
@@ -344,7 +355,7 @@ extern "C" void __fastcall SchReader_Skip(BYTE* self, void*)
 extern "C" void* __cdecl SchReader_4b3670(void* out, int a, BYTE* reader)
 {
     SchReader_4b2e80(a, reader);
-    CallC(FUN_4b20d0, out, F(int, reader, 72), reader);
+    Sch_ParseNumber((DWORD*)out, F(int, reader, 72), reader);
     return out;
 }
 
@@ -353,7 +364,7 @@ extern "C" void* __cdecl SchReader_4b3670(void* out, int a, BYTE* reader)
 
 extern "C" BYTE* __fastcall SchItem4b5f30_Construct(BYTE* self, void*, int a, int unused)
 {
-    CallThis(FUN_4b58c0, self);
+    SchState_Construct(self, 0);
     F(void*, self, 0) = g_vtbl64c0dc;
     F(int, self, 12) = a;
     return self;
@@ -363,8 +374,8 @@ extern "C" void __fastcall SchItem4b5f50_Destruct(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl64c0dc;
     if (self[16] & 1)
-        CallThis(FUN_4b5490, self);
-    CallThis(FUN_4b5b70, self);
+        SchReader_Close(self, 0);
+    FilePort_Destroy(self);
 }
 
 static BYTE* Zero5(BYTE* self, void* vtbl)
@@ -436,9 +447,12 @@ extern "C" BYTE* __fastcall Sch_At(BYTE** self, void*, int i)
 // medium-sized functions: a node's constructor, the reader's line buffer and
 // its error line
 
+extern "C" void __fastcall CharVec_InsertRange44c220(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
+extern "C" void __fastcall VecChar_Insert44bef0(BYTE** v, void*, BYTE* pos, const BYTE* x);
 extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@16")    // vector<char>::insert(pos, &c)
-extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")    // deque<int>::push_back when the block is full
+extern "C" void __fastcall DequeDw_PushBackAux(BYTE* self, int, const DWORD* x);
+extern "C" int __cdecl Sch_ErrorCode(int code, int severity);
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 KING_VAR(AsmLabel, g_fmtLineCol, 671458)      // the "line col" prefix of an error line
 
@@ -463,7 +477,7 @@ static void PushChar(BYTE* v, char c)
 {
     char* end = F(char*, v, 4);
     if (end == F(char*, v, 8))
-        CallThis(FUN_44bef0, v, end, &c);
+        VecChar_Insert44bef0((BYTE**)v, 0, (BYTE*)end, (const BYTE*)&c);
     else {
         if (end)
             *end = c;
@@ -476,8 +490,8 @@ extern "C" void __fastcall Reader_ErrorLine(BYTE* self, void*, BYTE* out)
 {
     char buf[128];
     sprintf(buf, g_fmtLineCol, F(int, self, 64), F(int, self, 68));
-    CallThis(FUN_44c220, out, F(char*, out, 4), buf, buf + strlen(buf));
-    CallThis(FUN_44c220, out, F(char*, out, 4), F(char*, self, 52), F(char*, self, 56));
+    CharVec_InsertRange44c220((BYTE**)out, 0, (BYTE*)(F(char*, out, 4)), (BYTE*)buf, (BYTE*)(buf + strlen(buf)));
+    CharVec_InsertRange44c220((BYTE**)out, 0, (BYTE*)(F(char*, out, 4)), (BYTE*)(F(char*, self, 52)), (BYTE*)(F(char*, self, 56)));
     PushChar(out, '\n');
     for (int i = 0; i < F(int, self, 68) - 1; i++)
         PushChar(out, ' ');
@@ -502,13 +516,13 @@ extern "C" unsigned __fastcall Reader_Fill(BYTE* self, void*, unsigned n)
         int c;
         do {
             if (!F(BYTE*, self, 40))
-                CallC(FUN_4a52e0, 0, 1);
+                Sch_ErrorCode(0, 1);
             if (F(DWORD, self, 48) & 0x10000)
-                CallC(FUN_4a52e0, 4, 1);
+                Sch_ErrorCode(4, 1);
             c = CallVirt<int>(F(BYTE*, self, 40), 20);
             int* end = F(int*, self, 24);
             if (end == (int*)(F(BYTE*, self, 32) - 4))
-                CallThis(FUN_4a20a0, self, &c);
+                DequeDw_PushBackAux(self, 0, (const DWORD*)&c);
             else {
                 if (end)
                     *end = c;
@@ -572,15 +586,15 @@ static void SchRef_Release(DWORD* v)
 static BYTE* NewIdentifier(DWORD name)
 {
     BYTE* o = (BYTE*)operator new(24);
-    return o ? CallThis<BYTE*>(FUN_4b6500, o, name) : 0;
+    return o ? SchSymbol_Construct(o, 0, (const char*)name) : 0;
 }
 
 static void Port_CheckWrite(BYTE* o, DWORD flags, int c)
 {
     if (!o)
-        CallC(FUN_4a52e0, 0, 1);
+        Sch_ErrorCode(0, 1);
     if (flags & 0x10000)
-        CallC(FUN_4a52e0, 4, 1);
+        Sch_ErrorCode(4, 1);
     CallVirt(o, 28, c);
 }
 
@@ -592,7 +606,7 @@ static BYTE* SchText_Construct(BYTE* self, const char* s, void* vtbl)
     F(int, self, 16) = 0;
     F(int, self, 20) = 0;
     F(void*, self, 0) = vtbl;
-    CallThis(FUN_44c220, self + 12, F(BYTE*, self, 16), s, s + strlen(s) + 1);
+    CharVec_InsertRange44c220((BYTE**)(self + 12), 0, F(BYTE*, self, 16), (BYTE*)s, (BYTE*)(s + strlen(s) + 1));
     return self;
 }
 
@@ -602,7 +616,7 @@ extern "C" {
 DWORD* __cdecl Sch_MakeIdentifierNew(DWORD* out)
 {
     BYTE* o = (BYTE*)operator new(24);
-    BYTE* id = o ? CallThis<BYTE*>(FUN_4b63a0, o) : 0;
+    BYTE* id = o ? SchBuf4b63a0_Construct(o, 0) : 0;
     return SchHandle_Take(out, id, 9, s_tIdentifier);
 }
 
@@ -656,8 +670,8 @@ void __cdecl Port_WriteString(const char* s, DWORD h0, DWORD h1, DWORD h2)
 // [FUN_4b2050]
 DWORD* __cdecl Sch_Convert4b2050(DWORD* out, const DWORD* x)
 {
-    BYTE* t = CallC<BYTE*>(FUN_48c540, x[0], (const char*)s_6703f0);
-    *out = CallC<DWORD>(FUN_48acd0, 0, t);
+    BYTE* t = (BYTE*)BigInt_Negate((WORD*)x[0], (WORD*)((const char*)s_6703f0));
+    *out = (DWORD)WStr_Assign(0, (const WORD*)t);
     if (t && F(WORD, t, 2))
         operator delete(t);
     return out;
@@ -705,20 +719,20 @@ extern "C" {
 // [FUN_4b2880] a new number from (*a, b, c)
 DWORD* __cdecl Sch_MakeNumber3(DWORD* out, int unused, const DWORD* a, DWORD b, DWORD c)
 {
-    BYTE* o = CallC<BYTE*>(FUN_4ad2f0, 32);
-    BYTE* n = o ? CallThis<BYTE*>(FUN_4b0be0, o, *a, b, c) : 0;
+    BYTE* o = (BYTE*)Pool32_New(32);
+    BYTE* n = o ? Number_ConstructComplex(o, 0, *a, (BYTE*)b, (BYTE*)c) : 0;
     return SchHandle_Take(out, n, 6, (const char*)s_tNumber);
 }
 
 // [FUN_4b58c0] the interpreter state: base, value tables, its random generator
 BYTE* __fastcall SchState_Construct(BYTE* self, void*)
 {
-    CallThis(FUN_4b1390, self);
+    SchItem4b1390_Construct(self, 0);
     F(int, self, 12) = 0;
     F(int, self, 16) = 0;
     F(int, self, 20) = 0;
     memset(self + 24, 0, 40);
-    CallThis(FUN_4abf10, self + 24, 0);
+    CharDeque_Construct((int*)(self + 24), 0, 0);
     F(BYTE, self, 64) = 0;
     SubtractiveRng_Init((DWORD*)(self + 68), 161803398);
     F(void*, self, 0) = g_vtbl64c0b0;
@@ -727,7 +741,8 @@ BYTE* __fastcall SchState_Construct(BYTE* self, void*)
 
 }
 
-extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
+extern "C" void __fastcall IntDeque_Construct(int* self, void*, unsigned n);
+extern "C" void __fastcall SchHandle_Release(void** h, int);
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
 
 extern "C" {
@@ -738,7 +753,7 @@ BYTE* __fastcall Item4b4e10_Construct(BYTE* self, void*, int a, DWORD h0, DWORD 
     DWORD h[3] = {h0, h1, h2};
     for (int i = 0; i < 10; i++)
         F(int, self, i * 4) = 0;
-    CallThis(FUN_4a1f10, self, 0);
+    IntDeque_Construct((int*)self, 0, 0);
     DWORD* d = (DWORD*)(self + 40);
     if (h2 & 0x10000) {
         d[2] = h2;
@@ -768,7 +783,7 @@ void __fastcall Item4b6840_Destroy(BYTE* self, void*)
     F(void*, self, 0) = &g_vtbl64c128;
     BYTE** v = (BYTE**)(self + 20);
     for (BYTE* e = v[0]; e != v[1]; e += 12)
-        CallThis(FUN_4a36c0, e);
+        SchHandle_Release((void**)e, 0);
     int n = (v[2] - v[0]) / 12;
     if (n)
         AiFree(v[0], n * 12);
@@ -815,6 +830,7 @@ BYTE* __fastcall BytesNode4b6400_Construct(BYTE* self, void*, BYTE* const* src) 
 
 }
 
+extern "C" BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx);
 extern "C" void FUN_4b6f70(); KING_ALIAS("_FUN_4b6f70", "_Sch_Write")
 
 struct Value3v { BYTE* obj; int len; DWORD flags; };
@@ -827,7 +843,7 @@ DWORD* __cdecl Sch4b8070(DWORD* out, int a, Value3v h1, Value3v h2)
     int t = a;
     DWORD r[4];
     r[0] = 0;
-    CallC(FUN_4b6f70, r, &h1, &h2, &t);
+    Sch_Write((BYTE*)r, (const BYTE*)&h1, (const BYTE*)&h2, (BYTE*)&t);
     CopyRef((BYTE*)out, (const BYTE*)(r + 1));
     SchRef_Release(r + 1);
     SchRef_Release((DWORD*)&h1);
@@ -839,6 +855,7 @@ DWORD* __cdecl Sch4b8070(DWORD* out, int a, Value3v h1, Value3v h2)
 
 extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
 extern "C" void FUN_4abf10(); KING_ALIAS("_FUN_4abf10", "@CharDeque_Construct@12")    // deque<char> constructor (n)
+extern "C" void __fastcall FilePort_ReadHeader(BYTE* self);
 extern "C" void FUN_4b54b0(); KING_ALIAS("_FUN_4b54b0", "@FilePort_ReadHeader@4")    // file port: reads the file
 extern "C" struct _iobuf* __cdecl fopen(const char* name, const char* mode);
 
@@ -848,13 +865,13 @@ extern "C" {
 // subtractive random generator (Knuth's, seed 161803398)
 BYTE* __fastcall FilePort_Construct(BYTE* self, void*, const char* name, unsigned mode)
 {
-    CallThis(FUN_4b1390, self);
+    SchItem4b1390_Construct(self, 0);
     F(int, self, 12) = 0;
     F(int, self, 16) = 1;
     F(int, self, 20) = 0;
     for (int i = 0; i < 10; i++)
         F(int, self, 24 + i * 4) = 0;
-    CallThis(FUN_4abf10, self + 24, 0);
+    CharDeque_Construct((int*)(self + 24), 0, 0);
     DWORD* t = (DWORD*)(self + 68);
     F(BYTE, self, 64) = 0;
     for (int i = 0; i < 55; i++)
@@ -881,7 +898,7 @@ BYTE* __fastcall FilePort_Construct(BYTE* self, void*, const char* name, unsigne
     if (!F(void*, self, 12))
         F(DWORD, self, 20) |= 1;
     else if (mode & 1)
-        CallThis(FUN_4b54b0, self);
+        FilePort_ReadHeader(self);
     return self;
 }
 
@@ -900,7 +917,7 @@ static void Chars_PushBack(BYTE** v, char c)
         Byte_Construct(v[1], (BYTE*)&c);
         v[1]++;
     } else
-        CallThis(FUN_44bef0, v, v[1], &c);
+        VecChar_Insert44bef0(v, 0, v[1], (const BYTE*)&c);
 }
 
 // marks the exponent: '#' before the first 'e' or 'E' of the text
@@ -913,7 +930,7 @@ static void Chars_MarkExponent(BYTE** v)
                 *p = '#';
                 v[1]++;
             } else
-                CallThis(FUN_44bef0, v, p, &c);
+                VecChar_Insert44bef0(v, 0, p, (const BYTE*)&c);
             return;
         }
 }
@@ -927,17 +944,18 @@ extern "C" void __fastcall Number_Write(BYTE* s, void*, BYTE** v)
         Chars_PushBack(v, 'i');
     }
     sprintf(buf, &g_fmtG4b0c70, F(double, s, 16));
-    CallThis(FUN_44c220, v, v[1], buf, buf + strlen(buf));
+    CharVec_InsertRange44c220(v, 0, v[1], (BYTE*)buf, (BYTE*)(buf + strlen(buf)));
     Chars_MarkExponent(v);
     if (F(double, s, 24) < 0.0 || F(double, s, 24) > 0.0) {
         Chars_PushBack(v, '@');
         sprintf(buf, &g_fmtG4b0c70, F(double, s, 24));
-        CallThis(FUN_44c220, v, v[1], buf, buf + strlen(buf));
+        CharVec_InsertRange44c220(v, 0, v[1], (BYTE*)buf, (BYTE*)(buf + strlen(buf)));
         Chars_MarkExponent(v);
     }
     Chars_PushBack(v, 0);
 }
 
+extern "C" double __cdecl Rational_ToDouble(WORD** num, WORD** den);
 extern "C" void FUN_48a7c0(); KING_ALIAS("_FUN_48a7c0", "_Rational_ToDouble")    // a big integer's value as a double (digits, end)
 
 // [FUN_4b0be0] constructs a complex number from two big integers (exact when asked)
@@ -946,8 +964,8 @@ extern "C" BYTE* __fastcall Number_ConstructComplex(BYTE* s, void*, int exact, B
     F(int, s, 4) = 0;
     F(int, s, 8) = 0;
     F(void*, s, 0) = &g_vtbl64c044;
-    F(double, s, 16) = CallC<double>(FUN_48a7c0, re, re + 4);
-    F(double, s, 24) = CallC<double>(FUN_48a7c0, im, im + 4);
+    F(double, s, 16) = Rational_ToDouble((WORD**)re, (WORD**)(re + 4));
+    F(double, s, 24) = Rational_ToDouble((WORD**)im, (WORD**)(im + 4));
     if (exact)
         F(DWORD, s, 8) |= 1;
     return s;
@@ -955,7 +973,7 @@ extern "C" BYTE* __fastcall Number_ConstructComplex(BYTE* s, void*, int exact, B
 
 KING_VAR(char, vt_64bee4, 64bee4)
 KING_VAR(char, g_6703f8, 6703f8)
-extern "C" void FUN_48ade0(); KING_ALIAS("_FUN_48ade0", "_BigInt_FromInt")
+extern "C" WORD* __cdecl BigInt_FromInt(WORD* p, int v);
 
 // [FUN_4b13b0] the script node base destructor
 extern "C" void __fastcall SchNode_Destroy(void** self, int)
@@ -977,7 +995,7 @@ extern "C" void __fastcall SchReader_Close(BYTE* self, int)
 // [FUN_4b26b0] a symbol value: (interned name, symbol type)
 extern "C" void** __fastcall SchSymbol_Init(void** self, int, const char* name)
 {
-    self[0] = (void*)CallC<int>(FUN_48ade0, 0, name);
+    self[0] = (void*)(int)BigInt_FromInt(0, (int)name);
     self[1] = &g_6703f8;
     return self;
 }
@@ -1003,8 +1021,9 @@ extern "C" void FUN_4b5f50(); KING_ALIAS("_FUN_4b5f50", "@SchItem4b5f50_Destruct
 extern "C" void FUN_4b6340(); KING_ALIAS("_FUN_4b6340", "@SchBuf4b6340_Destruct@8")
 extern "C" void FUN_4b6580(); KING_ALIAS("_FUN_4b6580", "@SchBuf4b6580_Destruct@8")
 extern "C" void FUN_4b6840(); KING_ALIAS("_FUN_4b6840", "@Item4b6840_Destroy@8")
+extern "C" void __fastcall Sch4b11f0_Destroy(BYTE* self, void*);
 extern "C" void FUN_4b11f0(); KING_ALIAS("_FUN_4b11f0", "@Sch4b11f0_Destroy@8")
-extern "C" void FUN_4ad230(); KING_ALIAS("_FUN_4ad230", "_SchPool1_Free")
+extern "C" void __cdecl SchPool1_Free(void* p);
 
 static BYTE* Val_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -1058,9 +1077,9 @@ extern "C" int __fastcall Port_PutChar(BYTE* s, void*, char c) { return CallC<in
 // [$L_4b1100] pairs come from the value pool and go back to it
 extern "C" BYTE* __fastcall Pair_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_4b11f0, s);
+    Sch4b11f0_Destroy(s, 0);
     if (flags & 1)
-        CallC(FUN_4ad230, s);
+        SchPool1_Free(s);
     return s;
 }
 
@@ -1098,13 +1117,15 @@ static void Val_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
 extern "C" void __cdecl ValInit_4b53e0() { Val_RngInit((DWORD*)g_valRng694748, &g_valRng694820, &g_valRng694824, &g_valRng694828); }
 
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
+extern "C" void __cdecl Reader_SkipBlanks(int, BYTE* r);
 extern "C" void FUN_4b2ca0(); KING_ALIAS("_FUN_4b2ca0", "_Reader_SkipBlanks")
+extern "C" BYTE* __cdecl Reader_ListTail(BYTE* out, int a, BYTE* r);
 extern "C" void FUN_4b2e90(); KING_ALIAS("_FUN_4b2e90", "_Reader_ListTail")
 // [FUN_4b3240] reads the next item of reader r into out: drops the current character (the deque at +8: cur, first
 // +12, last +16, node +20; +68 the position), refills, then 4b2ca0 and 4b2e90
 extern "C" int* __cdecl Reader_NextItem(int* out, int a, BYTE* r)
 {
-    CallThis(FUN_4b2b60, r, 1);
+    Reader_Fill(r, 0, 1);
     if (F(BYTE*, r, 8) != F(BYTE*, r, 16) - 4)
         F(BYTE*, r, 8) += 4;
     else {
@@ -1115,9 +1136,9 @@ extern "C" int* __cdecl Reader_NextItem(int* out, int a, BYTE* r)
         F(BYTE*, r, 8) = F(BYTE*, r, 12);
     }
     F(int, r, 68)++;
-    CallThis(FUN_4b2b60, r, 1);
-    CallC(FUN_4b2ca0, a, r);
-    CallC(FUN_4b2e90, out, a, r);
+    Reader_Fill(r, 0, 1);
+    Reader_SkipBlanks(a, r);
+    Reader_ListTail((BYTE*)out, a, r);
     return out;
 }
 
@@ -1191,7 +1212,7 @@ extern "C" int __fastcall FileReader_Get(BYTE* s)
         F(char*, s, 32)++;
         return c;
     }
-    CallC(FUN_44b4a0, F(void*, s, 36), 512);
+    Ai_PoolFree(F(void*, s, 36), 512);
     F(char**, s, 44)++;
     F(char*, s, 36) = *F(char**, s, 44);
     F(char*, s, 40) = F(char*, s, 36) + 512;
@@ -1210,7 +1231,7 @@ extern "C" int __fastcall CipherReader_Get(BYTE* s)
         F(char*, s, 32)++;
         return c;
     }
-    CallC(FUN_44b4a0, F(void*, s, 36), 512);
+    Ai_PoolFree(F(void*, s, 36), 512);
     F(char**, s, 44)++;
     F(char*, s, 36) = *F(char**, s, 44);
     F(char*, s, 40) = F(char*, s, 36) + 512;
@@ -1221,26 +1242,31 @@ extern "C" int __fastcall CipherReader_Get(BYTE* s)
 // ---------------------------------------------------------------------------
 // The reader: one datum of the script text.
 
-extern "C" void FUN_4b2730(); KING_ALIAS("_FUN_4b2730", "@SchDequeIt_Plus@16")    // the character iterator + n (out, n)
-extern "C" void FUN_4b26e0(); KING_ALIAS("_FUN_4b26e0", "@SchDeque_PopFront@8")
-extern "C" void FUN_4b2a00(); KING_ALIAS("_FUN_4b2a00", "@Reader_ErrorLine@12")
+extern "C" PtrDequeIt* __fastcall SchDequeIt_Plus(const PtrDequeIt* self, void*, PtrDequeIt* out, int n);
+extern "C" void __fastcall SchDeque_PopFront(BYTE* self, void*);
+extern "C" void __fastcall Reader_ErrorLine(BYTE* self, void*, BYTE* out);
+extern "C" void __fastcall SchReader_Skip(BYTE* self, void*);
 extern "C" void FUN_4b3610(); KING_ALIAS("_FUN_4b3610", "@SchReader_Skip@8")
-extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
-extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void** __fastcall Vec_Construct(void** self, void*, int);
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")
 extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
+extern "C" DWORD* __cdecl Sch_MakeIdentifierQ(DWORD* out, int unused, const DWORD* name);
 extern "C" void FUN_4b5140(); KING_ALIAS("_FUN_4b5140", "_Sch_MakeIdentifierQ")
+extern "C" DWORD* __cdecl Sch_MakeIdentifierC(DWORD* out, int unused, DWORD name);
 extern "C" void FUN_4b5220(); KING_ALIAS("_FUN_4b5220", "_Sch_MakeIdentifierC")
+extern "C" DWORD* __cdecl Sch_MakeIdentifierD(DWORD* out, int unused, DWORD name);
 extern "C" void FUN_4b5300(); KING_ALIAS("_FUN_4b5300", "_Sch_MakeIdentifierD")
 extern "C" void FUN_4b3670(); KING_ALIAS("_FUN_4b3670", "_SchReader_4b3670")      // a number
-extern "C" void FUN_4b29a0(); KING_ALIAS("_FUN_4b29a0", "_Sch_IsSymbolChar")
+extern "C" int __cdecl Sch_IsSymbolChar(int c);
 extern "C" void FUN_409070(); KING_ALIAS("_FUN_409070", "_Str_Same")
 extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
-extern "C" void FUN_492250(); KING_ALIAS("_FUN_492250", "_SchValue_Make10007")
+extern "C" DWORD* __cdecl SchValue_Make10007(DWORD* out, int unused, DWORD v);
+extern "C" BYTE* __cdecl Reader_String(BYTE* out, int a, BYTE* r);
 extern "C" void FUN_4b32d0(); KING_ALIAS("_FUN_4b32d0", "_Reader_String")    // a string
 extern "C" void FUN_4b36a0(); KING_ALIAS("_FUN_4b36a0", "_Reader_Symbol")    // a symbol
 extern "C" void FUN_4b38d0(); KING_ALIAS("_FUN_4b38d0", "_Reader_Vector")    // a vector
@@ -1258,33 +1284,33 @@ KING_VAR(AsmLabel, s_rdUnquote, 64c094)
 static int Rd_Peek(BYTE* r, int n)
 {
     BYTE it[16];
-    return **CallThis<int**>(FUN_4b2730, r + 8, it, n);
+    return **(int**)SchDequeIt_Plus((const PtrDequeIt*)(r + 8), 0, (PtrDequeIt*)it, n);
 }
 
-static void Rd_Fill(BYTE* r, int n) { CallThis(FUN_4b2b60, r, n); }
+static void Rd_Fill(BYTE* r, int n) { Reader_Fill(r, 0, n); }
 
 static void Rd_Drop(BYTE* r)
 {
     Rd_Fill(r, 1);
-    CallThis(FUN_4b26e0, r);
+    SchDeque_PopFront(r, 0);
     F(int, r, 68)++;
 }
 
 static void Rd_Error(BYTE* r, const char* format)
 {
     BYTE* line[3];
-    CallThis(FUN_487730, line, line);
-    CallThis(FUN_4b2a00, r, line);
-    CallC(FUN_4a54e0, 20, 768, format, line[0]);
-    CallThis(FUN_404420, line);
+    Vec_Construct((void**)line, 0, (int)line);
+    Reader_ErrorLine(r, 0, (BYTE*)line);
+    Sch_Error(20, 768, format, (const char*)line[0]);
+    VecB_FreeStorage(line, 0);
 }
 
 static void Rd_Check(const BYTE* v)
 {
     if (!F(BYTE*, v, 0))
-        CallC(FUN_4a52e0, 0, 1);
+        Sch_ErrorCode(0, 1);
     if (F(DWORD, v, 8) & 0x10000)
-        CallC(FUN_4a52e0, 4, 1);
+        Sch_ErrorCode(4, 1);
 }
 
 // the value at d = s, keeping d's object when it is the same value
@@ -1309,7 +1335,7 @@ static BYTE* Rd_Sub(BYTE* out, void (*read)(), int a, BYTE* r)
 {
     BYTE t[16];
     CallThis(FUN_454580, out, CallC<BYTE*>(read, t, a, r));
-    CallThis(FUN_4a36c0, t);
+    SchHandle_Release((void**)t, 0);
     return out;
 }
 
@@ -1321,7 +1347,7 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
 {
     for (;;) {
         Rd_Fill(r, 1);
-        CallC(FUN_4b2ca0, a, r);
+        Reader_SkipBlanks(a, r);
         int c = Rd_Peek(r, 0);
         switch (c) {
         case ';':
@@ -1346,13 +1372,13 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
         case '(': {
             BYTE t[16];
             CopyRef(out, (BYTE*)Reader_NextItem((int*)t, a, r));
-            CallThis(FUN_4a36c0, t);
+            SchHandle_Release((void**)t, 0);
             return out;
         }
         case '"': {
             BYTE t[16];
-            CopyRef(out, CallC<BYTE*>(FUN_4b32d0, t, a, r));
-            CallThis(FUN_4a36c0, t);
+            CopyRef(out, Reader_String(t, a, r));
+            SchHandle_Release((void**)t, 0);
             return out;
         }
         case '\'':
@@ -1360,10 +1386,10 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
             BYTE head[16], tail[16], t[16];
             CallC(FUN_4a28c0, head, 0, F(void*, r, 72));
             const char* name = Rd_Peek(r, 0) == '\'' ? s_rdQuote : s_rdQuasiquote;
-            BYTE* id = CallC<BYTE*>(FUN_4b5140, t, 0, &name);
+            BYTE* id = (BYTE*)Sch_MakeIdentifierQ((DWORD*)t, 0, (const DWORD*)&name);
             Rd_Check(head);
             Rd_Assign(F(BYTE*, head, 0) + 20, id);
-            CallThis(FUN_4a36c0, t);
+            SchHandle_Release((void**)t, 0);
             Rd_Drop(r);
             CallC(FUN_4a28c0, tail, 0, F(void*, r, 72));
             Rd_Check(head);
@@ -1374,8 +1400,8 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
             Rd_Assign(F(BYTE*, tail, 0) + 20, datum);
             Rd_Release(d);
             CopyRef(out, head);
-            CallThis(FUN_4a36c0, tail);
-            CallThis(FUN_4a36c0, head);
+            SchHandle_Release((void**)tail, 0);
+            SchHandle_Release((void**)head, 0);
             return out;
         }
         case ',': {
@@ -1383,16 +1409,16 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
             CallC(FUN_4a28c0, head, 0, F(void*, r, 72));
             Rd_Fill(r, 2);
             if (Rd_Peek(r, 1) == '@') {
-                BYTE* id = CallC<BYTE*>(FUN_4b5220, t, 0, (const char*)s_rdUnquoteSplicing);
+                BYTE* id = (BYTE*)Sch_MakeIdentifierC((DWORD*)t, 0, (DWORD)((const char*)s_rdUnquoteSplicing));
                 Rd_Check(head);
                 Rd_Assign(F(BYTE*, head, 0) + 20, id);
-                CallThis(FUN_4a36c0, t);
+                SchHandle_Release((void**)t, 0);
                 Rd_Drop(r);
             } else {
-                BYTE* id = CallC<BYTE*>(FUN_4b5300, t, 0, (const char*)s_rdUnquote);
+                BYTE* id = (BYTE*)Sch_MakeIdentifierD((DWORD*)t, 0, (DWORD)((const char*)s_rdUnquote));
                 Rd_Check(head);
                 Rd_Assign(F(BYTE*, head, 0) + 20, id);
-                CallThis(FUN_4a36c0, t);
+                SchHandle_Release((void**)t, 0);
             }
             Rd_Drop(r);
             CallC(FUN_4a28c0, tail, 0, F(void*, r, 72));
@@ -1404,8 +1430,8 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
             CallThis(FUN_40c100, F(BYTE*, tail, 0) + 20, datum);
             Rd_Release(d);
             CallThis(FUN_454580, out, head);
-            CallThis(FUN_4a36c0, tail);
-            CallThis(FUN_4a36c0, head);
+            SchHandle_Release((void**)tail, 0);
+            SchHandle_Release((void**)head, 0);
             return out;
         }
         case '+':
@@ -1428,14 +1454,14 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
             case 'x':
                 return Rd_Sub(out, FUN_4b3670, a, r);
             case 't':
-                CallThis(FUN_4b3610, r);
-                CallThis(FUN_4b3610, r);
-                CallC(FUN_492250, out, 0, -1);
+                SchReader_Skip(r, 0);
+                SchReader_Skip(r, 0);
+                SchValue_Make10007((DWORD*)out, 0, -1);
                 return out;
             case 'f':
-                CallThis(FUN_4b3610, r);
-                CallThis(FUN_4b3610, r);
-                CallC(FUN_492250, out, 0, 0);
+                SchReader_Skip(r, 0);
+                SchReader_Skip(r, 0);
+                SchValue_Make10007((DWORD*)out, 0, 0);
                 return out;
             case '|':
                 // a block comment; at "|#" the reading goes on with its "|" as an ordinary character
@@ -1448,7 +1474,7 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
                         CallThis(FUN_4bd4d0, out);
                         return out;
                     }
-                    CallThis(FUN_4b3610, r);
+                    SchReader_Skip(r, 0);
                 }
                 break;
             default:
@@ -1459,7 +1485,7 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
         default:
             if (isdigit(Rd_Peek(r, 0)))
                 return Rd_Sub(out, FUN_4b3670, a, r);
-            if (isalnum(Rd_Peek(r, 0)) || CallC<int>(FUN_4b29a0, Rd_Peek(r, 0)))
+            if (isalnum(Rd_Peek(r, 0)) || Sch_IsSymbolChar(Rd_Peek(r, 0)))
                 return Rd_Sub(out, FUN_4b36a0, a, r);
             Rd_Error(r, s_rdBadChar);
             continue;
@@ -1474,14 +1500,15 @@ BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
 
 extern "C" void FUN_4b13c0(); KING_ALIAS("_FUN_4b13c0", "_Port_WriteChar")
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")
-extern "C" void FUN_4b6a80(); KING_ALIAS("_FUN_4b6a80", "_Sch_CaretLine")
-extern "C" void FUN_4556d0(); KING_ALIAS("_FUN_4556d0", "@NumberHandle_From@12")
+extern "C" void __cdecl Sch_CaretLine(const BYTE* v, const BYTE* pos);
+extern "C" DWORD* __fastcall NumberHandle_From(DWORD* self, void*, const DWORD* v);
 extern "C" void FUN_4a1940(); KING_ALIAS("_FUN_4a1940", "@SchValue_AsBool@12")
 extern "C" void FUN_4a19c0(); KING_ALIAS("_FUN_4a19c0", "@SchValue_AsChar@12")
 extern "C" void FUN_4a6860(); KING_ALIAS("_FUN_4a6860", "@SchValue_Name@8")
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
-extern "C" void FUN_4a5420(); KING_ALIAS("_FUN_4a5420", "_Sch_TypeError")
+extern "C" void __cdecl Sch_TypeError(int code, int severity, const char* name);
 extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
+extern "C" BYTE* __cdecl Sch_WriteListTail(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx);
 extern "C" void FUN_4b6b90(); KING_ALIAS("_FUN_4b6b90", "_Sch_WriteListTail")    // writes the rest of a list (out, the tail, port, context)
 extern "C" void FUN_4b6e20(); KING_ALIAS("_FUN_4b6e20", "_Sch_WriteNumber")    // writes a number (handle by value, port)
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
@@ -1535,7 +1562,7 @@ static void Pr_Typed(BYTE* h, const BYTE* v, int type, const char* name)
             F(DWORD, h, 8) = F(DWORD, v, 8);
             F(int, o, 4)++;
         } else
-            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(o, 4), name);
+            Sch_Error(2, 1, CallVirt<const char*>(o, 4), name);
     } else {
         F(DWORD, h, 0) = 0;
         F(DWORD, h, 8) = 0;
@@ -1545,9 +1572,9 @@ static void Pr_Typed(BYTE* h, const BYTE* v, int type, const char* name)
 static void Pr_Check(const BYTE* h)
 {
     if (!F(BYTE*, h, 0))
-        CallC(FUN_4a52e0, 0, 1);
+        Sch_ErrorCode(0, 1);
     if (F(DWORD, h, 8) & 0x10000)
-        CallC(FUN_4a52e0, 4, 1);
+        Sch_ErrorCode(4, 1);
 }
 
 static void Pr_ReleaseInline(BYTE* v)
@@ -1573,7 +1600,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
         case 2:
             Pr_Typed(h, v, 2, s_prPair);
             F(int, ctx, 4)++;
-            CallC(FUN_4b6a80, port, ctx);
+            Sch_CaretLine(port, ctx);
             Pr_Char(port, '(');
             Pr_Check(h);
             Sch_Write(t, F(BYTE*, h, 0) + 20, port, ctx);
@@ -1588,7 +1615,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
                     Pr_Check(h);
                     if ((BYTE)F(DWORD, F(BYTE*, h, 0) + 32, 8) == 2) {
                         Pr_Check(h);
-                        CallC(FUN_4b6b90, t, F(BYTE*, h, 0) + 32, port, ctx);
+                        Sch_WriteListTail(t, F(BYTE*, h, 0) + 32, port, ctx);
                         Pr_ReleaseInline(t);
                     } else {
                         Pr_Str(port, s_prDot);
@@ -1600,7 +1627,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
                     }
                 }
             }
-            CallThis(FUN_4a36c0, h);
+            SchHandle_Release((void**)h, 0);
             break;
         case 3:
             Pr_Typed(h, v, 3, s_prString);
@@ -1628,7 +1655,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
             }
             Pr_Char(port, '"');
             Pr_Char(port, ' ');
-            CallThis(FUN_4a36c0, h);
+            SchHandle_Release((void**)h, 0);
             break;
         case 4:
             Pr_Str(port, s_prClosure);
@@ -1639,7 +1666,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
                 Pr_Typed(h2, h, 4, s_prClosureType);
                 PrValue pv = Pr_Port(port);
                 CallC(FUN_4b1450, F(const char*, CallThis<BYTE*>(FUN_4aa430, h2), 20), pv);
-                CallThis(FUN_4a36c0, h2);
+                SchHandle_Release((void**)h2, 0);
             } else {
                 Pr_Check(h);
                 if (CallVirt<int>(F(BYTE*, h, 0), 20) == 2 && (*F(BYTE*, ctx, 0) & 1)) {
@@ -1651,11 +1678,11 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
                     Pr_Check(h2);
                     Sch_Write(t, F(BYTE*, h2, 0) + 20, port, ctx);
                     Pr_ReleaseInline(t);
-                    CallThis(FUN_4a36c0, h2);
+                    SchHandle_Release((void**)h2, 0);
                 }
             }
             Pr_Str(port, s_prClosureEnd);
-            CallThis(FUN_4a36c0, h);
+            SchHandle_Release((void**)h, 0);
             break;
         case 5:
             Pr_Str(port, s_prContinuation);
@@ -1663,7 +1690,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
         case 6: {
             Pr_Char(port, ' ');
             PrValue n;
-            CallThis(FUN_4556d0, &n, v);
+            NumberHandle_From((DWORD*)&n, 0, (const DWORD*)v);
             CallC(FUN_4b6e20, n, port);
             Pr_Char(port, ' ');
             break;
@@ -1672,7 +1699,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
             Pr_Char(port, ' ');
             CallThis(FUN_4a1940, h, v);
             Pr_Str(port, F(BYTE*, h, 0) ? s_prTrue : s_prFalse);
-            CallThis(FUN_4a36c0, h);
+            SchHandle_Release((void**)h, 0);
             Pr_Char(port, ' ');
             break;
         case 8:
@@ -1689,7 +1716,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
                 CallC(FUN_4b13c0, (int)*CallThis<char*>(FUN_4bd510, h), pv);
             }
             Pr_Char(port, ' ');
-            CallThis(FUN_4a36c0, h);
+            SchHandle_Release((void**)h, 0);
             break;
         case 9:
             Pr_Char(port, ' ');
@@ -1702,7 +1729,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
                 Pr_Char(port, *p);
             }
             Pr_Char(port, ' ');
-            CallThis(FUN_4a36c0, h);
+            SchHandle_Release((void**)h, 0);
             break;
         case 10:
             Pr_Char(port, ' ');
@@ -1719,7 +1746,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
             }
             Pr_Char(port, ')');
             Pr_Char(port, ' ');
-            CallThis(FUN_4a36c0, h);
+            SchHandle_Release((void**)h, 0);
             break;
         case 11: Pr_Str(port, s_prPort); break;
         case 12: Pr_Str(port, s_prEnvironment); break;
@@ -1748,7 +1775,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
             CallC(FUN_4b1450, (const char*)s_prGt, cp);
             const char* name = (F(DWORD, v, 8) & 0x10000) ? (const char*)s_prImmediate
                                                           : CallVirt<const char*>(F(BYTE*, v, 0), 4);
-            CallC(FUN_4a5420, 21, 256, name);
+            Sch_TypeError(21, 256, name);
             break;
         }
         }
@@ -1763,9 +1790,10 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
 // ---------------------------------------------------------------------------
 // Number syntax
 
+extern "C" BYTE** __cdecl Num_ReadReal(BYTE** out, int radix, BYTE* d);
 extern "C" void FUN_4b1d40(); KING_ALIAS("_FUN_4b1d40", "_Num_ReadReal")    // a real number from the deque (out, radix, deque)
-extern "C" void FUN_48a9d0(); KING_ALIAS("_FUN_48a9d0", "@WBuf_Free@8")
-extern "C" void FUN_490ea0(); KING_ALIAS("_FUN_490ea0", "@StrPair_Destroy@4")
+extern "C" void __fastcall WBuf_Free(BYTE** self, void*);
+extern "C" void __fastcall StrPair_Destroy(BYTE* s);
 KING_VAR(char, s_badComplex671420, 671420)
 
 static int Num_Peek(BYTE* d, int n)
@@ -1783,8 +1811,8 @@ static void** Num_Int(void** r, int n)
 
 static void Num_Free(void** r)
 {
-    CallThis(FUN_48a9d0, &r[1]);
-    CallThis(FUN_48a9d0, &r[0]);
+    WBuf_Free((BYTE**)&r[1], 0);
+    WBuf_Free((BYTE**)&r[0], 0);
 }
 
 extern "C" {
@@ -1819,11 +1847,11 @@ DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
         Num_Free(im);
         return out;
     }
-    CallC(FUN_4b1d40, re, radix, d);
+    Num_ReadReal((BYTE**)re, radix, d);
     int c = Num_Peek(d, 0);
     if (c == '@') {
         SchDeque_PopFront(d, 0);
-        CallC(FUN_4b1d40, im, radix, d);
+        Num_ReadReal((BYTE**)im, radix, d);
         Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
         Num_Free(im);
     } else if (c == '+') {
@@ -1834,14 +1862,14 @@ DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
             Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
             Num_Free(im);
         } else {
-            CallC(FUN_4b1d40, im, radix, d);
+            Num_ReadReal((BYTE**)im, radix, d);
             if (Num_Peek(d, 0) == 'i')
                 SchDeque_PopFront(d, 0);
             else
-                CallC(FUN_4a5420, 20, 768, &s_badComplex671420);
+                Sch_TypeError(20, 768, &s_badComplex671420);
             Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
             Num_Free(im);
-            CallThis(FUN_490ea0, re);
+            StrPair_Destroy((BYTE*)re);
             return out;
         }
     } else if (c == '-') {
@@ -1852,21 +1880,21 @@ DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
             Num_Int(im, -1);
             Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
         } else {
-            CallC(FUN_4b1d40, im, radix, d);
+            Num_ReadReal((BYTE**)im, radix, d);
             if (Num_Peek(d, 0) == 'i')
                 SchDeque_PopFront(d, 0);
             else
-                CallC(FUN_4a5420, 20, 768, &s_badComplex671420);
+                Sch_TypeError(20, 768, &s_badComplex671420);
             Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
         }
-        CallThis(FUN_490ea0, im);
-        CallThis(FUN_490ea0, re);
+        StrPair_Destroy((BYTE*)im);
+        StrPair_Destroy((BYTE*)re);
         return out;
     } else {
         Num_Int(im, 0);
         Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
-        CallThis(FUN_490ea0, im);
-        CallThis(FUN_490ea0, re);
+        StrPair_Destroy((BYTE*)im);
+        StrPair_Destroy((BYTE*)re);
         return out;
     }
     Num_Free(re);
@@ -1878,10 +1906,11 @@ DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
 // === parsing a number's digits (FUN_4b1720)
 
 KING_VAR(AsmLabel, s_pd671400, 671400)
-extern "C" void FUN_48afa0(); KING_ALIAS("_FUN_48afa0", "_Int_AddSigned")
-extern "C" void FUN_48b350(); KING_ALIAS("_FUN_48b350", "_Int_Mul")
+extern "C" WORD* __cdecl Int_AddSigned(WORD* a, int na, WORD* b, int nb, WORD* out);
+extern "C" WORD* __cdecl Int_Mul(WORD* a, WORD* b, WORD* out);
+extern "C" int __cdecl Num_ReadExponent(BYTE* d);
 extern "C" void FUN_4b1500(); KING_ALIAS("_FUN_4b1500", "_Num_ReadExponent")
-extern "C" void FUN_4b2840(); KING_ALIAS("_FUN_4b2840", "@SchDeque_NextBlock@8")
+extern "C" void __fastcall SchDeque_NextBlock(BYTE* self, void*);
 
 // the temporary big integer t freed when it owns its digits
 static void Pd_Free(BYTE* t)
@@ -1892,15 +1921,15 @@ static void Pd_Free(BYTE* t)
 
 static void Pd_Mul(BYTE** v, int k)
 {
-    BYTE* t = CallC<BYTE*>(FUN_48ade0, 0, k);
-    *v = CallC<BYTE*>(FUN_48b350, *v, t, *v);
+    BYTE* t = (BYTE*)BigInt_FromInt(0, k);
+    *v = (BYTE*)Int_Mul((WORD*)*v, (WORD*)t, (WORD*)*v);
     Pd_Free(t);
 }
 
 static void Pd_Add(BYTE** v, int k)
 {
-    BYTE* t = CallC<BYTE*>(FUN_48ade0, 0, k);
-    *v = CallC<BYTE*>(FUN_48afa0, *v, 0, t, 0, *v);
+    BYTE* t = (BYTE*)BigInt_FromInt(0, k);
+    *v = (BYTE*)Int_AddSigned((WORD*)*v, 0, (WORD*)t, 0, (WORD*)*v);
     Pd_Free(t);
 }
 
@@ -1911,16 +1940,16 @@ static int Pd_Next(BYTE* d)
     if (*cur != F(BYTE*, d, 16) - 4)
         *cur += 4;
     else
-        CallThis(FUN_4b2840, d);
+        SchDeque_NextBlock(d, 0);
     BYTE it[16];
-    return toupper(**CallThis<int**>(FUN_4b2730, d + 8, it, 0));
+    return toupper(**(int**)SchDequeIt_Plus((const PtrDequeIt*)(d + 8), 0, (PtrDequeIt*)it, 0));
 }
 
 static void Pd_Digit(BYTE** num, int c, int radix)
 {
     int k = c - '0';
     if (k >= radix)
-        CallC(FUN_4a5420, 20, 768, (const char*)s_pd671400);
+        Sch_TypeError(20, 768, (const char*)s_pd671400);
     Pd_Mul(num, radix);
     Pd_Add(num, k);
 }
@@ -1928,7 +1957,7 @@ static void Pd_Digit(BYTE** num, int c, int radix)
 // an exponent: num or den times 10 per step
 static int Pd_Exponent(BYTE** num, BYTE** den, BYTE* d)
 {
-    int e = CallC<int>(FUN_4b1500, d);
+    int e = Num_ReadExponent(d);
     for (int i = 0; i < e; i++)
         Pd_Mul(num, 10);
     for (int i = 0; i < -e; i++)
@@ -1946,7 +1975,7 @@ extern "C" {
 int __cdecl Num_ParseDigits(BYTE** num, BYTE** den, int radix, BYTE* d)
 {
     BYTE it[16];
-    int c = toupper(**CallThis<int**>(FUN_4b2730, d + 8, it, 0));
+    int c = toupper(**(int**)SchDequeIt_Plus((const PtrDequeIt*)(d + 8), 0, (PtrDequeIt*)it, 0));
     for (;;) {
         if (c == '#')
             ;
@@ -1980,7 +2009,7 @@ int __cdecl Num_ParseDigits(BYTE** num, BYTE** den, int radix, BYTE* d)
 
 KING_VAR(AsmLabel, s_rl671470, 671470)
 KING_VAR(AsmLabel, s_rl671464, 671464)
-extern "C" void FUN_4b2980(); KING_ALIAS("_FUN_4b2980", "_Sch_IsSpaceOrEof")
+extern "C" int __cdecl Sch_IsSpaceOrEof(int c);
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
 
 extern "C" {
@@ -2003,21 +2032,21 @@ BYTE* __cdecl Reader_ListTail(BYTE* out, int a, BYTE* r)
     BYTE* v = Reader_Read((BYTE*)tmp, a, r);
     Rd_Check((BYTE*)pair);
     Rd_Assign(F(BYTE*, pair, 0) + 20, v);
-    CallThis(FUN_4a36c0, tmp);
-    CallC(FUN_4b2ca0, a, r);
+    SchHandle_Release((void**)tmp, 0);
+    Reader_SkipBlanks(a, r);
     Rd_Fill(r, 2);
     if (Rd_Peek(r, 0) == -1) {
         Rd_Error(r, (const char*)s_rl671470);
         CallThis(FUN_454580, out, pair);
-        CallThis(FUN_4a36c0, pair);
+        SchHandle_Release((void**)pair, 0);
         return out;
     }
-    if (Rd_Peek(r, 0) == '.' && CallC<int>(FUN_4b2980, Rd_Peek(r, 1))) {
+    if (Rd_Peek(r, 0) == '.' && Sch_IsSpaceOrEof(Rd_Peek(r, 1))) {
         Rd_Drop(r);
         BYTE* d = Reader_Read((BYTE*)tmp, a, r);
         CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, pair) + 32, d);
-        CallThis(FUN_4a36c0, tmp);
-        CallC(FUN_4b2ca0, a, r);
+        SchHandle_Release((void**)tmp, 0);
+        Reader_SkipBlanks(a, r);
         Rd_Fill(r, 1);
         if (Rd_Peek(r, 0) == ')')
             Rd_Drop(r);
@@ -2026,10 +2055,10 @@ BYTE* __cdecl Reader_ListTail(BYTE* out, int a, BYTE* r)
     } else {
         BYTE* d = Reader_ListTail((BYTE*)tmp, a, r);
         CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, pair) + 32, d);
-        CallThis(FUN_4a36c0, tmp);
+        SchHandle_Release((void**)tmp, 0);
     }
     CallThis(FUN_454580, out, pair);
-    CallThis(FUN_4a36c0, pair);
+    SchHandle_Release((void**)pair, 0);
     return out;
 }
 
@@ -2068,9 +2097,9 @@ BYTE* __cdecl Reader_String(BYTE* out, int a, BYTE* r)
             Rs_Push(s, ch);
         } else if (c == '"') {
             Rs_Push(s, 0);
-            CallThis(FUN_4b3610, r);
+            SchReader_Skip(r, 0);
             CallThis(FUN_454580, out, s);
-            CallThis(FUN_4a36c0, s);
+            SchHandle_Release((void**)s, 0);
             return out;
         } else
             Rs_Push(s, (char)c);
@@ -2084,8 +2113,8 @@ BYTE* __cdecl Reader_String(BYTE* out, int a, BYTE* r)
 
 KING_VAR(char, s_rc671480, 671480)
 KING_VAR(char, s_rc671488, 671488)
-extern "C" void FUN_49c210(); KING_ALIAS("_FUN_49c210", "_SchValue_Make10008")
-extern "C" void FUN_49c560(); KING_ALIAS("_FUN_49c560", "@SchValue_Assign@12")
+extern "C" DWORD* __cdecl SchValue_Make10008(DWORD* out, int unused, DWORD v);
+extern "C" BYTE* __fastcall SchValue_Assign(BYTE* self, void*, const BYTE* v);
 
 // whether the next n characters spell name (from its second letter on); consumes them when they do
 static bool Rc_Name(BYTE* r, const char* name, int n)
@@ -2096,7 +2125,7 @@ static bool Rc_Name(BYTE* r, const char* name, int n)
     if (i != n)
         return false;
     for (; i; i--)
-        CallThis(FUN_4b3610, r);
+        SchReader_Skip(r, 0);
     return true;
 }
 
@@ -2104,11 +2133,11 @@ static bool Rc_Name(BYTE* r, const char* name, int n)
 static void Rc_Set(DWORD* ch, int c)
 {
     DWORD v[3], t[3];
-    CallC(FUN_49c210, v, 0, c);
+    SchValue_Make10008(v, 0, c);
     CallThis(FUN_4a19c0, t, v);
-    CallThis(FUN_49c560, ch, t);
-    CallThis(FUN_4a36c0, t);
-    CallThis(FUN_4a36c0, v);
+    SchValue_Assign((BYTE*)ch, 0, (const BYTE*)t);
+    SchHandle_Release((void**)t, 0);
+    SchHandle_Release((void**)v, 0);
 }
 
 extern "C" {
@@ -2136,7 +2165,7 @@ BYTE* __cdecl Reader_Char(BYTE* out, int a, BYTE* r)
         Rd_Drop(r);
     }
     CallThis(FUN_454580, out, ch);
-    CallThis(FUN_4a36c0, ch);
+    SchHandle_Release((void**)ch, 0);
     return out;
 }
 
@@ -2144,8 +2173,9 @@ BYTE* __cdecl Reader_Char(BYTE* out, int a, BYTE* r)
 
 // === reading a real number (FUN_4b1d40)
 
+extern "C" DWORD* __cdecl Deque_ReadDigits(DWORD* out, int r, BYTE* q);
 extern "C" void FUN_4b1b90(); KING_ALIAS("_FUN_4b1b90", "_Deque_ReadDigits")    // an integer in radix from the deque (out, radix, deque)
-extern "C" void FUN_490db0(); KING_ALIAS("_FUN_490db0", "@Rational_Reduce@8")
+extern "C" void __fastcall Rational_Reduce(WORD** self, void*);
 
 // drops the current character of the reader's deque d
 static void Nm_Pop(BYTE* d)
@@ -2154,7 +2184,7 @@ static void Nm_Pop(BYTE* d)
     if (*cur != F(BYTE*, d, 16) - 4)
         *cur += 4;
     else
-        CallThis(FUN_4b2840, d);
+        SchDeque_NextBlock(d, 0);
 }
 
 extern "C" {
@@ -2163,11 +2193,11 @@ extern "C" {
 // optional sign, the digits (radix 10 may end in a fraction or exponent), then "/denominator" when exact
 BYTE** __cdecl Num_ReadReal(BYTE** out, int radix, BYTE* d)
 {
-    BYTE* num = CallC<BYTE*>(FUN_48ade0, 0, 0);
-    BYTE* den = CallC<BYTE*>(FUN_48ade0, 0, 1);
+    BYTE* num = (BYTE*)BigInt_FromInt(0, 0);
+    BYTE* den = (BYTE*)BigInt_FromInt(0, 1);
     BYTE it[16];
     bool neg = false;
-    int c = **CallThis<int**>(FUN_4b2730, d + 8, it, 0);
+    int c = **(int**)SchDequeIt_Plus((const PtrDequeIt*)(d + 8), 0, (PtrDequeIt*)it, 0);
     if (c == '-') {
         neg = true;
         Nm_Pop(d);
@@ -2178,28 +2208,28 @@ BYTE** __cdecl Num_ReadReal(BYTE** out, int radix, BYTE* d)
         inexact = Num_ParseDigits(&num, &den, 10, d);
     else {
         BYTE* t;
-        CallC(FUN_4b1b90, &t, radix, d);
-        num = CallC<BYTE*>(FUN_48acd0, num, t);
+        Deque_ReadDigits((DWORD*)&t, radix, d);
+        num = (BYTE*)WStr_Assign((WORD*)num, (const WORD*)t);
         Pd_Free(t);
     }
-    if (**CallThis<int**>(FUN_4b2730, d + 8, it, 0) == '/' && !inexact) {
+    if (**(int**)SchDequeIt_Plus((const PtrDequeIt*)(d + 8), 0, (PtrDequeIt*)it, 0) == '/' && !inexact) {
         Nm_Pop(d);
         BYTE* t;
-        CallC(FUN_4b1b90, &t, radix, d);
-        den = CallC<BYTE*>(FUN_48acd0, den, t);
+        Deque_ReadDigits((DWORD*)&t, radix, d);
+        den = (BYTE*)WStr_Assign((WORD*)den, (const WORD*)t);
         Pd_Free(t);
     }
     BYTE* r[2];
     BYTE* n = 0;
     if (neg) {
         Sch_Convert4b2050((DWORD*)&n, (DWORD*)&num);
-        r[0] = CallC<BYTE*>(FUN_48acd0, 0, n);
+        r[0] = (BYTE*)WStr_Assign(0, (const WORD*)n);
     } else
-        r[0] = CallC<BYTE*>(FUN_48acd0, 0, num);
-    r[1] = CallC<BYTE*>(FUN_48acd0, 0, den);
-    CallThis(FUN_490db0, r);
-    out[0] = CallC<BYTE*>(FUN_48acd0, 0, r[0]);
-    out[1] = CallC<BYTE*>(FUN_48acd0, 0, r[1]);
+        r[0] = (BYTE*)WStr_Assign(0, (const WORD*)num);
+    r[1] = (BYTE*)WStr_Assign(0, (const WORD*)den);
+    Rational_Reduce((WORD**)r, 0);
+    out[0] = (BYTE*)WStr_Assign(0, (const WORD*)r[0]);
+    out[1] = (BYTE*)WStr_Assign(0, (const WORD*)r[1]);
     Pd_Free(r[1]);
     Pd_Free(r[0]);
     if (neg)
@@ -2234,17 +2264,17 @@ BYTE* __cdecl Sch_WriteListTail(BYTE* out, const BYTE* v, const BYTE* port, BYTE
         if ((BYTE)F(DWORD, F(BYTE*, h, 0) + 32, 8) == 2) {
             Pr_Check(h);
             Sch_WriteListTail(t, F(BYTE*, h, 0) + 32, port, ctx);
-            CallThis(FUN_4a36c0, t);
+            SchHandle_Release((void**)t, 0);
         } else {
             Pr_Str(port, s_prDot);
             Sch_Write(t, CallThis<BYTE*>(FUN_4aa430, h) + 32, port, ctx);
-            CallThis(FUN_4a36c0, t);
+            SchHandle_Release((void**)t, 0);
             Pr_Char(port, ')');
             F(int, ctx, 4)--;
         }
     }
     CallThis(FUN_4bd4d0, out);
-    CallThis(FUN_4a36c0, h);
+    SchHandle_Release((void**)h, 0);
     return out;
 }
 
@@ -2253,7 +2283,7 @@ BYTE* __cdecl Sch_WriteListTail(BYTE* out, const BYTE* v, const BYTE* port, BYTE
 // === reading a vector literal (FUN_4b38d0)
 
 extern "C" void FUN_4a2700(); KING_ALIAS("_FUN_4a2700", "_SchValue_MakeVector")
-extern "C" void FUN_460910(); KING_ALIAS("_FUN_460910", "_ConstructStrRef")
+extern "C" void __cdecl ConstructStrRef(DWORD* d, const DWORD* s);
 extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")
 
 extern "C" {
@@ -2266,19 +2296,19 @@ BYTE* __cdecl Reader_Vector(BYTE* out, int a, BYTE* r)
     Rd_Drop(r);
     BYTE v[16];
     CallC(FUN_4a2700, v, 0, F(int, r, 72));
-    CallC(FUN_4b2ca0, a, r);
+    Reader_SkipBlanks(a, r);
     while (Rd_Peek(r, 0) != ')') {
         BYTE t[16];
         BYTE* e = Reader_Read(t, a, r);
         Pr_Check(v);
         BYTE** w = (BYTE**)(F(BYTE*, v, 0) + 20);
         if (w[1] != w[2]) {
-            CallC(FUN_460910, w[1], e);
+            ConstructStrRef((DWORD*)w[1], (const DWORD*)e);
             w[1] += 12;
         } else
             CallThis(FUN_44c710, w, w[1], e);
         Pr_ReleaseInline(t);
-        CallC(FUN_4b2ca0, a, r);
+        Reader_SkipBlanks(a, r);
     }
     Rd_Drop(r);
     CallThis(FUN_454580, out, v);
@@ -2300,7 +2330,7 @@ static void Rs_Append(BYTE* v, char c)
             *w[1] = c;
         w[1]++;
     } else
-        CallThis(FUN_44bef0, w, w[1], &c);
+        VecChar_Insert44bef0(w, 0, w[1], (const BYTE*)&c);
 }
 
 extern "C" {
@@ -2335,7 +2365,7 @@ KING_VAR(AsmLabel, s_ex6713f0, 6713f0)
 static int Ex_Peek(BYTE* d)
 {
     BYTE it[16];
-    return **CallThis<int**>(FUN_4b2730, d + 8, it, 0);
+    return **(int**)SchDequeIt_Plus((const PtrDequeIt*)(d + 8), 0, (PtrDequeIt*)it, 0);
 }
 
 extern "C" {
@@ -2354,7 +2384,7 @@ int __cdecl Num_ReadExponent(BYTE* d)
         sign = -1;
     }
     if (!isdigit(Ex_Peek(d)))
-        CallC(FUN_4a5420, 20, 768, (const char*)s_ex6713f0);
+        Sch_TypeError(20, 768, (const char*)s_ex6713f0);
     for (signed char ch = (signed char)toupper(Ex_Peek(d)); ch >= '0' && ch <= '9';
          ch = (signed char)toupper(Ex_Peek(d))) {
         n = n * 10 + ch - '0';
@@ -2369,7 +2399,7 @@ int __cdecl Num_ReadExponent(BYTE* d)
 
 extern "C" void FUN_4a29a0(); KING_ALIAS("_FUN_4a29a0", "_DequeIt_Pass0")
 struct Fp_It { DWORD d[4]; };     // a deque iterator passed by value
-extern "C" void FUN_4abea0(); KING_ALIAS("_FUN_4abea0", "@Sch_Copy16@12")
+extern "C" DWORD* __fastcall Sch_Copy16(DWORD* self, void*, const DWORD* from);
 
 extern "C" {
 
@@ -2379,17 +2409,17 @@ void __fastcall FilePort_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_vtbl64c0b0;
     if (F(BYTE, s, 16) & 1)
-        CallThis(FUN_4b5490, s);
+        SchReader_Close(s, 0);
     BYTE* d = s + 24;
     Fp_It a, b;
-    CallThis(FUN_4abea0, &a, d + 8);
+    Sch_Copy16((DWORD*)&a, 0, (const DWORD*)(d + 8));
     memcpy(&b, d + 24, 16);
     CallC(FUN_4a29a0, a, b);
     if (F(void*, d, 0)) {
         for (void** n = F(void**, d, 20); n < F(void**, d, 36) + 1; n++)
             free(*n);
         if (int m = F(int, d, 4))
-            CallC(FUN_44b4a0, F(void*, d, 0), m * 4);
+            Ai_PoolFree(F(void*, d, 0), m * 4);
     }
     SchNode_Destroy((void**)s, 0);
 }
@@ -2398,7 +2428,7 @@ void __fastcall FilePort_Destroy(BYTE* s)
 
 // === reading a datum from a port (FUN_4b4c20)
 
-extern "C" void FUN_4abec0(); KING_ALIAS("_FUN_4abec0", "@Deque_FreeStorage@8")
+extern "C" void __fastcall Deque_FreeStorage(DWORD* self, void*);
 
 extern "C" {
 
@@ -2415,13 +2445,13 @@ BYTE* __cdecl Port_ReadDatum(BYTE* out, int a, DWORD p0, DWORD p1, DWORD p2)
     CopyRef(out, t);
     Pr_ReleaseInline(t);
     if (int n = (int)(F(BYTE*, rd, 60) - F(BYTE*, rd, 52)))
-        CallC(FUN_44b4a0, F(BYTE*, rd, 52), n);
-    CallThis(FUN_4a36c0, rd + 40);
+        Ai_PoolFree(F(BYTE*, rd, 52), n);
+    SchHandle_Release((void**)(rd + 40), 0);
     Fp_It x, y;
-    CallThis(FUN_4abea0, &y, rd + 24);
-    CallThis(FUN_4abea0, &x, rd + 8);
+    Sch_Copy16((DWORD*)&y, 0, (const DWORD*)(rd + 24));
+    Sch_Copy16((DWORD*)&x, 0, (const DWORD*)(rd + 8));
     CallC(FUN_4a29a0, x, y);
-    CallThis(FUN_4abec0, rd);
+    Deque_FreeStorage((DWORD*)rd, 0);
     Pr_ReleaseInline((BYTE*)p);
     return out;
 }
@@ -2451,9 +2481,9 @@ void __cdecl Reader_SkipBlanks(int, BYTE* r)
 {
     PtrDequeIt* it = (PtrDequeIt*)(r + 8);
     for (;;) {
-        CallThis(FUN_4b2b60, r, 1);
+        Reader_Fill(r, 0, 1);
         if (Sch_IsSpaceChar(Sk_Peek(r))) {
-            CallThis(FUN_4b2b60, r, 1);
+            Reader_Fill(r, 0, 1);
             if ((BYTE*)it->cur != F(BYTE*, r, 16) - 4) {
                 it->cur = (void**)((BYTE*)it->cur + 4);
                 F(int, r, 68)++;
@@ -2470,16 +2500,16 @@ void __cdecl Reader_SkipBlanks(int, BYTE* r)
         if (Sk_Peek(r) == '\n')
             continue;
         for (;;) {
-            CallThis(FUN_4b2b60, r, 1);
+            Reader_Fill(r, 0, 1);
             if ((BYTE*)it->cur != F(BYTE*, r, 16) - 4)
                 it->cur = (void**)((BYTE*)it->cur + 4);
             else {
-                CallC(FUN_44b4a0, F(void*, r, 12), 512);
+                Ai_PoolFree(F(void*, r, 12), 512);
                 SchDequeIt_SetNode(it, 0, (void***)(F(BYTE*, r, 20) + 4));
                 it->cur = F(void**, r, 12);
             }
             F(int, r, 68)++;
-            CallThis(FUN_4b2b60, r, 1);
+            Reader_Fill(r, 0, 1);
             if (Sk_Peek(r) == -1)
                 return;
             if (Sk_Peek(r) == '\n')
@@ -2492,9 +2522,8 @@ void __cdecl Reader_SkipBlanks(int, BYTE* r)
 
 // === a vector value and writing a number (FUN_4b66f0, FUN_4b6e20)
 
-extern "C" void Vv_Allocate(); KING_ALIAS("_Vv_Allocate", "_Stl_Allocate")
-extern "C" void Vv_NumberWrite(); KING_ALIAS("_Vv_NumberWrite", "@Number_Write@12")
-extern "C" void Vv_PortWriteString(); KING_ALIAS("_Vv_PortWriteString", "_Port_WriteString")
+extern "C" void __fastcall Number_Write(BYTE* s, void*, BYTE** v);
+extern "C" void __cdecl Port_WriteString(const char* s, DWORD h0, DWORD h1, DWORD h2);
 
 extern "C" {
 
@@ -2504,7 +2533,7 @@ BYTE* __fastcall SchVector_Construct(BYTE* s, void*, BYTE* owner, unsigned n, DW
 {
     DWORD v[3] = {v0, v1, v2};
     LinkIntoOwner(s, owner);
-    BYTE* p = n ? CallC<BYTE*>(Vv_Allocate, n * 12) : 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 12) : 0;
     F(BYTE*, s, 20) = p;
     F(BYTE*, s, 24) = p;
     F(BYTE*, s, 28) = p + n * 12;
@@ -2519,16 +2548,16 @@ void __cdecl Sch_WriteNumber(DWORD n0, DWORD n1, DWORD n2, const DWORD* pv)
 {
     BYTE* o = (BYTE*)n0;
     if (!o)
-        CallC(FUN_4a52e0, 0, 1);
+        Sch_ErrorCode(0, 1);
     if (n2 & 0x10000)
-        CallC(FUN_4a52e0, 4, 1);
+        Sch_ErrorCode(4, 1);
     BYTE* str[3] = {0, 0, 0};
-    CallThis(Vv_NumberWrite, o, str);
+    Number_Write(o, 0, str);
     DWORD c[3];
     CopyRef((BYTE*)c, (const BYTE*)pv);
-    CallC(Vv_PortWriteString, Sch_At(str, 0, 0), c[0], c[1], c[2]);
+    Port_WriteString((const char*)(Sch_At(str, 0, 0)), c[0], c[1], c[2]);
     if (int len = (int)(str[2] - str[0]))
-        CallC(FUN_44b4a0, str[0], len);
+        Ai_PoolFree(str[0], len);
     if (!(n2 & 0x10000) && o && --F(int, o, 4) == 0)
         CallVirt(o, 12, 1);
 }
@@ -2539,7 +2568,7 @@ void __cdecl Sch_WriteNumber(DWORD n0, DWORD n1, DWORD n2, const DWORD* pv)
 extern "C" void __fastcall Item4b4e10_Destroy(BYTE* s)
 {
     if (int n = (int)(F(BYTE*, s, 60) - F(BYTE*, s, 52)))
-        CallC(FUN_44b4a0, F(BYTE*, s, 52), n);
+        Ai_PoolFree(F(BYTE*, s, 52), n);
     Pr_ReleaseInline(s + 40);
     Deque_Destroy(s);
 }
@@ -2547,9 +2576,7 @@ extern "C" void __fastcall Item4b4e10_Destroy(BYTE* s)
 // === reading digits from a character deque (FUN_4b1b90)
 
 extern "C" void Rd_Copy16(); KING_ALIAS("_Rd_Copy16", "@Sch_Copy16@12")
-extern "C" void Rd_Advance(); KING_ALIAS("_Rd_Advance", "@SchDequeIt_Advance@12")
-extern "C" void Rd_AddSigned(); KING_ALIAS("_Rd_AddSigned", "_Int_AddSigned")
-extern "C" void Rd_Mul(); KING_ALIAS("_Rd_Mul", "_Int_Mul")
+extern "C" PtrDequeIt* __fastcall SchDequeIt_Advance(PtrDequeIt* self, void*, int n);
 KING_VAR(char, s_rd671400, 671400)
 
 // a big integer freed unless it is a small one (+2 == 0)
@@ -2566,12 +2593,12 @@ extern "C" {
 // original; a digit not below r is a type error
 DWORD* __cdecl Deque_ReadDigits(DWORD* out, int r, BYTE* q)
 {
-    WORD* acc = CallC<WORD*>(FUN_48ade0, 0, 0);
+    WORD* acc = BigInt_FromInt(0, 0);
     DWORD* it = (DWORD*)(q + 8);
     for (;;) {
         DWORD t1[4], t2[4];
-        CallThis(Rd_Copy16, t1, it);
-        CallThis(Rd_Copy16, t2, CallThis<DWORD*>(Rd_Advance, t1, 0));
+        Sch_Copy16(t1, 0, it);
+        CallThis(Rd_Copy16, t2, (DWORD*)SchDequeIt_Advance((PtrDequeIt*)t1, 0, 0));
         char c = (char)toupper(*(int*)t2[0]);
         int d;
         if (c >= 'A' && c <= 'F')
@@ -2581,17 +2608,17 @@ DWORD* __cdecl Deque_ReadDigits(DWORD* out, int r, BYTE* q)
         else
             break;
         if (d >= r)
-            CallC(FUN_4a5420, 20, 768, &s_rd671400);
-        WORD* m = CallC<WORD*>(FUN_48ade0, 0, r);
-        acc = CallC<WORD*>(Rd_Mul, acc, m, acc);
+            Sch_TypeError(20, 768, &s_rd671400);
+        WORD* m = BigInt_FromInt(0, r);
+        acc = Int_Mul(acc, m, acc);
         Rd_Free(m);
-        WORD* a = CallC<WORD*>(FUN_48ade0, 0, d);
-        acc = CallC<WORD*>(Rd_AddSigned, acc, 0, a, 0, acc);
+        WORD* a = BigInt_FromInt(0, d);
+        acc = Int_AddSigned(acc, 0, a, 0, acc);
         Rd_Free(a);
         if (it[0] != F(DWORD, q, 16) - 4)
             it[0] += 4;
         else {
-            CallC(FUN_44b4a0, F(void*, q, 12), 512);
+            Ai_PoolFree(F(void*, q, 12), 512);
             DWORD* node = (DWORD*)(F(DWORD, q, 20) + 4);
             it[3] = (DWORD)node;
             it[1] = *node;
@@ -2599,7 +2626,7 @@ DWORD* __cdecl Deque_ReadDigits(DWORD* out, int r, BYTE* q)
             it[0] = F(DWORD, q, 12);
         }
     }
-    *out = CallC<DWORD>(FUN_48acd0, 0, acc);
+    *out = (DWORD)WStr_Assign(0, acc);
     Rd_Free(acc);
     return out;
 }
@@ -2676,8 +2703,7 @@ double __cdecl Rational_ToDouble(WORD** num, WORD** den)
 // Batch 32: the file port's header
 
 extern "C" void Fp32_End(); KING_ALIAS("_Fp32_End", "@SchItem_Value@12")
-extern "C" void Fp32_PoolFree(); KING_ALIAS("_Fp32_PoolFree", "_Ai_PoolFree")
-extern "C" void Fp32_Seed(); KING_ALIAS("_Fp32_Seed", "@Rng_Seed@12")
+extern "C" void __fastcall Rng_Seed(void* s, void*, unsigned seed);
 KING_VAR(char, fp32_tag671510, 671510)
 KING_VAR(int, fp32_seed67150c, 67150c)
 
@@ -2685,7 +2711,7 @@ KING_VAR(int, fp32_seed67150c, 67150c)
 static void Fp32_PopBack(BYTE* d)
 {
     if (F(char*, d, 0) == F(char*, d, 4)) {
-        CallC(Fp32_PoolFree, F(char*, d, 4), 512);
+        Ai_PoolFree(F(char*, d, 4), 512);
         F(char**, d, 12) -= 1;
         F(char*, d, 4) = *F(char**, d, 12);
         F(char*, d, 8) = F(char*, d, 4) + 512;
@@ -2714,7 +2740,7 @@ void __fastcall FilePort_ReadHeader(BYTE* self)
     F(BYTE, self, 64) = 1;
     for (int i = 0; i < 4; i++)
         Fp32_PopBack(self + 48);
-    CallThis(Fp32_Seed, fr + 4, fp32_seed67150c);
+    Rng_Seed(fr + 4, 0, fp32_seed67150c);
     memcpy(self + 68, fr + 4, 228);
 }
 

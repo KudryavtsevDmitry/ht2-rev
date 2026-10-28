@@ -6,11 +6,11 @@
 #include "ai.h"
 
 extern "C" void FUN_42d6e0(); KING_ALIAS("_FUN_42d6e0", "_Ai_Tick")    // the AI's cycle
-extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // CMainView: module by name
-extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")    // module: switch by name
-extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
+extern "C" BYTE* __fastcall Scenes_Find(BYTE* self, void*, const char* name);
+extern "C" BYTE* __fastcall Room_FindObject(BYTE* self, void*, const char* name);
+extern "C" void __cdecl Switch_Select(BYTE* node, int i);
 extern "C" char* __cdecl CopyBytes(const char* first, const char* last, char* to);   // aiordr.cpp
-extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
+extern "C" void __fastcall CharVec_InsertRange44c220(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void __cdecl Notice_Show(int level, const char* text, int a, int b);              // copter.cpp
 extern "C" void __cdecl Notice_Banner(int eventId, double value, const char* text);       // copter.cpp
 
@@ -61,12 +61,12 @@ void updateSwitch(const char* moduleName, const char* switchName, int v)
     StateTrace trace("updateSwitch(char const * moduleName, char const * switchName, int v)");
     if (!moduleName || !switchName || !strlen(moduleName) || !strlen(switchName))
         return;
-    void* module = CallThis<void*>(FUN_5d9290, g_pMainView, moduleName);
+    void* module = (void*)Scenes_Find((BYTE*)g_pMainView, 0, moduleName);
     if (!module)
         return;
-    void* sw = CallThis<void*>(FUN_5ef390, module, switchName);
+    void* sw = (void*)Room_FindObject((BYTE*)module, 0, switchName);
     if (sw)
-        CallC(FUN_5e1a10, sw, v);
+        Switch_Select((BYTE*)sw, v);
 }
 
 void AI_UpdateSwitch(const AiSwitch* s)
@@ -87,7 +87,7 @@ void displayScreenMessage(const char* message)
     CopyBytes(end, end, begin);
     g_screenMessage.end += begin - end;
     // g_screenMessage.insert(end(), message, message + strlen(message) + 1)
-    CallThis(FUN_44c220, &g_screenMessage, g_screenMessage.end, message, message + strlen(message) + 1);
+    CharVec_InsertRange44c220((BYTE**)&g_screenMessage, 0, (BYTE*)g_screenMessage.end, (BYTE*)message, (BYTE*)(message + strlen(message) + 1));
     Notice_Show(9, g_screenMessage.begin, 0, 0);
 }
 
@@ -121,7 +121,7 @@ typedef DWORD AiShuffleState[55];
 KING_VAR(AiShuffleState, g_aiShuffleState, 68d6d8)
 KING_VAR(DWORD, g_aiShuffleIndex, 68d7b4)
 KING_VAR(DWORD, g_aiShuffleOtherIndex, 68d7b8)
-extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8") // shared vector<char> destructor
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
 extern "C" int __cdecl atexit(void (__cdecl* callback)());
 
 extern "C" void __cdecl AI_ShuffleState_Init()
@@ -154,7 +154,7 @@ extern "C" CharVec* __cdecl AI_MessageBuffer_Construct()
 
 extern "C" void __cdecl AI_MessageBuffer_Destroy()
 {
-    CallThis(FUN_404420, &g_screenMessage);
+    VecB_FreeStorage((BYTE**)&g_screenMessage, 0);
 }
 
 extern "C" int __cdecl AI_MessageBuffer_RegisterDestructor()

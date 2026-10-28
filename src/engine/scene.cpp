@@ -24,12 +24,17 @@ extern "C" void __cdecl Channel_Stop(int id);                                   
 extern "C" void __cdecl Channel_SetFrequency(int id, int f);                        // directsound.cpp
 extern "C" int __cdecl Mixer_Load(int idx, int a, int b);                           // directsound.cpp
 
+extern "C" void __cdecl VertexDesc_Build(BYTE* s, int* fmt, int* hdr, int n, BYTE* r, float* v);
 extern "C" void FUN_5f2a40(); KING_ALIAS("_FUN_5f2a40", "_VertexDesc_Build")
+extern "C" BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind);
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // base node constructor (name, kind)
-extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
+extern "C" void __fastcall Rec5e5840_Free(BYTE* self, void*);
+extern "C" void __fastcall Node5f1a70_Destroy(BYTE* s);
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
+extern "C" void __fastcall Value_Free(int* s);
 extern "C" void FUN_5f4a90(); KING_ALIAS("_FUN_5f4a90", "@Value_Free@4")
-extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
+extern "C" void __fastcall Obj5e5cb0_Init(BYTE* self, void*);
+extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s);
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 ASM_VAR(AsmLabel, g_dtor5a3df0, @Wo_Free20@4)
 ASM_VAR(AsmLabel, g_dtor5e57a0, @Fw5e57a0_Destroy@4)
@@ -41,14 +46,16 @@ KING_VAR(AsmLabel, g_vtbl6528d8, 6528d8)
 KING_VAR(AsmLabel, g_vtbl652c68, 652c68)
 KING_VAR(AsmLabel, g_vtbl652cb4, 652cb4)
 KING_VAR(AsmLabel, g_vtbl652924, 652924)
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, int n);
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object constructor (name, kind, flag)
-extern "C" void FUN_6050f0(); KING_ALIAS("_FUN_6050f0", "_Mixer_GetVolume")    // mixer volume, returns double
+extern "C" double __cdecl Mixer_GetVolume();
+extern "C" const char* __cdecl Sound_ErrorText(int kind);
 extern "C" void FUN_604730(); KING_ALIAS("_FUN_604730", "_Sound_ErrorText")
-extern "C" void FUN_604d70(); KING_ALIAS("_FUN_604d70", "_Channels_Create")
-extern "C" void FUN_605130(); KING_ALIAS("_FUN_605130", "_Streams_Collect")
-extern "C" void FUN_604ed0(); KING_ALIAS("_FUN_604ed0", "_Snd_Free")
-extern "C" void FUN_5e98c0(); KING_ALIAS("_FUN_5e98c0", "_Data_Read5e99c0")
-extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
+extern "C" int __cdecl Channels_Create(int n);
+extern "C" void __cdecl Streams_Collect();
+extern "C" void __cdecl Snd_Free(int i);
+extern "C" void* __cdecl Data_Read5e99c0(void* a, const char* name);
+extern "C" int __cdecl Image_Read(BYTE* img, FILE* f, long off);
 extern "C" void Mixer_Close(); KING_ALIAS("_Mixer_Close", "_Mixer_ShutdownOnce")
 extern "C" void Scene_EachCallback(); KING_ALIAS("_Scene_EachCallback", "_Path_FindJoins")
 
@@ -198,13 +205,13 @@ int __fastcall Node_GetWorld(BYTE* self, void*, void* out)
 // [FUN_5f2dd0]
 void __fastcall Node_Call5f2a40a(BYTE* self, void*, int a)
 {
-    CallC(FUN_5f2a40, self + 68, self + 108, a, F(int, self, 56), F(int, self, 60), F(int, self, 64));
+    VertexDesc_Build(self + 68, (int*)(self + 108), (int*)a, F(int, self, 56), (BYTE*)(F(int, self, 60)), (float*)(F(int, self, 64)));
 }
 
 // [FUN_5f33e0]
 void __fastcall Node_Call5f2a40b(BYTE* self, void*, int a)
 {
-    CallC(FUN_5f2a40, self + 72, self + 108, a, F(int, self, 60), F(int, self, 64), F(int, self, 68));
+    VertexDesc_Build(self + 72, (int*)(self + 108), (int*)a, F(int, self, 60), (BYTE*)(F(int, self, 64)), (float*)(F(int, self, 68)));
 }
 
 // [FUN_5fa4f0]
@@ -217,7 +224,7 @@ void __fastcall Node_Set48(BYTE* self, void*, int a, int b)
 // [FUN_5fa6a0]
 BYTE* __fastcall Mesh_Construct(BYTE* self, void*)
 {
-    CallThis(FUN_5ef6d0, self, 0, 11);
+    Node_Construct(self, 0, 0, 11);
     F(int, self, 56) = 0;
     F(int, self, 60) = 0;
     F(int, self, 64) = 0;
@@ -230,7 +237,7 @@ BYTE* __fastcall Mesh_Construct(BYTE* self, void*)
 // [FUN_5fa6f0]
 BYTE* __fastcall Mesh_ConstructNamed(BYTE* self, void*, int name)
 {
-    CallThis(FUN_5ef6d0, self, name, 11);
+    Node_Construct(self, 0, (const char*)name, 11);
     F(int, self, 56) = 0;
     F(int, self, 60) = 0;
     F(int, self, 64) = 0;
@@ -286,7 +293,7 @@ int __cdecl Near3(float a, float b, float c)
 // [FUN_5fc6e0]
 BYTE* __fastcall Group_Construct(BYTE* self, void*, int name)
 {
-    CallThis(FUN_5f19b0, self, name, 15, 1);
+    NodeN_Construct(self, 0, (const char*)name, 15, 1);
     F(void*, self, 0) = g_vtbl652d68;
     F(int, self, 68) = 0;
     F(int, self, 56) = 0;
@@ -319,7 +326,7 @@ float __cdecl Sound_SetVolume(float v)
 {
     if (!g_soundOn)
         return v;
-    float old = (float)(CallC<double>(FUN_6050f0) * 1.0101010101010102);
+    float old = (float)(Mixer_GetVolume() * 1.0101010101010102);
     double x = v;
     if (x > 1.0f)
         x = 1.0f;
@@ -338,7 +345,7 @@ int __cdecl Sound_Open()
     int r = Mixer_Open(0, g_hWnd);
     if (!r)
         return 0;
-    return CallC<int>(FUN_604730, r);
+    return (int)Sound_ErrorText(r);
 }
 
 // [FUN_5fcea0]
@@ -350,7 +357,7 @@ void __cdecl Sound_AllocBuffers(int n)
     g_buffers = (BYTE**)operator new(n * 4);
     for (int i = 0; i < n; i++)
         g_buffers[i] = 0;
-    CallC(FUN_604d70, n);
+    Channels_Create(n);
 }
 
 // [FUN_5fcef0]
@@ -382,7 +389,7 @@ void __cdecl Sound_Frame()
             g_channels[i] = 0;
         }
     }
-    CallC(FUN_605130);
+    Streams_Collect();
     g_soundFrame++;
 }
 
@@ -426,7 +433,7 @@ int __fastcall SoundFile_SetBuffer(BYTE* self, void*, int buf)
         return 0;
     F(int, self, 8) = buf;
     F(DWORD, self, 24) |= 2;
-    CallC(FUN_604ed0, F(int, self, 12));
+    Snd_Free(F(int, self, 12));
     Mixer_Load(F(int, self, 12), F(int, self, 8), F(int, self, 4));
     return 1;
 }
@@ -440,12 +447,12 @@ int __fastcall SoundFile_Load(BYTE* self, void*)
     if (!(f & 2) || (f & 1))
         return 1;
     if (F(int, self, 0)) {
-        CallC(FUN_5e98c0, self, F(int, self, 0));
+        Data_Read5e99c0(self, (const char*)(F(int, self, 0)));
         F(DWORD, self, 24) |= 1;
         return 1;
     }
     if (F(int, self, 16)) {
-        CallC(FUN_5e99c0, self, F(int, self, 16), F(int, self, 20));
+        Image_Read(self, (FILE*)(F(int, self, 16)), F(int, self, 20));
         F(DWORD, self, 24) |= 1;
         return 1;
     }
@@ -574,7 +581,7 @@ BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, 
 BYTE* __fastcall Node5f1530_Construct(BYTE* self, void*, const char* name)
 {
     Node_Construct(self, 0, name, 1);
-    CallThis(FUN_5e5cb0, self + 60);
+    Obj5e5cb0_Init(self + 60, 0);
     F(short, self, 96) = 0;
     F(short, self, 98) = 0;
     F(short, self, 52) = 0;
@@ -589,8 +596,8 @@ void __fastcall Node5f1530_Destroy(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl652c68;
     ArrayDelete(F(BYTE*, self, 56), 88, (void (*)())(void*)g_dtor5e57a0);
-    CallThis(FUN_5e5840, self + 60);
-    CallThis(FUN_5ef660, self);
+    Rec5e5840_Free(self + 60, 0);
+    Sce5ef660_Destroy(self);
 }
 
 // [FUN_5f06e0]
@@ -599,15 +606,15 @@ void __fastcall Node5f06e0_Destroy(BYTE* self, void*)
     F(void*, self, 0) = g_vtbl652b84;
     ArrayDelete(F(BYTE*, self, 64), 28, (void (*)())(void*)g_dtor5a3df0);
     operator delete(F(void*, self, 68));
-    CallThis(FUN_5e5840, self + 72);
-    CallThis(FUN_5f1a70, self);
+    Rec5e5840_Free(self + 72, 0);
+    Node5f1a70_Destroy(self);
 }
 
 // [FUN_5f07a0]
 void __fastcall Node5f07a0_Destroy(BYTE* self, void*)
 {
-    CallThis(FUN_5f4a90, self + 56);
-    CallThis(FUN_5f1a70, self);
+    Value_Free((int*)(self + 56));
+    Node5f1a70_Destroy(self);
 }
 
 // [FUN_5f0810]
@@ -615,7 +622,7 @@ void __fastcall Node5f0810_Destroy(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl6528d8;
     operator delete(F(void*, self, 80));
-    CallThis(FUN_5f1a70, self);
+    Node5f1a70_Destroy(self);
 }
 
 // [FUN_5faa60]
@@ -626,7 +633,7 @@ void __fastcall Node5faa60_Destroy(BYTE* self, void*)
     operator delete(F(void*, self, 60));
     if (F(void*, self, 52))
         operator delete(F(void*, self, 52));
-    CallThis(FUN_5ef660, self);
+    Sce5ef660_Destroy(self);
 }
 
 // [FUN_5fcc70]
@@ -634,7 +641,7 @@ void __fastcall Node5fcc70_Destroy(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl652d68;
     operator delete(F(void*, self, 64));
-    CallThis(FUN_5f1a70, self);
+    Node5f1a70_Destroy(self);
 }
 
 }
@@ -652,6 +659,7 @@ extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int)
 extern "C" void FUN_604a80(); KING_ALIAS("_FUN_604a80", "_Mixer_Init")
 extern "C" void FUN_604730(); KING_ALIAS("_FUN_604730", "_Sound_ErrorText")
 extern "C" void $L_5fcdc0(); KING_ALIAS("_$L_5fcdc0", "_Slots723aa8_Destroy")
+extern "C" int __cdecl File_ReadInt(FILE* f);
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
 KING_VAR(int, g_sc723b28, 723b28)
 KING_VAR(int, g_sc723b30, 723b30)
@@ -674,15 +682,15 @@ extern "C" const char* __cdecl Sound_Start()
     memset(g_sc723aa8, 0, 128);
     if (!r)
         return 0;
-    return CallC<const char*>(FUN_604730, r);
+    return Sound_ErrorText(r);
 }
 
 // [FUN_5f92b0] reads three ints and the third's count of ints (+12, new) from a file
 extern "C" void __fastcall Ints3_Read(BYTE* self, void*, FILE* f)
 {
-    F(int, self, 0) = CallC<int>(FUN_5ab140, f);
-    F(int, self, 4) = CallC<int>(FUN_5ab140, f);
-    F(int, self, 8) = CallC<int>(FUN_5ab140, f);
+    F(int, self, 0) = File_ReadInt(f);
+    F(int, self, 4) = File_ReadInt(f);
+    F(int, self, 8) = File_ReadInt(f);
     if (F(int, self, 8))
     {
         void* p = operator new(F(int, self, 8) * 4);
@@ -732,12 +740,16 @@ extern "C" void __cdecl Sound_InitLock() { InitializeCriticalSection(&g_sc723b40
 
 
 // ---------------------------------------------------------------------------
+extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int);
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
+extern "C" int __fastcall View_SphereClip(BYTE* s, void*, const float* sp);
 extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
-extern "C" void FUN_604e10(); KING_ALIAS("_FUN_604e10", "_Channels_Release")
+extern "C" void __cdecl Channels_Release(void);
+extern "C" void __fastcall SoundFile_Destroy(BYTE* self, void*);
 extern "C" void FUN_5fd250(); KING_ALIAS("_FUN_5fd250", "@SoundFile_Destroy@8")
-extern "C" void FUN_605050(); KING_ALIAS("_FUN_605050", "_Mixer_Shutdown")
-extern "C" void FUN_5e6800(); KING_ALIAS("_FUN_5e6800", "@Outline_BoundingSphere@12")
+extern "C" void __cdecl Mixer_Shutdown(void);
+extern "C" void __fastcall Outline_BoundingSphere(BYTE* s, void*, float* v);
+extern "C" void __fastcall Sphere_Merge(float* s, void*, const float* b);
 extern "C" void FUN_5e5580(); KING_ALIAS("_FUN_5e5580", "@Sphere_Merge@12")
 KING_VAR(BYTE**, g_sc723b34p, 723b34)
 struct ScVec { float x, y, z; };
@@ -746,9 +758,9 @@ typedef int (__cdecl* ScTest)(int, BYTE*, BYTE*);
 // [FUN_5f3570] tests (a, b) against this object: 5ef800, then b's 5b4fc0 with +20, then the test hook +48 (a, b, this); 0 when one fails
 extern "C" int __fastcall Obj_Test(BYTE* self, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, self, a, b))
+    if (!Scene_TestInfo(self, 0, a, (int)b))
         return 0;
-    if (!CallThis<int>(FUN_5b4fc0, b, self + 20))
+    if (!View_SphereClip(b, 0, (const float*)(self + 20)))
         return 0;
     ScTest t = F(ScTest, self, 48);
     if (!t)
@@ -762,19 +774,19 @@ extern "C" void __cdecl Sound_Stop()
     if (!g_sc723b28)
         return;
     g_sc723b28 = 0;
-    CallC(FUN_604e10);
+    Channels_Release();
     for (int i = 0; i < g_sc723b30; i++)
     {
         BYTE* p = g_sc723b34p[i];
         if (p)
         {
-            CallThis(FUN_5fd250, p);
+            SoundFile_Destroy(p, 0);
             operator delete(p);
         }
     }
     operator delete(g_sc723b34p);
     memset(g_sc723aa8, 0, 128);
-    CallC(FUN_605050);
+    Mixer_Shutdown();
 }
 
 // [FUN_5fa5f0] moves the chain of n (+48) segments (40 bytes each, at +52) to the point +56: the first to it, the others following
@@ -784,25 +796,25 @@ extern "C" void __fastcall Chain_MoveTo(BYTE* self, void*)
     if (F(int, self, 48) < 1)
         return;
     F(ScVec, self, 20) = F(ScVec, self, 56);
-    CallThis(FUN_5e6800, F(BYTE*, self, 52), self + 20);
+    Outline_BoundingSphere(F(BYTE*, self, 52), 0, (float*)(self + 20));
     for (int i = 1; i < F(int, self, 48); i++)
     {
         t = F(ScVec, self, 56);
-        CallThis(FUN_5e6800, F(BYTE*, self, 52) + i * 40, &t);
-        CallThis(FUN_5e5580, self + 20, &t);
+        Outline_BoundingSphere(F(BYTE*, self, 52) + i * 40, 0, (float*)&t);
+        Sphere_Merge((float*)(self + 20), 0, (const float*)&t);
     }
 }
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void __fastcall Node_Unlink(BYTE* self, void*);
 
 // [FUN_5ef780] removes this node from its bucket table (+44) or, when linked (+4), from its list; 0 when it isn't in one
 extern "C" int __fastcall Node_Remove(BYTE* self, void*)
 {
     if (F(BYTE*, self, 4))
     {
-        CallThis(FUN_5d21b0, self);
+        Node_Unlink(self, 0);
         F(int, self, 44) = 0;
         F(int, self, 36) = 0;
         return 1;
@@ -827,11 +839,12 @@ extern "C" int __fastcall Node_Remove(BYTE* self, void*)
 
 
 // ---------------------------------------------------------------------------
+extern "C" void __fastcall Slots_Call48(BYTE* self, void*, int i, int a, int b);
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
-extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
 extern "C" void FUN_5af9e0(); KING_ALIAS("_FUN_5af9e0", "@Mesh_TexCoords@32")
-extern "C" void FUN_5b1950(); KING_ALIAS("_FUN_5b1950", "@Rn_DrawStrided@24")
-extern "C" void FUN_5b1df0(); KING_ALIAS("_FUN_5b1df0", "@Rn_DrawIndexedStrided@24")
+extern "C" long __fastcall Rn_DrawStrided(BYTE* self, void*, BYTE* mat, int prim, BYTE* v, int n);
+extern "C" long __fastcall Rn_DrawIndexedStrided(BYTE* self, void*, BYTE* mat, int prim, BYTE* idx, BYTE* v);
 KING_VAR(DWORD, g_sc702e8c, 702e8c)
 KING_VAR(BYTE*, g_scDevice, 720908)
 KING_VAR(AsmLabel, s_sc683640, 683640)
@@ -848,9 +861,9 @@ static void Sc_RenderState(int s, int v)
 // [FUN_5f36d0] draws the object when it passes the tests; names starting with 683640 are drawn with states 14 = 0 and 23 = 8
 extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, self, a, b))
+    if (!Scene_TestInfo(self, 0, a, (int)b))
         return 0;
-    if (!CallThis<int>(FUN_5b4fc0, b, self + 20))
+    if (!View_SphereClip(b, 0, (const float*)(self + 20)))
         return 0;
     int swap = 0;
     if (F(char*, self, 12) && (g_sc702e8c & 0x4000) && !strncmp(F(char*, self, 12), s_sc683640, 3))
@@ -860,7 +873,7 @@ extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b)
         Sc_RenderState(14, 0);
         Sc_RenderState(23, 8);
     }
-    CallThis(FUN_5f2080, self, 0, a, b);
+    Slots_Call48(self, 0, 0, a, (int)b);
     if (swap)
     {
         g_sc702e8c |= 0x4000;
@@ -877,16 +890,16 @@ extern "C" long __cdecl Mesh_Draw(BYTE* r, BYTE* mesh, BYTE* mat, ScVec3* p, int
 {
     if (!F(int, mesh, 32))
     {
-        CallThis(FUN_5b1020, r, mat, F(int, mesh, 24) != 0, g_sc721770 ? 2 : 0, 0);
+        Material_Select(r, 0, mat, F(int, mesh, 24) != 0, g_sc721770 ? 2 : 0, 0);
         CallThis(FUN_5af9e0, r, mesh, (int)F(WORD, mesh, 0), mat, *p);
-        return CallThis<long>(FUN_5b1950, r, mat, prim, mesh, (int)F(WORD, mesh, 0));
+        return Rn_DrawStrided(r, 0, mat, prim, mesh, (int)F(WORD, mesh, 0));
     }
     BYTE* v = g_sc723a90;
     if (!v)
         return 0;
-    CallThis(FUN_5b1020, r, mat, (F(DWORD, v, 8) >> 4) & 1, g_sc721770 ? 3 : 0, 0);
+    Material_Select(r, 0, mat, (F(DWORD, v, 8) >> 4) & 1, g_sc721770 ? 3 : 0, 0);
     CallThis(FUN_5af9e0, r, v, (int)F(WORD, v, 0), mat, *p);
-    return CallThis<long>(FUN_5b1df0, r, mat, prim, mesh, g_sc723a90);
+    return Rn_DrawIndexedStrided(r, 0, mat, prim, mesh, g_sc723a90);
 }
 
 
@@ -932,13 +945,17 @@ extern "C" BYTE* __fastcall Sce5fa6d0_DeletingDestructor(BYTE* s, void*, int fla
 // [$L_5fc6c0]
 extern "C" BYTE* __fastcall Sce5fc6c0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5fcc70); }
 
+extern "C" int __fastcall Slot_CastRay(BYTE* s, void*, int i, int flags, BYTE* r);
 extern "C" void FUN_5f21e0(); KING_ALIAS("_FUN_5f21e0", "@Slot_CastRay@20")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+extern "C" int __fastcall Scene_ReadChildren(BYTE* s, void*, int file, int r, int n, int b, int c);
 extern "C" void FUN_5f1db0(); KING_ALIAS("_FUN_5f1db0", "@Scene_ReadChildren@28")
 extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
+extern "C" void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f);
 extern "C" void FUN_5f8bf0(); KING_ALIAS("_FUN_5f8bf0", "@Shape_ReadData@12")
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
+extern "C" int __fastcall Node_Remove(BYTE* self, void*);
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void FUN_5ab790(); KING_ALIAS("_FUN_5ab790", "@Vec3_Read@12")
 
@@ -972,7 +989,7 @@ extern "C" int __fastcall Sce_5fb7b0(BYTE* s, void*, int a, int b)
 {
     if (F(BYTE, s, 40) & 1)
         return 0;
-    return CallThis<int>(FUN_5f21e0, s, 0, a, b);
+    return Slot_CastRay(s, 0, 0, a, (BYTE*)b);
 }
 
 // [$L_5f96e0] FUN_5f21e0 with the count (+56, or +56 of the source at +60) limited to +52
@@ -985,14 +1002,14 @@ extern "C" int __fastcall Sce_5f96e0(BYTE* s, void*, int a, int b)
         n = F(int, F(BYTE*, s, 60), 56);
     if (n > F(int, s, 52))
         n = F(int, s, 52);
-    return CallThis<int>(FUN_5f21e0, s, n, a, b);
+    return Slot_CastRay(s, 0, n, a, (BYTE*)b);
 }
 
 // the node's part of a load: FUN_5f1db0 (file, FUN_5ab140 (file), kind, b, c)
 static int Sce_LoadTail(BYTE* s, int file, int kind, int b, int c)
 {
-    int r = CallC<int>(FUN_5ab140, file);
-    return CallThis<int>(FUN_5f1db0, s, file, r, kind, b, c);
+    int r = File_ReadInt((FILE*)file);
+    return Scene_ReadChildren(s, 0, file, r, kind, b, c);
 }
 // [$L_5fca20]
 extern "C" int __fastcall Sce_Load5fca20(BYTE* s, void*, int f, int b, int c) { return Sce_LoadTail(s, f, 1, b, c); }
@@ -1013,7 +1030,7 @@ extern "C" int __fastcall Sce_Load5f4960(BYTE* s, void*, int f, int b, int c)
 extern "C" int __fastcall Sce_Load5f8ed0(BYTE* s, void*, int f, int b, int c)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
-    CallThis(FUN_5f8bf0, s + 56, f);
+    Shape_ReadData(s + 56, 0, (BYTE*)f);
     return Sce_LoadTail(s, f, 2, b, c);
 }
 
@@ -1021,27 +1038,27 @@ extern "C" int __fastcall Sce_Load5f8ed0(BYTE* s, void*, int f, int b, int c)
 extern "C" int __fastcall Sce_Load5faad0(BYTE* s, void*, int f, int, int)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
-    int r = CallC<int>(FUN_5ab140, f);
+    int r = File_ReadInt((FILE*)f);
     F(int, s, 48) = (r & 1) ? 0 : 1;
     F(int, s, 52) = r >> 1;
     CallThis(FUN_5ab790, s + 56, f);
-    F(int, s, 68) = CallC<int>(FUN_5ab140, f);
+    F(int, s, 68) = File_ReadInt((FILE*)f);
     return 1;
 }
 
 // [$L_5fa4b0]
 extern "C" int __fastcall Sce_5fa4b0(BYTE* s, void*, int a, int b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, b))
         return 0;
-    CallThis(FUN_5f2080, s, 0, a, b);
+    Slots_Call48(s, 0, 0, a, b);
     return 1;
 }
 
 // [$L_5f9720] after FUN_5ef780: the object at +76 gets vtbl+36, is deleted and cleared
 extern "C" int __fastcall Sce_5f9720(BYTE* s)
 {
-    int r = CallThis<int>(FUN_5ef780, s);
+    int r = Node_Remove(s, 0);
     if (!r)
         return r;
     if (F(BYTE*, s, 76)) {
@@ -1056,27 +1073,34 @@ extern "C" int __fastcall Sce_5f9720(BYTE* s)
 // ---------------------------------------------------------------------------
 // Virtual methods of the scene nodes: event handling, drawing passes, loading.
 
+extern "C" int __fastcall Obj_Flag0Clear(BYTE* self, void*, int, int, int, int);
 extern "C" void FUN_5ef820(); KING_ALIAS("_FUN_5ef820", "@Obj_Flag0Clear@24")
+extern "C" void __fastcall Slots_Call56(BYTE* self, void*, int i, int a, int b, int c, int d);
 extern "C" void FUN_5f2100(); KING_ALIAS("_FUN_5f2100", "@Slots_Call56@28")
+extern "C" void __fastcall Draw_ListItem(BYTE* self, void*, DWORD a, DWORD b, DWORD c, DWORD d, DWORD e, int idx);
 extern "C" void FUN_5b4cd0(); KING_ALIAS("_FUN_5b4cd0", "@Draw_ListItem@32")
 extern "C" void FUN_5aba10(); KING_ALIAS("_FUN_5aba10", "@Matrix_Read@12")
+extern "C" void __fastcall NameHash_AddList(BYTE* h, void*, const char* name, void* v);
 extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")
-extern "C" void FUN_5ab190(); KING_ALIAS("_FUN_5ab190", "_File_ReadFloat")
-extern "C" void FUN_5d2fa0(); KING_ALIAS("_FUN_5d2fa0", "_Time_NowMs")
-extern "C" void FUN_5d2fc0(); KING_ALIAS("_FUN_5d2fc0", "_Time_Delta")
+extern "C" float __cdecl File_ReadFloat(FILE* f);
+extern "C" void __cdecl Time_NowMs(double* out);
+extern "C" void __cdecl Time_Delta(double* last, double* acc);
+extern "C" BYTE* __fastcall Render_CurrentFrame(BYTE* self, void*);
 extern "C" void FUN_5ae560(); KING_ALIAS("_FUN_5ae560", "@Render_CurrentFrame@8")
+extern "C" int __fastcall Volume_Contains(DWORD* s, void*, const float* p);
 extern "C" void FUN_5f88d0(); KING_ALIAS("_FUN_5f88d0", "@Volume_Contains@12")
+extern "C" void __fastcall Renderer_PushLight(BYTE* s, void*, const BYTE* l);
 extern "C" void FUN_5ad180(); KING_ALIAS("_FUN_5ad180", "@Renderer_PushLight@12")
-extern "C" void FUN_5adc20(); KING_ALIAS("_FUN_5adc20", "@Render_PopLight@12")
-extern "C" void FUN_5e6520(); KING_ALIAS("_FUN_5e6520", "@Poly_BoundingSphere@16")
+extern "C" void __fastcall Render_PopLight(BYTE* self, void*, int unused);
+extern "C" void __fastcall Poly_BoundingSphere(BYTE* s, void*, float* out, const BYTE* v);
 extern "C" void FUN_5e5580(); KING_ALIAS("_FUN_5e5580", "@Sphere_Merge@12")
+extern "C" void __fastcall Ints3_Read(BYTE* self, void*, FILE* f);
 extern "C" void FUN_5f92b0(); KING_ALIAS("_FUN_5f92b0", "@Ints3_Read@12")
+extern "C" int __fastcall Clip_InFront(BYTE* self, void*, const float* p);
 extern "C" void FUN_5b4f70(); KING_ALIAS("_FUN_5b4f70", "@Clip_InFront@12")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
-extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
 extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
-extern "C" void Sce_fread(); KING_ALIAS("_Sce_fread", "_fread")
-extern "C" void Sce_strncmp(); KING_ALIAS("_Sce_strncmp", "_strncmp")
 KING_VAR(AsmLabel, g_sce71e820, 71e820)
 KING_VAR(int, g_sce723aa4, 723aa4)
 KING_VAR(AsmLabel, g_sce71f800, 71f800)
@@ -1094,8 +1118,8 @@ typedef void (*AsmFn)();
 static void Sce_ReadName(void* f, void* out)
 {
     char buf[64];
-    CallC(Sce_fread, buf, 32, 1, f);
-    CallThis(FUN_5d2650, g_sce71e820, buf, out);
+    fread(buf, 32, 1, (FILE*)f);
+    NameHash_AddList((BYTE*)g_sce71e820, 0, buf, out);
 }
 
 // the children (+48 list, next +8) get the event through vtbl+28; unhandled it goes to vtbl+20 (0, ev)
@@ -1117,18 +1141,18 @@ extern "C" int __fastcall Sce_5f3800(BYTE* s, void*, int ev) { return F(int, s, 
 // [$L_5fab50] after FUN_5ef800: FUN_5b4cd0 of b with +48, +52, the vector +56 and +68
 extern "C" int __fastcall Sce_5fab50(BYTE* s, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, (int)b))
         return 0;
-    CallThis(FUN_5b4cd0, b, F(int, s, 48), F(int, s, 52), F(DWORD, s, 56), F(DWORD, s, 60), F(DWORD, s, 64), F(int, s, 68));
+    Draw_ListItem(b, 0, F(int, s, 48), F(int, s, 52), F(DWORD, s, 56), F(DWORD, s, 60), F(DWORD, s, 64), F(int, s, 68));
     return 1;
 }
 
 // after FUN_5ef820 (a, b, c, d): FUN_5f2100 (k, a, b, c, d)
 static int Sce_Pass4(BYTE* s, int k, int a, int b, int c, int d)
 {
-    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+    if (!Obj_Flag0Clear(s, 0, a, b, c, d))
         return 0;
-    CallThis(FUN_5f2100, s, k, a, b, c, d);
+    Slots_Call56(s, 0, k, a, b, c, d);
     return 1;
 }
 // [$L_5f37b0]
@@ -1138,9 +1162,9 @@ extern "C" int __fastcall Sce_5f2790(BYTE* s, void*, int a, int b, int c, int d)
 // [$L_5fa310] the last slot (+52 - 1)
 extern "C" int __fastcall Sce_5fa310(BYTE* s, void*, int a, int b, int c, int d)
 {
-    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+    if (!Obj_Flag0Clear(s, 0, a, b, c, d))
         return 0;
-    CallThis(FUN_5f2100, s, F(int, s, 52) - 1, a, b, c, d);
+    Slots_Call56(s, 0, F(int, s, 52) - 1, a, b, c, d);
     return 1;
 }
 
@@ -1157,69 +1181,69 @@ static int Sce_CurrentSlot(BYTE* s)
 // [$L_5f9680]
 extern "C" int __fastcall Sce_5f9680(BYTE* s, void*, int a, int b, int c, int d)
 {
-    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+    if (!Obj_Flag0Clear(s, 0, a, b, c, d))
         return 0;
-    CallThis(FUN_5f2100, s, Sce_CurrentSlot(s), a, b, c, d);
+    Slots_Call56(s, 0, Sce_CurrentSlot(s), a, b, c, d);
     return 1;
 }
 // [$L_5f9630]
 extern "C" int __fastcall Sce_5f9630(BYTE* s, void*, int a, int b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, b))
         return 0;
-    CallThis(FUN_5f2080, s, Sce_CurrentSlot(s), a, b);
+    Slots_Call48(s, 0, Sce_CurrentSlot(s), a, b);
     return 1;
 }
 
 // [$L_5f48f0] slots 0, 1 and 2
 extern "C" int __fastcall Sce_5f48f0(BYTE* s, void*, int a, int b, int c, int d)
 {
-    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+    if (!Obj_Flag0Clear(s, 0, a, b, c, d))
         return 0;
-    CallThis(FUN_5f2100, s, 0, a, b, c, d);
-    CallThis(FUN_5f2100, s, 1, a, b, c, d);
-    CallThis(FUN_5f2100, s, 2, a, b, c, d);
+    Slots_Call56(s, 0, 0, a, b, c, d);
+    Slots_Call56(s, 0, 1, a, b, c, d);
+    Slots_Call56(s, 0, 2, a, b, c, d);
     return 1;
 }
 
 // [$L_5f39a0] slot 0; in state 1 (+140) with +136 then FUN_5ad180 of d with +56
 extern "C" int __fastcall Sce_5f39a0(BYTE* s, void*, int a, int b, int c, BYTE* d)
 {
-    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+    if (!Obj_Flag0Clear(s, 0, a, b, c, (int)d))
         return 0;
-    CallThis(FUN_5f2100, s, 0, a, b, c, d);
+    Slots_Call56(s, 0, 0, a, b, c, (int)d);
     if (F(int, s, 140) == 1 && F(int, s, 136))
-        CallThis(FUN_5ad180, d, s + 56);
+        Renderer_PushLight(d, 0, s + 56);
     return 1;
 }
 
 // [$L_5f8f70] slot 0 when FUN_5f88d0 of +56 accepts +36 of the record FUN_5ac2e0 gives for b, else slot 1
 extern "C" int __fastcall Sce_5f8f70(BYTE* s, void*, int a, int b, int c, int d)
 {
-    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+    if (!Obj_Flag0Clear(s, 0, a, b, c, d))
         return 0;
     BYTE loc[48];
     BYTE* r = CallC<BYTE*>(FUN_5ac2e0, loc, b);
-    int k = CallThis<int>(FUN_5f88d0, s + 56, r + 36) ? 0 : 1;
-    CallThis(FUN_5f2100, s, k, a, b, c, d);
+    int k = Volume_Contains((DWORD*)(s + 56), 0, (const float*)(r + 36)) ? 0 : 1;
+    Slots_Call56(s, 0, k, a, b, c, d);
     return 1;
 }
 
 // [$L_5f8f10] the same choice for FUN_5ae560 of b, with FUN_5f2080
 extern "C" int __fastcall Sce_5f8f10(BYTE* s, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, (int)b))
         return 0;
-    int x = CallThis<int>(FUN_5ae560, b);
-    int k = CallThis<int>(FUN_5f88d0, s + 56, x) ? 0 : 1;
-    CallThis(FUN_5f2080, s, k, a, b);
+    int x = (int)Render_CurrentFrame(b, 0);
+    int k = Volume_Contains((DWORD*)(s + 56), 0, (const float*)x) ? 0 : 1;
+    Slots_Call48(s, 0, k, a, (int)b);
     return 1;
 }
 
 // [$L_5f9380] b's vtbl+0 with +48, without flag 2 and +64
 extern "C" int __fastcall Sce_5f9380(BYTE* s, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, (int)b))
         return 0;
     if (a & 2)
         return 0;
@@ -1234,26 +1258,26 @@ extern "C" int __fastcall Sce_5f3920(BYTE* s, void*, int a, BYTE* b)
 {
     if (F(int, s, 140))
         return 0;
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, (int)b))
         return 0;
     if (F(int, s, 136))
-        CallThis(FUN_5ad180, b, s + 56);
-    CallThis(FUN_5f2080, s, 0, a, b);
+        Renderer_PushLight(b, 0, s + 56);
+    Slots_Call48(s, 0, 0, a, (int)b);
     if (F(int, s, 136))
-        CallThis(FUN_5adc20, b, s + 56);
+        Render_PopLight(b, 0, (int)(s + 56));
     return 1;
 }
 
 // [$L_5f4880] FUN_5b4f70 of b with +56 decides the order of slots 0 and 2; slot 1 last
 extern "C" int __fastcall Sce_5f4880(BYTE* s, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, (int)b))
         return 0;
-    int r = CallThis<int>(FUN_5b4f70, b, s + 56);
+    int r = Clip_InFront(b, 0, (const float*)(s + 56));
     int first = (r ^ (a & 1)) ? 0 : 2;
-    CallThis(FUN_5f2080, s, first, a, b);
-    CallThis(FUN_5f2080, s, 2 - first, a, b);
-    CallThis(FUN_5f2080, s, 1, a, b);
+    Slots_Call48(s, 0, first, a, (int)b);
+    Slots_Call48(s, 0, 2 - first, a, (int)b);
+    Slots_Call48(s, 0, 1, a, (int)b);
     return 1;
 }
 
@@ -1263,11 +1287,11 @@ extern "C" int __fastcall Sce_5fccd0(BYTE* s, void*, int a, int b)
     if (F(BYTE, s, 40) & 1)
         return 0;
     if (!g_sce723aa4)
-        CallC(FUN_5d2fa0, (BYTE*)g_sce71f800);
+        Time_NowMs((double*)((BYTE*)g_sce71f800));
     g_sce723aa4++;
-    int r = CallThis<int>(FUN_5f21e0, s, 0, a, b);
+    int r = Slot_CastRay(s, 0, 0, a, (BYTE*)b);
     if (--g_sce723aa4 == 0)
-        CallC(FUN_5d2fc0, (BYTE*)g_sce71f800, (BYTE*)g_sce71f810);
+        Time_Delta((double*)((BYTE*)g_sce71f800), (double*)((BYTE*)g_sce71f810));
     return r;
 }
 
@@ -1305,7 +1329,7 @@ static int Sce_EventToTarget(BYTE* s, int a, BYTE* b, int to, int vo)
             return r;
         }
     }
-    return CallThis<int>(FUN_5f21e0, s, 0, a, b);
+    return Slot_CastRay(s, 0, 0, a, b);
 }
 // [$L_5f2e00]
 extern "C" int __fastcall Sce_5f2e00(BYTE* s, void*, int a, BYTE* b) { return Sce_EventToTarget(s, a, b, 104, 112); }
@@ -1318,10 +1342,10 @@ extern "C" void __fastcall Sce_Bounds(BYTE* s)
     DWORD loc[4] = {0, 0, 0, 0};
     if (F(WORD, s, 52) < 1)
         return;
-    CallThis(FUN_5e6520, F(BYTE*, s, 56), s + 20, F(int, s, 48));
+    Poly_BoundingSphere(F(BYTE*, s, 56), 0, (float*)(s + 20), (const BYTE*)(F(int, s, 48)));
     for (int i = 1; i < F(WORD, s, 52); i++) {
-        CallThis(FUN_5e6520, F(BYTE*, s, 56) + i * 88, loc, F(int, s, 48));
-        CallThis(FUN_5e5580, s + 20, loc);
+        Poly_BoundingSphere(F(BYTE*, s, 56) + i * 88, 0, (float*)loc, (const BYTE*)(F(int, s, 48)));
+        Sphere_Merge((float*)(s + 20), 0, (const float*)loc);
     }
 }
 
@@ -1329,7 +1353,7 @@ extern "C" void __fastcall Sce_Bounds(BYTE* s)
 extern "C" int __fastcall Sce_Load5f2640(BYTE* s, void*, int f, int b, int c)
 {
     CallThis(FUN_5aba10, s + 64, f);
-    int r = CallC<int>(FUN_5ab140, f);
+    int r = File_ReadInt((FILE*)f);
     if (r == 0)
         F(int, s, 56) = 0;
     else if (r == 1)
@@ -1364,27 +1388,27 @@ extern "C" int __fastcall Sce_Load5f3620(BYTE* s, void*, int f, int, int)
 {
     char buf[64];
     CallThis(FUN_5ac7f0, s + 20, f);
-    CallC(Sce_fread, buf, 32, 1, f);
-    if (CallC<int>(Sce_strncmp, buf, (const char*)s_sce67fb20, 2) == 0) {
-        CallThis(FUN_5d2650, g_sce71e820, buf, s + 52);
+    fread(buf, 32, 1, (FILE*)f);
+    if (strncmp(buf, (const char*)s_sce67fb20, 2) == 0) {
+        NameHash_AddList((BYTE*)g_sce71e820, 0, buf, s + 52);
         F(int, s, 56) = 0;
     } else {
-        CallThis(FUN_5d2650, g_sce71e820, buf, s + 56);
+        NameHash_AddList((BYTE*)g_sce71e820, 0, buf, s + 56);
         F(int, s, 52) = 0;
     }
     Sce_ReadName((void*)f, s + 48);
-    CallThis(FUN_5f92b0, s + 60, f);
+    Ints3_Read(s + 60, 0, (FILE*)f);
     return 1;
 }
 // [$L_5f4030] +20, the doubles +72, +56, +64 (a word skipped) and +96
 extern "C" int __fastcall Sce_Load5f4030(BYTE* s, void*, int f, int b, int c)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
-    F(double, s, 72) = CallC<double>(FUN_5ab190, f);
-    CallC(FUN_5ab140, f);
-    F(double, s, 56) = CallC<double>(FUN_5ab190, f);
-    F(double, s, 64) = CallC<double>(FUN_5ab190, f);
-    F(int, s, 96) = CallC<int>(FUN_5ab140, f);
+    F(double, s, 72) = (double)File_ReadFloat((FILE*)f);
+    File_ReadInt((FILE*)f);
+    F(double, s, 56) = (double)File_ReadFloat((FILE*)f);
+    F(double, s, 64) = (double)File_ReadFloat((FILE*)f);
+    F(int, s, 96) = File_ReadInt((FILE*)f);
     return Sce_LoadTail(s, f, 1, b, c);
 }
 // [$L_5f9300] by the kind (+64): 6 and 7 read +48 first, 7 also +20 and +68
@@ -1394,31 +1418,31 @@ extern "C" int __fastcall Sce_Load5f9300(BYTE* s, void*, int f, int, int)
     if (t == 6 || t == 7) {
         if (t == 7) {
             CallThis(FUN_5ac7f0, s + 20, f);
-            F(int, s, 68) = CallC<int>(FUN_5ab140, f);
+            F(int, s, 68) = File_ReadInt((FILE*)f);
         }
-        CallThis(FUN_5f92b0, s + 48, f);
-        CallThis(FUN_5f8bf0, s + 64, f);
+        Ints3_Read(s + 48, 0, (FILE*)f);
+        Shape_ReadData(s + 64, 0, (BYTE*)f);
     } else {
         CallThis(FUN_5ac7f0, s + 20, f);
-        CallThis(FUN_5f8bf0, s + 64, f);
-        CallThis(FUN_5f92b0, s + 48, f);
+        Shape_ReadData(s + 64, 0, (BYTE*)f);
+        Ints3_Read(s + 48, 0, (FILE*)f);
     }
     return 1;
 }
 // [$L_5fadc0] the light: words +52, +48, +56, the name +80, +84, +96 and the floats +64..+76, +60
 extern "C" int __fastcall Sce_Load5fadc0(BYTE* s, void*, int f, int, int)
 {
-    F(int, s, 52) = CallC<int>(FUN_5ab140, f);
-    F(int, s, 48) = CallC<int>(FUN_5ab140, f);
-    F(int, s, 56) = CallC<int>(FUN_5ab140, f);
+    F(int, s, 52) = File_ReadInt((FILE*)f);
+    F(int, s, 48) = File_ReadInt((FILE*)f);
+    F(int, s, 56) = File_ReadInt((FILE*)f);
     Sce_ReadName((void*)f, s + 80);
     CallThis(FUN_5ab790, s + 84, f);
     CallThis(FUN_5ab790, s + 96, f);
-    F(float, s, 64) = (float)CallC<double>(FUN_5ab190, f);
-    F(float, s, 68) = (float)CallC<double>(FUN_5ab190, f);
-    F(float, s, 72) = (float)CallC<double>(FUN_5ab190, f);
-    F(float, s, 76) = (float)CallC<double>(FUN_5ab190, f);
-    F(float, s, 60) = (float)CallC<double>(FUN_5ab190, f);
+    F(float, s, 64) = (float)(double)File_ReadFloat((FILE*)f);
+    F(float, s, 68) = (float)(double)File_ReadFloat((FILE*)f);
+    F(float, s, 72) = (float)(double)File_ReadFloat((FILE*)f);
+    F(float, s, 76) = (float)(double)File_ReadFloat((FILE*)f);
+    F(float, s, 60) = (float)(double)File_ReadFloat((FILE*)f);
     return 1;
 }
 
@@ -1452,7 +1476,7 @@ extern "C" BYTE* __fastcall Sce_LinkChild(BYTE* s, void*, int i, BYTE* node, BYT
         return 0;
     if (parent) {
         F(int, node, 44) = F(int, parent, 44);
-        CallThis(FUN_5d2190, node, parent);
+        Node_Link(node, 0, parent);
         F(int, node, 36) = F(int, parent, 36);
         return node;
     }
@@ -1468,16 +1492,16 @@ extern "C" BYTE* __fastcall Sce_LinkChild(BYTE* s, void*, int i, BYTE* node, BYT
     BYTE* last = *slot;
     while (F(BYTE*, last, 8))
         last = F(BYTE*, last, 8);
-    CallThis(FUN_5d2190, node, last);
+    Node_Link(node, 0, last);
     return node;
 }
 
 // [$L_5fa9d0] render state 136 from b's +8272, the light (+52, +48) to stage 482
 extern "C" int __fastcall Sce_5fa9d0(BYTE* s, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, (int)b))
         return 0;
-    int r = CallThis<int>(FUN_5b4fc0, b, s + 20);
+    int r = View_SphereClip(b, 0, (const float*)(s + 20));
     if (!r)
         return r;
     void* d = g_sce720908;
@@ -1494,7 +1518,7 @@ extern "C" int __fastcall Sce_5fa9d0(BYTE* s, void*, int a, BYTE* b)
 // [$L_5fcba0] b's material from the table (+276, count +284) by b's +8660, and the colors +288..+312
 extern "C" int __fastcall Sce_5fcba0(BYTE* s, void*, int a, BYTE* b)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, a, (int)b))
         return 0;
     if (F(int, s, 56))
         CallVirt(b, 4, F(int, s, 56));
@@ -1511,7 +1535,7 @@ extern "C" int __fastcall Sce_5fcba0(BYTE* s, void*, int a, BYTE* b)
     } else {
         F(int, b, 8632) = 0;
     }
-    CallThis(FUN_5f2080, s, 0, a, b);
+    Slots_Call48(s, 0, 0, a, (int)b);
     return 1;
 }
 
@@ -1532,17 +1556,17 @@ KING_VAR(BYTE*, g_sce723a90, 723a90)
 extern "C" int __fastcall Sce_Load5fabb0(BYTE* s, void*, int f, int, int)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
-    F(int, s, 72) = CallC<int>(FUN_5ab140, f);
+    F(int, s, 72) = File_ReadInt((FILE*)f);
     CallThis(FUN_5ac7f0, s + 56, f);
-    int r = CallC<int>(FUN_5ab140, f);
+    int r = File_ReadInt((FILE*)f);
     F(int, s, 48) = (r & 1) ? 0 : 1;
     F(int, s, 52) = r >> 1;
     CallThis(FUN_5ab790, s + 84, f);
     F(void*, s, 76) = operator new(F(int, s, 72) * 4);
     F(void*, s, 80) = operator new(F(int, s, 72) * 4);
     for (int i = 0; i < F(int, s, 72); i++) {
-        F(float*, s, 76)[i] = (float)CallC<double>(FUN_5ab190, f);
-        F(int*, s, 80)[i] = CallC<int>(FUN_5ab140, f);
+        F(float*, s, 76)[i] = (float)(double)File_ReadFloat((FILE*)f);
+        F(int*, s, 80)[i] = File_ReadInt((FILE*)f);
     }
     return 1;
 }
@@ -1551,8 +1575,8 @@ extern "C" int __fastcall Sce_Load5fabb0(BYTE* s, void*, int f, int, int)
 extern "C" int __fastcall Sce_Load5fa860(BYTE* s, void*, int f, int, int)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
-    CallC(FUN_5ab140, f);
-    int n = CallC<int>(FUN_5ab140, f);
+    File_ReadInt((FILE*)f);
+    int n = File_ReadInt((FILE*)f);
     F(int, s, 48) = n;
     DWORD* p = (DWORD*)operator new(n * 12);
     if (p)
@@ -1562,7 +1586,7 @@ extern "C" int __fastcall Sce_Load5fa860(BYTE* s, void*, int f, int, int)
     F(void*, s, 60) = operator new(F(int, s, 48) * 4);
     for (int i = 0; i < F(int, s, 48); i++) {
         CallThis(FUN_5ab790, F(BYTE*, s, 56) + i * 12, f);
-        F(int*, s, 60)[i] = CallC<int>(FUN_5ab140, f);
+        F(int*, s, 60)[i] = File_ReadInt((FILE*)f);
     }
     return 1;
 }
@@ -1571,8 +1595,8 @@ extern "C" int __fastcall Sce_Load5fa860(BYTE* s, void*, int f, int, int)
 extern "C" int __fastcall Sce_Load5f9e70(BYTE* s, void*, int f, int b, int c)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
-    int n = CallC<int>(FUN_5ab140, f);
-    int fl = CallC<int>(FUN_5ab140, f);
+    int n = File_ReadInt((FILE*)f);
+    int fl = File_ReadInt((FILE*)f);
     int m = fl & 3;
     if (m == 0)
         F(int, s, 56) = 0;
@@ -1585,7 +1609,7 @@ extern "C" int __fastcall Sce_Load5f9e70(BYTE* s, void*, int f, int b, int c)
     CallThis(FUN_5ac7f0, s + 64, f);
     F(void*, s, 80) = operator new(n * 4);
     for (int i = 0; i < n; i++)
-        F(float*, s, 80)[i] = (float)CallC<double>(FUN_5ab190, f);
+        F(float*, s, 80)[i] = (float)(double)File_ReadFloat((FILE*)f);
     return Sce_LoadTail(s, f, n, b, c);
 }
 
@@ -1602,7 +1626,7 @@ extern "C" void __fastcall Sce_ChildBounds(BYTE* s)
                 F(DWORD, s, 28) = F(DWORD, o, 28);
             } else {
                 DWORD box[4] = {F(DWORD, o, 20), F(DWORD, o, 24), F(DWORD, o, 28), F(DWORD, o, 32)};
-                CallThis(FUN_5e5580, s + 20, box);
+                Sphere_Merge((float*)(s + 20), 0, (const float*)box);
             }
         }
     }
@@ -1634,10 +1658,10 @@ extern "C" int __fastcall Sce_Load5fa360(BYTE* s, void*, int f, int b, int c)
 extern "C" int __fastcall Sce_Light(BYTE* s, void*, int a, BYTE* b)
 {
     g_sce723a94 = s;
-    int r = CallThis<int>(FUN_5ef800, s, a, b);
+    int r = Scene_TestInfo(s, 0, a, (int)b);
     if (!r)
         return r;
-    r = CallThis<int>(FUN_5b4fc0, b, s + 20);
+    r = View_SphereClip(b, 0, (const float*)(s + 20));
     if (!r)
         return r;
     F(int, b, 8252) = F(int, s, 60);
@@ -1655,8 +1679,8 @@ extern "C" int __fastcall Sce_Light(BYTE* s, void*, int a, BYTE* b)
         g_sce723a8c = 0;
         g_sce723a90 = 0;
     }
-    if (CallThis<int>(FUN_5b4fc0, b, s + 20))
-        CallThis(FUN_5f2080, s, 0, a, b);
+    if (View_SphereClip(b, 0, (const float*)(s + 20)))
+        Slots_Call48(s, 0, 0, a, (int)b);
     g_sce723a8c = 0;
     g_sce723a48 = 0;
     g_sce723a50 = 0;
@@ -1670,7 +1694,7 @@ extern "C" int __fastcall Sce_PlaneOrder(BYTE* s, void*, int a, BYTE* b)
 {
     if (F(BYTE, s, 40) & 1)
         return 0;
-    int r = CallThis<int>(FUN_5f21e0, s, 1, a, b);
+    int r = Slot_CastRay(s, 0, 1, a, b);
     if (r)
         return r;
     double x = (double)F(float, b, 16) * F(float, b, 80) + (double)F(float, b, 28) * F(float, b, 84);
@@ -1686,10 +1710,10 @@ extern "C" int __fastcall Sce_PlaneOrder(BYTE* s, void*, int a, BYTE* b)
     d = d + x * F(float, s, 56);
     d = d + F(float, s, 68);
     int first = d > g_sce64b678 ? 0 : 2;
-    r = CallThis<int>(FUN_5f21e0, s, first, a, b);
+    r = Slot_CastRay(s, 0, first, a, b);
     if (r)
         return r;
-    return CallThis<int>(FUN_5f21e0, s, 2 - first, a, b);
+    return Slot_CastRay(s, 0, 2 - first, a, b);
 }
 
 // visits node o with fn: vtbl+32 (fn, x); nodes marked +40 bit 2 are closed (vtbl+36) and deleted
@@ -1721,10 +1745,10 @@ extern "C" void __fastcall Sce_Visit(BYTE* s, void*, AsmFn fn, int x)
 // [$L_5fa790] the 40-byte items (+52, count +48) drawn with the color +56, backwards with flag 1
 extern "C" int __fastcall Sce_DrawItems(BYTE* s, void*, int a, BYTE* b)
 {
-    int r = CallThis<int>(FUN_5ef800, s, a, b);
+    int r = Scene_TestInfo(s, 0, a, (int)b);
     if (!r)
         return r;
-    r = CallThis<int>(FUN_5b4fc0, b, s + 20);
+    r = View_SphereClip(b, 0, (const float*)(s + 20));
     if (!r)
         return r;
     int n = F(int, s, 48);
@@ -1765,16 +1789,17 @@ extern "C" void __fastcall Sce5fa720_Destroy(BYTE* s)
         CallStd(Sce_VecDtor, a, 40, F(int, a, -4), (BYTE*)g_sce4c47f0);
         operator delete(a - 4);
     }
-    CallThis(FUN_5ef660, s);
+    Sce5ef660_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Constructors, destructors and messages (exception frames dropped).
 
+extern "C" BYTE* __fastcall SoundFile_Construct(BYTE* self, void*, const char* name);
 extern "C" void FUN_5fd1d0(); KING_ALIAS("_FUN_5fd1d0", "@SoundFile_Construct@12")
-extern "C" void FUN_5e9860(); KING_ALIAS("_FUN_5e9860", "_Data_Read5e99a0")
-extern "C" void FUN_5e9800(); KING_ALIAS("_FUN_5e9800", "_Data_Read5e9910")
-extern "C" void FUN_604e90(); KING_ALIAS("_FUN_604e90", "_Mixer_Load")
+extern "C" void* __cdecl Data_Read5e99a0(void* a, const char* name);
+extern "C" void* __cdecl Data_Read5e9910(const char* name);
+extern "C" int __cdecl Mixer_Load(int idx, int a, int b);
 KING_VAR(AsmLabel, g_sce652cb4, 652cb4)
 KING_VAR(int, g_sce723b28, 723b28)
 KING_VAR(BYTE**, g_sce723b34, 723b34)
@@ -1788,7 +1813,7 @@ extern "C" void __fastcall Node5f1a70_Destroy(BYTE* s)
             continue;
         BYTE* c;
         while ((c = F(BYTE*, F(BYTE**, s, 48)[j], 8))) {
-            CallThis(FUN_5d21b0, c);
+            Node_Unlink(c, 0);
             if (c)
                 CallVirt(c, 0, 1);
         }
@@ -1796,7 +1821,7 @@ extern "C" void __fastcall Node5f1a70_Destroy(BYTE* s)
             CallVirt(F(BYTE**, s, 48)[j], 0, 1);
     }
     operator delete(F(void*, s, 48));
-    CallThis(FUN_5ef660, s);
+    Sce5ef660_Destroy(s);
 }
 
 // [FUN_5fcf80] a sound (id, slot, streamed): made (streamed: a 28-byte stream object) and entered in the table 723b34
@@ -1807,16 +1832,16 @@ extern "C" BYTE* __cdecl Sound_Create(int id, int slot, int streamed)
     BYTE* r;
     if (streamed) {
         BYTE* m = (BYTE*)operator new(28);
-        BYTE* o = m ? CallThis<BYTE*>(FUN_5fd1d0, m, id) : 0;
-        r = CallC<BYTE*>(FUN_5e9860, o, id);
+        BYTE* o = m ? SoundFile_Construct(m, 0, (const char*)id) : 0;
+        r = (BYTE*)Data_Read5e99a0(o, (const char*)id);
     } else {
-        r = CallC<BYTE*>(FUN_5e9800, id);
+        r = (BYTE*)Data_Read5e9910((const char*)id);
     }
     if (!r)
         return 0;
     g_sce723b34[slot] = r;
     F(int, r, 12) = slot;
-    CallC(FUN_604e90, slot, F(int, r, 8), F(int, r, 4));
+    Mixer_Load(slot, F(int, r, 8), F(int, r, 4));
     return r;
 }
 
@@ -1824,9 +1849,9 @@ extern "C" BYTE* __cdecl Sound_Create(int id, int slot, int streamed)
 // Constructors, destructors and setup (exception frames dropped).
 
 extern "C" void FUN_5fd230(); KING_ALIAS("_FUN_5fd230", "@SoundFile_ConstructData@16")
-extern "C" void FUN_5e99a0(); KING_ALIAS("_FUN_5e99a0", "_Image_SetData")
-extern "C" void FUN_5e9910(); KING_ALIAS("_FUN_5e9910", "_Sound_ReadFile")
-extern "C" void Sce_ftell(); KING_ALIAS("_Sce_ftell", "_ftell")
+extern "C" int __cdecl Image_SetData(BYTE* img, int unused, int data);
+extern "C" BYTE* __cdecl Sound_ReadFile(FILE* f, int size);
+extern "C" long __cdecl ftell(FILE* f);
 
 // [FUN_5fd060] a sound from an open file (file, slot, size, streamed): like Sound_Create
 extern "C" BYTE* __cdecl Sound_CreateFromFile(void* file, int slot, int size, int streamed)
@@ -1836,16 +1861,16 @@ extern "C" BYTE* __cdecl Sound_CreateFromFile(void* file, int slot, int size, in
     BYTE* r;
     if (streamed) {
         BYTE* m = (BYTE*)operator new(28);
-        BYTE* o = m ? CallThis<BYTE*>(FUN_5fd230, m, file, CallC<int>(Sce_ftell, file)) : 0;
-        r = CallC<BYTE*>(FUN_5e99a0, o, file, size);
+        BYTE* o = m ? CallThis<BYTE*>(FUN_5fd230, m, file, (int)ftell((FILE*)file)) : 0;
+        r = (BYTE*)Image_SetData(o, (int)file, size);
     } else {
-        r = CallC<BYTE*>(FUN_5e9910, file, size);
+        r = Sound_ReadFile((FILE*)file, size);
     }
     if (!r)
         return 0;
     g_sce723b34[slot] = r;
     F(int, r, 12) = slot;
-    CallC(FUN_604e90, slot, F(int, r, 8), F(int, r, 4));
+    Mixer_Load(slot, F(int, r, 8), F(int, r, 4));
     return r;
 }
 
@@ -1855,52 +1880,53 @@ extern "C" BYTE* __cdecl Sound_CreateFromFile(void* file, int slot, int size, in
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 KING_VAR(AsmLabel, g_q46_722940, 722940)
 KING_VAR(AsmLabel, g_q46_723190, 723190)
-extern "C" void g_q46s_5ef410(); KING_ALIAS("_g_q46s_5ef410", "@ListHead_Construct@8")
+extern "C" BYTE* __fastcall ListHead_Construct(BYTE* s, void*);
 KING_VAR(AsmLabel, g_q46_652a08, 652a08)
 // [FUN_5ef4d0] constructs the static 722940
 extern "C" int __cdecl Static722940_Construct(void)
 {
-    return CallThis<int>(g_q46s_5ef410, (void*)g_q46_722940);
+    return (int)ListHead_Construct((BYTE*)((void*)g_q46_722940), 0);
 }
 // [FUN_5ef510] constructs the static 723190
 extern "C" int __cdecl Static723190_Construct(void)
 {
-    return CallThis<int>(g_q46s_5ef410, (void*)g_q46_723190);
+    return (int)ListHead_Construct((BYTE*)((void*)g_q46_723190), 0);
 }
 // [FUN_5f08c0] destructor: the 652a08 vtable, then the base
 extern "C" void __fastcall Sce5f08c0_Destruct(BYTE* s, void*)
 {
     F(void*, s, 0) = g_q46_652a08;
-    CallThis(FUN_5ef660, s);
+    Sce5ef660_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Small static setup and teardown procs, destructors and thunks.
 
-extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void** __fastcall Vec_Construct(void** self, void*, int);
 KING_VAR(AsmLabel, g_q47_723d28, 723d28)
 KING_VAR(AsmLabel, g_q47_723d38, 723d38)
 // [FUN_5ff120] constructs the static vector 723d28
 extern "C" void __cdecl Static723d28_Construct(void)
 {
     char a;
-    CallThis(FUN_487730, (void*)g_q47_723d28, &a);
+    Vec_Construct((void**)((void*)g_q47_723d28), 0, (int)&a);
 }
 // [FUN_5ff5a0] constructs the static vector 723d38
 extern "C" void __cdecl Static723d38_Construct(void)
 {
     char a;
-    CallThis(FUN_487730, (void*)g_q47_723d38, &a);
+    Vec_Construct((void**)((void*)g_q47_723d38), 0, (int)&a);
 }
 
 // ---------------------------------------------------------------------------
 // Small methods and static helpers: guarded static construction, releases, frees.
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void __fastcall Node_Destroy(BYTE* self, void*);
 extern "C" void FUN_5ef450(); KING_ALIAS("_FUN_5ef450", "@Node_Destroy@8")
 static void __cdecl Static722940_Destroy(void)
 {
-    CallThis(FUN_5ef450, (void*)g_q46_722940);
+    Node_Destroy((BYTE*)((void*)g_q46_722940), 0);
 }
 // [$L_5ef4e0] destroys the static node 722940 at exit
 extern "C" int __cdecl Static722940_AtExit(void)
@@ -1948,16 +1974,17 @@ extern "C" void __fastcall Value_Free(int* s)
 // Reading scene nodes.
 
 extern "C" void FUN_5f1db0(); KING_ALIAS("_FUN_5f1db0", "@Scene_ReadChildren@28")
-extern "C" void FUN_5ae580(); KING_ALIAS("_FUN_5ae580", "@Render_PushMatrix@16")
+extern "C" void __fastcall Render_PushMatrix(BYTE* s, void*, const BYTE* m, int multiply);
 extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
 extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")
 extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
-extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")
+extern "C" char* __cdecl NextToken(char** pp);
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);
 extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
-extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
+extern "C" void __fastcall Clip_Pop(BYTE* self, void*);
 extern "C" double __cdecl atof(const char* s);
 extern "C" long __cdecl atol(const char* s);
 KING_VAR(AsmLabel, g_q109_7025f0, 7025f0)
@@ -1976,24 +2003,24 @@ extern "C" void __fastcall SceneNode5f3f30_Read(BYTE* s, void*, FILE* f, int a2,
     fread(buf, 32, 1, f);
     char* p = buf;
     const char* t;
-    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+    if ((t = (const char*)NextToken(&p)) != 0)
         F(double, s, 56) = atof(t);
     else
         Sce109_SetBits(s, 56, 0, 1081262080);
-    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+    if ((t = (const char*)NextToken(&p)) != 0)
         F(double, s, 64) = atof(t);
     else
         Sce109_SetBits(s, 64, 0, 1084715008);
-    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+    if ((t = (const char*)NextToken(&p)) != 0)
         F(int, s, 96) = atol(t);
     else
         F(int, s, 96) = 8;
-    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+    if ((t = (const char*)NextToken(&p)) != 0)
         F(double, s, 72) = atof(t);
     else
         Sce109_SetBits(s, 72, 858993459, 1070805811);
-    int n = CallC<int>(FUN_5ab140, f);
-    CallThis(FUN_5f1db0, s, f, n, 1, a2, a3);
+    int n = File_ReadInt(f);
+    Scene_ReadChildren(s, 0, (int)f, n, 1, a2, a3);
 }
 
 // [$L_5f9580] reads node s of a scene file f: its plane (+20), a value kept for its children, +56; a "refer"
@@ -2002,13 +2029,13 @@ extern "C" void __fastcall SceneNode5f9580_Read(BYTE* s, void*, FILE* f, int a2,
 {
     char name[64];
     CallThis(FUN_5ac7f0, s + 20, f);
-    int x = CallC<int>(FUN_5ab140, f);
-    F(int, s, 56) = CallC<int>(FUN_5ab140, f);
+    int x = File_ReadInt(f);
+    F(int, s, 56) = File_ReadInt(f);
     strcpy(name, F(const char*, s, 12));
     if (strncmp(name, "refer", 5) == 0)
-        CallThis(FUN_5d2650, (BYTE*)g_q109_71e820, name + 6, s + 60);
-    int n = CallC<int>(FUN_5ab140, f);
-    CallThis(FUN_5f1db0, s, f, n, x, a2, a3);
+        NameHash_AddList((BYTE*)g_q109_71e820, 0, name + 6, s + 60);
+    int n = File_ReadInt(f);
+    Scene_ReadChildren(s, 0, (int)f, n, x, a2, a3);
 }
 
 // [$L_5f4170] draws node s through view b when its info test passes: the world matrix, the clip test of its
@@ -2017,22 +2044,23 @@ extern "C" int __fastcall SceneNode5f4170_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
 {
     BYTE m[48];
     memcpy(m, (BYTE*)g_q109_7025f0, 48);
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, (int)a, (int)b))
         return 0;
-    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, 60), m);
-    CallThis(FUN_5ae580, b, m, w);
-    if (CallThis<int>(FUN_5b4fc0, b, s + 20))
-        CallThis(FUN_5f2080, s, 0, a, b);
-    CallThis(FUN_5ae8a0, b);
+    BYTE* w = (BYTE*)Node_GetWorld(F(BYTE*, s, 60), 0, m);
+    Render_PushMatrix(b, 0, m, (int)w);
+    if (View_SphereClip(b, 0, (const float*)(s + 20)))
+        Slots_Call48(s, 0, 0, (int)a, (int)b);
+    Clip_Pop(b, 0);
     return 1;
 }
 
+extern "C" int __fastcall Face_RayHit(BYTE* s, void*, int flags, BYTE* r);
 extern "C" void FUN_5fbdf0(); KING_ALIAS("_FUN_5fbdf0", "@Face_RayHit@16")
 // [$L_5fc2c0] the base test of node s for a and b; when it sets bit 2 the name "<+132>::<+164>" goes to b + 124
 // (and 0 is returned)
 extern "C" int __fastcall SceneNode5fc2c0_Test(BYTE* s, void*, BYTE* a, BYTE* b)
 {
-    int r = CallThis<int>(FUN_5fbdf0, s, a, b);
+    int r = Face_RayHit(s, 0, (int)a, b);
     if (!(r & 4))
         return r;
     char* d = (char*)b + 124;
@@ -2046,15 +2074,15 @@ extern "C" int __fastcall SceneNode5fc2c0_Test(BYTE* s, void*, BYTE* a, BYTE* b)
 // +276 (a third one lands on the count, as in the original), then its children
 extern "C" void __fastcall SceneNode5fca50_Read(BYTE* s, void*, FILE* f, int a2, int a3)
 {
-    F(double, s, 288) = CallC<double>(FUN_5ab190, f);
-    F(double, s, 296) = CallC<double>(FUN_5ab190, f);
-    F(double, s, 304) = CallC<double>(FUN_5ab190, f);
-    F(double, s, 312) = CallC<double>(FUN_5ab190, f);
-    F(int, s, 284) = CallC<int>(FUN_5ab140, f);
+    F(double, s, 288) = (double)File_ReadFloat(f);
+    F(double, s, 296) = (double)File_ReadFloat(f);
+    F(double, s, 304) = (double)File_ReadFloat(f);
+    F(double, s, 312) = (double)File_ReadFloat(f);
+    F(int, s, 284) = File_ReadInt(f);
     for (int i = 0; i < F(int, s, 284); i++)
-        F(int, s, 276 + i * 4) = CallC<int>(FUN_5ab140, f);
-    int n = CallC<int>(FUN_5ab140, f);
-    CallThis(FUN_5f1db0, s, f, n, 1, a2, a3);
+        F(int, s, 276 + i * 4) = File_ReadInt(f);
+    int n = File_ReadInt(f);
+    Scene_ReadChildren(s, 0, (int)f, n, 1, a2, a3);
 }
 
 KING_VAR(unsigned, g_q111_702e8c, 702e8c)
@@ -2099,10 +2127,10 @@ extern "C" int __fastcall SceneNode5f2f40_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
     BYTE m[48];
     memcpy(m, (BYTE*)g_q109_7025f0, 48);
     g_q140_723a94 = s;
-    if (!CallThis<int>(FUN_5ef800, s, a, b))
+    if (!Scene_TestInfo(s, 0, (int)a, (int)b))
         return 0;
-    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, 112), m);
-    CallThis(FUN_5ae580, b, m, w);
+    BYTE* w = (BYTE*)Node_GetWorld(F(BYTE*, s, 112), 0, m);
+    Render_PushMatrix(b, 0, m, (int)w);
     F(int, b, 8252) = F(int, s, 64);
     F(int, b, 8256) = F(int, s, 68);
     g_q140_723a50 = F(int, s, 108);
@@ -2121,14 +2149,14 @@ extern "C" int __fastcall SceneNode5f2f40_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
         g_q140_723a8c = 0;
         g_q140_723a90 = 0;
     }
-    if (CallThis<int>(FUN_5b4fc0, b, s + 20))
-        CallThis(FUN_5f2080, s, 0, a, b);
+    if (View_SphereClip(b, 0, (const float*)(s + 20)))
+        Slots_Call48(s, 0, 0, (int)a, (int)b);
     g_q140_723a8c = 0;
     g_q140_723a48 = 0;
     g_q140_723a50 = 0;
     g_q140_723a90 = 0;
     g_q140_723a94 = 0;
-    CallThis(FUN_5ae8a0, b);
+    Clip_Pop(b, 0);
     return 1;
 }
 
@@ -2139,14 +2167,14 @@ static int Sce141_DrawXform(BYTE* s, int node, void* a1, BYTE* m, BYTE* a3, BYTE
 {
     BYTE w1[48], saved[48], t[48];
     memcpy(w1, (BYTE*)g_q109_7025f0, 48);
-    if (!CallThis<int>(FUN_5ef820, s, a1, m, a3, b))
+    if (!Obj_Flag0Clear(s, 0, (int)a1, (int)m, (int)a3, (int)b))
         return 0;
-    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, node), w1);
+    BYTE* w = (BYTE*)Node_GetWorld(F(BYTE*, s, node), 0, w1);
     memcpy(saved, m, 48);
     memcpy(m, CallC<BYTE*>(FUN_5aba40, t, w1, a3), 48);
-    CallThis(FUN_5ae580, b, w1, w);
-    CallThis(FUN_5f2100, s, 0, a1, m, a3, b);
-    CallThis(FUN_5ae8a0, b);
+    Render_PushMatrix(b, 0, w1, (int)w);
+    Slots_Call56(s, 0, 0, (int)a1, (int)m, (int)a3, (int)b);
+    Clip_Pop(b, 0);
     memcpy(m, saved, 48);
     return 1;
 }
@@ -2167,7 +2195,7 @@ static int Sce141_HitXform(BYTE* s, int node, int copy, int flags, BYTE* rec)
         return 0;
     BYTE* m = rec + 4;
     memcpy(saved, m, 48);
-    int kind = CallThis<int>(FUN_5f25c0, F(BYTE*, s, node), w1);
+    int kind = Node_GetWorld(F(BYTE*, s, node), 0, w1);
     memcpy(w1, CallC<BYTE*>(FUN_5ac2e0, t, w1), 48);
     if (kind == 0)
         memcpy(m, w1, 48);
@@ -2175,7 +2203,7 @@ static int Sce141_HitXform(BYTE* s, int node, int copy, int flags, BYTE* rec)
         memcpy(m, CallC<BYTE*>(FUN_5aba40, t, m, w1), 48);
     int r;
     if (flags & 1)
-        r = CallThis<int>(FUN_5f21e0, s, 0, flags, rec);
+        r = Slot_CastRay(s, 0, 0, flags, rec);
     else {
         BYTE* o = F(BYTE*, s, 56);
         if (o && (flags & 4)) {
@@ -2185,7 +2213,7 @@ static int Sce141_HitXform(BYTE* s, int node, int copy, int flags, BYTE* rec)
                 return r;
             }
         } else
-            r = CallThis<int>(FUN_5f21e0, s, 0, flags, rec);
+            r = Slot_CastRay(s, 0, 0, flags, rec);
     }
     if (!(r & 1))
         memcpy(m, saved, 48);
@@ -2230,7 +2258,7 @@ extern "C" int __fastcall SceneNode5f9b00_Hit(BYTE* s, void*, int flags, BYTE* r
     memcpy(v1, rec + 76, 12);
     memcpy(v2, rec + 88, 12);
     if (BYTE* n = F(BYTE*, s, 68)) {
-        int kind = CallThis<int>(FUN_5f25c0, n, w1);
+        int kind = Node_GetWorld(n, 0, w1);
         if (kind == 0)
             memcpy(m, CallC<BYTE*>(FUN_5ac2e0, t1, w1), 48);
         else if (kind == 1) {
@@ -2260,19 +2288,19 @@ extern "C" int __fastcall SceneNode5f9d20_Draw(BYTE* s, void*, void* a1, BYTE* m
 {
     BYTE w1[48], saved[48], t[48];
     memcpy(w1, (BYTE*)g_q109_7025f0, 48);
-    if (!CallThis<int>(FUN_5ef820, s, a1, m, a3, b))
+    if (!Obj_Flag0Clear(s, 0, (int)a1, (int)m, (int)a3, (int)b))
         return 0;
     if (!F(BYTE*, s, 64))
         return 0;
     memcpy(saved, m, 48);
     if (BYTE* n = F(BYTE*, s, 68)) {
-        BYTE* w = CallThis<BYTE*>(FUN_5f25c0, n, w1);
-        CallThis(FUN_5ae580, b, w1, w);
+        BYTE* w = (BYTE*)Node_GetWorld(n, 0, w1);
+        Render_PushMatrix(b, 0, w1, (int)w);
         memcpy(m, CallC<BYTE*>(FUN_5aba40, t, w1, a3), 48);
     }
     int r = CallVirt<int>(F(BYTE*, s, 64), 56, a1, m, a3, b);
     if (F(BYTE*, s, 68))
-        CallThis(FUN_5ae8a0, b);
+        Clip_Pop(b, 0);
     memcpy(m, saved, 48);
     return r;
 }
@@ -2281,8 +2309,8 @@ extern "C" void FUN_5ac640(); KING_ALIAS("_FUN_5ac640", "_Matrix_Transposed")
 extern "C" void FUN_5ab8f0(); KING_ALIAS("_FUN_5ab8f0", "@Plane_Transform@12")
 extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
 extern "C" void FUN_5ab660(); KING_ALIAS("_FUN_5ab660", "@Vec3_DivAssign@16")
-extern "C" void FUN_5ad150(); KING_ALIAS("_FUN_5ad150", "@Render_PushShade@12")
-extern "C" void FUN_5adc00(); KING_ALIAS("_FUN_5adc00", "@Render_PopShade@8")
+extern "C" void __fastcall Render_PushShade(BYTE* self, void*, const DWORD* s);
+extern "C" void __fastcall Render_PopShade(BYTE* self, void*);
 // [FUN_5f98c0] draws shaded reference node s through view b when its info test passes, in the space of node
 // +68: with +80 (or +76 without flags bit 4) its plane (+48) is moved into view space, normalised and pushed as
 // the shade around the referred object's (+64) draw (vtbl+48, flags bit 4 added with +80; its material +36 and
@@ -2291,13 +2319,13 @@ extern "C" int __fastcall SceneNode5f98c0_Draw(BYTE* s, void*, int flags, BYTE* 
 {
     BYTE w1[48], t1[48], t2[48], t3[48], m[48], out[12];
     memcpy(w1, (BYTE*)g_q109_7025f0, 48);
-    if (!CallThis<int>(FUN_5ef800, s, flags, b))
+    if (!Scene_TestInfo(s, 0, flags, (int)b))
         return 0;
     if (BYTE* n = F(BYTE*, s, 68)) {
-        BYTE* w = CallThis<BYTE*>(FUN_5f25c0, n, w1);
-        CallThis(FUN_5ae580, b, w1, w);
+        BYTE* w = (BYTE*)Node_GetWorld(n, 0, w1);
+        Render_PushMatrix(b, 0, w1, (int)w);
     }
-    if (CallThis<int>(FUN_5b4fc0, b, s + 20)) {
+    if (View_SphereClip(b, 0, (const float*)(s + 20))) {
         bool shade = F(int, s, 80) || (F(int, s, 76) && !(flags & 16));
         if (shade) {
             float p[4];
@@ -2311,7 +2339,7 @@ extern "C" int __fastcall SceneNode5f98c0_Draw(BYTE* s, void*, int flags, BYTE* 
             double len = CallC<double>(FUN_5ab4d0, p);
             CallThis(FUN_5ab660, p, out, (float)len);
             p[3] = (float)(p[3] / len);
-            CallThis(FUN_5ad150, b, p);
+            Render_PushShade(b, 0, (const DWORD*)p);
         }
         BYTE* o = F(BYTE*, s, 64);
         if (F(int, o, 36) != F(int, s, 36))
@@ -2324,10 +2352,10 @@ extern "C" int __fastcall SceneNode5f98c0_Draw(BYTE* s, void*, int flags, BYTE* 
         if (F(int, F(BYTE*, s, 64), 36) != F(int, s, 36))
             CallVirt(b, 8, F(int, s, 36));
         if (F(int, s, 80) || (F(int, s, 76) && !(flags & 16)))
-            CallThis(FUN_5adc00, b);
+            Render_PopShade(b, 0);
     }
     if (F(BYTE*, s, 68))
-        CallThis(FUN_5ae8a0, b);
+        Clip_Pop(b, 0);
     return 1;
 }
 
@@ -2336,7 +2364,7 @@ static int Sce163_WorldPos(BYTE* s, BYTE* n, float* out)
 {
     float m[12];
     memcpy(m, (BYTE*)g_q109_7025f0, 48);
-    int k = CallThis<int>(FUN_5f25c0, n, m);
+    int k = Node_GetWorld(n, 0, m);
     float x = F(float, s, 20), y = F(float, s, 24), z = F(float, s, 28);
     double X = m[6] * z + m[3] * y;
     X = X + m[0] * x;
@@ -2375,6 +2403,7 @@ extern "C" int __fastcall SceneNode5f9760_WorldPos(BYTE* s, void*, float* out)
     return Sce163_WorldPos(s, F(BYTE*, s, 68), out);
 }
 
+extern "C" int __cdecl Sound_TakeChannel(BYTE* s);
 extern "C" void FUN_5fd580(); KING_ALIAS("_FUN_5fd580", "_Sound_TakeChannel")
 extern "C" void FUN_604f20(); KING_ALIAS("_FUN_604f20", "_Snd_Start")
 extern "C" void FUN_605000(); KING_ALIAS("_FUN_605000", "_Channel_Call8")
@@ -2403,7 +2432,7 @@ extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, in
         return;
     float v = Sce182_Unit(vol), p = Sce182_Unit(pitch);
     if (!F(int, s, 20)) {
-        int ch = CallC<int>(FUN_5fd580, s);
+        int ch = Sound_TakeChannel(s);
         if (ch == -1)
             return;
         F(int, s, 24) = ch;
@@ -2416,10 +2445,11 @@ extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, in
     F(int, s, 12) = g_q182_723b38;
 }
 
+extern "C" void __fastcall Vec56_Destroy(BYTE** v, void*);
 extern "C" void $L_5ffc60(); KING_ALIAS("_$L_5ffc60", "@Vec56_Destroy@8")
-extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
 // [$L_5ff150] destroys the static vector 723d28
-extern "C" void __cdecl Static723d28_Destroy(void) { CallThis($L_5ffc60, (void*)g_q47_723d28); }
+extern "C" void __cdecl Static723d28_Destroy(void) { Vec56_Destroy((BYTE**)((void*)g_q47_723d28), 0); }
 // [$L_5ff140] destroys it at exit
 extern "C" int __cdecl Static723d28_AtExit(void) { return atexit(Static723d28_Destroy); }
 // [$L_5ff110] the static initializer of 723d28
@@ -2439,7 +2469,7 @@ extern "C" int __cdecl Sound_LockInit(void)
     return Sound_LockAtExit();
 }
 // [$L_5ff5d0] frees the static vector 723d38
-extern "C" void __cdecl Static723d38_Destroy(void) { CallThis(FUN_404420, (void*)g_q47_723d38); }
+extern "C" void __cdecl Static723d38_Destroy(void) { VecB_FreeStorage((BYTE**)((void*)g_q47_723d38), 0); }
 // [$L_5ff5c0] frees it at exit
 extern "C" int __cdecl Static723d38_AtExit(void) { return atexit(Static723d38_Destroy); }
 // [$L_5ff590] the static initializer of 723d38
@@ -2449,7 +2479,8 @@ extern "C" int __cdecl Static723d38_Init(void)
     return Static723d38_AtExit();
 }
 
-extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
+extern "C" void __fastcall CharVec_InsertRange44c220(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
+extern "C" void __cdecl Music_FindFiles(const char* pattern);
 extern "C" void FUN_5ff5e0(); KING_ALIAS("_FUN_5ff5e0", "_Music_FindFiles")
 extern "C" __declspec(dllimport) DWORD __stdcall timeGetTime(void);
 KING_VAR(AsmLabel, s_q194_68321c, 68321c)
@@ -2485,10 +2516,10 @@ extern "C" int __cdecl Sce_SetRootDir(const char* dir)
         strncat(buf, (const char*)s_q194_68321c, 8192);
     char** v = (char**)(void*)g_q47_723d38;
     v[1] = v[0];
-    CallThis(FUN_44c220, v, v[1], buf, buf + strlen(buf));
-    CallC(FUN_5ff5e0, (const char*)s_q194_683c70);
-    CallC(FUN_5ff5e0, (const char*)s_q194_683c68);
-    CallC(FUN_5ff5e0, (const char*)s_q194_683c60);
+    CharVec_InsertRange44c220((BYTE**)v, 0, (BYTE*)v[1], (BYTE*)buf, (BYTE*)(buf + strlen(buf)));
+    Music_FindFiles((const char*)s_q194_683c70);
+    Music_FindFiles((const char*)s_q194_683c68);
+    Music_FindFiles((const char*)s_q194_683c60);
     return 0;
 }
 
@@ -2502,7 +2533,7 @@ extern "C" void __cdecl free(void*);
 extern "C" void __fastcall Vec56_Destroy(BYTE** v, void*)
 {
     for (BYTE* e = v[0]; e != v[1]; e += 56)
-        CallThis(FUN_404420, e);
+        VecB_FreeStorage((BYTE**)e, 0);
     BYTE* p = v[0];
     int n = (int)(v[2] - p) / 56;
     if (!n)
@@ -2522,18 +2553,16 @@ extern "C" void __fastcall Vec56_Destroy(BYTE** v, void*)
 // ---------------------------------------------------------------------------
 // Static initializers: construct a global, register its teardown at exit.
 
-extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 KING_VAR(char, g_q197_723190, 723190)
-extern "C" void q197_FUN_5ef450(); KING_ALIAS("_q197_FUN_5ef450", "@Node_Destroy@8")
-extern "C" void q197_FUN_5ef510(); KING_ALIAS("_q197_FUN_5ef510", "_Static723190_Construct")
+extern "C" int __cdecl Static723190_Construct(void);
 // [$L_5ef530] destroys the static object 723190 at exit (FUN_5ef450)
-extern "C" void __cdecl Static723190_Destroy(void) { CallThis(q197_FUN_5ef450, &g_q197_723190); }
+extern "C" void __cdecl Static723190_Destroy(void) { Node_Destroy((BYTE*)&g_q197_723190, 0); }
 // [$L_5ef520] registers the teardown at exit
 extern "C" int __cdecl Static723190_AtExit(void) { return atexit((void(__cdecl*)(void))Static723190_Destroy); }
 // [$L_5ef500] the static initializer: FUN_5ef510, then the teardown at exit
 extern "C" int __cdecl Static723190_Init(void)
 {
-    CallC(q197_FUN_5ef510);
+    Static723190_Construct();
     return Static723190_AtExit();
 }
 
@@ -2545,8 +2574,8 @@ extern "C" int __fastcall q198_Node_Destroy(BYTE* s, void* d); KING_ALIAS("@q198
 // [$L_5ef4b0] Node_Destroy on the static object 723978
 extern "C" void __cdecl Static723978_Destroy(void) { q198_Node_Destroy((BYTE*)&g_q198_723978, 0); }
 
-extern "C" void FUN_5adc80(); KING_ALIAS("_FUN_5adc80", "@Render_SetFog@28")
-extern "C" void FUN_5addf0(); KING_ALIAS("_FUN_5addf0", "@Render_SetAmbient@32")
+extern "C" void __fastcall Render_SetFog(BYTE* s, void*, double start, double end, int mode);
+extern "C" void __fastcall Render_SetAmbient(BYTE* s, void*, double r, double g, double b);
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
 KING_VAR(unsigned, g_q217_702e8c, 702e8c)
 // [$L_5f3da0] draws node s with its own fog (+56, +64, +96; flag 4 of 702e8c on when +96 >= 0) and ambient (+72..)
@@ -2563,18 +2592,18 @@ extern "C" int __fastcall Node_DrawWithFog(BYTE* s, void*, int a, BYTE* r)
         g_q217_702e8c |= 4;
     else
         g_q217_702e8c &= ~4u;
-    CallThis(FUN_5adc80, r, F(double, s, 56), F(double, s, 64), F(int, s, 96));
-    CallThis(FUN_5addf0, r, F(double, s, 72), F(double, s, 80), F(double, s, 88));
-    CallThis(FUN_5f2080, s, 0, a, r);
+    Render_SetFog(r, 0, F(double, s, 56), F(double, s, 64), F(int, s, 96));
+    Render_SetAmbient(r, 0, F(double, s, 72), F(double, s, 80), F(double, s, 88));
+    Slots_Call48(s, 0, 0, a, (int)r);
     g_q217_702e8c &= ~4u;
     if (saved) {
         g_q217_702e8c |= saved;
-        CallThis(FUN_5adc80, r, end, start, mode);
+        Render_SetFog(r, 0, end, start, mode);
     } else {
         g_q217_702e8c &= ~4u;
-        CallThis(FUN_5adc80, r, end, start, -1);
+        Render_SetFog(r, 0, end, start, -1);
     }
-    CallThis(FUN_5addf0, r, amb, -1.0, -1.0);
+    Render_SetAmbient(r, 0, amb, -1.0, -1.0);
     return 1;
 }
 
@@ -2588,7 +2617,6 @@ extern "C" int __fastcall Thunk5f0770(BYTE* s) { return q238_Node5f1a70_Destroy(
 // [FUN_5f0870] forwards to Sce5ef660_Destroy
 extern "C" int __fastcall Thunk5f0870(BYTE* s) { return q238_Sce5ef660_Destroy(s); }
 
-extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 extern "C" void q241_L_5ef4b0(); KING_ALIAS("_q241_L_5ef4b0", "_Static723978_Destroy")
 // [$L_5ef4a0] registers 5ef4b0 at exit
 extern "C" int __cdecl Static5ef4a0_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_5ef4b0); }
@@ -2596,9 +2624,9 @@ extern "C" int __cdecl Static5ef4a0_AtExit(void) { return atexit((void(__cdecl*)
 // === reading a node's shape data (FUN_5f8bf0)
 
 extern "C" void FUN_5ab6a0(); KING_ALIAS("_FUN_5ab6a0", "_Vec3_NearlyEqual")
-extern "C" void FUN_5e5720(); KING_ALIAS("_FUN_5e5720", "@Fw_Read5e5720@12")
+extern "C" void __fastcall Fw_Read5e5720(BYTE* self, void*, FILE* f);
 extern "C" void Sce_VecCtorEh(); KING_ALIAS("_Sce_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
-extern "C" void FUN_5e69a0(); KING_ALIAS("_FUN_5e69a0", "@Polygon_Read@12")    // reads a 48-byte item (file)
+extern "C" int __fastcall Polygon_Read(BYTE* s, void*, void* f);
 extern "C" void g_sd5e6980(); KING_ALIAS("_g_sd5e6980", "@Rec5e6980_Clear@8")    // its constructor
 ASM_VAR(AsmLabel, g_sd5f4b20, @Sce_FreeBuf4@4)    // its destructor
 KING_VAR(char, s_sd683bcc, 683bcc)
@@ -2629,10 +2657,10 @@ void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f)
     case 3:
     case 4:
         F(BYTE*, s, 8) = Sd_New(32);
-        CallThis(FUN_5e5720, F(BYTE*, s, 8), f);
+        Fw_Read5e5720(F(BYTE*, s, 8), 0, (FILE*)f);
         break;
     case 6: {
-        int n = CallC<int>(FUN_5ab140, f);
+        int n = File_ReadInt((FILE*)f);
         F(int, s, 4) = n;
         BYTE* a = (BYTE*)operator new(n * 48 + 4);
         BYTE* items = 0;
@@ -2643,7 +2671,7 @@ void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f)
         }
         F(BYTE*, s, 8) = items;
         for (int i = 0; i < F(int, s, 4); i++)
-            CallThis(FUN_5e69a0, F(BYTE*, s, 8) + i * 48, f);
+            Polygon_Read(F(BYTE*, s, 8) + i * 48, 0, f);
         break;
     }
     case 7: {
@@ -2666,14 +2694,15 @@ void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f)
 
 // === vector<56 bytes>::insert_aux (FUN_5ffdf0)
 
+extern "C" BYTE* __fastcall Rec56_CopyConstruct(BYTE* s, void*, const BYTE* src);
 extern "C" void FUN_6000c0(); KING_ALIAS("_FUN_6000c0", "@Rec56_CopyConstruct@12")    // copy constructor of a 56-byte record (this, src)
-extern "C" void FUN_600420(); KING_ALIAS("_FUN_600420", "_SoundRecs_UninitCopy")    // uninitialized copy of 56-byte records (first, last, dest, x)
+extern "C" BYTE* __cdecl SoundRecs_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*);
 extern "C" void FUN_6002f0(); KING_ALIAS("_FUN_6002f0", "_Music_CopyBackward")
-extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
-extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
-extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
-extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
-extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src);
+extern "C" BYTE** __fastcall VecChar_Copy(BYTE** self, int, BYTE* const* src);
+extern "C" void __fastcall Vec1_Free(BYTE** v, int);
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 
 extern "C" {
 
@@ -2684,28 +2713,28 @@ void __fastcall Vec56_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
     if (v[1] != v[2]) {
         BYTE* end = v[1];
         if (end)
-            CallThis(FUN_6000c0, end, end - 56);
+            Rec56_CopyConstruct(end, 0, end - 56);
         v[1] = end + 56;
         BYTE t[56];
-        CallThis(FUN_44dd90, t, x);
+        VecChar_Copy((BYTE**)t, 0, (BYTE* const*)x);
         memcpy(t + 16, x + 16, 40);
         CallC(FUN_6002f0, pos, end - 56, end, x, 0);
-        CallThis(FUN_44c160, pos, t);
+        PodVec_Assign((BYTE**)pos, 0, (BYTE* const*)t);
         memcpy(pos + 16, t + 16, 40);
-        CallThis(FUN_44b090, t);
+        Vec1_Free((BYTE**)t, 0);
         return;
     }
     int n = (int)(v[1] - v[0]) / 56;
     int len = n ? n * 2 : 1;
-    BYTE* p = CallC<BYTE*>(FUN_44b740, len * 56);
-    BYTE* q = CallC<BYTE*>(FUN_600420, v[0], pos, p, x);
+    BYTE* p = (BYTE*)Stl_Allocate(len * 56);
+    BYTE* q = SoundRecs_UninitCopy(v[0], pos, p, (void*)x);
     if (q)
-        CallThis(FUN_6000c0, q, x);
-    BYTE* e = CallC<BYTE*>(FUN_600420, pos, v[1], q + 56, x);
+        Rec56_CopyConstruct(q, 0, x);
+    BYTE* e = SoundRecs_UninitCopy(pos, v[1], q + 56, (void*)x);
     for (BYTE* r = v[0]; r != v[1]; r += 56)
-        CallThis(FUN_404420, r);
+        VecB_FreeStorage((BYTE**)r, 0);
     if (int bytes = (int)(v[2] - v[0]) / 56 * 56)
-        CallC(FUN_44b4a0, v[0], bytes);
+        Ai_PoolFree(v[0], bytes);
     v[1] = e;
     v[0] = p;
     v[2] = p + len * 56;
@@ -2715,7 +2744,7 @@ void __fastcall Vec56_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
 
 // === loading an animated node ($L_5f3190)
 
-extern "C" void FUN_5e56f0(); KING_ALIAS("_FUN_5e56f0", "@Fw_Read5e56f0@12")
+extern "C" void __fastcall Fw_Read5e56f0(BYTE* self, void*, FILE* f);
 extern "C" void __fastcall Wea5a72c0_Init(BYTE* s);
 
 extern "C" {
@@ -2729,10 +2758,10 @@ int __fastcall AnimNode_Load(BYTE* s, void*, void* f, int, int)
     Sce_ReadName(f, s + 112);
     Sce_ReadName(f, s + 56);
     if (F(int, s, 108))
-        F(int, s, 108) = CallC<int>(FUN_5ab140, f);
+        F(int, s, 108) = File_ReadInt((FILE*)f);
     int per = F(int, s, 108) >> 8;
     F(int, s, 108) &= 255;
-    int n = CallC<int>(FUN_5ab140, f);
+    int n = File_ReadInt((FILE*)f);
     F(int, s, 60) = n;
     F(BYTE*, s, 64) = 0;
     if (n) {
@@ -2752,21 +2781,21 @@ int __fastcall AnimNode_Load(BYTE* s, void*, void* f, int, int)
     }
     for (int i = 0; i < F(int, s, 60); i++) {
         BYTE* k = F(BYTE*, s, 64) + i * 28;
-        CallThis(FUN_5e56f0, k, f);
+        Fw_Read5e56f0(k, 0, (FILE*)f);
         if (per > 0) {
             F(int, k, 24) = per;
             float* v = (float*)operator new(per * 8);
             F(float*, k, 20) = v;
             for (int j = 0; j < per; j++) {
-                F(float*, F(BYTE*, s, 64) + i * 28, 20)[j * 2] = (float)CallC<double>(FUN_5ab190, f);
-                F(float*, F(BYTE*, s, 64) + i * 28, 20)[j * 2 + 1] = (float)CallC<double>(FUN_5ab190, f);
+                F(float*, F(BYTE*, s, 64) + i * 28, 20)[j * 2] = (float)(double)File_ReadFloat((FILE*)f);
+                F(float*, F(BYTE*, s, 64) + i * 28, 20)[j * 2 + 1] = (float)(double)File_ReadFloat((FILE*)f);
             }
         }
         int kind = F(int, s, 108);
         if (kind == 1 || kind == 2)
             CallThis(FUN_5ab790, F(BYTE*, s, 68) + i * 12, f);
         else if (kind == 3)
-            F(float, F(BYTE*, s, 68), i * 12) = (float)CallC<double>(FUN_5ab190, f);
+            F(float, F(BYTE*, s, 68), i * 12) = (float)(double)File_ReadFloat((FILE*)f);
     }
     return Sce_LoadTail(s, (int)f, 1, F(int, s, 64), F(int, s, 68));
 }
@@ -2784,10 +2813,10 @@ int __fastcall AnimNode1_Load(BYTE* s, void*, void* f, int, int)
     CallThis(FUN_5ac7f0, s + 20, f);
     Sce_ReadName(f, s + 104);
     if (F(int, s, 108))
-        F(int, s, 108) = CallC<int>(FUN_5ab140, f);
+        F(int, s, 108) = File_ReadInt((FILE*)f);
     int per = F(int, s, 108) >> 8;
     F(int, s, 108) &= 255;
-    int n = CallC<int>(FUN_5ab140, f);
+    int n = File_ReadInt((FILE*)f);
     F(int, s, 56) = n;
     F(BYTE*, s, 60) = 0;
     if (n) {
@@ -2807,20 +2836,20 @@ int __fastcall AnimNode1_Load(BYTE* s, void*, void* f, int, int)
     }
     for (int i = 0; i < F(int, s, 56); i++) {
         BYTE* k = F(BYTE*, s, 60) + i * 28;
-        CallThis(FUN_5e56f0, k, f);
+        Fw_Read5e56f0(k, 0, (FILE*)f);
         if (per > 0) {
             F(int, k, 24) = per;
             F(float*, k, 20) = (float*)operator new(per * 8);
             for (int j = 0; j < per; j++) {
-                F(float*, F(BYTE*, s, 60) + i * 28, 20)[j * 2] = (float)CallC<double>(FUN_5ab190, f);
-                F(float*, F(BYTE*, s, 60) + i * 28, 20)[j * 2 + 1] = (float)CallC<double>(FUN_5ab190, f);
+                F(float*, F(BYTE*, s, 60) + i * 28, 20)[j * 2] = (float)(double)File_ReadFloat((FILE*)f);
+                F(float*, F(BYTE*, s, 60) + i * 28, 20)[j * 2 + 1] = (float)(double)File_ReadFloat((FILE*)f);
             }
         }
         int kind = F(int, s, 108);
         if (kind == 1 || kind == 2)
             CallThis(FUN_5ab790, F(BYTE*, s, 64) + i * 12, f);
         else if (kind == 3)
-            F(float, F(BYTE*, s, 64), i * 12) = (float)CallC<double>(FUN_5ab190, f);
+            F(float, F(BYTE*, s, 64), i * 12) = (float)(double)File_ReadFloat((FILE*)f);
     }
     return Sce_LoadTail(s, (int)f, 1, F(int, s, 60), F(int, s, 64));
 }
@@ -2940,15 +2969,15 @@ int __fastcall Portal_Read(BYTE* s, void*, void* f, int, int)
     float a[3] = {0, 0, 0}, b[3] = {0, 0, 0};
     CallThis(FUN_5ac7f0, s + 112, f);
     char buf[32];
-    CallC(Sce_fread, buf, 32, 1, f);
+    fread(buf, 32, 1, (FILE*)f);
     int i = 0;
     for (char c = buf[0]; c && c != ':'; c = buf[++i])
         ;
     F(int, s, 128) = 0;
     if (!buf[i]) {
-        if (F(char*, s, 12) && !CallC<int>(Sce_strncmp, F(char*, s, 12), (char*)s_sce683c00, 6))
+        if (F(char*, s, 12) && !strncmp(F(char*, s, 12), (char*)s_sce683c00, 6))
             F(int, s, 108) = 1;
-        CallThis(FUN_5d2650, g_sce71e820, buf, s + 128);
+        NameHash_AddList((BYTE*)g_sce71e820, 0, buf, s + 128);
     } else {
         F(BYTE, s, 40) |= 2;
         buf[i] = 0;
@@ -2990,7 +3019,7 @@ int __fastcall Portal_Read(BYTE* s, void*, void* f, int, int)
 
 // === sorting an item into a split node (5f4530)
 
-extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")
+extern "C" DWORD __fastcall Shade_Assign(DWORD* self, void*, const DWORD* s);
 KING_VAR(AsmLabel, g_vtbl64c7dc, 64c7dc)
 
 // the plane p at a point v: (p.n . v) + p.d
@@ -3041,7 +3070,7 @@ int __fastcall Bsp_SortItem(BYTE* s, void*, BYTE* o)
             if (sp[3] > e) {
                 BYTE* n = (BYTE*)operator new(88);
                 if (n) {
-                    CallThis(FUN_5ef6d0, n, (void*)&g_q195_68d1c0, 17);
+                    Node_Construct(n, 0, (const char*)((void*)&g_q195_68d1c0), 17);
                     F(int, n, 48) = F(int, n, 52) = F(int, n, 56) = F(int, n, 60) = 0;
                     F(void*, n, 0) = (BYTE*)g_vtbl64c7dc;
                     F(BYTE*, n, 64) = o;
@@ -3054,11 +3083,11 @@ int __fastcall Bsp_SortItem(BYTE* s, void*, BYTE* o)
                 F(int, n, 80) = 1;
                 float neg[4] = {-p[0], -p[1], -p[2], -p[3]};
                 if (other == 2) {
-                    CallThis(FUN_5cda50, n + 48, neg);
-                    CallThis(FUN_5cda50, o + 48, p);
+                    Shade_Assign((DWORD*)(n + 48), 0, (const DWORD*)neg);
+                    Shade_Assign((DWORD*)(o + 48), 0, (const DWORD*)p);
                 } else {
-                    CallThis(FUN_5cda50, n + 48, p);
-                    CallThis(FUN_5cda50, o + 48, neg);
+                    Shade_Assign((DWORD*)(n + 48), 0, (const DWORD*)p);
+                    Shade_Assign((DWORD*)(o + 48), 0, (const DWORD*)neg);
                 }
                 F(BYTE*, o, 76) = n;
                 Bsp_Give(s, other, n);
@@ -3084,9 +3113,9 @@ extern "C" {
 int __fastcall Light_Read(BYTE* s, void*, int f, int a, int b)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
-    F(int, s, 136) = CallC<int>(FUN_5ab140, f);
-    F(int, s, 140) = CallC<int>(FUN_5ab140, f) ? 1 : 0;
-    switch (CallC<int>(FUN_5ab140, f)) {
+    F(int, s, 136) = File_ReadInt((FILE*)f);
+    F(int, s, 140) = File_ReadInt((FILE*)f) ? 1 : 0;
+    switch (File_ReadInt((FILE*)f)) {
     case 0:
         F(int, s, 56) = 0;
         break;
@@ -3105,17 +3134,17 @@ int __fastcall Light_Read(BYTE* s, void*, int f, int a, int b)
     CallThis(FUN_5ab790, s + 60, f);
     CallThis(FUN_5ab790, s + 72, f);
     for (int o = 84; o <= 96; o += 4)
-        F(float, s, o) = (float)CallC<double>(FUN_5ab190, f);
-    double c = CallC<double>(FUN_5ab190, f);
+        F(float, s, o) = (float)(double)File_ReadFloat((FILE*)f);
+    double c = (double)File_ReadFloat((FILE*)f);
     F(float, s, 100) = (float)c;
     if (c > g_lr64d900)
         F(DWORD, s, 100) = 0x40490FDA;
-    c = CallC<double>(FUN_5ab190, f);
+    c = (double)File_ReadFloat((FILE*)f);
     F(float, s, 104) = (float)c;
     if (c + F(float, s, 100) > g_lr64d900)
         F(float, s, 104) = (float)(g_lr64d900 - F(float, s, 100));
     for (int o = 108; o <= 116; o += 4)
-        F(float, s, o) = (float)CallC<double>(FUN_5ab190, f);
+        F(float, s, o) = (float)(double)File_ReadFloat((FILE*)f);
     return Sce_LoadTail(s, f, 1, a, b);
 }
 
@@ -3126,7 +3155,7 @@ int __fastcall Light_ReadOld(BYTE* s, void*, int f, int a, int b)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
     char name[32];
-    CallC(Sce_fread, name, 32, 1, f);
+    fread(name, 32, 1, (FILE*)f);
     if (!strcmp(name, "direction") || !strcmp(name, "direct"))
         F(int, s, 56) = 1;
     else if (!strcmp(name, "position"))
@@ -3211,15 +3240,12 @@ int __fastcall Volume_Contains(DWORD* s, void*, const float* p)
 
 // === finding the music files (FUN_5ff5e0)
 
-extern "C" void Mf_Allocate(); KING_ALIAS("_Mf_Allocate", "_Stl_Allocate")
-extern "C" void Mf_PoolFree(); KING_ALIAS("_Mf_PoolFree", "_Ai_PoolFree")
-extern "C" void Mf_Copy1(); KING_ALIAS("_Mf_Copy1", "_Copy1")
-extern "C" void Mf_InsertRange(); KING_ALIAS("_Mf_InsertRange", "@CharVec_InsertRange44c220@20")
+extern "C" BYTE* __cdecl Copy1(const BYTE* first, const BYTE* last, BYTE* dest);
 extern "C" void Mf_Reserve(); KING_ALIAS("_Mf_Reserve", "@Vec1_Reserve@16")
 extern "C" void Mf_FilterConstruct(); KING_ALIAS("_Mf_FilterConstruct", "@Filter1_Construct@8")
 extern "C" void Mf_FilterSetLength(); KING_ALIAS("_Mf_FilterSetLength", "@Filter1_SetLength@12")
 extern "C" void Mf_MusicConstruct(); KING_ALIAS("_Mf_MusicConstruct", "_Music_Construct")
-extern "C" void Mf_InsertAux(); KING_ALIAS("_Mf_InsertAux", "@Vec56_InsertAux@16")
+extern "C" void __fastcall Vec56_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x);
 
 struct Mf_Vec { BYTE* begin; BYTE* end; BYTE* cap; };
 
@@ -3228,18 +3254,18 @@ static void Mf_Path(Mf_Vec* v, const char* s)
 {
     Mf_Vec* dir = (Mf_Vec*)(BYTE*)g_q47_723d38;
     int n = (int)(dir->end - dir->begin);
-    BYTE* p = n ? CallC<BYTE*>(Mf_Allocate, n) : 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
     v->begin = v->end = p;
     v->cap = p + n;
-    v->end = CallC<BYTE*>(Mf_Copy1, dir->begin, dir->end, p);
-    CallThis(Mf_InsertRange, v, v->end, s, s + strlen(s) + 1);
+    v->end = Copy1(dir->begin, dir->end, p);
+    CharVec_InsertRange44c220((BYTE**)v, 0, v->end, (BYTE*)s, (BYTE*)(s + strlen(s) + 1));
 }
 
 // frees the storage of v
 static void Mf_Free(Mf_Vec* v)
 {
     if (int n = (int)(v->cap - v->begin))
-        CallC(Mf_PoolFree, v->begin, n);
+        Ai_PoolFree(v->begin, n);
 }
 
 extern "C" {
@@ -3259,7 +3285,7 @@ void __cdecl Music_FindFiles(const char* pattern)
             Mf_Path(&name, fd.cFileName);
             BYTE rec[56];
             CallThis(Mf_Reserve, rec, (int)(name.end - name.begin), &fill);
-            F(BYTE*, rec, 4) = CallC<BYTE*>(Mf_Copy1, name.begin, name.end, F(BYTE*, rec, 0));
+            F(BYTE*, rec, 4) = Copy1(name.begin, name.end, F(BYTE*, rec, 0));
             CallThis(Mf_FilterConstruct, rec + 16);
             F(double, rec, 40) = 0.1;
             F(double, rec, 48) = 0;
@@ -3269,7 +3295,7 @@ void __cdecl Music_FindFiles(const char* pattern)
                 CallC(Mf_MusicConstruct, list->end, rec);
                 list->end += 56;
             } else
-                CallThis(Mf_InsertAux, list, list->end, rec);
+                Vec56_InsertAux((BYTE**)list, 0, list->end, rec);
             Mf_Free((Mf_Vec*)rec);
             Mf_Free(&name);
         } while (FindNextFileA(h, &fd));
@@ -3287,7 +3313,7 @@ static BYTE* Pc_NewPiece(BYTE* o)
 {
     BYTE* n = (BYTE*)operator new(88);
     if (n) {
-        CallThis(FUN_5ef6d0, n, (void*)&g_q195_68d1c0, 17);
+        Node_Construct(n, 0, (const char*)((void*)&g_q195_68d1c0), 17);
         F(int, n, 48) = F(int, n, 52) = F(int, n, 56) = F(int, n, 60) = 0;
         F(void*, n, 0) = (BYTE*)g_vtbl64c7dc;
         F(BYTE*, n, 64) = o;
@@ -3326,9 +3352,9 @@ int __fastcall Portal_SplitItem(BYTE* s, void*, BYTE* o)
     memcpy(c + 20, sp, 16);
     F(int, c, 80) = 1;
     float front[4] = {n[0], n[1], n[2], (float)d0};
-    CallThis(FUN_5cda50, c + 48, front);
+    Shade_Assign((DWORD*)(c + 48), 0, (const DWORD*)front);
     float back[4] = {-n[0], -n[1], -n[2], (float)-d0};
-    CallThis(FUN_5cda50, o + 48, back);
+    Shade_Assign((DWORD*)(o + 48), 0, (const DWORD*)back);
     F(BYTE*, o, 76) = c;
     CallVirt(F(BYTE*, s, 128), 28, c);
     return 0;
@@ -3376,6 +3402,7 @@ int __cdecl Path_FindJoins(BYTE* g)
 
 // === stereo sounds at a point (FUN_5fd5f0, FUN_5fd870)
 
+extern "C" void __fastcall Sound_Restart(BYTE* s, void*, float vol, float pitch);
 extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")    // updates a sound's two channel volumes
 extern "C" void Ss_RotZ(); KING_ALIAS("_Ss_RotZ", "_Matrix_RotationZ")
 KING_VAR(double, g_ss64b6d0, 64b6d0)
@@ -3444,7 +3471,7 @@ void __fastcall Sound_UpdateAt(BYTE* s, void*, Ss_V3 p, double range, double vol
 {
     double l, r;
     if (Ss_Gains(p, range, &l, &r))
-        CallThis(FUN_5fdaf0, s, (float)(l * vol), (float)(r * vol));
+        Sound_Restart(s, 0, (float)(l * vol), (float)(r * vol));
 }
 
 } // extern "C"
@@ -3470,7 +3497,7 @@ extern "C" {
 // until none is needed, at most 10000 passes); 0 when the test fails
 int __fastcall Node_DrawSorted(BYTE* s, void*, int a, BYTE* r)
 {
-    if (!CallThis<int>(FUN_5ef800, s, a, r))
+    if (!Scene_TestInfo(s, 0, a, (int)r))
         return 0;
     float c[3];
     memcpy(c, Render_Material(r, 0), 12);
@@ -3485,7 +3512,7 @@ int __fastcall Node_DrawSorted(BYTE* s, void*, int a, BYTE* r)
             if (dp - g_fn64b748 > dm) {
                 Node_Remove(n, 0);
                 F(int, n, 44) = F(int, m, 44);
-                CallThis(FUN_5d2190, n, m);
+                Node_Link(n, 0, m);
                 F(int, n, 36) = F(int, m, 36);
                 swapped = true;
             } else {
@@ -3499,7 +3526,7 @@ int __fastcall Node_DrawSorted(BYTE* s, void*, int a, BYTE* r)
         if (!n)
             return 1;
     }
-    CallThis(FUN_5f2080, s, 0, a, r);
+    Slots_Call48(s, 0, 0, a, (int)r);
     return 1;
 }
 
@@ -3568,7 +3595,7 @@ int __fastcall Music_PickNext(BYTE* s)
 extern "C" void Mr_VecCtor(); KING_ALIAS("_Mr_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" void Mr_FaceCtor(); KING_ALIAS("_Mr_FaceCtor", "@Obj5e5760_Construct@4")
 extern "C" void Mr_FaceDtor(); KING_ALIAS("_Mr_FaceDtor", "@Fw5e57a0_Destroy@4")
-extern "C" void Mr_FaceRead(); KING_ALIAS("_Mr_FaceRead", "@Face_Read@20")
+extern "C" int __fastcall Face_Read(BYTE* s, void*, void* f, BYTE* pts, BYTE* normals);
 KING_VAR(int, g_mr720904, 720904)
 
 extern "C" {
@@ -3580,12 +3607,12 @@ int __fastcall Mesh_Read(BYTE* s, void*, FILE* f, BYTE* pts, BYTE* normals)
 {
     CallThis(FUN_5ac7f0, s + 20, f);
     if (F(WORD, s, 96)) {
-        F(WORD, s, 96) = (WORD)CallC<int>(FUN_5ab140, f);
+        F(WORD, s, 96) = (WORD)File_ReadInt(f);
         if (F(WORD, s, 96) == 1 && !(g_sc702e8c & 64))
             F(WORD, s, 96) = 2;
-        F(WORD, s, 98) = (WORD)CallC<int>(FUN_5ab140, f);
+        F(WORD, s, 98) = (WORD)File_ReadInt(f);
     }
-    int n = CallC<int>(FUN_5ab140, f);
+    int n = File_ReadInt(f);
     F(WORD, s, 52) = (WORD)n;
     F(BYTE*, s, 48) = pts;
     if (F(WORD, s, 96) == 3 && g_mr720904) {
@@ -3612,7 +3639,7 @@ int __fastcall Mesh_Read(BYTE* s, void*, FILE* f, BYTE* pts, BYTE* normals)
     }
     F(BYTE*, s, 56) = faces;
     for (int i = 0; i < F(WORD, s, 52); i++)
-        if (!CallThis<int>(Mr_FaceRead, F(BYTE*, s, 56) + i * 88, f, pts, normals))
+        if (!Face_Read(F(BYTE*, s, 56) + i * 88, 0, f, pts, normals))
             return 0;
     return 1;
 }
@@ -3634,7 +3661,7 @@ extern "C" void __fastcall Sound_Restart(BYTE* s, void*, float vol, float pitch)
         F(int, s, 24) = -1;
         F(int, s, 20) = 0;
     }
-    int ch = CallC<int>(FUN_5fd580, s);
+    int ch = Sound_TakeChannel(s);
     if (ch == -1)
         return;
     F(int, s, 24) = ch;
@@ -3645,7 +3672,6 @@ extern "C" void __fastcall Sound_Restart(BYTE* s, void*, float vol, float pitch)
 
 // === a portal's pass-through (a method at $L_5fbc90)
 
-extern "C" void Pp_Flag0Clear(); KING_ALIAS("_Pp_Flag0Clear", "@Obj_Flag0Clear@24")
 extern "C" void Pp_Inverse(); KING_ALIAS("_Pp_Inverse", "_Matrix_Inverse")
 extern "C" void Pp_Length(); KING_ALIAS("_Pp_Length", "_Vec3_Length")
 KING_VAR(double, g_pp64b748, 64b748)
@@ -3660,7 +3686,7 @@ int __fastcall Portal_Pass(BYTE* s, void*, int a, int b, BYTE* m, BYTE* r)
 {
     if (!F(BYTE*, s, 128))
         return 0;
-    if (!CallThis<int>(Pp_Flag0Clear, s, a, b, m, r))
+    if (!Obj_Flag0Clear(s, 0, a, b, (int)m, (int)r))
         return 0;
     if (F(int, s, 108))
         return 0;
@@ -3682,8 +3708,8 @@ int __fastcall Portal_Pass(BYTE* s, void*, int a, int b, BYTE* m, BYTE* r)
 
 // === the music thread's run method ($L_5ff250)
 
-extern "C" void Mt_Poll(); KING_ALIAS("_Mt_Poll", "@Music_Poll@8")
-extern "C" void Mt_StopGraph(); KING_ALIAS("_Mt_StopGraph", "@Music_StopGraph@8")
+extern "C" int __fastcall Music_Poll(BYTE* self, void*);
+extern "C" int __fastcall Music_StopGraph(BYTE* self, void*);
 extern "C" void Mt_SetVolume(); KING_ALIAS("_Mt_SetVolume", "@Music_SetVolume@16")
 extern "C" void Mt_Construct(); KING_ALIAS("_Mt_Construct", "@Music_Construct@8")
 extern "C" void Mt_Shutdown(); KING_ALIAS("_Mt_Shutdown", "_Gate_ShutdownCom")
@@ -3707,7 +3733,7 @@ int __fastcall Music_Thread(BYTE* s)
     if (!m)
         return -5;
     while (!(F(BYTE, s, 8) & 1)) {
-        int r = CallThis<int>(Mt_Poll, F(BYTE*, s, 20));
+        int r = Music_Poll(F(BYTE*, s, 20), 0);
         if (r == 1 || r == 0)
             Music_PickNext(s);
         Sleep(400);
@@ -3719,7 +3745,7 @@ int __fastcall Music_Thread(BYTE* s)
         } else
             LeaveCriticalSection(&g_sc723b40);
     }
-    CallThis(Mt_StopGraph, F(BYTE*, s, 20));
+    Music_StopGraph(F(BYTE*, s, 20), 0);
     if (BYTE* g = F(BYTE*, s, 20)) {
         CallThis(Mt_Shutdown, g);
         operator delete(g);
@@ -4210,7 +4236,7 @@ int __fastcall Face_RayHit(BYTE* s, void*, int flags, BYTE* r)
 
 // === a level-of-detail switch (a method at $L_5f9f20)
 
-extern "C" void Ld_RenderLevel(); KING_ALIAS("_Ld_RenderLevel", "@Render_Level@8")
+extern "C" int __fastcall Render_Level(BYTE* self, void*);
 extern "C" void Ld_PlaneTransform(); KING_ALIAS("_Ld_PlaneTransform", "@Plane_Transform@12")
 extern "C" void Ld_Multiply(); KING_ALIAS("_Ld_Multiply", "_Matrix_Multiply")
 extern "C" void Ld_Length(); KING_ALIAS("_Ld_Length", "_Vec3_Length")
@@ -4276,7 +4302,7 @@ int __fastcall Lod_Draw(BYTE* s, void*, int a, BYTE* v)
         }
         else
         {
-            int half = CallThis<int>(Ld_RenderLevel, v) / 2;
+            int half = Render_Level(v, 0) / 2;
             r = (float)((double)half * ((q + q) / dist));
             for (i = n - 1; i >= 0 && !(arr[i] < r); i--)
                 ;
@@ -4323,10 +4349,9 @@ int __fastcall Lod_Draw(BYTE* s, void*, int a, BYTE* v)
 
 // === casting a ray into one slot's objects (FUN_5f21e0)
 
-extern "C" void Rs_TscNow(); KING_ALIAS("_Rs_TscNow", "_Tsc_Now")
+extern "C" double __cdecl Tsc_Now();
 extern "C" void Rs_Inverse(); KING_ALIAS("_Rs_Inverse", "_Matrix_Inverse")
 extern "C" void Rs_Length(); KING_ALIAS("_Rs_Length", "_Vec3_Length")
-extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 KING_VAR(int, g_rs702e74, 702e74)                // ray casts timed
 KING_VAR(double, g_rs702e78, 702e78)             // their time
 KING_VAR(BYTE, g_rs723a54, 723a54)
@@ -4339,7 +4364,7 @@ static void Rs_EndTiming(BYTE* r)
 {
     if (--F(int, r, 204))
         return;
-    F(double, r, 192) = CallC<double>(Rs_TscNow) - F(double, r, 192);
+    F(double, r, 192) = Tsc_Now() - F(double, r, 192);
     g_rs702e74 += F(int, r, 200);
     g_rs702e78 = g_rs702e78 + F(double, r, 192);
 }
@@ -4355,7 +4380,7 @@ int __fastcall Slot_CastRay(BYTE* s, void*, int i, int flags, BYTE* r)
         return 0;
     if (!F(int, r, 204))
     {
-        F(double, r, 192) = CallC<double>(Rs_TscNow);
+        F(double, r, 192) = Tsc_Now();
         F(int, r, 200) = 0;
     }
     F(int, r, 204)++;
@@ -4768,10 +4793,8 @@ int __fastcall Shape_SweepHit(BYTE* s, void*, int flags, ShV* p, ShV* n, float r
 
 // === a mesh's texture coordinates for its material (FUN_5af9e0)
 
-extern "C" void Tc_Frame(); KING_ALIAS("_Tc_Frame", "@Render_CurrentFrame@8")
 extern "C" void Tc_Transform(); KING_ALIAS("_Tc_Transform", "@Vec3_TransformPoint@12")
 extern "C" void Tc_Normalized(); KING_ALIAS("_Tc_Normalized", "_Vec3_Normalized")
-extern "C" void Tc_Fatal(); KING_ALIAS("_Tc_Fatal", "_Sys_Fatal")
 KING_VAR(BYTE, g_tc702a40, 702a40)
 KING_VAR(float, g_tc702da0, 702da0)                   // a static identity matrix
 KING_VAR(float, g_tcIdentity, 7025f0)
@@ -4856,7 +4879,7 @@ void __fastcall Mesh_TexCoords(BYTE* r, void*, BYTE* m, int n, BYTE* mat, ScVec3
                 if (F(BYTE*, m, 20))
                 {
                     if (F(BYTE, m, 12) < ch)
-                        CallC(Tc_Fatal, &g_tc67f010, mat);
+                        Sys_Fatal(&g_tc67f010, (const char*)mat);
                     const float* uv = F(const float*, m, 20) + 2 * ((F(BYTE, m, 12) + 1) * i + ch);
                     u = uv[0];
                     v = uv[1];
@@ -4872,7 +4895,7 @@ void __fastcall Mesh_TexCoords(BYTE* r, void*, BYTE* m, int n, BYTE* mat, ScVec3
                     {
                         char buf[128];
                         sprintf(buf, &g_tc67efd4, mat);
-                        CallC(Tc_Fatal, buf, 0);
+                        Sys_Fatal(buf, 0);
                     }
                     const float* uv = F(const float*, vx, 20) + 2 * (ch - 1);
                     u = uv[0];
@@ -4901,7 +4924,7 @@ void __fastcall Mesh_TexCoords(BYTE* r, void*, BYTE* m, int n, BYTE* mat, ScVec3
                         CallThis(Tc_Transform, &P, r + 2240 + 48 * F(int, r, 8224));
                     else
                     {
-                        const float* e = CallThis<const float*>(Tc_Frame, r);
+                        const float* e = (const float*)Render_CurrentFrame(r, 0);
                         TcV d, nv;
                         d.x = (float)((double)e[0] - P.x);
                         d.y = (float)((double)e[1] - P.y);
@@ -4994,8 +5017,6 @@ void __fastcall Mesh_TexCoords(BYTE* r, void*, BYTE* m, int n, BYTE* mat, ScVec3
 
 // === drawing through a portal (a method at $L_5fb820)
 
-extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int);
-extern "C" int __fastcall View_SphereClip(BYTE* s, void*, const float* sp);
 extern "C" void __fastcall Render_PopState(BYTE* self, void*);
 extern "C" int __fastcall Render_PortalView(BYTE* r, void*, const float* q, int mirror);
 KING_VAR(DWORD, g_po723a88, 723a88)
@@ -5052,18 +5073,14 @@ int __fastcall Portal_Draw(BYTE* p, void*, int a, BYTE* r)
 
 // === reading a scene node record (FUN_5ef830)
 
-extern "C" void Nr_ReadInt(); KING_ALIAS("_Nr_ReadInt", "_File_ReadInt")
-extern "C" void Nr_Node(); KING_ALIAS("_Nr_Node", "@Node_Construct@16")
-extern "C" void Nr_NodeN(); KING_ALIAS("_Nr_NodeN", "@NodeN_Construct@20")
-extern "C" void Nr_Node100(); KING_ALIAS("_Nr_Node100", "@Node5f1530_Construct@12")
-extern "C" void Nr_Group(); KING_ALIAS("_Nr_Group", "@Group_Construct@12")
-extern "C" void Nr_Mesh(); KING_ALIAS("_Nr_Mesh", "@Mesh_ConstructNamed@12")
-extern "C" void Nr_LightInit(); KING_ALIAS("_Nr_LightInit", "@Light_Init@8")
-extern "C" void Nr_Init5e5cb0(); KING_ALIAS("_Nr_Init5e5cb0", "@Obj5e5cb0_Init@8")
+extern "C" BYTE* __fastcall Node5f1530_Construct(BYTE* self, void*, const char* name);
+extern "C" BYTE* __fastcall Group_Construct(BYTE* self, void*, int name);
+extern "C" BYTE* __fastcall Mesh_ConstructNamed(BYTE* self, void*, int name);
+extern "C" BYTE* __fastcall Light_Init(BYTE* self, void*);
 extern "C" void Nr_LightRead(); KING_ALIAS("_Nr_LightRead", "@Light_ReadOld@20")
 extern "C" void Nr_EnvRead(); KING_ALIAS("_Nr_EnvRead", "@SceneNode5f3f30_Read@20")
 extern "C" void Nr_GroupRead(); KING_ALIAS("_Nr_GroupRead", "@SceneNode5fca50_Read@20")
-extern "C" void Nr_AddName(); KING_ALIAS("_Nr_AddName", "@NameHash_Add@16")
+extern "C" void __fastcall NameHash_Add(BYTE* h, void*, const char* name, void* v);
 KING_VAR(char, g_nrName, 723a04)
 KING_VAR(AsmLabel, g_nrNames, 71e820)
 KING_VAR(BYTE, g_nr7025f0, 7025f0)
@@ -5100,7 +5117,7 @@ static BYTE* Nr_MakeN(int size, int t, int n, const void* vt)
     BYTE* o = Nr_New(size);
     if (!o)
         return 0;
-    CallThis(Nr_NodeN, o, &g_nrName, t, n);
+    NodeN_Construct(o, 0, &g_nrName, t, n);
     F(const void*, o, 0) = vt;
     return o;
 }
@@ -5110,7 +5127,7 @@ static BYTE* Nr_Make(int size, int t, const void* vt)
     BYTE* o = Nr_New(size);
     if (!o)
         return 0;
-    CallThis(Nr_Node, o, &g_nrName, t);
+    Node_Construct(o, 0, &g_nrName, t);
     F(const void*, o, 0) = vt;
     return o;
 }
@@ -5142,8 +5159,8 @@ static BYTE* Nr_Light()
     BYTE* o = Nr_New(144);
     if (o)
     {
-        CallThis(Nr_NodeN, o, &g_nrName, 21, 1);
-        CallThis(Nr_LightInit, o + 56);
+        NodeN_Construct(o, 0, &g_nrName, 21, 1);
+        Light_Init(o + 56, 0);
         F(const void*, o, 0) = &nr_64d444;
         F(int, o, 136) = 1;
         F(int, o, 140) = 0;
@@ -5156,8 +5173,8 @@ static BYTE* Nr_Type2(int mark)
     BYTE* o = Nr_New(120);
     if (o)
     {
-        CallThis(Nr_NodeN, o, &g_nrName, 2, 1);
-        CallThis(Nr_Init5e5cb0, o + 72);
+        NodeN_Construct(o, 0, &g_nrName, 2, 1);
+        Obj5e5cb0_Init(o + 72, 0);
         F(const void*, o, 0) = &nr_652b84;
         static const int z[] = {56, 112, 116, 68, 108};
         Nr_Zero(o, z, 5);
@@ -5171,8 +5188,8 @@ static BYTE* Nr_Type3(int mark)
     BYTE* o = Nr_New(116);
     if (o)
     {
-        CallThis(Nr_NodeN, o, &g_nrName, 3, 1);
-        CallThis(Nr_Init5e5cb0, o + 68);
+        NodeN_Construct(o, 0, &g_nrName, 3, 1);
+        Obj5e5cb0_Init(o + 68, 0);
         F(const void*, o, 0) = &nr_6515dc;
         static const int z[] = {104, 112, 60, 56, 108, 64};
         Nr_Zero(o, z, 6);
@@ -5205,7 +5222,7 @@ static BYTE* Nr_Finish(BYTE* o, int cluster, void* f, int a, int b, void (*read)
 {
     F(int, o, 36) = cluster;
     if (g_nrName)
-        CallThis(Nr_AddName, &g_nrNames, &g_nrName, o);
+        NameHash_Add((BYTE*)&g_nrNames, 0, &g_nrName, o);
     int ok = read ? CallThis<int>(read, o, f, a, b) : CallVirt<int>(o, 44, f, a, b);
     return ok ? o : 0;
 }
@@ -5219,7 +5236,7 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
 {
     *kind = -1;
     fread(&g_nrName, 32, 1, f);
-    unsigned k = CallC<unsigned>(Nr_ReadInt, f);
+    unsigned k = (unsigned)File_ReadInt(f);
     BYTE* o = 0;
     switch (k)
     {
@@ -5264,7 +5281,7 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
         break;
     case 8:
         if ((o = Nr_New(100)) != 0)
-            o = CallThis<BYTE*>(Nr_Node100, o, &g_nrName);
+            o = Node5f1530_Construct(o, 0, &g_nrName);
         break;
     case 9:
     case 22:
@@ -5303,7 +5320,7 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
         break;
     case 19:
         if ((o = Nr_New(320)) != 0)
-            o = CallThis<BYTE*>(Nr_Group, o, &g_nrName);
+            o = Group_Construct(o, 0, (int)&g_nrName);
         break;
     case 20:
         o = Nr_Type9(7);
@@ -5339,7 +5356,7 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
         break;
     case 28:
         if ((o = Nr_New(68)) != 0)
-            o = CallThis<BYTE*>(Nr_Mesh, o, &g_nrName);
+            o = Mesh_ConstructNamed(o, 0, (int)&g_nrName);
         break;
     case 29:
         if ((o = Nr_MakeN(84, 13, 0, &nr_6528d8)) != 0)
@@ -5373,7 +5390,7 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
         break;
     case 35:
         if ((o = Nr_New(100)) != 0)
-            o = CallThis<BYTE*>(Nr_Node100, o, &g_nrName);
+            o = Node5f1530_Construct(o, 0, &g_nrName);
         F(short, o, 96) = 1;
         break;
     case 36:
@@ -5394,7 +5411,7 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
         break;
     case 41:
         if ((o = Nr_New(320)) != 0)
-            o = CallThis<BYTE*>(Nr_Group, o, &g_nrName);
+            o = Group_Construct(o, 0, (int)&g_nrName);
         return Nr_Finish(o, c, f, a, b, Nr_GroupRead);
     default:
         return 0;
@@ -5408,24 +5425,21 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
 
 // === a node's children read from the scene file (FUN_5f1db0 with its tail $L_5f1f1d)
 
-extern "C" void Ch_ReadInt(); KING_ALIAS("_Ch_ReadInt", "_File_ReadInt")
-extern "C" void Ch_ReadNode(); KING_ALIAS("_Ch_ReadNode", "_Scene_ReadNode")
-extern "C" void Ch_Root(); KING_ALIAS("_Ch_Root", "@Node_Root@8")
-extern "C" void Ch_Fatal(); KING_ALIAS("_Ch_Fatal", "_Sys_Fatal")
+extern "C" BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char** name);
+extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);
 extern "C" void Ch_Path(); KING_ALIAS("_Ch_Path", "@Path_Construct@32")
-extern "C" void Ch_AddControl(); KING_ALIAS("_Ch_AddControl", "@Chain_AddControl@12")
-extern "C" void Ch_Link(); KING_ALIAS("_Ch_Link", "@Node_Link@12")
+extern "C" void __fastcall Chain_AddControl(BYTE** self, void*, BYTE* c);
 KING_VAR(float, g_ch64c450, 64c450)
 
 // a "way..." node of kind 9 / 7 made a path control of the root room (kind 15)
 static void Ch_AddWay(BYTE* s, BYTE* node)
 {
-    BYTE* root = CallThis<BYTE*>(Ch_Root, s);
+    BYTE* root = Node_Root(s, 0);
     if (F(int, root, 16) != 15)
     {
         char buf[100];
         sprintf(buf, "Road(%s) must be placed in room", F(const char*, node, 12));
-        CallC(Ch_Fatal, buf, 0);
+        Sys_Fatal(buf, 0);
     }
     BYTE* list = F(BYTE*, root, 64);
     if (!list)
@@ -5441,7 +5455,7 @@ static void Ch_AddWay(BYTE* s, BYTE* node)
         double w = F(int, node, 56) ? *F(float*, node, 60) : g_ch64c450;
         p = CallThis<BYTE*>(Ch_Path, p, F(int, node, 68), F(int, node, 72), F(int, node, 48), F(int, node, 52), w);
     }
-    CallThis(Ch_AddControl, list, p);
+    Chain_AddControl((BYTE**)list, 0, p);
     CallVirt(node, 0, 1);
 }
 
@@ -5470,7 +5484,7 @@ int __fastcall Scene_ReadChildren(BYTE* s, void*, int file, int r, int n, int b,
         {
             if (!r && i == F(int, s, 52) - 1)
                 break;
-            int k = CallC<int>(Ch_ReadInt, file);
+            int k = File_ReadInt((FILE*)file);
             if (k != 333)
             {
                 if (k == 444)
@@ -5478,20 +5492,20 @@ int __fastcall Scene_ReadChildren(BYTE* s, void*, int file, int r, int n, int b,
                 return 0;
             }
             int tmp;
-            BYTE* node = CallC<BYTE*>(Ch_ReadNode, file, F(int, s, 36), &tmp, b, c, 0);
+            BYTE* node = Scene_ReadNode((FILE*)file, F(int, s, 36), &tmp, b, c, 0);
             if (!node)
                 return 0;
             const char* name = F(const char*, node, 12);
             if (F(int, node, 16) == 9 && name && !strncmp(name, "way", 3) && F(int, node, 64) == 7)
             {
                 r--;
-                if (CallC<int>(Ch_ReadInt, file) != 555)
+                if (File_ReadInt((FILE*)file) != 555)
                     return 0;
                 Ch_AddWay(s, node);
                 continue;
             }
             r--;
-            if (CallC<int>(Ch_ReadInt, file) != 555)
+            if (File_ReadInt((FILE*)file) != 555)
                 return 0;
             if (F(int, node, 16) == 2 && !*F(int*, node, 48))
             {
@@ -5503,7 +5517,7 @@ int __fastcall Scene_ReadChildren(BYTE* s, void*, int file, int r, int n, int b,
             else
             {
                 F(int, node, 44) = F(int, prev, 44);
-                CallThis(Ch_Link, node, prev);
+                Node_Link(node, 0, prev);
                 F(int, node, 36) = F(int, prev, 36);
             }
             prev = node;
@@ -5518,7 +5532,6 @@ int __fastcall Scene_ReadChildren(BYTE* s, void*, int file, int r, int n, int b,
 
 // === a 56-byte record copied (FUN_6000c0)
 
-extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 
 extern "C" {
@@ -5548,8 +5561,6 @@ BYTE* __fastcall Rec56_CopyConstruct(BYTE* s, void*, const BYTE* src)
 
 // === a sprite node drawn at the level of detail for its projected size ($L_5fac60, a vtable entry)
 
-extern "C" void Sp_Test(); KING_ALIAS("_Sp_Test", "@Scene_TestInfo@16")
-extern "C" void Sp_Level(); KING_ALIAS("_Sp_Level", "@Render_Level@8")
 extern "C" void Sp_Draw(); KING_ALIAS("_Sp_Draw", "@Render_Sprite@32")
 KING_VAR(double, g_sp64b670, 64b670)
 KING_VAR(double, g_sp64b5a0, 64b5a0)
@@ -5562,7 +5573,7 @@ extern "C" {
 // (64b5a0) the last image, else the last one whose size is under the projected size; 1 when drawn
 int __fastcall Sprite_Draw(BYTE* s, void*, int a, BYTE* v)
 {
-    if (!CallThis<int>(Sp_Test, s, a, v))
+    if (!Scene_TestInfo(s, 0, a, (int)v))
         return 0;
     const float* M = (const float*)(v + 2240 + F(int, v, 8224) * 48);
     float depth = (float)((double)M[7] * F(float, s, 64) + (double)F(float, s, 60) * M[4] + (double)M[1] * F(float, s, 56)
@@ -5574,7 +5585,7 @@ int __fastcall Sprite_Draw(BYTE* s, void*, int a, BYTE* v)
     int i = n - 1;
     if ((double)depth > g_sp64b5a0)
     {
-        int half = CallThis<int>(Sp_Level, v) / 2;
+        int half = Render_Level(v, 0) / 2;
         float size = (float)((double)half * ((r + r) / depth));
         for (; i >= 0; i--)
             if (F(float*, s, 76)[i] < size)
@@ -5810,11 +5821,8 @@ int __fastcall Slot_SegmentCast(BYTE* s, void*, int flags, BYTE* q)
 // ---------------------------------------------------------------------------
 // Batch 32: a mesh object's draw
 
-extern "C" void Sd32_TestInfo(); KING_ALIAS("_Sd32_TestInfo", "@Scene_TestInfo@16")
-extern "C" void Sd32_SphereClip(); KING_ALIAS("_Sd32_SphereClip", "@View_SphereClip@12")
-extern "C" void Sd32_ClipSphere(); KING_ALIAS("_Sd32_ClipSphere", "@Render_ClipSphere@12")
-extern "C" void Sd32_Object(); KING_ALIAS("_Sd32_Object", "@Render_Object@12")
-extern "C" void Sd32_Fatal(); KING_ALIAS("_Sd32_Fatal", "_Sys_Fatal")
+extern "C" int __fastcall Render_ClipSphere(BYTE* s, void*, const float* sp);
+extern "C" void __fastcall Render_Object(BYTE* self, void*, BYTE* o);
 KING_VAR(int, sd32_on683b54, 683b54)
 KING_VAR(int, sd32_hw720904, 720904)
 KING_VAR(int, sd32_mode723a50, 723a50)
@@ -5833,9 +5841,9 @@ int __fastcall MeshObject_Draw(BYTE* self, void*, DWORD flags, BYTE* r)
 {
     if (!sd32_on683b54)
         return 0;
-    if (!CallThis<int>(Sd32_TestInfo, self, flags, r))
+    if (!Scene_TestInfo(self, 0, flags, (int)r))
         return 0;
-    if (!CallThis<int>(Sd32_SphereClip, r, self + 20))
+    if (!View_SphereClip(r, 0, (const float*)(self + 20)))
         return 0;
     int saved = F(int, r, 8620);
     if (sd32_hw720904) {
@@ -5850,9 +5858,9 @@ int __fastcall MeshObject_Draw(BYTE* self, void*, DWORD flags, BYTE* r)
             int k = lit;
             if (kind == 3) {
                 if (sd32_mode723a50 != 1 && sd32_mode723a50 != 3 && sd32_mode723a50 != 2)
-                    CallC(Sd32_Fatal, (const char*)&sd32_s683b68, 0);
+                    Sys_Fatal((const char*)&sd32_s683b68, 0);
                 if (!sd32_dev723a90)
-                    CallC(Sd32_Fatal, (const char*)&sd32_s683b58, 0);
+                    Sys_Fatal((const char*)&sd32_s683b58, 0);
                 k += F(int, sd32_dev723a90, 28) ? 4 : 6;
             } else if (kind == 1) {
                 k += 2;
@@ -5868,13 +5876,13 @@ int __fastcall MeshObject_Draw(BYTE* self, void*, DWORD flags, BYTE* r)
 parts:
     F(int, r, 8280) += F(WORD, self, 52);
     F(int, r, 8252) = F(int, self, 48);
-    F(int, r, 8448) = CallThis<int>(Sd32_ClipSphere, r, self + 20);
+    F(int, r, 8448) = Render_ClipSphere(r, 0, (const float*)(self + 20));
     if (flags & 1) {
         for (int i = F(WORD, self, 52) - 1; i >= 0; i--)
-            CallThis(Sd32_Object, r, F(BYTE*, self, 56) + i * 88);
+            Render_Object(r, 0, F(BYTE*, self, 56) + i * 88);
     } else {
         for (int i = 0; i < F(WORD, self, 52); i++)
-            CallThis(Sd32_Object, r, F(BYTE*, self, 56) + i * 88);
+            Render_Object(r, 0, F(BYTE*, self, 56) + i * 88);
     }
     F(int, r, 8620) = saved;
     return 1;

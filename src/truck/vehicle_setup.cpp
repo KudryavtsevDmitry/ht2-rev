@@ -9,6 +9,7 @@
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
+extern "C" int __fastcall Car_AxleFlat(BYTE* s, void*, unsigned k);
 extern "C" void FUN_506750(); KING_ALIAS("_FUN_506750", "@Car_AxleFlat@12")    // vehicle: part by index
 
 KING_VAR(int, g_697678, 697678)
@@ -151,7 +152,7 @@ void Car::StepSetting(int i)
 int Car::FindParts()
 {
     for (int i = 0; i < 4; i++)
-        F(void*, this, 2236 + i * 4) = CallThis<void*>(FUN_506750, this, i);
+        F(void*, this, 2236 + i * 4) = (void*)Car_AxleFlat((BYTE*)this, 0, i);
     if (F(void*, this, 2236) && F(void*, this, 2240) && F(void*, this, 2244) && F(void*, this, 2248)) {
         F(int, this, 2232) = 1;
         return 1;
@@ -203,7 +204,7 @@ void __fastcall Car_StepSetting(Car* s, void*, int i) { s->StepSetting(i); }    
 int __fastcall Car_FindParts(Car* s, void*) { return s->FindParts(); }                               // [FUN_506a60]
 }
 
-extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" BYTE* __fastcall Node_Init(BYTE* self, void*);
 typedef DWORD Dwords12[12];
 KING_VAR(Dwords12, g_rayDefaults, 7025f0)
 
@@ -214,7 +215,7 @@ extern "C" {
 int __fastcall Vehicle_RayTest(BYTE* self, void*, DWORD* p, BYTE** hit)
 {
     BYTE q[208];
-    CallThis(FUN_5ef5c0, q);
+    Node_Init(q, 0);
     memcpy(q + 4, g_rayDefaults, 48);
     DWORD* from = (DWORD*)(self + 2292);
     F(DWORD, q, 76) = from[0];
@@ -314,6 +315,7 @@ extern "C" double __fastcall Car_MinWearFactor(BYTE* car, void*)
 }
 
 extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")    // filter: feed (value, name)
+extern "C" float __fastcall Filter_Value(BYTE* s);
 extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
 KING_VAR(char, g_strFilterEngineTach, 674850)
 
@@ -358,7 +360,7 @@ extern "C" void __fastcall Car_UpdateTach(BYTE* s, void*, const float* rpm)
     if (!(out >= lim))
         out = (float)lim;
     CallThis(FUN_4eacce, s + 6992, out, &g_strFilterEngineTach);
-    F(float, s, 7300) = (float)CallThis<double>(FUN_4eaf98, s + 6992);
+    F(float, s, 7300) = (float)(double)Filter_Value(s + 6992);
 }
 
 // [FUN_501e30] moves wheel i's level (+15532) towards its notch by *amount at rate; 1 when the notch was reached
@@ -407,7 +409,7 @@ extern "C" int __fastcall Wheel_StepLevel(BYTE* s, void*, int i, float* amount, 
     return 1;
 }
 
-extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")    // a random value (angle, name)
+extern "C" float __cdecl Angle_F2Pi(float x, const char* name);
 extern "C" double __cdecl Table360_At(float angle);   // world.cpp
 KING_VAR(char, g_strCheckDamage, 67498c)    // "_Car_V::check_damage"
 
@@ -422,7 +424,7 @@ extern "C" void __fastcall Car_CheckDamage(BYTE* s, void*)
             F(DWORD, s, 7028 + k * 4) = F(DWORD, s, 7552 + k * 4);
         else if (a == 2 || a == 1) {
             float t = (float)(F(float, s, 3740 + k * 4) + 1.570796326795);
-            float u = (float)(CallC<double>(FUN_4e41d9, t, &g_strCheckDamage) + 3.14159265359);
+            float u = (float)((double)Angle_F2Pi(t, &g_strCheckDamage) + 3.14159265359);
             double c = Table360_At(u);
             if (a == 2)
                 F(float, s, 7028 + k * 4) = (float)((c * ((double)A - B) + ((double)A + B)) * 0.5);
@@ -462,14 +464,14 @@ extern "C" void __fastcall Car_CheckDamage(BYTE* s, void*)
 
 // ---------------------------------------------------------------------------
 typedef char AsmLabel[1];
-extern "C" void FUN_501710(); KING_ALIAS("_FUN_501710", "_Car_ClearSettings")
+extern "C" int __cdecl Car_ClearSettings(int* out);
 KING_VAR(AsmLabel, s_674950, 674950)
 extern "C" void __cdecl World_Fatal(const char* msg);
 
 // [FUN_501730..$L_501790] clears the 27 first settings, then one zero and seven ones; returns 35
 extern "C" int __cdecl Car_ResetSettings35(float* p)
 {
-    int i = CallC<int>(FUN_501710, p);
+    int i = Car_ClearSettings((int*)p);
     p[i++] = 0;
     for (int k = 0; k < 7; k++)
         p[i++] = 1.0f;
@@ -480,13 +482,15 @@ extern "C" int __cdecl Car_ResetSettings35(float* p)
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_4eb5e0(); KING_ALIAS("_FUN_4eb5e0", "@Ramp_Value@8")
-extern "C" void FUN_4eb690(); KING_ALIAS("_FUN_4eb690", "@Ramp_Position@8")
-extern "C" void FUN_507380(); KING_ALIAS("_FUN_507380", "_Car_EngineTorque")
-extern "C" void FUN_507440(); KING_ALIAS("_FUN_507440", "_Car_ThrottleTorque")
+extern "C" double __fastcall Ramp_Value(BYTE* self, void*);
+extern "C" float __fastcall Ramp_Position(BYTE* self, void*);
+extern "C" double __cdecl Car_EngineTorque(float rpm, float torqueRpm, float maxTorque, float scale);
+extern "C" double __cdecl Car_ThrottleTorque(int type, float full, float idle, float throttle);
+extern "C" double __fastcall Car_EngineBrakeTorque(BYTE* car, void*, float speed);
 extern "C" void FUN_4ff3e0(); KING_ALIAS("_FUN_4ff3e0", "@Car_EngineBrakeTorque@12")
+extern "C" int __fastcall Car_GetSettings(Car* s, void*, int* out);
 extern "C" void FUN_501480(); KING_ALIAS("_FUN_501480", "@Car_GetSettings@12")
-extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
+extern "C" double __cdecl Game_Time();
 extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")    // filter: feed (value, name)
 extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
 KING_VAR(AsmLabel, s_674914, 674914)
@@ -495,9 +499,9 @@ KING_VAR(AsmLabel, s_674870, 674870)
 // [FUN_4ff460..$L_4ff492] the engine torque at rpm from the torque-rpm (+7304) and the two ramps
 extern "C" double __fastcall Car_TorqueAt(BYTE* self, void*, float rpm)
 {
-    float scale = (float)CallThis<double>(FUN_4eb5e0, self + 16320);
-    float maxTorque = (float)CallThis<double>(FUN_4eb5e0, self + 16060);
-    return CallC<double>(FUN_507380, rpm, F(float, self, 7304), maxTorque, scale);
+    float scale = (float)Ramp_Value(self + 16320, 0);
+    float maxTorque = (float)Ramp_Value(self + 16060, 0);
+    return Car_EngineTorque(rpm, F(float, self, 7304), maxTorque, scale);
 }
 
 // [FUN_4ff4a0..$L_4ff4ac] the engine torque at the current rpm (+7300)
@@ -510,7 +514,7 @@ extern "C" double __fastcall Car_TorqueNow(BYTE* self, void*)
 extern "C" double __fastcall Car_TorqueRatio(BYTE* self, void*, float rpm)
 {
     float t = (float)Car_TorqueAt(self, 0, rpm);
-    double u = CallThis<double>(FUN_4ff3e0, self, rpm);
+    double u = Car_EngineBrakeTorque(self, 0, rpm);
     return -(u / ((double)t - u));
 }
 
@@ -518,17 +522,17 @@ extern "C" double __fastcall Car_TorqueRatio(BYTE* self, void*, float rpm)
 extern "C" double __fastcall Car_TorqueThrottle(BYTE* self, void*, float rpm, float throttle)
 {
     float t = (float)Car_TorqueAt(self, 0, rpm);
-    float u = (float)CallThis<double>(FUN_4ff3e0, self, rpm);
-    return CallC<double>(FUN_507440, F(int, self, 2252), t, u, throttle);
+    float u = (float)Car_EngineBrakeTorque(self, 0, rpm);
+    return Car_ThrottleTorque(F(int, self, 2252), t, u, throttle);
 }
 
 // [FUN_5014b0..$L_501543] the settings, then +3808 and the 7 ramp positions; returns 35
 extern "C" int __fastcall Car_ReadSettings35(BYTE* self, void*, float* p)
 {
-    int i = CallThis<int>(FUN_501480, self, p);
+    int i = Car_GetSettings((Car*)self, 0, (int*)p);
     p[i++] = (float)F(double, self, 3808);
     for (int off = 16060; off <= 16372; off += 52)
-        p[i++] = (float)CallThis<double>(FUN_4eb690, self + off);
+        p[i++] = (float)(double)Ramp_Position(self + off, 0);
     if (i != 35)
         World_Fatal(s_674914);
     return i;
@@ -539,12 +543,12 @@ extern "C" void __fastcall Car_StartEngine(BYTE* self, void*)
 {
     F(int, self, 7196) = 1;
     F(int, self, 7204) = 0;
-    F(float, self, 7228) = (float)CallC<double>(FUN_4e27a5);
+    F(float, self, 7228) = (float)Game_Time();
     double d = (double)F(float, self, 10712) * F(float, self, 7304);
     float v = (float)(d + d);
     F(float, self, 7300) = v;
     CallThis(FUN_4eacce, self + 6992, v, (char*)s_674870);
-    F(float, self, 7300) = (float)CallThis<double>(FUN_4eaf98, self + 6992);
+    F(float, self, 7300) = (float)(double)Filter_Value(self + 6992);
 }
 
 
@@ -622,6 +626,7 @@ extern "C" BYTE* __fastcall Tuning_SetDefaults(BYTE* s)
 // The static vehicle records.
 
 extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
 KING_VAR(AsmLabel, g_q98_7025f0, 7025f0)
 KING_VAR(AsmLabel, g_q98_6c6b68, 6c6b68)
@@ -676,14 +681,14 @@ extern "C" BYTE* __cdecl VehSet_Init697688(void) { return Tuning_SetDefaults((BY
 // Static initializers: construct a global, register its teardown at exit.
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-extern "C" void q197_FUN_503dd0(); KING_ALIAS("_q197_FUN_503dd0", "_Car_InitDefaults")
+extern "C" void __cdecl Car_InitDefaults();
 extern "C" void q197_L_503e10(); KING_ALIAS("_q197_L_503e10", "_Block697684_Free")
 // [$L_503e00] registers the teardown at exit
 extern "C" int __cdecl Static503dc0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_503e10); }
 // [$L_503dc0] the static initializer: FUN_503dd0, then the teardown at exit
 extern "C" int __cdecl Static503dc0_Init(void)
 {
-    CallC(q197_FUN_503dd0);
+    Car_InitDefaults();
     return Static503dc0_AtExit();
 }
 
@@ -757,12 +762,12 @@ int __fastcall Car_WheelContact(BYTE* c, void*, BYTE* out)
 
 // === constructing the car model table (the static initializer $L_506fc0)
 
-extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
 KING_VAR(AsmLabel, g_cm697868, 697868)    // 80 models of 2416 bytes
 
 // count empty vectors of size bytes at p
-static void Cm_Vectors(BYTE* p, int size, int count) { CallStd(FUN_4011e0, p, size, count, (void*)FUN_4bd4d0); }
+static void Cm_Vectors(BYTE* p, int size, int count) { Array_ForEach(p, size, count, (void (*)())((void*)FUN_4bd4d0)); }
 
 static void Cm_Zero(BYTE* m, int off, int n)
 {
@@ -797,11 +802,11 @@ void __cdecl CarModels_Construct()
         Cm_Vectors(m + 1780, 12, 5);
         Cm_Zero(m, 1844, 9);
         for (int i = 0; i < 9; i++)
-            CallThis(FUN_4bd4d0, m + 1880 + i * 12);
+            Vec3_ZeroThis((Vec3*)(m + 1880 + i * 12), 0);
         for (int i = 0; i < 4; i++)
-            CallThis(FUN_4bd4d0, m + 2000 + i * 12);
-        CallThis(FUN_4bd4d0, m + 2380);
-        CallThis(FUN_4bd4d0, m + 2392);
+            Vec3_ZeroThis((Vec3*)(m + 2000 + i * 12), 0);
+        Vec3_ZeroThis((Vec3*)(m + 2380), 0);
+        Vec3_ZeroThis((Vec3*)(m + 2392), 0);
     }
 }
 
@@ -1008,7 +1013,7 @@ void __fastcall Body_InWater(BYTE* s)
 // === a hit shaking the cab (FUN_501010)
 
 extern "C" int __cdecl rand(void);
-extern "C" void Ch_Normalized(); KING_ALIAS("_Ch_Normalized", "_Vec3_Normalized")
+extern "C" Vec3* __cdecl Vec3_Normalized(Vec3* out, const Vec3* v);
 extern "C" void Ch_RampDown(); KING_ALIAS("_Ch_RampDown", "@Ramp_Down@12")
 KING_VAR(float, g_ch64c40c, 64c40c)
 KING_VAR(float, g_ch64c250, 64c250)
@@ -1047,7 +1052,7 @@ void __fastcall Cab_Hit(BYTE* s, void*, const float* p, const float* n, float f)
     u[1] = (float)((double)g_ch702638 * M[7] + (double)g_ch702634 * M[4] + (double)g_ch702630 * M[1]);
     u[2] = (float)((double)g_ch702638 * M[8] + (double)g_ch702634 * M[5] + (double)g_ch702630 * M[2]);
     float t[3];
-    const float* nn = CallC<const float*>(Ch_Normalized, t, n);
+    const float* nn = (const float*)Vec3_Normalized((Vec3*)t, (const Vec3*)n);
     float c = (float)((double)nn[2] * u[2] + (double)nn[1] * u[1] + (double)nn[0] * u[0]);
     if (c < g_ch64c264)
         c = 0;
@@ -1110,11 +1115,11 @@ void __fastcall Cab_Hit(BYTE* s, void*, const float* p, const float* n, float f)
 // === the wheels' ground contacts (FUN_504d30)
 
 extern "C" int __cdecl sprintf(char*, const char*, ...);
-extern "C" void Gc_DumpText(); KING_ALIAS("_Gc_DumpText", "_Dump_Text")
-extern "C" void Gc_NormalizeThis(); KING_ALIAS("_Gc_NormalizeThis", "@Vec3_NormalizeThis@8")
-extern "C" void Gc_AddAssign(); KING_ALIAS("_Gc_AddAssign", "@Vec3_AddAssign@16")
-extern "C" void Gc_Contact(); KING_ALIAS("_Gc_Contact", "@Wheel_FindGround@24")
-extern "C" void Gc_State(); KING_ALIAS("_Gc_State", "@Body_GroundNormal@12")
+extern "C" void __cdecl Dump_Text(const char* text);
+extern "C" void __fastcall Vec3_NormalizeThis(Vec3* self, void*);
+extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
+extern "C" int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* obj, int i);
+extern "C" void __fastcall Body_GroundNormal(BYTE* s, void*, int need);
 KING_VAR(int, g_gc696be8, 696be8)
 KING_VAR(AsmLabel, g_gc674a20, 674a20)
 KING_VAR(BYTE, g_gc698166, 698166)
@@ -1143,7 +1148,7 @@ int __fastcall Wheels_FindGround(BYTE* s)
         char buf[100];
         sprintf(buf, (const char*)g_gc674a20, &g_gc698166 + F(int, s, 2252) * 2416, (double)F(float, s, 52),
             (double)F(float, s, 56), (double)F(float, s, 60), F(int, s, 3540));
-        CallC(Gc_DumpText, buf);
+        Dump_Text(buf);
     }
     for (int i = 0; i < F(int, s, 3540); i++) {
         memcpy(s + 3848 + i * 12, &g_gc702650, 12);
@@ -1154,7 +1159,7 @@ int __fastcall Wheels_FindGround(BYTE* s)
         pos[0] = (float)(rz * F(float, s, 40) + (double)ry * F(float, s, 28) + (double)rx * F(float, s, 16) + F(float, s, 52));
         pos[1] = (float)(rz * F(float, s, 44) + (double)ry * F(float, s, 32) + (double)rx * F(float, s, 20) + F(float, s, 56));
         pos[2] = (float)(rz * F(float, s, 48) + (double)ry * F(float, s, 36) + (double)rx * F(float, s, 24) + F(float, s, 60));
-        int r = CallThis<int>(Gc_Contact, s, 0, pos, 0, i);
+        int r = Wheel_FindGround(s, 0, 0, (const Vec3*)pos, 0, i);
         if (F(int, s, 15444))
             return 0;
         WORD* w = (WORD*)(s + 6564 + i * 2);
@@ -1165,7 +1170,7 @@ int __fastcall Wheels_FindGround(BYTE* s)
             const float* nb = (const float*)(s + 248 + i * 248);
             c[0] = k * nb[3] + nb[0], c[1] = k * nb[4] + nb[1], c[2] = k * nb[5] + nb[2];
             float t[3];
-            CallThis(Gc_AddAssign, s + 196, t, nb + 3);
+            Vec3_AddAssign((Vec3*)(s + 196), 0, (Vec3*)t, (const Vec3*)(nb + 3));
             F(float, s, 9904) = F(float, s, 9904) + F(float, s, 9840 + i * 4);
             count++;
             float x = c[0], y = c[1], z = c[2];
@@ -1206,7 +1211,7 @@ int __fastcall Wheels_FindGround(BYTE* s)
     float m2 = F(float, s, 3608) < F(float, s, 3612) ? F(float, s, 3612) : F(float, s, 3608);
     F(float, s, 3640) = m2 < m1 ? m1 : m2;
     if (count) {
-        CallThis(Gc_NormalizeThis, s + 196);
+        Vec3_NormalizeThis((Vec3*)(s + 196), 0);
         F(float, s, 9904) = F(float, s, 9904) / count;
     } else {
         F(float, s, 196) = g_gc702630, F(float, s, 200) = g_gc702634, F(float, s, 204) = g_gc702638;
@@ -1233,7 +1238,7 @@ int __fastcall Wheels_FindGround(BYTE* s)
         F(BYTE, s, 6586) = F(BYTE, s, 6586) || w[i];
         F(BYTE, s, 6580) = F(BYTE, s, 6580) && w[i];
     }
-    CallThis(Gc_State, s, 1);
+    Body_GroundNormal(s, 0, 1);
     return (int)(s + 6564 + n * 2);
 }
 
@@ -1241,11 +1246,12 @@ int __fastcall Wheels_FindGround(BYTE* s)
 
 // === a wheel on its surface (FUN_502780)
 
-extern "C" void Ws_InPatch(); KING_ALIAS("_Ws_InPatch", "_Patch_SegmentHits")
+extern "C" int __cdecl Patch_SegmentHits(const Vec3* p, const Vec3* a, const Vec3* b);
 extern "C" void Ws_RampValue(); KING_ALIAS("_Ws_RampValue", "@Ramp_Value@8")
 extern "C" void Ws_AddContact(); KING_ALIAS("_Ws_AddContact", "@Engine_AddContact@20")
-extern "C" void Ws_CameraGet(); KING_ALIAS("_Ws_CameraGet", "@Camera_Get@12")
-extern "C" void Ws_Length(); KING_ALIAS("_Ws_Length", "_Vec3_Length")
+extern "C" void* __fastcall Camera_Get(BYTE* self, void*, void* out);
+extern "C" double __cdecl Vec3_Length(const Vec3* v);
+extern "C" Vec3* __fastcall Vec3_MulAssign(Vec3* self, void*, Vec3* ret, float s);
 extern "C" void Ws_MulAssign(); KING_ALIAS("_Ws_MulAssign", "@Vec3_MulAssign@16")
 KING_VAR(int, g_ws69784c, 69784c)
 KING_VAR(BYTE*, g_ws6ef1fc, 6ef1fc)
@@ -1359,7 +1365,7 @@ int __fastcall Wheel_Surface(BYTE* s, void*, BYTE* c, int w)
         memcpy(P, s + 4120 + w * 248, 12);
         memcpy(Q, c + 52, 12);
         for (int j = 0; j < F(int, s, 10704); j++)
-            if (CallC<int>(Ws_InPatch, s + 10496 + j * 48, P, Q))
+            if (Patch_SegmentHits((const Vec3*)(s + 10496 + j * 48), (const Vec3*)P, (const Vec3*)Q))
                 kind = 13;
     }
     mat = F(const int*, c, 100);
@@ -1378,9 +1384,9 @@ int __fastcall Wheel_Surface(BYTE* s, void*, BYTE* c, int w)
                 break;
             if (!F(WORD, s, 10048)) {
                 BYTE tmp[48];
-                const float* cam = CallThis<const float*>(Ws_CameraGet, g_ws6ef1fc, tmp);
+                const float* cam = (const float*)Camera_Get(g_ws6ef1fc, 0, tmp);
                 float d[3] = {cam[9] - F(float, s, 52), cam[10] - F(float, s, 56), cam[11] - F(float, s, 60)};
-                double p = g_ws64b918 / (CallC<double>(Ws_Length, d) + g_ws64b5b8);
+                double p = g_ws64b918 / (Vec3_Length((const Vec3*)d) + g_ws64b5b8);
                 if (!(rand() * (double)g_ws64c254 > p))
                     break;
             }
@@ -1546,7 +1552,7 @@ int __fastcall Wheel_Surface(BYTE* s, void*, BYTE* c, int w)
 
 // === a segment against a four-cornered patch (FUN_502270)
 
-extern "C" void Ph_PlaneHitT(); KING_ALIAS("_Ph_PlaneHitT", "_Vec3_PlaneHitT")
+extern "C" float* __cdecl Vec3_PlaneHitT(float* out, float* a, float* b, float* c, float* e, double* tOut);
 KING_VAR(double, g_ph64b678, 64b678)
 KING_VAR(float, g_ph64c250, 64c250)
 KING_VAR(double, g_ph64b670, 64b670)
@@ -1575,7 +1581,7 @@ int __cdecl Patch_SegmentHits(const Vec3* p, const Vec3* a, const Vec3* b)
             double L = Vec3_Length(&edge[i]);
             len[i] = (float)L;
             if (L != g_ph64b678)
-                CallThis(Ws_MulAssign, &edge[i], &tmp, (float)(g_ph64c250 / L));
+                Vec3_MulAssign(&edge[i], 0, &tmp, (float)(g_ph64c250 / L));
         }
         else
         {
@@ -1619,10 +1625,10 @@ int __cdecl Patch_SegmentHits(const Vec3* p, const Vec3* a, const Vec3* b)
     double L = Vec3_Length(&d);
     if (L == g_ph64b678)
         return 0;
-    CallThis(Ws_MulAssign, &d, &tmp, (float)(g_ph64b670 / L));
+    Vec3_MulAssign(&d, 0, &tmp, (float)(g_ph64b670 / L));
     memset(hit, 0, sizeof hit);
     for (int i = 0; i < 4; i++)
-        hit[i] = *CallC<const Vec3*>(Ph_PlaneHitT, &tmp, &p[i], &nrm[i], a, &d, &t[i]);
+        hit[i] = *(const Vec3*)Vec3_PlaneHitT((float*)&tmp, (float*)&p[i], (float*)&nrm[i], (float*)a, (float*)&d, &t[i]);
     for (int i = 0; i < 4; i++)
     {
         flag[i] = t[i] >= g_ph64b678 && t[i] <= L;
@@ -1640,7 +1646,6 @@ int __cdecl Patch_SegmentHits(const Vec3* p, const Vec3* a, const Vec3* b)
 
 // === the ground normal under four wheels (FUN_506210)
 
-extern "C" void Gn_AddAssign(); KING_ALIAS("_Gn_AddAssign", "@Vec3_AddAssign@16")
 
 // (v x u) for u = b - a kept unrounded and v = c - a with its x, y rounded, as the code keeps them
 static Vec3 Gn_Normal(const float* a, const float* b, const float* c)
@@ -1713,7 +1718,7 @@ void __fastcall Body_GroundNormal(BYTE* s, void*, int need)
         if (!valid[i])
             continue;
         u[i] = *Vec3_Normalized(&tmp, &n[i]);
-        CallThis(Gn_AddAssign, &sum, &tmp, &u[i]);
+        Vec3_AddAssign(&sum, 0, &tmp, &u[i]);
         count++;
     }
     if (need && !count)
@@ -1726,7 +1731,6 @@ void __fastcall Body_GroundNormal(BYTE* s, void*, int need)
 
 // === sliding a body's move along what it hits (FUN_506ae0)
 
-extern "C" void Sl_SetThis(); KING_ALIAS("_Sl_SetThis", "@Vec3_SetThis@20")
 KING_VAR(float, g_sl64c334, 64c334)
 
 static Vec3 Sl_Set(double x, double y, double z)
@@ -1747,7 +1751,7 @@ extern "C" {
 int __fastcall Body_SlideMove(BYTE* s, void*)
 {
     BYTE nd[256];
-    CallThis(FUN_5ef5c0, nd);
+    Node_Init(nd, 0);
     memcpy(nd + 4, &g_identity, 48);
     Vec3* P = &F(Vec3, s, 52);
     Vec3* Q = &F(Vec3, s, 2292);
@@ -1771,7 +1775,7 @@ int __fastcall Body_SlideMove(BYTE* s, void*)
         {
             *P = Sl_Set((double)p0.x + w.x, (double)w.y + p0.y, (double)w.z + p0.z);
             Vec3 e = Sl_Set((double)w.x - d.x, (double)w.y - d.y, (double)w.z - d.z);
-            CallThis(Gn_AddAssign, Q, &tmp, &e);
+            Vec3_AddAssign(Q, 0, &tmp, &e);
             Matrix inv;
             memcpy(s + 2304, Matrix_Inverse(&inv, (const Matrix*)(s + 16)), 48);
             memcpy(s + 2352, Matrix_Inverse(&inv, (const Matrix*)(s + 2256)), 48);
@@ -1803,8 +1807,7 @@ int __fastcall Body_SlideMove(BYTE* s, void*)
 
 // === placing the wheels on the ground for a new frame (FUN_505530)
 
-extern "C" void Gp_PlaneHit(); KING_ALIAS("_Gp_PlaneHit", "_Vec3_PlaneHit")
-extern "C" void Gp_MulAssign(); KING_ALIAS("_Gp_MulAssign", "@Vec3_MulAssign@16")
+extern "C" float* __cdecl Vec3_PlaneHit(float* out, float* a, float* b, float* c, float* e);
 KING_VAR(float, g_gp64d980, 64d980)
 KING_VAR(double, g_gp64b678, 64b678)
 KING_VAR(double, g_gp64d6b8, 64d6b8)
@@ -1907,7 +1910,7 @@ const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx)
     }
     for (int i = 0; i < F(int, s, 3540); i++)
         if (Fl[i])
-            R[i] = CallThis<int>(Gc_Contact, s, 0, &P[i], 0, i);
+            R[i] = Wheel_FindGround(s, 0, 0, &P[i], 0, i);
     const float* Z = &g_axisZ.x;
     Vec3 up;
     up.x = (float)((double)Z[2] * M[6] + (double)Z[0] * M[0] + (double)Z[1] * M[3]);
@@ -1940,7 +1943,7 @@ const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx)
         memcpy(s + 13584 + 208 * i, s + 13584 + 208 * bi, 208);
         memcpy(s + 248 + 248 * i, s + 248 + 248 * bi, 248);
         Vec3 h;
-        F(Vec3, s, 248 + 248 * i) = *CallC<Vec3*>(Gp_PlaneHit, &h, s + 248 + 248 * bi, s + 260 + 248 * bi, &P[i], &up);
+        F(Vec3, s, 248 + 248 * i) = *(Vec3*)Vec3_PlaneHit((float*)&h, (float*)(s + 248 + 248 * bi), (float*)(s + 260 + 248 * bi), (float*)&P[i], (float*)&up);
         R[i] = R[bi];
     }
     // the springs
@@ -1961,16 +1964,16 @@ const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx)
             fresh = true;
         if (fresh)
         {
-            R[i] = CallThis<int>(Gc_Contact, s, 0, &P[i], 0, i);
+            R[i] = Wheel_FindGround(s, 0, 0, &P[i], 0, i);
             if (R[i])
                 Gp_TakeHub(s, i, I);
         }
         if (R[i])
         {
             Vec3 t;
-            CallThis(Gc_AddAssign, s + 196, &t, rec + 12);
+            Vec3_AddAssign((Vec3*)(s + 196), 0, &t, (const Vec3*)(rec + 12));
             F(float, s, 9904) = (float)((double)F(float, s, 9840 + 4 * i) + F(float, s, 9904));
-            CallThis(Gc_AddAssign, s + 8724, &t, s + 100 + 12 * i);
+            Vec3_AddAssign((Vec3*)(s + 8724), 0, &t, (const Vec3*)(s + 100 + 12 * i));
             cnt++;
             if (!(F(float, s, 3544 + 4 * i) <= F(float, s, 8092 + 4 * i)))
             {
@@ -2014,12 +2017,12 @@ const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx)
     F(float, s, 3640) = *b < *a ? *a : *b;
     if (cnt)
     {
-        CallThis(Gc_NormalizeThis, s + 196);
+        Vec3_NormalizeThis((Vec3*)(s + 196), 0);
         double q = g_gp64b670 / cnt;
         float f = (float)q;
         F(float, s, 9904) = (float)(q * F(float, s, 9904));
         Vec3 t;
-        CallThis(Gp_MulAssign, s + 8724, &t, f);
+        Vec3_MulAssign((Vec3*)(s + 8724), 0, &t, f);
     }
     else
     {
@@ -2053,7 +2056,7 @@ const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx)
         s[6586] = s[6586] || W[k];
     }
     s[6585] = s[6581] || s[6582] || s[6583] || s[6584];
-    CallThis(Gc_State, s, 0);
+    Body_GroundNormal(s, 0, 0);
     return Mx;
 }
 
@@ -2061,15 +2064,14 @@ const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx)
 
 // === a wheel's ground contact (FUN_503e30)
 
-extern "C" void Wg_RayTest(); KING_ALIAS("_Wg_RayTest", "@Vehicle_RayTest@16")
-extern "C" void Wg_WheelContact(); KING_ALIAS("_Wg_WheelContact", "@Car_WheelContact@12")
-extern "C" void Wg_Parts1(); KING_ALIAS("_Wg_Parts1", "_Query_Parts1")
-extern "C" void Wg_Parts2(); KING_ALIAS("_Wg_Parts2", "_Query_Parts2")
-extern "C" void Wg_LineProject(); KING_ALIAS("_Wg_LineProject", "_Line_Project")
-extern "C" void Wg_Surface(); KING_ALIAS("_Wg_Surface", "@Wheel_Surface@16")
-extern "C" void Wg_SubAssign(); KING_ALIAS("_Wg_SubAssign", "@Vec3_SubAssign@16")
+extern "C" int __fastcall Vehicle_RayTest(BYTE* self, void*, DWORD* p, BYTE** hit);
+extern "C" int __fastcall Car_WheelContact(BYTE* c, void*, BYTE* out);
+extern "C" unsigned __cdecl Query_Parts1(int a, int mode, BYTE* q);
+extern "C" unsigned __cdecl Query_Parts2(int a, int mode, BYTE* q);
+extern "C" int __fastcall Wheel_Surface(BYTE* s, void*, BYTE* c, int w);
+extern "C" Vec3* __fastcall Vec3_SubAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
+extern "C" void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind);
 extern "C" void FUN_503500(); KING_ALIAS("_FUN_503500", "@Wheel_RollDrag@20")
-extern "C" void Wg_NodeInit(); KING_ALIAS("_Wg_NodeInit", "@Node_Init@8")
 KING_VAR(int, g_wg697660, 697660)                 // the contact count
 KING_VAR(double, g_wg697658, 697658)              // and its time
 KING_VAR(AsmLabel, g_wg697678, 697678)
@@ -2112,7 +2114,7 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
 {
     Vec3 P = *p;
     BYTE nd[208];
-    CallThis(Wg_NodeInit, nd);
+    Node_Init(nd, 0);
     BYTE* rec = s + 248 * (i + 1);
     double t0 = Timer_Now();
     const float* Z = &g_axisZ.x;
@@ -2124,7 +2126,7 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
     U.x = (float)((double)P.x + Z[0]);
     U.y = (float)((double)P.y + Z[1]);
     U.z = (float)((double)P.z + Z[2]);
-    if (!obj && !CallThis<int>(Wg_RayTest, s, &U, &obj))
+    if (!obj && !Vehicle_RayTest(s, 0, (DWORD*)&U, &obj))
     {
         F(int, rec, 240) = 0;
         F(short, rec, 24) = 0;
@@ -2159,26 +2161,26 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
             if (F(short, s, 9992))
             {
                 char buf[256];
-                r = CallC<int>(Wg_Parts2, obj, 4, nd);
+                r = (int)Query_Parts2((int)obj, 4, nd);
                 int hit = r & 1;
                 if (hit)
                 {
                     if (g_gc696be8 > 1)
                     {
                         sprintf(buf, &g_wg674a14, i);
-                        CallC(Gc_DumpText, buf);
+                        Dump_Text(buf);
                     }
                 }
                 else
                 {
-                    r = CallC<int>(Wg_Parts1, obj, 4, nd);
+                    r = (int)Query_Parts1((int)obj, 4, nd);
                     hit = r & 1;
                     if (hit)
                     {
                         if (g_gc696be8 > 1)
                         {
                             sprintf(buf, &g_wg674a08, i);
-                            CallC(Gc_DumpText, buf);
+                            Dump_Text(buf);
                         }
                         if (!F(void*, nd, 100))
                             F(void*, nd, 100) = &g_wg697678;
@@ -2190,17 +2192,17 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
                     if (m)
                     {
                         sprintf(buf, &g_wg674a00, F(int, m, 0), F(int, m, 4));
-                        CallC(Gc_DumpText, buf);
+                        Dump_Text(buf);
                     }
                     sprintf(buf, &g_wg6749f4, (double)F(float, nd, 52), (double)F(float, nd, 56), (double)F(float, nd, 60));
-                    CallC(Gc_DumpText, buf);
+                    Dump_Text(buf);
                 }
             }
             else
                 r = CallThis<int>((void (*)())F(void**, obj, 0)[13], obj, 4, nd);
         }
         else
-            r = CallThis<int>(Wg_WheelContact, s, nd);
+            r = Car_WheelContact(s, 0, nd);
         if ((r & 1) == 1)
             break;
         if (++it > 3)
@@ -2215,7 +2217,7 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
                 dn.x = (float)((double)P.x - D.x);
                 dn.y = (float)((double)P.y - D.y);
                 dn.z = (float)((double)P.z - D.z);
-                Vec3 Q = *CallC<Vec3*>(Wg_LineProject, &q, rec, rec + 12, &up, &dn);
+                Vec3 Q = *Line_Project(&q, (const Vec3*)rec, (const Vec3*)(rec + 12), &up, &dn);
                 Vec3 e;
                 e.x = (float)((double)P.x - Q.x);
                 e.y = (float)((double)P.y - Q.y);
@@ -2267,25 +2269,25 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
         {
         case 0:
             v = Wg_Side(s, (double)F(float, model, 12) * g_wg64c258);
-            CallThis(Gc_AddAssign, hp, &tmp, &v);
+            Vec3_AddAssign(hp, 0, &tmp, &v);
             break;
         case 1:
             v = Wg_Side(s, (double)F(float, model, 12) * g_wg64c258);
-            CallThis(Wg_SubAssign, hp, &tmp, &v);
+            Vec3_SubAssign(hp, 0, &tmp, &v);
             break;
         case 2:
         case 4:
             v = Wg_Side(s, (double)F(float, model, 16) * g_wg64c258);
-            CallThis(Gc_AddAssign, hp, &tmp, &v);
+            Vec3_AddAssign(hp, 0, &tmp, &v);
             break;
         case 3:
         case 5:
             v = Wg_Side(s, (double)F(float, model, 16) * g_wg64c258);
-            CallThis(Wg_SubAssign, hp, &tmp, &v);
+            Vec3_SubAssign(hp, 0, &tmp, &v);
             break;
         }
-        int surf = CallThis<int>(Wg_Surface, s, nd, i);
-        CallThis(FUN_503500, s, nd, i, surf);
+        int surf = Wheel_Surface(s, 0, nd, i);
+        Wheel_RollDrag(s, 0, nd, i, surf);
     }
     memcpy(s + 13584 + 208 * i, nd, 208);
     return Wg_Done(t0, it, 1);
@@ -2295,7 +2297,7 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
 
 // === a wheel's rolling drag by its ground (FUN_503500)
 
-extern "C" void Wr_Rolling(); KING_ALIAS("_Wr_Rolling", "_Car_RollingFactor")
+extern "C" double __cdecl Car_RollingFactor(float speed, float k);
 KING_VAR(float, g_wr64c450, 64c450)
 KING_VAR(float, g_wr64c32c, 64c32c)
 KING_VAR(float, g_wr64c320, 64c320)
@@ -2350,7 +2352,7 @@ void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
             set = false;
             break;
         }
-        r = CallC<double>(Wr_Rolling, t, load) * grip;
+        r = Car_RollingFactor(t, load) * grip;
         break;
     case 2:
     case 6:
@@ -2433,7 +2435,7 @@ void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
     d.y = (float)(f * dir.y);
     d.z = (float)(f * dir.z);
     tmp = d;
-    CallThis(Gc_AddAssign, &acc, &d, &tmp);
+    Vec3_AddAssign(&acc, 0, &d, &tmp);
     int n = F(int, s, 15580 + 20 * i);
     if (n && F(float, s, 7028 + 4 * i) > g_gc64c264)
     {
@@ -2443,7 +2445,7 @@ void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
         d.y = (float)(g * dir.y);
         d.z = (float)(g * dir.z);
         tmp = d;
-        CallThis(Wg_SubAssign, &acc, &d, &tmp);
+        Vec3_SubAssign(&acc, 0, &d, &tmp);
     }
 }
 
@@ -2453,20 +2455,19 @@ void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
 
 // === a car's clutch, gear choice and drive force for the frame (FUN_4ff800, running on through $L_5006aa)
 
+extern "C" double __fastcall Car_SlipRatio(BYTE* s, void*);
 ASM_FUNC(FUN_4ff660, @Car_SlipRatio@8)
-extern "C" void Gb_Speed(); KING_ALIAS("_Gb_Speed", "@Car_WheelSpeed@12")
-extern "C" void Gb_Tach(); KING_ALIAS("_Gb_Tach", "@Car_UpdateTach@12")
-extern "C" void Gb_TorqueAt(); KING_ALIAS("_Gb_TorqueAt", "@Car_TorqueAt@12")
-extern "C" void Gb_TorqueNow(); KING_ALIAS("_Gb_TorqueNow", "@Car_TorqueNow@8")
-extern "C" void Gb_Throttle(); KING_ALIAS("_Gb_Throttle", "@Car_TorqueThrottle@16")
-extern "C" void Gb_Ratio(); KING_ALIAS("_Gb_Ratio", "@Car_TorqueRatio@12")
-extern "C" void Gb_ForceB(); KING_ALIAS("_Gb_ForceB", "@Car_WheelForceNowB@12")
-extern "C" void Gb_Force(); KING_ALIAS("_Gb_Force", "@Car_WheelForceNow@12")
-extern "C" void Gb_ForceIn(); KING_ALIAS("_Gb_ForceIn", "@Car_WheelForceIn@16")
-extern "C" void Gb_Record(); KING_ALIAS("_Gb_Record", "@History_Record@16")
-extern "C" void Gb_Filter(); KING_ALIAS("_Gb_Filter", "@Filter_Value@4")
-extern "C" void Gb_Ramp(); KING_ALIAS("_Gb_Ramp", "@Ramp_Value@8")
-extern "C" void Gb_RampDown(); KING_ALIAS("_Gb_RampDown", "@Ramp_Down@12")
+extern "C" float __fastcall Car_WheelSpeed(Car* s, void*, int i);
+extern "C" void __fastcall Car_UpdateTach(BYTE* s, void*, const float* rpm);
+extern "C" double __fastcall Car_TorqueAt(BYTE* self, void*, float rpm);
+extern "C" double __fastcall Car_TorqueNow(BYTE* self, void*);
+extern "C" double __fastcall Car_TorqueThrottle(BYTE* self, void*, float rpm, float throttle);
+extern "C" double __fastcall Car_TorqueRatio(BYTE* self, void*, float rpm);
+extern "C" double __fastcall Car_WheelForceNowB(Car* s, void*, float torque);
+extern "C" double __fastcall Car_WheelForceNow(Car* s, void*, float torque);
+extern "C" double __fastcall Car_WheelForceIn(Car* s, void*, float torque, int gear);
+extern "C" void __fastcall History_Record(BYTE* h, void*, DWORD v, const char* name);
+extern "C" void __fastcall Ramp_Down(BYTE* self, void*, float dt);
 KING_VAR(float, g_gb674410, 674410)
 KING_VAR(float, g_gb67440c, 67440c)
 KING_VAR(int, g_gb696c4c, 696c4c)
@@ -2496,15 +2497,15 @@ KING_VAR(char, g_gbForce, 674894)
 
 static void Gb_RecordF(BYTE* h, float v, const char* name)
 {
-    CallThis(Gb_Record, h, *(DWORD*)&v, name);
+    History_Record(h, 0, *(DWORD*)&v, name);
 }
 
 // the drive force through gear g at the wheels' speed in that gear
 static double Gb_GearForce(BYTE* s, int g)
 {
-    float ws = (float)CallThis<double>(Gb_Speed, s, g);
-    float tq = (float)CallThis<double>(Gb_TorqueAt, s, ws);
-    return CallThis<double>(Gb_ForceIn, s, tq, g);
+    float ws = (float)(double)Car_WheelSpeed((Car*)s, 0, g);
+    float tq = (float)Car_TorqueAt(s, 0, ws);
+    return Car_WheelForceIn((Car*)s, 0, tq, g);
 }
 
 // the gear (from first, stepping by d to last inclusive, gear 1 skipped when skip1) whose force is over lim and the
@@ -2583,7 +2584,7 @@ void __fastcall Car_DriveStep(BYTE* s)
     else if (F(float, s, 3528) > g_gb64b6e0 && F(float, s, 10716) > g_gb64b6e0 && !F(short, s, 6564) &&
              !F(short, s, 6566))
     {
-        F(int, s, 15384) = CallThis<double>(Gb_Ramp, s + 16268) > g_gb64c264 ? 1 : 2;
+        F(int, s, 15384) = Ramp_Value(s + 16268, 0) > g_gb64c264 ? 1 : 2;
         Gb_Wheel(s, 0);
         Gb_Wheel(s, 1);
     }
@@ -2597,18 +2598,18 @@ void __fastcall Car_DriveStep(BYTE* s)
     {
         F(int, s, 7316) = 0;
         F(int, s, 7300) = 0;
-        CallThis(Gb_Record, s + 6992, 0, &g_gbIdle);
-        F(float, s, 7300) = (float)CallThis<double>(Gb_Filter, s + 6992);
+        History_Record(s + 6992, 0, 0, &g_gbIdle);
+        F(float, s, 7300) = (float)(double)Filter_Value(s + 6992);
         F(int, s, 13516) = 0;
         F(int, s, 7196) = 1;
         goto shared;
     }
     {
         float run = (float)((double)now - F(float, s, 6104));
-        float ws = (float)CallThis<double>(Gb_Speed, s, F(int, s, 7196));
+        float ws = (float)(double)Car_WheelSpeed((Car*)s, 0, F(int, s, 7196));
         F(int, s, 7208) = 0;
-        CallThis(Gb_Tach, s, &ws);
-        float cap = (float)CallThis<double>(FUN_4ff660, s);
+        Car_UpdateTach(s, 0, &ws);
+        float cap = (float)Car_SlipRatio(s, 0);
         float& thr = F(float, s, 10712);
         if (!manual)
         {
@@ -2661,7 +2662,7 @@ void __fastcall Car_DriveStep(BYTE* s)
         {
             double a = x87_fabs(F(float, s, 3524));
             double d = a < g_gb64da48 ? (g_gb64da48 - a) * g_gb64da40 : 0;
-            double r = CallThis<double>(Gb_Ratio, s, F(float, s, 7300));
+            double r = Car_TorqueRatio(s, 0, F(float, s, 7300));
             double v = r + d * g_gb64b840;
             if (F(int, s, 7196) == 2 && !(v <= thr) && x87_fabs(F(float, s, 3524)) < g_gb64b660)
                 thr = (float)v;
@@ -2708,8 +2709,8 @@ void __fastcall Car_DriveStep(BYTE* s)
         pick:
             if (!req)
             {
-                float tq = (float)CallThis<double>(Gb_TorqueAt, s, ws);
-                float f = (float)CallThis<double>(Gb_Force, s, tq);
+                float tq = (float)Car_TorqueAt(s, 0, ws);
+                float f = (float)Car_WheelForceNow((Car*)s, 0, tq);
                 if (F(float, s, 7304) * g_gb64b840 > x87_fabs(ws) &&
                     (thr < g_gb64b5b8 || F(float, s, 10716) > g_gb64b5b8) && !(manual && F(short, s, 10004)))
                     req = 21;
@@ -2731,8 +2732,8 @@ void __fastcall Car_DriveStep(BYTE* s)
             short q = req;
             if ((q == 1 && F(int, s, 7196) < F(int, s, 7192)) || (q == -1 && F(int, s, 7196) > 0))
             {
-                float tq = (float)CallThis<double>(Gb_TorqueNow, s);
-                float f = (float)CallThis<double>(Gb_Force, s, tq);
+                float tq = (float)Car_TorqueNow(s, 0);
+                float f = (float)Car_WheelForceNow((Car*)s, 0, tq);
                 double lim = f * g_gb64d378;
                 if (req > 0)
                     Gb_Best(s, F(int, s, 7196) + 1, 1, lim, true, false);
@@ -2830,7 +2831,7 @@ void __fastcall Car_DriveStep(BYTE* s)
                 F(float, s, 7228) = now;
                 F(float, s, 7300) = (float)v;
                 Gb_RecordF(s + 6992, (float)v, &g_gbShift);
-                F(float, s, 7300) = (float)CallThis<double>(Gb_Filter, s + 6992);
+                F(float, s, 7300) = (float)(double)Filter_Value(s + 6992);
                 F(int, s, 7200) = -1;
             }
             else
@@ -2841,13 +2842,13 @@ void __fastcall Car_DriveStep(BYTE* s)
                 Gb_RecordF(s + 6992, (float)v, &g_gbShifting);
                 int sh = F(int, s, 7204);
                 F(int, s, 7196) = 1;
-                F(float, s, 7300) = (float)CallThis<double>(Gb_Filter, s + 6992);
+                F(float, s, 7300) = (float)(double)Filter_Value(s + 6992);
                 F(int, s, 15412) = sh;
             }
         }
 
-        float t = (float)CallThis<double>(Gb_Throttle, s, F(float, s, 7300), thr);
-        F(float, s, 7316) = (float)CallThis<double>(Gb_ForceB, s, t);
+        float t = (float)Car_TorqueThrottle(s, 0, F(float, s, 7300), thr);
+        F(float, s, 7316) = (float)Car_WheelForceNowB((Car*)s, 0, t);
         if (!((double)now - F(float, s, 7228) < F(float, s, 7232)))
         {
             if (!F(int, s, 7188) && F(int, s, 7196) != 1 && !(F(float, s, 7304) * g_gb64b5b8 <= F(float, s, 7300)))
@@ -2860,11 +2861,10 @@ void __fastcall Car_DriveStep(BYTE* s)
         float ft = (float)Game_FrameTime();
         if (F(int, s, 10080))
         {
-            double rv = CallThis<double>(Gb_Ramp, s + 16320);
-            CallThis(Gb_RampDown, s + 16112,
-                     (float)(rv * (x87_fabs(F(float, s, 7300)) * thr / F(float, s, 7304)) * ft));
+            double rv = Ramp_Value(s + 16320, 0);
+            Ramp_Down(s + 16112, 0, (float)(rv * (x87_fabs(F(float, s, 7300)) * thr / F(float, s, 7304)) * ft));
         }
-        if (CallThis<double>(Gb_Ramp, s + 16112) > g_gb64c264)
+        if (Ramp_Value(s + 16112, 0) > g_gb64c264)
         {
             F(int, s, 15484) = 0;
             F(int, s, 6948) = 2;
@@ -2876,15 +2876,15 @@ void __fastcall Car_DriveStep(BYTE* s)
             F(int, s, 15484) = 1;
             F(int, s, 6948) = 3;
         }
-        F(float, s, 15476) = (float)CallThis<double>(Gb_Ramp, s + 16112);
+        F(float, s, 15476) = (float)Ramp_Value(s + 16112, 0);
     }
 
 shared:
     F(int, s, 15332) = F(int, s, 7200);
     F(int, s, 15376) = F(int, s, 7212);
     F(int, s, 15380) = F(int, s, 7228);
-    CallThis(Gb_Record, s + 6960, F(DWORD, s, 7316), &g_gbForce);
-    F(float, s, 7316) = (float)CallThis<double>(Gb_Filter, s + 6960);
+    History_Record(s + 6960, 0, F(DWORD, s, 7316), &g_gbForce);
+    F(float, s, 7316) = (float)(double)Filter_Value(s + 6960);
     if (F(int, s, 6948) == 2 && F(int, s, 10108) == -1 &&
         (double)g_gb674410 * g_gb64c408 < (double)now - F(float, s, 6952))
         F(int, s, 6948) = 3;
@@ -2911,7 +2911,7 @@ shared:
             F(int, s, 10108) = 0;
             return;
         }
-        if (!(CallThis<double>(Gb_Ramp, s + 16112) > g_gb64c264))
+        if (!(Ramp_Value(s + 16112, 0) > g_gb64c264))
             F(int, s, 6948) = 0;
         else
             F(int, s, 6948) = 2;

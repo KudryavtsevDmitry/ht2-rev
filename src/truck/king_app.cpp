@@ -2,6 +2,9 @@
 // king.masm. CKingApp::Frame is in mainloop.cpp.
 
 #include "king.h"
+extern "C" void __cdecl Hud_Frame();
+extern "C" void __fastcall Med5c3990_Destroy(BYTE* s);
+extern "C" void __fastcall Player_Controls(BYTE* s, void*);
 
 void CKingApp::Destruct()
 {
@@ -9,7 +12,7 @@ void CKingApp::Destruct()
     Joy_Shutdown();
     for (int i = 0; i < 6; i++)
         g_696cf0[i] = 0;
-    CallThis(FUN_5c3990, this);         // the base class's destructor
+    Med5c3990_Destroy((BYTE*)this);         // the base class's destructor
 }
 
 // Before the windows execute.
@@ -25,7 +28,7 @@ void CKingApp::PreExecute()
     if (g_p6d2078 && g_p6d2078->m_616 && Car_InList(g_p6d2078->m_616)
         && g_p6d2078->m_616->m_21600 && g_p6d2078->m_616->m_21600->m_10048 == 1
         && (g_pMainView->m_flags & WND_VISIBLE))
-        CallThis(FUN_53b4c0, g_p6d2078);
+        Player_Controls((BYTE*)g_p6d2078, 0);
 }
 
 // After the windows have executed: the engine's overlays, then the joystick
@@ -87,7 +90,7 @@ void CKingApp::PostExecute()
             g_joyAxes[i].value = (float)v;
         }
     }
-    CallC(FUN_56ce40);
+    Hud_Frame();
 }
 
 // A key pressed while the game is paused: typing a cheat code.

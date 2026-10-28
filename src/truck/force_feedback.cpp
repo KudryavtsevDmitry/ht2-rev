@@ -12,16 +12,18 @@ extern "C" void __fastcall Chain_DeleteAll(BYTE* self, void*);    // movingb.cpp
 extern "C" void __cdecl Carat_Message(const char* text, int);
 KING_ALIAS("_Carat_Message", "_Sys_Log")
 
+extern "C" int __cdecl Joy_SetAutoCenter(int on);
 extern "C" void FUN_578100(); KING_ALIAS("_FUN_578100", "_Joy_SetAutoCenter")
-extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
-extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
-extern "C" void FUN_579420(); KING_ALIAS("_FUN_579420", "@Pool_Destruct@8")
-extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
-extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
+extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const char* name);
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
+extern "C" void __fastcall Pool_Destruct(BYTE* self, void*);
+extern "C" void __fastcall Object_Destroy(BYTE* s);
+extern "C" BYTE* __fastcall Fx_Self(BYTE* s, void*);
 extern "C" void FUN_5799c0(); KING_ALIAS("_FUN_5799c0", "@Triangles_Init@8")
-extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
+extern "C" int __fastcall Node_Remove(BYTE* self, void*);
+extern "C" void __fastcall Pool6928_Free(BYTE** self, void*);
 extern "C" void FUN_579850(); KING_ALIAS("_FUN_579850", "@Pool6928_Free@8")
-extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
+extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s);
 KING_VAR(AsmLabel, s_67cfc0, 67cfc0)
 KING_VAR(AsmLabel, s_67d04c, 67d04c)
 KING_VAR(AsmLabel, g_vtbl650340, 650340)
@@ -29,7 +31,8 @@ KING_VAR(AsmLabel, g_vtbl650430, 650430)
 KING_VAR(AsmLabel, g_vtbl6503e4, 6503e4)
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")    // assertion failed (level, format, expression, file, line, date)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
-extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
+extern "C" int __cdecl Point_InTriangleXY(float x, float y, const float* xs, const float* ys);
 extern "C" void FUN_57c5f0(); KING_ALIAS("_FUN_57c5f0", "_Point_InTriangleXY")
 
 typedef void (__cdecl* LogFn)(const char* text);
@@ -204,7 +207,7 @@ extern "C" int __cdecl Joy_Shutdown()
     if (g_joyDevice) {
         CallStd(Method(g_joyDevice, 32), g_joyDevice);     // Unacquire
         if (g_joyForceFeedback == 1)
-            CallC(FUN_578100, (int)(g_67c4bc == 1));
+            Joy_SetAutoCenter((int)(g_67c4bc == 1));
         CallStd(Method(g_joyDevice, 8), g_joyDevice);      // Release
         g_joyDevice = 0;
     }
@@ -404,7 +407,7 @@ extern "C" void __fastcall Triangles_Draw(BYTE* self, void*, void* texture, void
 {
     if (!F(int, self, 6916) || !F(int, self, 6912) || !F(int, self, 6920))
         return;
-    CallThis(FUN_5b1020, texture, F(int, self, 6920), 1, 0, 0);
+    Material_Select((BYTE*)texture, 0, (BYTE*)(F(int, self, 6920)), 1, 0, 0);
     CallStd(Method(device, 80), device, 136, 1);
     CallStd(Method(device, 104), device, 4, 274, self, F(int, self, 6916), (short*)g_triangles,
             F(int, self, 6912), 0);
@@ -453,7 +456,7 @@ extern "C" int __cdecl Tris_Height(float* out, float x, float y, BYTE* tris, BYT
                                    const Matrix** matrices, unsigned n)
 {
     for (unsigned i = 0; i < n; i++, tris += 12, tris2 += 12) {
-        if (CallC<int>(FUN_57c5f0, x, y, tris, tris2)) {
+        if (Point_InTriangleXY(x, y, (const float*)tris, (const float*)tris2)) {
             *out = (float)Plane_HeightAfter(x, y, planes[i], matrices[i]);
             return 1;
         }
@@ -523,9 +526,9 @@ extern "C" {
 // [FUN_579570] the frame-stack task on the vehicle v
 BYTE* __fastcall FrameTask_Construct(BYTE* self, void*, BYTE* v, int kind)
 {
-    CallThis(FUN_5d31e0, self, kind, (const char*)s_67cfc0);
+    Object_ConstructKind(self, 0, kind, (const char*)s_67cfc0);
     F(void*, self, 0) = g_vtbl650340;
-    CallThis(FUN_5d3570, v + 2992, self);
+    Owner_Attach(v + 2992, 0, self);
     F(int, self, 432) = 0;
     return self;
 }
@@ -537,12 +540,12 @@ void __fastcall FrameTask_Destroy(BYTE* self, void*)
     for (unsigned i = 0; i < F(unsigned, self, 432); i++) {
         BYTE* p = F(BYTE*, self, 32 + i * 4);
         if (p) {
-            CallThis(FUN_579420, p);
+            Pool_Destruct(p, 0);
             operator delete(p);
         }
     }
     F(int, self, 432) = 0;
-    CallThis(FUN_5d3290, self);
+    Object_Destroy(self);
 }
 
 // [FUN_5797d0] a pool of 50 6928-byte objects (count before the array)
@@ -554,7 +557,7 @@ DWORD* __fastcall Pool50_Construct(DWORD* self, void*)
         F(int, a, 0) = 50;
         p = a + 4;
         for (int i = 0; i < 50; i++)
-            CallThis(FUN_4bd510, p + i * 6928);
+            Fx_Self(p + i * 6928, 0);
     }
     self[0] = (DWORD)p;
     self[1] = 0;
@@ -584,11 +587,11 @@ BYTE* __fastcall PoolNode_Construct(BYTE* self, void*, BYTE* v, int b)
 void __fastcall PoolNode_Destroy(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl6503e4;
-    CallThis(FUN_5ef780, self);
-    CallThis(FUN_579850, self + 76);
+    Node_Remove(self, 0);
+    Pool6928_Free((BYTE**)(self + 76), 0);
     if (F(void*, self, 72))
         operator delete(F(void*, self, 72));
-    CallThis(FUN_5ef660, self);
+    Sce5ef660_Destroy(self);
 }
 
 }
@@ -700,7 +703,9 @@ extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b)
 }
 
 extern "C" char* __cdecl strerror(int e);
+extern "C" void __cdecl Joy_DateText(char* out);
 ASM_FUNC(FUN_576d70, _Joy_DateText)    // the DirectInput version text
+extern "C" int __cdecl Joy_Open(int n, int wnd, float range, FILE* log);
 extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")    // opens joystick n
 extern "C" void FUN_6303a0(); KING_ALIAS("_FUN_6303a0", "_DirectInputCreateA@16")    // DirectInputCreateA
 // [$L_6300e0] the joystick's DirectInput object formats (c_dfDIJoystick) (DIOBJECTDATAFORMAT: guid, offset, type, flags;
@@ -788,7 +793,7 @@ extern "C" int __cdecl Joy_Init(HWND wnd, int range)
     g_joy6f4b8c = 0;
     g_joyDevice = 0;
     char ver[100], text[300];
-    CallC(FUN_576d70, ver);
+    Joy_DateText(ver);
     sprintf(text, &g_fmtJoyVersion, ver);
     Joy_Log(text);
     sprintf(text, &g_strJoy67cf0c);
@@ -828,7 +833,7 @@ extern "C" int __cdecl Joy_Init(HWND wnd, int range)
             if (pick < 0)
                 pick = 0;
         }
-        CallC(FUN_5787a0, pick, wnd, (float)range, 0);
+        Joy_Open(pick, (int)wnd, (float)range, 0);
     }
     return g_joyDevice ? 0 : 0x80004005;
 }
@@ -868,8 +873,9 @@ extern "C" void __fastcall Shadow_Add(BYTE* s, void*, int a0, int a1, const floa
 }
 
 extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")
-extern "C" void FUN_579890(); KING_ALIAS("_FUN_579890", "@ShadowStack_Push@8")
+extern "C" BYTE* __fastcall ShadowStack_Push(BYTE* self, void*);
 extern "C" void FUN_57b2d0(); KING_ALIAS("_FUN_57b2d0", "@Decal_Build@32")
+extern "C" BYTE* __fastcall ShadowStack_Pop(BYTE* self, void*);
 extern "C" void FUN_5798d0(); KING_ALIAS("_FUN_5798d0", "@ShadowStack_Pop@8")
 KING_VAR(int, g_6f4bb4, 6f4bb4)
 KING_VAR(int, g_6f4bb8, 6f4bb8)
@@ -885,12 +891,12 @@ extern "C" int __cdecl FF_578d50(int a)
 extern "C" int __fastcall FF_PoolStart(BYTE* self, int, int a, int b, int c, int d, int e)
 {
     BYTE* pool = self + 76;
-    void* obj = CallThis<void*>(FUN_579890, pool);
+    void* obj = (void*)ShadowStack_Push(pool, 0);
     if (!obj)
         return 0;
     int r = CallThis<int>(FUN_57b2d0, obj, a, b, c, 16, d, e);
     if (!r)
-        r = CallThis<int>(FUN_5798d0, pool);
+        r = (int)ShadowStack_Pop(pool, 0);
     return r;
 }
 
@@ -935,6 +941,7 @@ extern "C" void __cdecl ForfeeInit_57c970() { g_forfee6f63d8 = 0x0; g_forfee6f63
 // [$L_579900]
 extern "C" void __cdecl ForfeeInit_579900() { g_forfee6f63b8 = 0x0; g_forfee6f63bc = 0x0; g_forfee6f63c0 = 0x0; g_forfee6f63c4 = 0x0; }
 
+extern "C" void __cdecl Pooled_Release(BYTE* e);
 extern "C" void FUN_5793f0(); KING_ALIAS("_FUN_5793f0", "_Pooled_Release")
 KING_VAR(AsmLabel, g_forfee650334, 650334)
 KING_VAR(AsmLabel, g_forfee6f6140, 6f6140)
@@ -945,7 +952,7 @@ extern "C" BYTE* __fastcall Forfee579340_DeletingDestructor(BYTE* s, void*, int 
     F(void*, s, 0) = g_forfee650334;
     F(int, s, 4) = 0;
     if (flags & 1)
-        CallC(FUN_5793f0, s);
+        Pooled_Release(s);
     return s;
 }
 
@@ -960,9 +967,9 @@ extern "C" void __cdecl ForfeeInit_579940()
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
-extern "C" void FUN_579880(); KING_ALIAS("_FUN_579880", "@Pool_HasNoFree@8")
+extern "C" int __fastcall Pool_HasNoFree(BYTE* self, void*);
 extern "C" void FUN_5798d0(); KING_ALIAS("_FUN_5798d0", "@ShadowStack_Pop@8")
-extern "C" void FUN_579a30(); KING_ALIAS("_FUN_579a30", "@Triangles_Draw@16")
+extern "C" void __fastcall Triangles_Draw(BYTE* self, void*, void* texture, void* device);
 
 // a COM method of the device d (vtable slot at byte offset off)
 template <class... A>
@@ -980,9 +987,9 @@ extern "C" int __fastcall Ff_DrawList(BYTE* s, void*, int, int b)
     Ff_Com(F(void*, s, 84), 84, 22, &old);
     Ff_Com(F(void*, s, 84), 80, 22, 1);
     BYTE* l = s + 76;
-    while (!CallThis<int>(FUN_579880, l)) {
-        BYTE* o = CallThis<BYTE*>(FUN_5798d0, l);
-        CallThis(FUN_579a30, o, b, F(int, s, 84));
+    while (!Pool_HasNoFree(l, 0)) {
+        BYTE* o = ShadowStack_Pop(l, 0);
+        Triangles_Draw(o, 0, (void*)b, (void*)(F(int, s, 84)));
     }
     Ff_Com(F(void*, s, 84), 80, 22, old);
     return 1;
@@ -991,9 +998,9 @@ extern "C" int __fastcall Ff_DrawList(BYTE* s, void*, int, int b)
 // ---------------------------------------------------------------------------
 // More virtual methods.
 
-extern "C" void FUN_579460(); KING_ALIAS("_FUN_579460", "@Pool_NextUsed@12")
+extern "C" BYTE* __fastcall Pool_NextUsed(BYTE* self, void*, BYTE* e);
 
-extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg);
 
 // [$L_5796e0] the pools (+32, count +432): each used item gets vtbl+4 until no new first item appears, then the
 // items marked +4 are deleted; then released
@@ -1004,29 +1011,29 @@ extern "C" int __fastcall Ff_ClearPools(BYTE* s)
         BYTE* prev = 0;
         BYTE* first;
         do {
-            first = CallThis<BYTE*>(FUN_579460, pool, 0);
+            first = Pool_NextUsed(pool, 0, 0);
             if (first != prev) {
                 BYTE* p = first;
                 BYTE* n;
                 do {
-                    n = CallThis<BYTE*>(FUN_579460, pool, p);
+                    n = Pool_NextUsed(pool, 0, p);
                     CallVirt(p, 4);
                     p = n;
                 } while (n != prev);
             }
             prev = first;
-        } while (CallThis<BYTE*>(FUN_579460, pool, 0) != first);
+        } while (Pool_NextUsed(pool, 0, 0) != first);
     }
     for (unsigned i = 0; i < F(unsigned, s, 432); i++) {
         BYTE* pool = F(BYTE*, s, 32 + i * 4);
-        for (BYTE* p = CallThis<BYTE*>(FUN_579460, pool, 0); p;) {
-            BYTE* n = CallThis<BYTE*>(FUN_579460, pool, p);
+        for (BYTE* p = Pool_NextUsed(pool, 0, 0); p;) {
+            BYTE* n = Pool_NextUsed(pool, 0, p);
             if (F(int, p, 4) && p)
                 CallVirt(p, 0, 1);
             p = n;
         }
     }
-    return CallThis<int>(FUN_5d32f0, s, 1);
+    return Queue_PostEvent(s, 0, 1);
 }
 
 // ---------------------------------------------------------------------------
@@ -1091,7 +1098,7 @@ extern "C" void __cdecl Ff_InitRecords(void)
 // ---------------------------------------------------------------------------
 // Force feedback effects: a DIEFFECT (56 bytes) for one axis, created on the joystick device.
 
-extern "C" void FUN_592f90(); KING_ALIAS("_FUN_592f90", "@PtrList_Append@12")
+extern "C" void __fastcall PtrList_Append(BYTE* s, void*, void* p);
 extern "C" void $L_578fb0(); KING_ALIAS("_$L_578fb0", "_Ff_GetRect@8")
 KING_VAR(AsmLabel, s_q210_67c6f8, 67c6f8)
 KING_VAR(AsmLabel, s_q210_67c60c, 67c60c)
@@ -1152,7 +1159,7 @@ extern "C" DWORD* __fastcall FfPeriodic_Construct(DWORD* s)
     d[12] = (DWORD)periodic;
     if (!Ff210_Create(s, g_q210_655390, d, (const char*)s_q210_67c6d0))
         return s;
-    CallThis(FUN_592f90, g_joyEffects, s);
+    PtrList_Append((BYTE*)g_joyEffects, 0, s);
     s[2] = d[2];
     s[3] = periodic[3];
     return s;
@@ -1190,7 +1197,7 @@ extern "C" DWORD* __fastcall FfForce_Construct(DWORD* s, void*, int a)
     d[12] = (DWORD)&mag;
     if (!Ff210_Create(s, g_ff6553b0, d, (const char*)s_ff67c880))
         return s;
-    CallThis(FUN_592f90, g_joyEffects, s);
+    PtrList_Append((BYTE*)g_joyEffects, 0, s);
     return s;
 }
 // [FUN_577630] a condition effect of coefficient c (+4..+36 the DICONDITION, +8 the gain)
@@ -1227,7 +1234,7 @@ extern "C" DWORD* __fastcall FfCondition_Construct(DWORD* s, void*, int c)
     d[10] = 0;
     d[11] = 24;
     if (Ff210_Create(s, g_q210_655380, d, (const char*)s_q210_67c730))
-        CallThis(FUN_592f90, g_joyEffects, s);
+        PtrList_Append((BYTE*)g_joyEffects, 0, s);
     return s;
 }
 
@@ -1267,7 +1274,7 @@ extern "C" DWORD* __fastcall FfDamper_Construct(DWORD* s)
     d[10] = 0;
     d[11] = 24;
     if (Ff210_Create(s, g_q211_655370, d, (const char*)s_q211_67c7d0))
-        CallThis(FUN_592f90, g_joyEffects, s);
+        PtrList_Append((BYTE*)g_joyEffects, 0, s);
     return s;
 }
 // [FUN_577ce0] a constant force of magnitude and gain m for 100000 (+8 the gain)
@@ -1297,7 +1304,7 @@ extern "C" DWORD* __fastcall FfConstant_Construct(DWORD* s, void*, int m)
     d[2] = 100000;
     d[11] = 16;
     if (Ff210_Create(s, g_q211_6553a0, d, (const char*)s_q211_67c880))
-        CallThis(FUN_592f90, g_joyEffects, s);
+        PtrList_Append((BYTE*)g_joyEffects, 0, s);
     return s;
 }
 
@@ -1366,7 +1373,7 @@ extern "C" {
 int __cdecl Joy_Open(int n, int wnd, float range, FILE* log)
 {
     char ver[340], text[300], err[256];
-    CallC(FUN_576d70, ver);
+    Joy_DateText(ver);
     sprintf(text, &g_fmtJoyVersion, ver);
     sprintf(text, &g_jo67ce9c, n, ver);
     Joy_Log(text);
@@ -1719,14 +1726,16 @@ int __cdecl Point_InTriangleXY(float x, float y, const float* xs, const float* y
 
 struct Dg_V { float x, y, z; };
 extern "C" void Dg_SetThis(); KING_ALIAS("_Dg_SetThis", "@Vec3_SetThis@20")
-extern "C" void Dg_LengthSq(); KING_ALIAS("_Dg_LengthSq", "_Vec3_LengthSq")
+extern "C" double __cdecl Vec3_LengthSq(const Vec3* v);
 extern "C" void Dg_DivBy(); KING_ALIAS("_Dg_DivBy", "_Vec3_DivBy")
 extern "C" void Dg_ScaleBy(); KING_ALIAS("_Dg_ScaleBy", "_Vec3_ScaleBy")
 extern "C" void Dg_Diff(); KING_ALIAS("_Dg_Diff", "_Vec3_Diff")
+extern "C" Vec3* __cdecl Vec3_Sum(Vec3* out, const Vec3* a, const Vec3* b);
 extern "C" void Dg_Sum(); KING_ALIAS("_Dg_Sum", "_Vec3_Sum")
 extern "C" void Dg_Times(); KING_ALIAS("_Dg_Times", "_Vec3_Times")
 extern "C" void Dg_DivideBy(); KING_ALIAS("_Dg_DivideBy", "@Vec3_DivideBy@12")
 extern "C" void Dg_Set2Vec(); KING_ALIAS("_Dg_Set2Vec", "@Fx_Set2Vec@24")
+extern "C" double __cdecl Records_Height(float x, float y, BYTE* recs, unsigned n);
 extern "C" void Dg_RecordsHeight(); KING_ALIAS("_Dg_RecordsHeight", "_Records_Height")
 extern "C" void Dg_TerrainHeight(); KING_ALIAS("_Dg_TerrainHeight", "@Terrain_HeightAt@16")
 KING_VAR(BYTE*, g_dg6cec98, 6cec98)
@@ -1745,7 +1754,7 @@ static void Dg_Set(Dg_V* v, float x, float y, float z)
 
 static float Dg_Len(const Dg_V* v)
 {
-    return (float)x87_sqrt(CallC<double>(Dg_LengthSq, v));
+    return (float)x87_sqrt(Vec3_LengthSq((const Vec3*)v));
 }
 
 static Dg_V* Dg_Scale(Dg_V* out, float k, const Dg_V* v)
@@ -1759,7 +1768,7 @@ static float Dg_Lean(const float* a, const float* b)
     float dz = a[2] - b[2];
     Dg_V d;
     Dg_Set(&d, a[0] - b[0], a[1] - b[1], dz);
-    return (float)(x87_fabs(dz) / x87_sqrt(CallC<double>(Dg_LengthSq, &d)));
+    return (float)(x87_fabs(dz) / x87_sqrt(Vec3_LengthSq((const Vec3*)&d)));
 }
 
 // e made a unit vector, or (when shorter than 1) the unit vector across o, turned by flip
@@ -1854,18 +1863,18 @@ int __fastcall Decal_Build(BYTE* s, void*, BYTE* arr, unsigned n, const float* c
         const float s6 = 0.06f, s12 = 0.12f;
         Dg_Scale(&t1, s6, &E2);
         Dg_Scale(&t2, s12, &E1);
-        P0 = *CallC<Dg_V*>(Dg_Diff, &q, CallC<Dg_V*>(Dg_Diff, &r, &P0, &t2), &t1);
+        P0 = *CallC<Dg_V*>(Dg_Diff, &q, (Dg_V*)Vec3_Diff((Vec3*)&r, (const Vec3*)&P0, (const Vec3*)&t2), &t1);
         Dg_Scale(&t1, s6, &E2);
         Dg_Scale(&t2, s12, &E1);
-        P1 = *CallC<Dg_V*>(Dg_Diff, &q, CallC<Dg_V*>(Dg_Sum, &r, &P1, &t2), &t1);
+        P1 = *CallC<Dg_V*>(Dg_Diff, &q, (Dg_V*)Vec3_Sum((Vec3*)&r, (const Vec3*)&P1, (const Vec3*)&t2), &t1);
         Dg_Scale(&t1, s6, &E2);
         Dg_Scale(&t2, s12, &E1);
-        P2 = *CallC<Dg_V*>(Dg_Sum, &q, CallC<Dg_V*>(Dg_Diff, &r, &P2, &t2), &t1);
+        P2 = *CallC<Dg_V*>(Dg_Sum, &q, (Dg_V*)Vec3_Diff((Vec3*)&r, (const Vec3*)&P2, (const Vec3*)&t2), &t1);
         Dg_Scale(&t1, s6, &E2);
         Dg_Scale(&t2, s12, &E1);
-        P3 = *CallC<Dg_V*>(Dg_Sum, &q, CallC<Dg_V*>(Dg_Sum, &r, &P3, &t2), &t1);
-        E1 = *CallC<Dg_V*>(Dg_Diff, &t1, &P1, &P0);
-        E2 = *CallC<Dg_V*>(Dg_Diff, &t1, &P2, &P0);
+        P3 = *CallC<Dg_V*>(Dg_Sum, &q, (Dg_V*)Vec3_Sum((Vec3*)&r, (const Vec3*)&P3, (const Vec3*)&t2), &t1);
+        E1 = *(Dg_V*)Vec3_Diff((Vec3*)&t1, (const Vec3*)&P1, (const Vec3*)&P0);
+        E2 = *(Dg_V*)Vec3_Diff((Vec3*)&t1, (const Vec3*)&P2, (const Vec3*)&P0);
     }
     l1 = Dg_Len(&E1);
     l2 = Dg_Len(&E2);
@@ -1891,8 +1900,8 @@ int __fastcall Decal_Build(BYTE* s, void*, BYTE* arr, unsigned n, const float* c
             CallC<Dg_V*>(Dg_Times, &m2, &m1, *(DWORD*)&fi);
             CallC<Dg_V*>(Dg_Times, &m3, &E1, *(DWORD*)&across);
             CallC<Dg_V*>(Dg_Times, &m4, &m3, *(DWORD*)&fj);
-            CallC(Dg_Sum, &s1, &P0, &m4);
-            CallC(Dg_Sum, &pos, &s1, &m2);
+            Vec3_Sum((Vec3*)&s1, (const Vec3*)&P0, (const Vec3*)&m4);
+            Vec3_Sum((Vec3*)&pos, (const Vec3*)&s1, (const Vec3*)&m2);
             BYTE tmp[32];
             memcpy(rec, CallThis<BYTE*>(Dg_Set2Vec, tmp, &pos, &up, *(DWORD*)&vv, *(DWORD*)&u), 32);
             double z;
@@ -1911,9 +1920,9 @@ int __fastcall Decal_Build(BYTE* s, void*, BYTE* arr, unsigned n, const float* c
 // === a ground decal over objects and meshes (FUN_579aa0)
 
 extern "C" double __fastcall Terrain_HeightAt(BYTE** s, void*, float x, float y);
-extern "C" void Dm_TrisHeight(); KING_ALIAS("_Dm_TrisHeight", "_Tris_Height")
+extern "C" int __cdecl Tris_Height(float* out, float x, float y, BYTE* tris, BYTE* tris2, const PlaneBits** planes, const Matrix** matrices, unsigned n);
 extern "C" void Dm_PlaneHeightX(); KING_ALIAS("_Dm_PlaneHeightX", "_Plane_HeightX")
-extern "C" void Dm_MulMatrix(); KING_ALIAS("_Dm_MulMatrix", "_Vec3_MulMatrix")
+extern "C" Vec3* __cdecl Vec3_MulMatrix(Vec3* out, const Vec3* p, const Matrix* m);
 extern "C" void Dm_Inverse(); KING_ALIAS("_Dm_Inverse", "_Matrix_Inverse")
 KING_VAR(double, g_dm64b788, 64b788)
 KING_VAR(float, g_dm64c334, 64c334)
@@ -1940,7 +1949,7 @@ static double Dm_Lean(const float* a, const float* b)
 static void Dm_Unit(float* out, double x, double y)
 {
     float v[3] = {(float)x, (float)y, 0};
-    double l = x87_sqrt(CallC<double>(Dg_LengthSq, v));
+    double l = x87_sqrt(Vec3_LengthSq((const Vec3*)v));
     out[0] = (float)(v[0] / l);
     out[1] = (float)(v[1] / l);
     out[2] = (float)(v[2] / l);
@@ -1949,7 +1958,7 @@ static void Dm_Unit(float* out, double x, double y)
 // the height of a vertex from the objects, plus 64c304
 static float Dm_ObjHeight(float x, float y, BYTE* arr, unsigned n)
 {
-    return (float)(CallC<double>(Dg_RecordsHeight, x, y, arr, n) + g_dg64c304);
+    return (float)(Records_Height(x, y, arr, n) + g_dg64c304);
 }
 
 extern "C" {
@@ -2107,8 +2116,8 @@ int __fastcall Decal_BuildOnObjects(BYTE* s, void*, BYTE* arr, unsigned n, const
         E2[1] = (float)((double)Q2[1] - Q0[1]);
         E2[2] = (float)((double)Q2[2] - Q0[2]);
     }
-    float L1 = (float)x87_sqrt(CallC<double>(Dg_LengthSq, E1));
-    double L2 = x87_sqrt(CallC<double>(Dg_LengthSq, E2));
+    float L1 = (float)x87_sqrt(Vec3_LengthSq((const Vec3*)E1));
+    double L2 = x87_sqrt(Vec3_LengthSq((const Vec3*)E2));
     F(int, s, 6916) = rows * 6;
     F(int, s, 6912) = rows * 30 - 30;
     for (int t = 0; t < 3; t++)
@@ -2159,9 +2168,9 @@ int __fastcall Decal_BuildOnObjects(BYTE* s, void*, BYTE* arr, unsigned n, const
         for (unsigned q = 1; q < cnt - 1 && tris * 12 < 480; q++)
         {
             Vec3 v0, v1, v2;
-            CallC(Dm_MulMatrix, &v0, verts, inv);
-            CallC(Dm_MulMatrix, &v1, verts + q * 12, inv);
-            CallC(Dm_MulMatrix, &v2, verts + q * 12 + 12, inv);
+            Vec3_MulMatrix(&v0, (const Vec3*)verts, (const Matrix*)inv);
+            Vec3_MulMatrix(&v1, (const Vec3*)(verts + q * 12), (const Matrix*)inv);
+            Vec3_MulMatrix(&v2, (const Vec3*)(verts + q * 12 + 12), (const Matrix*)inv);
             float* X = (float*)&g_dmTris + tris * 3;
             float* Y = (float*)&g_dmTris2 + tris * 3;
             X[0] = v0.x;
@@ -2184,7 +2193,7 @@ int __fastcall Decal_BuildOnObjects(BYTE* s, void*, BYTE* arr, unsigned n, const
     {
         float* V = (float*)(s + v * 32);
         float h;
-        if (CallC<int>(Dm_TrisHeight, &h, V[0], V[1], &g_dmTris, &g_dmTris2, &g_dmPlanes, &g_dmMats, tris))
+        if (Tris_Height(&h, V[0], V[1], (BYTE*)&g_dmTris, (BYTE*)&g_dmTris2, (const PlaneBits**)&g_dmPlanes, (const Matrix**)&g_dmMats, tris))
             V[2] = (float)((double)h + g_dg64c304);
         else if (terrain)
             V[2] = (float)(Terrain_HeightAt((BYTE**)terrain, 0, V[0], V[1]) + g_dg64c304);
@@ -2235,7 +2244,7 @@ int __fastcall Decal_BuildOnObjects(BYTE* s, void*, BYTE* arr, unsigned n, const
                 {
                     double zc = colz[(i - 3) * 48];
                     if (colz[(i - 3) * 48] == g_dm6503d0)
-                        zc = CallC<double>(Dg_RecordsHeight, colz[(i - 3) * 48 - 2], colz[(i - 3) * 48 - 1], arr, n) + g_dg64c304;
+                        zc = Records_Height(colz[(i - 3) * 48 - 2], colz[(i - 3) * 48 - 1], arr, n) + g_dg64c304;
                     if (x87_fabs((double)za - zb) > x87_fabs(zc - zb))
                     {
                         za = zb;
@@ -2258,7 +2267,7 @@ int __fastcall Decal_BuildOnObjects(BYTE* s, void*, BYTE* arr, unsigned n, const
                 {
                     double zc = colz[(e + 2) * 48];
                     if (colz[(e + 2) * 48] == g_dm6503d0)
-                        zc = CallC<double>(Dg_RecordsHeight, colz[(e + 2) * 48 - 2], colz[(e + 2) * 48 - 1], arr, n) + g_dg64c304;
+                        zc = Records_Height(colz[(e + 2) * 48 - 2], colz[(e + 2) * 48 - 1], arr, n) + g_dg64c304;
                     if (x87_fabs((double)za - zb) > x87_fabs(zc - zb))
                     {
                         za = zb;

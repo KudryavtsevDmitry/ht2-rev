@@ -17,24 +17,10 @@ extern "C" void __fastcall Engine_4eec20(BYTE* self, void*);            // carph
 extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, float* c, float* d, float* e,
                                            float* f);                    // world.cpp
 
-extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<12 bytes>::insert_aux
-extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
-extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
-extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
-extern "C" void FUN_5dbbb0(); KING_ALIAS("_FUN_5dbbb0", "@Fw_ResetRenderer@24")
-extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
-extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
-extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
-extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
-extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
-extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
-ASM_FUNC(FUN_4e4d82, _Sound_PlayPannedCos)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
-extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
-extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
-extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);
+extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, int mode);
 
 KING_VAR(int, g_6cec68, 6cec68)
 KING_VAR(int, g_6968ac, 6968ac)
@@ -86,7 +72,7 @@ static float VolumeMul(int off, float v)
 extern "C" void __fastcall Node_Matrix(BYTE* self, void*, Matrix* out)
 {
     if (F(void*, self, 48)) {
-        CallThis(FUN_5f25c0, F(void*, self, 48), out);
+        Node_GetWorld((BYTE*)(F(void*, self, 48)), 0, out);
         return;
     }
     Matrix m;
@@ -96,7 +82,7 @@ extern "C" void __fastcall Node_Matrix(BYTE* self, void*, Matrix* out)
 extern "C" void __fastcall Node_SetMatrix(BYTE* self, void*, const Matrix* m)
 {
     if (F(void*, self, 48)) {
-        CallThis(FUN_5f2190, F(void*, self, 48), m, 0);
+        Node_ApplyMatrix((BYTE*)(F(void*, self, 48)), 0, m, 0);
         return;
     }
     *F(Vec3Bits*, self, 52) = F(Vec3Bits, m, 36);
@@ -296,17 +282,10 @@ extern "C" char* __cdecl NextToken(char** pp)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
-extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_55f000(); KING_ALIAS("_FUN_55f000", "_Trailer_HitchCheck")    // whether a vehicle can take another (vehicle, other)
-extern "C" void FUN_4f1180(); KING_ALIAS("_FUN_4f1180", "@Body_SetUpright@4")
-extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
-extern "C" void FUN_55f5f0(); KING_ALIAS("_FUN_55f5f0", "_Truck_HitchTrailer")
+extern "C" BYTE* __cdecl Objects_Find(const char* name);
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
-extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
-extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
-extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
 KING_VAR(DWORD, g_702650, 702650)
 KING_VAR(DWORD, g_702654, 702654)
 KING_VAR(DWORD, g_702658, 702658)
@@ -328,8 +307,6 @@ KING_VAR(float, g_eng702638, 702638)
 KING_VAR(float, g_ten64c450, 64c450)          // 10.0
 KING_VAR(AsmLabel, g_strOvation, 678540)
 
-extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
-extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 KING_VAR(BYTE*, g_effectManager, 6f6910)
 
@@ -338,7 +315,6 @@ KING_VAR(float, g_positionResetThreshold, 650624)
 KING_VAR(AsmLabel, g_setPosition1, 67d4cc)
 KING_VAR(AsmLabel, g_setPosition2, 67d4c0)
 KING_VAR(AsmLabel, g_setPlace, 67d4b4)
-extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 
 KING_VAR(short, g_sceneCommandCode, 67d10a)
 KING_VAR(BYTE*, g_sceneCommandList, 6f653c)
@@ -362,9 +338,9 @@ static BYTE* SceneObj_FindCommandTarget(int key)
 extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5e1ad0(); KING_ALIAS("_FUN_5e1ad0", "_Node_ParentRoot")
+extern "C" BYTE* __cdecl Node_ParentRoot(BYTE* node);
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
-extern "C" void FUN_5a3f50(); KING_ALIAS("_FUN_5a3f50", "@Light5a3f50_Attach@12")    // (this, node)
+extern "C" void __fastcall Light5a3f50_Attach(BYTE* s, void*, BYTE* n);
 extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")    // decomposes a matrix (by value) into six doubles
 KING_VAR(AsmLabel, s_67e8f0, 67e8f0)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
@@ -376,7 +352,7 @@ extern "C" void __fastcall WeatherNode_Attach(BYTE* self, void*, BYTE* node)
 {
     if (!node)
         return;
-    CallThis(FUN_5a3f50, self, node);
+    Light5a3f50_Attach(self, 0, node);
     switch (F(int, node, 16))
     {
     case 2:
@@ -399,9 +375,9 @@ extern "C" void __fastcall WeatherNode_Attach(BYTE* self, void*, BYTE* node)
     default:
         F(BYTE*, self, 48) = 0;
     }
-    F(BYTE*, self, 56) = CallC<BYTE*>(FUN_5e1ad0, F(BYTE*, self, 32));
+    F(BYTE*, self, 56) = Node_ParentRoot(F(BYTE*, self, 32));
     if (F(BYTE*, self, 48))
-        CallThis(FUN_5f25c0, F(BYTE*, self, 48), self + 60);
+        Node_GetWorld(F(BYTE*, self, 48), 0, self + 60);
     else
     {
         Weather_Mat48 m;
@@ -426,8 +402,8 @@ extern "C" int __cdecl File_ReadShort(FILE* f)
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
-extern "C" void FUN_5e54c0(); KING_ALIAS("_FUN_5e54c0", "@Resources_AddRecord@20")
+extern "C" int __fastcall Resources_Get(BYTE** self, void*, int id);
+extern "C" int __fastcall Resources_AddRecord(BYTE* self, void*, int a, BYTE* rec, int c);
 
 // [FUN_5a4700] attaches the object's resource (+344) to a: re-adds it under a's name when that differs, then a's method +28 gets this +256; without a adds it under b and resets this
 extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const char* b)
@@ -435,14 +411,14 @@ extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const c
     int id = F(int, self, 344);
     BYTE* r = 0;
     if (id >= 0)
-        r = CallThis<BYTE*>(FUN_5e5370, F(BYTE*, self, 36) + 704, id);
+        r = (BYTE*)Resources_Get((BYTE**)(F(BYTE*, self, 36) + 704), 0, id);
     if (r)
     {
         id = F(int, self, 344);
         if (!a)
         {
             if (id >= 0)
-                CallThis(FUN_5e54c0, F(BYTE*, self, 36) + 704, b, r, 0);
+                Resources_AddRecord(F(BYTE*, self, 36) + 704, 0, (int)b, r, 0);
             CallVirt(self, 28, 0);
             return 0;
         }
@@ -450,7 +426,7 @@ extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const c
         {
             const char* name = F(char*, F(BYTE*, a, 36), 60);
             if (strcmp(name, F(char*, F(BYTE*, r, 12), 4016)))
-                CallThis(FUN_5e54c0, F(BYTE*, self, 36) + 704, name, r, 0);
+                Resources_AddRecord(F(BYTE*, self, 36) + 704, 0, (int)name, r, 0);
         }
     }
     else if (!a)
@@ -527,13 +503,13 @@ extern "C" void __cdecl WeaInit_5ab3d0() { g_wea702630 = 0x0; g_wea702634 = 0x0;
 // [$L_5a73a0]
 extern "C" void __cdecl WeaInit_5a73a0() { g_wea6fb3e4 = 0x3ff00000; g_wea6fb3dc = 0; g_wea6fb3d8 = 0; g_wea6fb3d4 = 0; g_wea6fb3d0 = 0; g_wea6fb3e0 = 0; g_wea6fb3e8 = 0; g_wea6fb3ec = 0x3ff00000; }
 
-extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
-extern "C" void FUN_5d3350(); KING_ALIAS("_FUN_5d3350", "@Queue_PostEvent1@12")
+extern "C" int __fastcall Queue_PostEvent2(BYTE* self, void*, int arg);
+extern "C" int __fastcall Queue_PostEvent1(BYTE* self, void*, int arg);
 
 // [$L_5a6ab0]
-extern "C" int __fastcall Wea_5a6ab0(BYTE* s, void*, int a) { return CallThis<int>(FUN_5d33d0, s, a); }
+extern "C" int __fastcall Wea_5a6ab0(BYTE* s, void*, int a) { return Queue_PostEvent2(s, 0, a); }
 // [$L_5a6ac0]
-extern "C" int __fastcall Wea_5a6ac0(BYTE* s, void*, int a) { return CallThis<int>(FUN_5d3350, s, a); }
+extern "C" int __fastcall Wea_5a6ac0(BYTE* s, void*, int a) { return Queue_PostEvent1(s, 0, a); }
 // [$L_5ad130] 1 when +8244 is set
 extern "C" int __fastcall Wea_Has8244(BYTE* s) { return F(int, s, 8244) != 0; }
 
@@ -555,6 +531,7 @@ extern "C" void __cdecl WeaInit_5ab230()
 // More virtual methods.
 
 extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
+extern "C" int __fastcall SheetAnim_Step(BYTE* s);
 extern "C" void FUN_5a4ca0(); KING_ALIAS("_FUN_5a4ca0", "@SheetAnim_Step@4")
 KING_VAR(AsmLabel, g_wea6fd7dc, 6fd7dc)
 
@@ -571,7 +548,7 @@ extern "C" void __fastcall Wea_Lightning(BYTE* s)
             CallThis(FUN_5fdaf0, F(BYTE*, s, 176), *(DWORD*)&v, *(DWORD*)&v);
         }
     }
-    CallThis(FUN_5a4ca0, s);
+    SheetAnim_Step(s);
     int m = F(int, s, 16);
     if (m != 0 && m != 1)
         return;
@@ -597,8 +574,8 @@ extern "C" void __fastcall Wea_Lightning(BYTE* s)
 // ---------------------------------------------------------------------------
 // More virtual methods.
 
-extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
-extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void* __fastcall Camera_Get(BYTE* self, void*, void* out);
+extern "C" Matrix* __cdecl Matrix_Inverse(Matrix* out, const Matrix* m);
 extern "C" void FUN_5fd870(); KING_ALIAS("_FUN_5fd870", "@Sound_UpdateAt@36")
 
 // [$L_5a5000] the rain sound (+176) is placed at the point (+88..+96) seen from the camera
@@ -607,8 +584,8 @@ extern "C" void __fastcall Wea_RainSound(BYTE* s)
     if (!F(int, s, 16) && F(BYTE*, s, 176)) {
         BYTE frame[108];  // the original's stack frame: the matrix at +12, the camera buffer at +64
         float* m = (float*)(frame + 12);
-        BYTE* cam = CallThis<BYTE*>(FUN_5dbcc0, F(BYTE*, s, 100), frame + 64);
-        CallC(FUN_5ac2e0, m, cam);
+        BYTE* cam = (BYTE*)Camera_Get(F(BYTE*, s, 100), 0, frame + 64);
+        Matrix_Inverse((Matrix*)m, (const Matrix*)cam);
         float px = F(float, s, 88), py = F(float, s, 92), pz = F(float, s, 96);
         float v[3];
         v[0] = (float)((double)m[1] * px + (double)m[7] * pz + (double)m[4] * py + m[10]);
@@ -616,11 +593,12 @@ extern "C" void __fastcall Wea_RainSound(BYTE* s)
         v[2] = (float)((double)m[3] * px + (double)m[9] * pz + (double)m[6] * py + m[12]);
         CallThis(FUN_5fd870, F(BYTE*, s, 176), *(DWORD*)&v[0], *(DWORD*)&v[1], *(DWORD*)&v[2], 50.0, F(double, s, 184));
     }
-    CallThis(FUN_5a4ca0, s);
+    SheetAnim_Step(s);
 }
 
+extern "C" void __fastcall Object_Destroy(BYTE* s);
 extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
-extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
+extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s);
 KING_VAR(AsmLabel, g_wea6514d4, 6514d4)
 KING_VAR(AsmLabel, g_wea651590, 651590)
 
@@ -630,7 +608,7 @@ extern "C" void __fastcall Wea5a53a0_Destroy(BYTE* s)
     F(void*, s, 0) = g_wea6514d4;
     operator delete(F(void*, s, 40));
     operator delete(F(void*, s, 36));
-    CallThis(FUN_5d3290, s);
+    Object_Destroy(s);
 }
 // [FUN_5a7240] (vtable 651590) frees +76 and +80
 extern "C" void __fastcall Wea5a7240_Destroy(BYTE* s)
@@ -638,19 +616,19 @@ extern "C" void __fastcall Wea5a7240_Destroy(BYTE* s)
     F(void*, s, 0) = g_wea651590;
     operator delete(F(void*, s, 76));
     operator delete(F(void*, s, 80));
-    CallThis(FUN_5ef660, s);
+    Sce5ef660_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Constructors and destructors (exception frames dropped).
 
-extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
-extern "C" void FUN_5fa720(); KING_ALIAS("_FUN_5fa720", "@Sce5fa720_Destroy@4")
-extern "C" void FUN_5bad90(); KING_ALIAS("_FUN_5bad90", "@Texture_SetPixels@20")
-extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
-extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
-extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
-extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
+extern "C" int __fastcall Node_Remove(BYTE* self, void*);
+extern "C" void __fastcall Sce5fa720_Destroy(BYTE* s);
+extern "C" int __fastcall Texture_SetPixels(BYTE* self, void*, BYTE* data, BYTE* mips, int owned);
+extern "C" void __fastcall Window_FreeBuffers(BYTE* self, void*);
+extern "C" void __fastcall Handle_Release(BYTE* self, void*);
+extern "C" void __fastcall Rec5e5840_Free(BYTE* self, void*);
+extern "C" void __fastcall Node5f1a70_Destroy(BYTE* s);
 extern "C" void Wea_VecDtor(); KING_ALIAS("_Wea_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 KING_VAR(AsmLabel, g_wea651390, 651390)
 KING_VAR(AsmLabel, g_wea6513b0, 6513b0)
@@ -665,21 +643,21 @@ extern "C" void __fastcall Wea5a4e90_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_wea651390;
     F(void*, s, 32) = g_wea6513b0;
-    CallThis(FUN_5ef780, s + 32);
-    CallThis(FUN_5fa720, s ? s + 32 : 0);
-    CallThis(FUN_5d3290, s);
+    Node_Remove(s + 32, 0);
+    Sce5fa720_Destroy(s ? s + 32 : 0);
+    Object_Destroy(s);
 }
 // [FUN_5a63a0] (vtable 651548): its picture (+148) stopped, its surface (+152) freed
 extern "C" void __fastcall Wea5a63a0_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_wea651548;
-    CallThis(FUN_5bad90, F(BYTE*, s, 148), 0, 0, 0);
+    Texture_SetPixels(F(BYTE*, s, 148), 0, 0, 0, 0);
     BYTE* p = F(BYTE*, s, 152);
     if (p) {
-        CallThis(FUN_5b6a90, p);
+        Window_FreeBuffers(p, 0);
         operator delete(p);
     }
-    CallThis(FUN_5d3290, s);
+    Object_Destroy(s);
 }
 // [FUN_5a47f0] the helicopter's object (vtables 651358, 65130c at +256)
 extern "C" void __fastcall Wea5a47f0_Destroy(BYTE* s)
@@ -689,9 +667,9 @@ extern "C" void __fastcall Wea5a47f0_Destroy(BYTE* s)
     CallVirt(F(BYTE*, s, 32), 36);
     if (F(BYTE*, s, 324))
         CallVirt(F(BYTE*, s, 324), 0, 1);
-    CallThis(FUN_5d33b0, s);
-    CallThis(FUN_5ef660, s ? s + 256 : 0);
-    CallThis(FUN_5d3290, s);
+    Handle_Release(s, 0);
+    Sce5ef660_Destroy(s ? s + 256 : 0);
+    Object_Destroy(s);
 }
 // [FUN_5a7310] (vtable 6515dc): its 28-byte items (+60), +64, +68
 extern "C" void __fastcall Wea5a7310_Destroy(BYTE* s)
@@ -703,22 +681,22 @@ extern "C" void __fastcall Wea5a7310_Destroy(BYTE* s)
         operator delete(a - 4);
     }
     operator delete(F(void*, s, 64));
-    CallThis(FUN_5e5840, s + 68);
-    CallThis(FUN_5f1a70, s);
+    Rec5e5840_Free(s + 68, 0);
+    Node5f1a70_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Constructors, destructors and messages (exception frames dropped).
 
-extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
-extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const char* name);
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
 KING_VAR(AsmLabel, s_wea67e94c, 67e94c)
 KING_VAR(AsmLabel, g_wea6514f4, 6514f4)
 
 // [FUN_5a5790] constructor (world, name, a..f): the weather (vtable 6514f4) registered with the world
 extern "C" BYTE* __fastcall Weather_Construct(BYTE* s, void*, BYTE* w, int name, int a, int b, int c, int d, int e, int f)
 {
-    CallThis(FUN_5d31e0, s, name, (const char*)s_wea67e94c);
+    Object_ConstructKind(s, 0, name, (const char*)s_wea67e94c);
     F(int, s, 124) = a;
     F(int, s, 128) = b;
     F(int, s, 132) = c;
@@ -740,7 +718,7 @@ extern "C" BYTE* __fastcall Weather_Construct(BYTE* s, void*, BYTE* w, int name,
     F(int, s, 96) = 200;
     F(int, s, 100) = 100;
     F(int, s, 168) = 0;
-    CallThis(FUN_5d3570, w + 2992, s);
+    Owner_Attach(w + 2992, 0, s);
     static const int zero[] = {56, 48, 176, 184, 60, 52, 156, 180, 152, 188};
     for (int o : zero)
         F(int, s, o) = 0;
@@ -765,7 +743,7 @@ static char* Wea_StrDup(const char* t)
 // [FUN_5a5270] constructor (world, name1, name2, a, b, c, d): a weather layer (vtable 6514d4) started now
 extern "C" BYTE* __fastcall WeatherLayer_Construct(BYTE* s, void*, BYTE* w, const char* n1, const char* n2, int a, int b, int c, int d)
 {
-    CallThis(FUN_5d31e0, s, 100, (const char*)s_wea67e940);
+    Object_ConstructKind(s, 0, 100, (const char*)s_wea67e940);
     F(void*, s, 0) = g_wea6514d4;
     F(BYTE*, s, 32) = w;
     F(int, s, 72) = 0;
@@ -777,18 +755,20 @@ extern "C" BYTE* __fastcall WeatherLayer_Construct(BYTE* s, void*, BYTE* w, cons
     F(int, s, 60) = b;
     F(int, s, 64) = c;
     F(int, s, 68) = d;
-    CallThis(FUN_5d3570, F(BYTE*, s, 32) + 2992, s);
+    Owner_Attach(F(BYTE*, s, 32) + 2992, 0, s);
     return s;
 }
 
 // ---------------------------------------------------------------------------
 // Gauge constructor (exception frame dropped).
 
+extern "C" BYTE* __fastcall Weather_Construct(BYTE* s, void*, BYTE* w, int name, int a, int b, int c, int d, int e, int f);
 extern "C" void FUN_5a5790(); KING_ALIAS("_FUN_5a5790", "@Weather_Construct@40")
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
-extern "C" void FUN_5b63e0(); KING_ALIAS("_FUN_5b63e0", "@Surface_Construct@12")
-extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
+extern "C" BYTE* __fastcall Surface_Construct(BYTE* self, void*, BYTE* d);
+extern "C" void __fastcall Surface_Clear(BYTE* self, void*, int color, int argb);
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 KING_VAR(AsmLabel, g_q24_651548, 651548)
 KING_VAR(int, g_q24_7025b0, 7025b0)
@@ -805,27 +785,27 @@ static BYTE* Wea_Find(const char* fmt, int name)
 {
     char buf[64];
     sprintf(buf, fmt, name);
-    return CallC<BYTE*>(FUN_5ef3d0, buf);
+    return Objects_Find(buf);
 }
 // [FUN_5a6160] constructor (a1, a2, world, name, a5..a10): a gauge (vtable 651548, kind 9) with its object's
 // surface (+148, +152), two more images (+64, +68) and its room material (+200)
 extern "C" BYTE* __fastcall Gauge_Construct(BYTE* s, void*, int a1, int a2, BYTE* w, int name, int a5, int a6,
                                             int a7, int a8, int a9, int a10)
 {
-    CallThis(FUN_5a5790, s, a1, 9, a5, a6, a7, a8, a9, a10);
+    Weather_Construct(s, 0, (BYTE*)a1, 9, a5, a6, a7, a8, a9, a10);
     F(void*, s, 0) = g_q24_651548;
     if (!w)
-        CallC(FUN_5d2ba0, (const char*)s_q24_67e9f0, 0);
+        Sys_Log((const char*)s_q24_67e9f0, 0);
     F(BYTE*, s, 196) = w;
     BYTE* r = Wea_Find((const char*)s_q24_66d9c4, name);
     if (!r) {
-        CallC(FUN_5d2ba0, (const char*)s_q24_67e9d0, 0);
+        Sys_Log((const char*)s_q24_67e9d0, 0);
         F(int, s, 148) = 0;
     } else {
         F(int, s, 148) = F(int, r, 76);
     }
     if (!F(int, s, 148))
-        CallC(FUN_5d2ba0, (const char*)s_q24_67e9ac, 0);
+        Sys_Log((const char*)s_q24_67e9ac, 0);
     F(int, s, 200) = 0;
     int k = F(int, r, 44);
     if (k >= 0 && w && g_q24_7025b0)
@@ -834,10 +814,10 @@ extern "C" BYTE* __fastcall Gauge_Construct(BYTE* s, void*, int a1, int a2, BYTE
         F(int, r, 44) = -1;
     F(BYTE*, s, 64) = Wea_Find((const char*)s_q24_67e99c, name);
     if (!F(BYTE*, s, 64))
-        CallC(FUN_5d2ba0, (const char*)s_q24_67e980, 0);
+        Sys_Log((const char*)s_q24_67e980, 0);
     F(BYTE*, s, 68) = Wea_Find((const char*)s_q24_67e970, name);
     if (!F(BYTE*, s, 68))
-        CallC(FUN_5d2ba0, (const char*)s_q24_67e954, 0);
+        Sys_Log((const char*)s_q24_67e954, 0);
     F(int, s, 40) = 0;
     F(int, s, 192) = a2;
     F(DWORD, s, 176) = 2468160491u;
@@ -849,9 +829,9 @@ extern "C" BYTE* __fastcall Gauge_Construct(BYTE* s, void*, int a1, int a2, BYTE
     F(int, s, 100) = 234;
     if (F(int, s, 148)) {
         BYTE* m = (BYTE*)operator new(124);
-        BYTE* o = m ? CallThis<BYTE*>(FUN_5b63e0, m, F(int, s, 148)) : 0;
+        BYTE* o = m ? Surface_Construct(m, 0, (BYTE*)(F(int, s, 148))) : 0;
         F(BYTE*, s, 152) = o;
-        CallThis(FUN_5b6e00, o, 0, 1);
+        Surface_Clear(o, 0, 0, 1);
     } else {
         F(int, s, 152) = 0;
     }
@@ -861,31 +841,34 @@ extern "C" BYTE* __fastcall Gauge_Construct(BYTE* s, void*, int a1, int a2, BYTE
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
+extern "C" void __fastcall Wea5a47f0_Destroy(BYTE* s);
 extern "C" void FUN_5a47f0(); KING_ALIAS("_FUN_5a47f0", "@Wea5a47f0_Destroy@4")
 // [$L_5a46e0]
 extern "C" BYTE* __fastcall Dtor5a46e0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5a47f0, s);
+    Wea5a47f0_Destroy(s);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" void __fastcall Wea5a4e90_Destroy(BYTE* s);
 extern "C" void FUN_5a4e90(); KING_ALIAS("_FUN_5a4e90", "@Wea5a4e90_Destroy@4")
 // [$L_5a4c80]
 extern "C" BYTE* __fastcall Dtor5a4c80_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5a4e90, s);
+    Wea5a4e90_Destroy(s);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" int __fastcall Thunk5a4ff0(BYTE* s);
 extern "C" void FUN_5a4ff0(); KING_ALIAS("_FUN_5a4ff0", "@Thunk5a4ff0@4")
 // [$L_5a5250]
 extern "C" BYTE* __fastcall Dtor5a5250_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5a4ff0, s);
+    Thunk5a4ff0(s);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -900,7 +883,7 @@ KING_VAR(AsmLabel, g_q46_651568, 651568)
 extern "C" void __fastcall Wea5a6aa0_Destruct(BYTE* s, void*)
 {
     F(void*, s, 0) = g_q46_651568;
-    CallThis(FUN_5d3290, s);
+    Object_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
@@ -913,7 +896,7 @@ extern "C" void __fastcall Wea5a73f0_Destruct(BYTE* s, void*)
 {
     F(void*, s, 0) = g_q47_651628;
     g_q47_7025b8 = 0;
-    CallThis(FUN_5d3290, s);
+    Object_Destroy(s);
 }
 
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
@@ -926,7 +909,7 @@ extern "C" int __cdecl Weather_LogPos(void*, const BYTE* r, const BYTE* o)
         float p[4];
         memcpy(p, o + 20, 16);
         sprintf(buf, (const char*)s_q161_67ef54, (double)p[0], (double)p[1], (double)p[2]);
-        CallC(FUN_5d2ba0, buf, 0);
+        Sys_Log(buf, 0);
     }
     return 0;
 }
@@ -1067,8 +1050,8 @@ extern "C" int __fastcall Thunk5a4ff0(BYTE* s) { return q238_Wea5a4e90_Destroy(s
 // ---------------------------------------------------------------------------
 // Weather settings
 
-extern "C" void FUN_5a88f0(); KING_ALIAS("_FUN_5a88f0", "_Color_Parse")
-extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")
+extern "C" void __cdecl Color_Parse(float* out, char* text);
+extern "C" int __cdecl Ini_GetDouble(const char* section, const char* key, double def, double* out, const char* file);
 KING_VAR(DWORD, g_weatherFlags6fca38, 6fca38)    // [8]: 1 rain, 2 sun, 4 thunder
 KING_VAR(BYTE, g_w6f9cc0, 6f9cc0)
 KING_VAR(BYTE, g_w6f9ccc, 6f9ccc)
@@ -1232,12 +1215,12 @@ void __cdecl Weather_LoadSettings(const char* ini)
         sprintf(sect, "WEATHER%d", k + 1);
         for (int i = 0; i < (int)(sizeof(s_weatherColors) / sizeof(s_weatherColors[0])); i++) {
             GetPrivateProfileStringA(sect, s_weatherColors[i].key, "0 0 0", buf, 70, ini);
-            CallC(FUN_5a88f0, s_weatherColors[i].to + k * 96, buf);
+            Color_Parse((float*)(s_weatherColors[i].to + k * 96), buf);
         }
         for (int i = 0; i < (int)(sizeof(s_weatherDoubles) / sizeof(s_weatherDoubles[0])); i++) {
             DWORD bits[2] = {0, s_weatherDoubles[i].hi};
             double d;
-            CallC(FUN_603cb0, sect, s_weatherDoubles[i].key, *(double*)bits, &d, ini);
+            Ini_GetDouble(sect, s_weatherDoubles[i].key, *(double*)bits, &d, ini);
             *(float*)(s_weatherDoubles[i].to + k * 16) = (float)d;
         }
         DWORD* f = &g_weatherFlags6fca38 + k;
@@ -1280,7 +1263,7 @@ static BYTE* Wo_Find(const char* prefix, const char* suffix)
     char buf[32];
     strcpy(buf, prefix);
     strcat(buf, suffix);
-    return CallC<BYTE*>(FUN_5ef2b0, 0, buf);
+    return Scene_FindObject(0, buf);
 }
 
 static double Wo_Double(DWORD lo, DWORD hi)
@@ -1297,14 +1280,14 @@ extern "C" {
 BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char* a, const char* b, const char* c,
                                    int unused, const char* d)
 {
-    CallThis(FUN_5d31e0, self, 100, (const char*)s_wo67eaa0);
+    Object_ConstructKind(self, 0, 100, (const char*)s_wo67eaa0);
     F(int, self, 556) = 0;
     F(int, self, 560) = 0;
     F(int, self, 564) = 0;
     F(void*, self, 0) = g_woVtbl651628;
     g_wo7025b8 = self;
     Weather_LoadSettings(s_wo67ea90);
-    F(BYTE*, self, 492) = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_wo67ea84);
+    F(BYTE*, self, 492) = Objects_Find((const char*)s_wo67ea84);
     F(BYTE*, self, 80) = view;
     F(int, self, 132) = 0;
     F(int, self, 136) = 0;
@@ -1318,7 +1301,7 @@ BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char*
         char buf[32];
         strcpy(buf, c);
         strcpy(buf + 4, s_wo67ea78);
-        F(BYTE*, self, 508) = CallC<BYTE*>(FUN_5ef3d0, buf);
+        F(BYTE*, self, 508) = Objects_Find(buf);
     }
     F(BYTE*, self, 480) = Wo_Find(d, s_wo677738);
     F(BYTE*, self, 484) = Wo_Find(d, s_wo679a18);
@@ -1328,7 +1311,7 @@ BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char*
     for (int i = 0; i < 16; i++) {
         char buf[32];
         sprintf(buf, s_wo67ea64, i);
-        F(BYTE*, self, 160 + i * 4) = CallC<BYTE*>(FUN_5ef2b0, 0, buf);
+        F(BYTE*, self, 160 + i * 4) = Scene_FindObject(0, buf);
         F(double, self, 224 + i * 16) = level[i] + g_wo651650;
         if (i < 8)
             F(double, self, 232 + i * 16) = level[i] + g_wo651648;
@@ -1343,8 +1326,8 @@ BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char*
     F(int, self, 92) = 0;
     F(DWORD, self, 100) = 1077411840;      // +96: 24.0
     F(DWORD, self, 116) = 1072693248;      // +112: 1.0
-    CallThis(FUN_5d3570, F(BYTE*, self, 80) + 2992, self);
-    CallThis(FUN_5d33d0, self, 1);
+    Owner_Attach(F(BYTE*, self, 80) + 2992, 0, self);
+    Queue_PostEvent2(self, 0, 1);
     BYTE* o = (BYTE*)operator new(128);
     if (o)
         o = CallThis<BYTE*>(FUN_5a6890, o, F(BYTE*, self, 80), Wo_Double(1293080650, 3219726843u),
@@ -1391,14 +1374,15 @@ BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char*
 
 KING_VAR(AsmLabel, g_rb651718, 651718)
 KING_VAR(int, g_rb67ef88, 67ef88)
-extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
-extern "C" void FUN_5ad4c0(); KING_ALIAS("_FUN_5ad4c0", "@Light_Init@8")
+extern "C" BYTE* __fastcall Light_Init(BYTE* self, void*);
 
 // matrix m: its rows constructed, then the identity
 static void Rb_Matrix(BYTE* m)
 {
-    CallStd(FUN_4011e0, m, 12, 4, FUN_4bd4d0);
+    Array_ForEach(m, 12, 4, FUN_4bd4d0);
     memcpy(m, (BYTE*)g_wea7025f0, 48);
 }
 
@@ -1416,21 +1400,21 @@ BYTE* __fastcall Render_Construct(BYTE* s, void*, BYTE* a)
     for (int i = 0; i < 40; i++)
         Rb_Matrix(s + 2288 + i * 48);
     for (int i = 0; i < 4; i++)
-        CallThis(FUN_4bd4d0, s + 4208 + i * 12);
+        Vec3_ZeroThis((Vec3*)(s + 4208 + i * 12), 0);
     memcpy(s + 4208, (BYTE*)g_wea7025f0, 48);
     for (int i = 0; i < 4; i++)
-        CallThis(FUN_4bd4d0, s + 4256 + i * 12);
+        Vec3_ZeroThis((Vec3*)(s + 4256 + i * 12), 0);
     memcpy(s + 4256, (BYTE*)g_wea7025f0, 48);
     for (int i = 0; i < 20; i++)
         Rb_Matrix(s + 4304 + i * 48);
     for (int i = 0; i < 20; i++)
         Rb_Matrix(s + 5264 + i * 48);
     for (int i = 0; i < 20; i++)
-        CallThis(FUN_5ad4c0, s + 6224 + i * 80);
-    CallThis(FUN_5ad4c0, s + 7824);
+        Light_Init(s + 6224 + i * 80, 0);
+    Light_Init(s + 7824, 0);
     Rb_Zero(s, 7904, 320);
     for (int i = 0; i < 4; i++)
-        CallThis(FUN_4bd4d0, s + 8564 + i * 12);
+        Vec3_ZeroThis((Vec3*)(s + 8564 + i * 12), 0);
     memcpy(s + 8564, (BYTE*)g_wea7025f0, 48);
     F(void*, s, 0) = g_rb651718;
     F(BYTE*, s, 1948) = a;
@@ -1478,7 +1462,7 @@ BYTE* __fastcall Render_Construct(BYTE* s, void*, BYTE* a)
 // === spawning lightning ($L_5a5400)
 
 extern "C" void FUN_5a50f0(); KING_ALIAS("_FUN_5a50f0", "@Lightning_Construct@44")    // a lightning flash: constructor (world, scene, x, y, z, height, a, b)
-extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg);
 KING_VAR(float, g_lt64c32c, 64c32c)
 KING_VAR(float, g_lt64d0c8, 64d0c8)
 KING_VAR(double, g_lt64b670, 64b670)
@@ -1497,7 +1481,7 @@ void __fastcall Lightning_Update(BYTE* s)
         BYTE* scene = F(BYTE*, w, 528);
         float x = (float)(rand() % 600 - 300);
         BYTE t[48];
-        const float* m = CallThis<const float*>(FUN_5dbcc0, F(BYTE*, s, 32), t);
+        const float* m = (const float*)Camera_Get(F(BYTE*, s, 32), 0, t);
         float px = (float)((double)x * m[0] + (double)m[6] * g_lt64c32c + (double)m[3] * g_lt64d0c8 + m[9]);
         float py = (float)((double)x * m[1] + (double)m[7] * g_lt64c32c + (double)m[4] * g_lt64d0c8 + m[10]);
         if (!scene) {
@@ -1515,7 +1499,7 @@ void __fastcall Lightning_Update(BYTE* s)
     }
     if (F(double, s, 48) + g_lt64b670 < F(double, F(BYTE*, s, 32), 2968))
         F(DWORD, s, 72) &= ~2u;
-    CallThis(FUN_5d32f0, s, 1);
+    Queue_PostEvent(s, 0, 1);
 }
 
 } // extern "C"
@@ -1609,8 +1593,8 @@ double __cdecl Weather_MixValue(float a, float b, const BYTE* table)
 
 // === the daylight of the weather (FUN_5a89a0)
 
-extern "C" void Dl_Wave(); KING_ALIAS("_Dl_Wave", "@Wave_Value@16")
-extern "C" void Dl_RootSurface(); KING_ALIAS("_Dl_RootSurface", "@Window_RootSurface@8")
+extern "C" double __fastcall Wave_Value(BYTE* self, void*, double phase);
+extern "C" int __fastcall Window_RootSurface(BYTE* self, void*);
 extern "C" void Dl_ImagePrepare(); KING_ALIAS("_Dl_ImagePrepare", "@Image_Prepare@16")
 KING_VAR(double, g_dl64b678, 64b678)
 KING_VAR(double, g_dl64da00, 64da00)
@@ -1641,7 +1625,7 @@ void __fastcall Weather_Daylight(BYTE* s)
     double t = g_dl64b678;
     if (F(double, s, 104) > g_dl64da00)
         t = F(double, s, 104) < g_dl651540 ? F(double, s, 104) - g_dl64da00 : g_dl651298;
-    double v = (CallThis<double>(Dl_Wave, s, -t) - g_dl64b7a8) * g_dl651658;
+    double v = (Wave_Value(s, 0, -t) - g_dl64b7a8) * g_dl651658;
     F(float, s, 536) = (float)v;
     if (v < g_dl64b678)
         F(float, s, 536) = 0;
@@ -1657,7 +1641,7 @@ void __fastcall Weather_Daylight(BYTE* s)
         for (int c = 0; c < 6; c++)
             if (int id = F(int, r, 156 + c * 4))
                 F(int, F(BYTE*, r, 76), id * 124 + 40) = 4;
-        CallC(FUN_5ef3d0, (const char*)s_dlRoadMat);
+        Objects_Find((const char*)s_dlRoadMat);
         for (int j = 0; j < F(int, r, 72); j++) {
             BYTE* m = F(BYTE*, r, 76) + j * 124;
             if (strcmp((const char*)m, (const char*)s_dlRoadMat) || !m || !F(BYTE*, m, 76))
@@ -1671,7 +1655,7 @@ void __fastcall Weather_Daylight(BYTE* s)
                 CallThis(Dl_ImagePrepare, F(BYTE*, m, 76), -(double)F(float, s, 536));
         }
     }
-    if (BYTE* surf = CallThis<BYTE*>(Dl_RootSurface, F(BYTE*, F(BYTE*, s, 80), 12))) {
+    if (BYTE* surf = (BYTE*)Window_RootSurface(F(BYTE*, F(BYTE*, s, 80), 12), 0)) {
         double g = F(float, s, 536) * (double)g_dl64d2f8;
         if (g > g_dl64b670)
             g = g_dl64b670;
@@ -1687,7 +1671,6 @@ void __fastcall Weather_Daylight(BYTE* s)
 // === an animated sprite sheet (FUN_5a4ca0)
 
 KING_VAR(double, g_ss2_64b678, 64b678)
-extern "C" void Sa_PostEvent(); KING_ALIAS("_Sa_PostEvent", "@Queue_PostEvent@12")
 
 extern "C" {
 
@@ -1725,15 +1708,15 @@ int __fastcall SheetAnim_Step(BYTE* s)
     if (F(double, s, 136) > g_ss2_64b678 && F(double, s, 144) > F(double, s, 136))
         return CallVirt<int>(s, 28, 1);
     F(double, s, 144) = F(double, F(BYTE*, s, 100), 2960) + F(double, s, 144);
-    return CallThis<int>(Sa_PostEvent, s, 1);
+    return Queue_PostEvent(s, 0, 1);
 }
 
 } // extern "C"
 
 // === a cloud layer following the camera (a method at $L_5a4370)
 
-extern "C" void Cl_SetMatrix(); KING_ALIAS("_Cl_SetMatrix", "@Node_SetMatrix@12")
-extern "C" void Cl_Transform2(); KING_ALIAS("_Cl_Transform2", "@Matrix_Transform2@12")
+extern "C" void __fastcall Node_SetMatrix(BYTE* self, void*, const Matrix* m);
+extern "C" void __fastcall Matrix_Transform2(Matrix* self, void*, const Matrix* by);
 extern "C" void Cl_Translation(); KING_ALIAS("_Cl_Translation", "_Matrix_Translation")
 KING_VAR(double, g_cl64b5b8, 64b5b8)
 KING_VAR(float, g_cl64c304, 64c304)
@@ -1762,8 +1745,8 @@ void __fastcall Layer_Follow(BYTE* s, void*, const float* a, float* b, const BYT
         v.z = z * h;
     }
     float m[12];
-    CallThis(Cl_Transform2, b, CallC<float*>(Cl_Translation, m, v));
-    CallThis(Cl_SetMatrix, s, b);
+    Matrix_Transform2((Matrix*)b, 0, (const Matrix*)(CallC<float*>(Cl_Translation, m, v)));
+    Node_SetMatrix(s, 0, (const Matrix*)b);
 }
 
 } // extern "C"
@@ -1771,7 +1754,6 @@ void __fastcall Layer_Follow(BYTE* s, void*, const float* a, float* b, const BYT
 // === a lightning flash's constructor (FUN_5a50f0)
 
 extern "C" void FUN_5a4880(); KING_ALIAS("_FUN_5a4880", "@SkyEffect_Construct@68")
-extern "C" void Lf_Find(); KING_ALIAS("_Lf_Find", "_Objects_Find")
 KING_VAR(AsmLabel, g_lf6514b4, 6514b4)
 KING_VAR(AsmLabel, g_lf651468, 651468)
 KING_VAR(double, g_lf64b7c0, 64b7c0)
@@ -1795,7 +1777,7 @@ BYTE* __fastcall Lightning_Construct(BYTE* s, void*, int a, int b, Lf_V3 p, doub
             break;
     if (i < n)
         F(DWORD, F(BYTE*, t, 76) + i * 124, 32) |= 0x100;
-    F(int, s, 176) = CallC<int>(Lf_Find, sound);
+    F(int, s, 176) = (int)Objects_Find(sound);
     F(int, s, 180) = 0;
     F(DWORD, s, 184) = 0x9999999A;
     F(DWORD, s, 188) = 0x3FE99999;
@@ -1806,9 +1788,9 @@ BYTE* __fastcall Lightning_Construct(BYTE* s, void*, int a, int b, Lf_V3 p, doub
 
 // === a sky effect's base constructor (FUN_5a4880)
 
-extern "C" void Sb_MeshConstruct(); KING_ALIAS("_Sb_MeshConstruct", "@Mesh_Construct@8")
-extern "C" void Sb_Set48(); KING_ALIAS("_Sb_Set48", "@Node_Set48@16")
-extern "C" void Sb_MoveTo(); KING_ALIAS("_Sb_MoveTo", "@Chain_MoveTo@8")
+extern "C" BYTE* __fastcall Mesh_Construct(BYTE* self, void*);
+extern "C" void __fastcall Node_Set48(BYTE* self, void*, int a, int b);
+extern "C" void __fastcall Chain_MoveTo(BYTE* self, void*);
 extern "C" void Sb_VecCtor(); KING_ALIAS("_Sb_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" void Sb_RecInit(); KING_ALIAS("_Sb_RecInit", "@FxRec_Init@4")
 extern "C" void Sb_RecFree(); KING_ALIAS("_Sb_RecFree", "@FxRec_Free@4")
@@ -1834,9 +1816,9 @@ extern "C" {
 BYTE* __fastcall SkyEffect_Construct(BYTE* s, void*, BYTE* o, BYTE* p, Lf_V3 pos, float w, float h,
     const char* name, int a, int su, int sv, float f1, float f2, int k, int n)
 {
-    CallThis(FUN_5d31e0, s, k, &s_sb67e938);
+    Object_ConstructKind(s, 0, k, &s_sb67e938);
     BYTE* m = s + 32;
-    CallThis(Sb_MeshConstruct, m);
+    Mesh_Construct(m, 0);
     F(double, s, 128) = f1;
     F(double, s, 136) = f2;
     F(void*, m, 0) = g_wea6513b0;
@@ -1861,7 +1843,7 @@ BYTE* __fastcall SkyEffect_Construct(BYTE* s, void*, BYTE* o, BYTE* p, Lf_V3 pos
         CallStd(Sb_VecCtor, items, 40, n, Sb_RecInit, Sb_RecFree);
     }
     memcpy(s + 88, &pos, 12);
-    F(int, s, 168) = CallC<int>(FUN_5ef3d0, name);
+    F(int, s, 168) = (int)Objects_Find(name);
     for (int i = 0; i < n; i++) {
         BYTE* it = items + i * 40;
         F(WORD, it, 0) = 2;
@@ -1914,14 +1896,14 @@ BYTE* __fastcall SkyEffect_Construct(BYTE* s, void*, BYTE* o, BYTE* p, Lf_V3 pos
         F(WORD, it, 34) = 4095;
         F(int, it, 36) = F(int, s, 168);
     }
-    CallThis(Sb_Set48, m, items, F(int, s, 124));
-    CallThis(Sb_MoveTo, m);
+    Node_Set48(m, 0, (int)items, F(int, s, 124));
+    Chain_MoveTo(m, 0);
     BYTE* par = F(BYTE*, s, 104);
     if (par == F(BYTE*, o, 524))
         CallVirt(par, 20, 0, s ? m : 0);
     else
         CallVirt(par, 28, s ? m : 0);
-    CallThis(FUN_5d3570, F(BYTE*, s, 100) + 2992, s);
+    Owner_Attach(F(BYTE*, s, 100) + 2992, 0, s);
     F(BYTE, s, 72) |= 1;
     F(int, s, 144) = 0;
     F(int, s, 148) = 0;
@@ -1933,7 +1915,7 @@ BYTE* __fastcall SkyEffect_Construct(BYTE* s, void*, BYTE* o, BYTE* p, Lf_V3 pos
 
 // === applying the weather mix to the sky (FUN_5a9540)
 
-extern "C" void Wa_Select(); KING_ALIAS("_Wa_Select", "_Switch_Select")
+extern "C" void __cdecl Switch_Select(BYTE* node, int i);
 KING_VAR(int, g_wa7025c0, 7025c0)                 // no thunder
 KING_VAR(double, g_wa64d950, 64d950)
 KING_VAR(double, g_wa64b898, 64b898)
@@ -2116,7 +2098,7 @@ void __fastcall Weather_ApplySky(BYTE* s, void*)
             else
                 on = d[0] - g_wa651660 > h ? 1 : 0;
         }
-        CallC(Wa_Select, sw, on);
+        Switch_Select(sw, on);
     }
 }
 
@@ -2124,11 +2106,9 @@ void __fastcall Weather_ApplySky(BYTE* s, void*)
 
 // === the sun's flare (a method at $L_5a6ad0)
 
-extern "C" void Sf_PostEvent(); KING_ALIAS("_Sf_PostEvent", "@Queue_PostEvent@12")
-extern "C" void Sf_GetWorld(); KING_ALIAS("_Sf_GetWorld", "@Node_GetWorld@12")
-extern "C" void Sf_TransformDir(); KING_ALIAS("_Sf_TransformDir", "@Vec3_TransformDir@12")
-extern "C" void Sf_MulAssign(); KING_ALIAS("_Sf_MulAssign", "@Vec3_MulAssign@16")
-extern "C" void Sf_FrameApply(); KING_ALIAS("_Sf_FrameApply", "_Frame_Apply")
+extern "C" void __fastcall Vec3_TransformDir(Vec3* self, void*, const Matrix* m);
+extern "C" Vec3* __fastcall Vec3_MulAssign(Vec3* self, void*, Vec3* ret, float s);
+extern "C" void __cdecl Frame_Apply(BYTE* node, int mode, const void* m);
 KING_VAR(double, g_sf64d900, 64d900)
 KING_VAR(double, g_sf64d908, 64d908)
 KING_VAR(double, g_sf64d910, 64d910)
@@ -2186,7 +2166,7 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
     {
         a[40] |= 1;
         b[40] |= 1;
-        CallThis(Sf_PostEvent, s, 1);
+        Queue_PostEvent(s, 0, 1);
         return;
     }
     a[40] &= 0xfe;
@@ -2199,7 +2179,7 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
     Sf_Strength(s, v);
     BYTE* viewer = F(BYTE*, cam, 488);
     Matrix m292 = g_identity, m196, tmp;
-    CallThis(Sf_GetWorld, F(BYTE*, viewer, 80), &m292);
+    Node_GetWorld(F(BYTE*, viewer, 80), 0, &m292);
     m292 = *Matrix_Inverse(&m196, &m292);
     const float* R = Matrix_RotationX(&m196, (float)F(double, s, 48))->m;
     const float* Y = &g_axisY.x;
@@ -2212,7 +2192,7 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
     q.y = (float)((double)pz * Z[7] + (double)py * Z[4] + (double)px * Z[1] + Z[10]);
     q.z = (float)((double)pz * Z[8] + (double)py * Z[5] + (double)px * Z[2] + Z[11]);
     q.x = (float)((double)pz * Z[6] + (double)py * Z[3] + (double)px * Z[0] + Z[9]);
-    CallThis(Sf_TransformDir, &q, &m292);
+    Vec3_TransformDir(&q, 0, &m292);
     float az, pol;
     Vec3_ToAngles(q, &az, &pol);
     az = (float)(az - g_sf64da00);
@@ -2220,13 +2200,13 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
     az = Sf_WrapF(az);
     pol = Sf_WrapF(pol);
     Vec3 t3;
-    CallThis(Sf_MulAssign, &q, &t3, 50.0f);
+    Vec3_MulAssign(&q, 0, &t3, 50.0f);
     Matrix tr, rz, rx, m100, m244;
     Matrix_Translation(&tr, q);
     Matrix_RotationZ(&rz, az);
     Matrix_RotationX(&rx, pol);
     m292 = *Matrix_Multiply(&m244, Matrix_Multiply(&m100, &rx, &rz), &tr);
-    CallC(Sf_FrameApply, F(BYTE*, s, 64), 0, &m292);
+    Frame_Apply(F(BYTE*, s, 64), 0, &m292);
     if (!(s[120] & 4))
     {
         bool hidden = !(q.y >= g_sf64b5b8)
@@ -2236,7 +2216,7 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
             b[40] |= 1;
         else
             b[40] &= 0xfe;
-        CallThis(Sf_TransformDir, &q, &m292);
+        Vec3_TransformDir(&q, 0, &m292);
         float nx = (float)-(double)q.x, nz = (float)-(double)q.z;
         q.x = nx;
         q.y = 0;
@@ -2254,15 +2234,15 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
             o.y = (float)(ty / dn);
             o.z = (float)(tz / dn);
             Matrix mt;
-            CallC(Sf_FrameApply, *ring++, 0, Matrix_Translation(&mt, o));
+            Frame_Apply(*ring++, 0, Matrix_Translation(&mt, o));
             n = F(int, s, 104);
         }
     }
     else
     {
-        CallC(Wa_Select, b, (int)(F(double, cam, 2968) * g_sf64b780) % F(int, s, 104));
+        Switch_Select(b, (int)(F(double, cam, 2968) * g_sf64b780) % F(int, s, 104));
         Matrix wm, inv;
-        CallThis(Sf_GetWorld, F(BYTE*, s, 64), &wm);
+        Node_GetWorld(F(BYTE*, s, 64), 0, &wm);
         const float* I = Matrix_Inverse(&inv, &wm)->m;
         const float* Zv = &g_axisZ.x;
         double dx = (double)Zv[2] * I[6] + (double)Zv[1] * I[3] + (double)Zv[0] * I[0];
@@ -2274,19 +2254,17 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
         o.y = (float)((double)dy * k);
         o.z = (float)((double)dz * k);
         Matrix mt;
-        CallC(Sf_FrameApply, F(BYTE*, s, 68), 0, Matrix_Translation(&mt, o));
+        Frame_Apply(F(BYTE*, s, 68), 0, Matrix_Translation(&mt, o));
     }
     Sf_Strength(s, v);
-    CallThis(Sf_PostEvent, s, 1);
+    Queue_PostEvent(s, 0, 1);
 }
 
 } // extern "C"
 
 // === the weather's frame (a method at $L_5a9dc0)
 
-extern "C" void Wf_Switch(); KING_ALIAS("_Wf_Switch", "_Switch_Select")
-extern "C" void Wf_FrameApply(); KING_ALIAS("_Wf_FrameApply", "_Frame_Apply")
-extern "C" void Wf_SoundPlay(); KING_ALIAS("_Wf_SoundPlay", "@Sound_Play@20")
+extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, int a3);
 KING_VAR(int, g_wf721768, 721768)                 // the trace is on
 KING_VAR(BYTE*, g_wfTraceData, 71e814)
 KING_VAR(int, g_wfTraceSize, 71e810)
@@ -2424,7 +2402,7 @@ void __fastcall Weather_Frame(BYTE* s, void*)
     if (F(int, s, 144))
     {
         Matrix r;
-        CallC(Wf_FrameApply, F(int, s, 144), 0, Matrix_RotationY(&r, (float)(F(double, s, 56) * g_wf6516b8 - g_wf6516b0)));
+        Frame_Apply((BYTE*)(F(int, s, 144)), 0, Matrix_RotationY(&r, (float)(F(double, s, 56) * g_wf6516b8 - g_wf6516b0)));
     }
     // the lamps by the dark, flickering every third half second
     double dark = F(double, s, 56);
@@ -2451,21 +2429,21 @@ void __fastcall Weather_Frame(BYTE* s, void*)
     if (g_wf7025c0 && vol > g_wf6fb3e8)
         vol = g_wf6fb3e8;
     if (BYTE* snd = F(BYTE*, s, 492))
-        CallThis(Wf_SoundPlay, snd, (float)vol, (float)vol, 0);
+        Sound_Play(snd, 0, (float)vol, (float)vol, 0);
     if (F(double, s, 56) > g_wf64b7a8)
     {
-        CallC(Wf_Switch, F(int, s, 152), 1);
+        Switch_Select((BYTE*)(F(int, s, 152)), 1);
         if (BYTE* snd2 = F(BYTE*, s, 508))
         {
             double v2 = (F(double, s, 56) - g_wf64b7a8) * F(float, s, 552);
             if (g_wf7025c0 && v2 > g_wf6fb3e8)
                 v2 = g_wf6fb3e8;
-            CallThis(Wf_SoundPlay, snd2, (float)v2, (float)v2, 0);
+            Sound_Play(snd2, 0, (float)v2, (float)v2, 0);
         }
     }
     else if (F(int, s, 152))
-        CallC(Wf_Switch, F(int, s, 152), 0);
-    CallThis(FUN_5d32f0, s, 1);
+        Switch_Select((BYTE*)(F(int, s, 152)), 0);
+    Queue_PostEvent(s, 0, 1);
 }
 
 } // extern "C"
@@ -2474,7 +2452,7 @@ void __fastcall Weather_Frame(BYTE* s, void*)
 
 extern "C" BYTE* __fastcall Render_Material(BYTE* self, void*);
 extern "C" double __cdecl Tsc_Now();
-extern "C" void Ws_Select(); KING_ALIAS("_Ws_Select", "@Material_Select@24")
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
 KING_VAR(BYTE, g_ws6fd758, 6fd758)
 KING_VAR(float, g_wsPos, 7009e0)                      // the strip's points, normals and both texture coordinates
 KING_VAR(float, g_wsNormal, 6fb6f8)
@@ -2581,7 +2559,7 @@ int __cdecl Water_Draw(void*, BYTE* r)
         F(double, w, 72) = F(double, w, 64) * g_ws64b7a8;
         F(double, w, 80) = F(double, w, 64) * g_ws64b7b8;
     }
-    CallThis(Ws_Select, r, F(BYTE*, g_wsSurface, 104), 1, 0, 0);
+    Material_Select(r, 0, F(BYTE*, g_wsSurface, 104), 1, 0, 0);
     void** vt = *(void***)g_wsDevice;
     ((long(__stdcall*)(BYTE*, int, int))vt[20])(g_wsDevice, 136, 1);
     double rx = step.x * (double)g_ws64f720;
@@ -2648,13 +2626,12 @@ int __cdecl Water_Draw(void*, BYTE* r)
 
 // === a dial's hands turned and its face copied from the screen (FUN_5a6420)
 
+extern "C" void __fastcall Windscreen_Frame(BYTE* s, void*);
 extern "C" void FUN_5a58e0(); KING_ALIAS("_FUN_5a58e0", "@Windscreen_Frame@8")
-extern "C" void Dl_RotY(); KING_ALIAS("_Dl_RotY", "_Matrix_RotationY")
+extern "C" Matrix* __cdecl Matrix_RotationY(Matrix* out, float angle);
 extern "C" void Dl_Apply(); KING_ALIAS("_Dl_Apply", "_Frame_Apply")
-extern "C" void Dl_Switch(); KING_ALIAS("_Dl_Switch", "_Switch_Select")
-extern "C" void Dl_Level(); KING_ALIAS("_Dl_Level", "_Mode_TextureLevel")
+extern "C" int __cdecl Mode_TextureLevel(void);
 extern "C" void Dl_Upload(); KING_ALIAS("_Dl_Upload", "@Texture_Upload@24")
-extern "C" void Dl_Post(); KING_ALIAS("_Dl_Post", "@Queue_PostEvent@12")
 KING_VAR(BYTE*, g_dl7208fc, 7208fc)
 KING_VAR(int, g_dlRows, 67e448)
 
@@ -2692,21 +2669,21 @@ void __fastcall Dial_Update(BYTE* s)
         F(BYTE, F(BYTE*, s, 192), 40) |= 1;
     if (F(WORD*, s, 152))
         F(double, s, 72) = *F(WORD*, s, 152);
-    CallThis(FUN_5a58e0, s);
+    Windscreen_Frame(s, 0);
     float M[12];
     static const int hands[3] = {128, 136, 144};
     for (int k = 0; k < 3; k++)
-        CallC(Dl_Apply, F(void*, s, hands[k]), 0, CallC<void*>(Dl_RotY, M, (float)(F(double, s, 112) - g_dl64da00)));
+        CallC(Dl_Apply, F(void*, s, hands[k]), 0, (void*)Matrix_RotationY((Matrix*)M, (float)(F(double, s, 112) - g_dl64da00)));
     if (!(F(BYTE, s, 164) & 8))
     {
-        CallC(Dl_Switch, F(void*, s, 196), 0);
-        CallThis(Dl_Post, s, 1);
+        Switch_Select((BYTE*)(F(void*, s, 196)), 0);
+        Queue_PostEvent(s, 0, 1);
         return;
     }
-    CallC(Dl_Switch, F(void*, s, 196), 1);
+    Switch_Select((BYTE*)(F(void*, s, 196)), 1);
     if (!F(BYTE*, s, 148))
     {
-        CallThis(Dl_Post, s, 1);
+        Queue_PostEvent(s, 0, 1);
         return;
     }
     if (g_7025b0 && F(BYTE*, s, 200))
@@ -2735,7 +2712,7 @@ void __fastcall Dial_Update(BYTE* s)
                     BYTE* row = surf + (int)y * pitch;
                     if (!((j + frame) % 2))
                     {
-                        bool l2 = CallC<int>(Dl_Level) == 2;
+                        bool l2 = Mode_TextureLevel() == 2;
                         double x = 20.0f;
                         const int* colT = &g_dlRows;
                         WORD* d = dst;
@@ -2761,7 +2738,7 @@ void __fastcall Dial_Update(BYTE* s)
     CallThis(Dl_Upload, F(void*, s, 148), 0, 0, 1.0);
     if (F(BYTE*, s, 200))
         CallThis(Dl_Upload, F(void*, s, 200), 0, 0, 1.0);
-    CallThis(Dl_Post, s, 1);
+    Queue_PostEvent(s, 0, 1);
 }
 
 } // extern "C"
@@ -2775,7 +2752,6 @@ extern "C" void __cdecl Wd_MarkPixel(const BYTE* s, int x, int y, const BYTE* fl
 extern "C" void __cdecl Wd_Line(BYTE* w, int x0, int y0, int x1, int y1, DWORD c, int rgb); KING_ALIAS("_Wd_Line", "_Window_DrawLine")
 extern "C" BYTE* __fastcall Wd_ObjectKind(BYTE* s, void*, int kind, const char* name); KING_ALIAS("@Wd_ObjectKind@16", "@Object_ConstructKind@16")
 extern "C" void __fastcall Wd_OwnerAttach(BYTE* self, void*, BYTE* node); KING_ALIAS("@Wd_OwnerAttach@12", "@Owner_Attach@12")
-extern "C" int __cdecl rand();
 KING_VAR(double, g_wd651540, 651540)
 KING_VAR(double, g_wd64da00, 64da00)
 KING_VAR(float, g_wd7025ac, 7025ac)
@@ -2976,7 +2952,6 @@ void __fastcall Windscreen_Frame(BYTE* s, void*)
 // Batch 32: the explosion effect
 
 extern "C" void Ex32_SkyEffect(); KING_ALIAS("_Ex32_SkyEffect", "@SkyEffect_Construct@68")
-extern "C" void Ex32_ObjFind(); KING_ALIAS("_Ex32_ObjFind", "_Objects_Find")
 KING_VAR(BYTE, ex32_vtbl651448, 651448)
 KING_VAR(BYTE, ex32_vtbl6513fc, 6513fc)
 
@@ -2994,7 +2969,7 @@ BYTE* __fastcall Explosion_Construct(BYTE* self, void*, BYTE* o, int a1, float x
              kind == 1 ? 1 : 4);
     F(void*, self, 0) = &ex32_vtbl651448;
     F(void*, self, 32) = &ex32_vtbl6513fc;
-    F(BYTE*, self, 176) = CallC<BYTE*>(Ex32_ObjFind, name);
+    F(BYTE*, self, 176) = Objects_Find(name);
     F(double, self, 184) = 1.0;
     return self;
 }
@@ -3006,15 +2981,11 @@ BYTE* __fastcall Explosion_Construct(BYTE* self, void*, BYTE* o, int a1, float x
 
 extern "C" void Wf33_MarkPixel(); KING_ALIAS("_Wf33_MarkPixel", "_Gfx_MarkPixel")
 extern "C" void Wf33_SurfaceMark(); KING_ALIAS("_Wf33_SurfaceMark", "_Surface_Mark")
-extern "C" void Wf33_PostEvent(); KING_ALIAS("_Wf33_PostEvent", "@Queue_PostEvent@12")
-extern "C" void Wi33_Base(); KING_ALIAS("_Wi33_Base", "@Worobj5a4120_Construct@28")
-extern "C" void Wi33_Node(); KING_ALIAS("_Wi33_Node", "@Node_Construct@16")
-extern "C" void Wi33_GetWorld(); KING_ALIAS("_Wi33_GetWorld", "@Node_GetWorld@12")
-extern "C" void Wi33_Root(); KING_ALIAS("_Wi33_Root", "@Node_Root@8")
-extern "C" void Wi33_NodeN(); KING_ALIAS("_Wi33_NodeN", "@NodeN_Construct@20")
-extern "C" void Wi33_Apply(); KING_ALIAS("_Wi33_Apply", "@Node_ApplyMatrix@16")
-extern "C" void Wi33_Attach(); KING_ALIAS("_Wi33_Attach", "@WeatherNode_Attach@12")
-extern "C" void Wi33_Fatal(); KING_ALIAS("_Wi33_Fatal", "_Sys_Fatal")
+extern "C" BYTE* __fastcall Worobj5a4120_Construct(BYTE* s, void*, BYTE* w, int name, int c, int d, int e);
+extern "C" BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind);
+extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, int n);
+extern "C" void __fastcall WeatherNode_Attach(BYTE* self, void*, BYTE* node);
 KING_VAR(double, wf33_speed64b938, 64b938)
 KING_VAR(double, wf33_half64b6e0, 64b6e0)
 KING_VAR(float, wf33_wind7025ac, 7025ac)
@@ -3053,7 +3024,7 @@ void __fastcall Flake_Step(BYTE* self, void*)
     surf = F(BYTE*, self, 40);
     int x = F(int, self, 48);
     if ((int)F(WORD, surf, 2) > F(int, self, 52) && x > 0 && x < (int)F(WORD, surf, 0)) {
-        CallThis(Wf33_PostEvent, self, 1);
+        Queue_PostEvent(self, 0, 1);
         return;
     }
     F(int, self, 36) -= 4;
@@ -3067,10 +3038,10 @@ void __fastcall Flake_Step(BYTE* self, void*)
 BYTE* __fastcall WeatherItem_Construct(BYTE* self, void*, BYTE* world, BYTE* a, BYTE* b, int n, int scale, int z,
                                        Wi33_M48 m, int kind)
 {
-    CallThis(Wi33_Base, self, world, n, 0, scale, z);
+    Worobj5a4120_Construct(self, 0, world, n, 0, scale, z);
     BYTE* model = kind == 0 ? b : F(BYTE*, b, 64);
     BYTE* node = self + 256;
-    CallThis(Wi33_Node, node, (const char*)&wi33_name68d1c0, 17);
+    Node_Construct(node, 0, (const char*)&wi33_name68d1c0, 17);
     for (int i = 48; i <= 60; i += 4)
         F(int, node, i) = 0;
     F(void*, node, 0) = &wi33_vtbl64c7dc;
@@ -3085,14 +3056,14 @@ BYTE* __fastcall WeatherItem_Construct(BYTE* self, void*, BYTE* world, BYTE* a, 
     BYTE* owner = a;
     if (kind == 1) {
         if (F(int, b, 16) != 17)
-            CallC(Wi33_Fatal, (const char*)&wi33_s67e918, 0);
-        CallThis(Wi33_GetWorld, F(BYTE*, b, 68), &m);
-        owner = CallThis<BYTE*>(Wi33_Root, b);
+            Sys_Fatal((const char*)&wi33_s67e918, 0);
+        Node_GetWorld(F(BYTE*, b, 68), 0, &m);
+        owner = Node_Root(b, 0);
         F(BYTE, b, 40) |= 1;
     }
     BYTE* p = (BYTE*)operator new(112);
     if (p) {
-        CallThis(Wi33_NodeN, p, (const char*)&wi33_name68d1c0, 6, 1);
+        NodeN_Construct(p, 0, (const char*)&wi33_name68d1c0, 6, 1);
         memset(p + 64, 0, 48);
         memcpy(p + 64, &wi33_identity7025f0, 48);
         F(void*, p, 0) = &wi33_vtbl64d7d0;
@@ -3100,7 +3071,7 @@ BYTE* __fastcall WeatherItem_Construct(BYTE* self, void*, BYTE* world, BYTE* a, 
         F(int, p, 60) = 0;
     }
     F(BYTE*, self, 324) = p;
-    CallThis(Wi33_Apply, p, &m, 0);
+    Node_ApplyMatrix(p, 0, &m, 0);
     BYTE* adj = self ? node : 0;
     if (kind == 0) {
         if (owner == F(BYTE*, world, 524))
@@ -3111,7 +3082,7 @@ BYTE* __fastcall WeatherItem_Construct(BYTE* self, void*, BYTE* world, BYTE* a, 
         CallVirt(F(BYTE*, b, 44), 20, 0, adj);
     }
     memcpy(self + 276, b + 20, 16);
-    CallThis(Wi33_Attach, self, adj);
+    WeatherNode_Attach(self, 0, adj);
     return self;
 }
 
@@ -3131,7 +3102,7 @@ KING_VAR(AsmLabel, wo_67ea14, 67ea14)
 KING_VAR(AsmLabel, wo_vtbl651568, 651568)
 static BYTE* Wo_Find(char* buf)
 {
-    BYTE* o = (BYTE*)CallC<BYTE*>(FUN_5ef2b0, 0, buf);
+    BYTE* o = (BYTE*)Scene_FindObject(0, buf);
     if (!o)
         Sys_Fatal(buf, 0);
     return o;
@@ -3140,7 +3111,7 @@ extern "C" BYTE* __fastcall WeatherKind31_Construct(BYTE* self, void* edx, BYTE*
                                                  DWORD d2lo, DWORD d2hi, const char* name, int count, int c, int flags)
 {
     char buf[64];
-    CallThis(FUN_5d31e0, self, 31, (void*)wo_67ea3c);
+    Object_ConstructKind(self, 0, 31, (const char*)((void*)wo_67ea3c));
     F(BYTE*, self, 32) = owner;
     F(DWORD, self, 40) = d1lo;
     F(DWORD, self, 44) = d1hi;
@@ -3167,7 +3138,7 @@ extern "C" BYTE* __fastcall WeatherKind31_Construct(BYTE* self, void* edx, BYTE*
         sprintf(buf, wo_67ea14, name);
         F(BYTE*, self, 68) = Wo_Find(buf);
     }
-    CallThis(FUN_5d3570, F(BYTE*, self, 32) + 2992, self);
+    Owner_Attach(F(BYTE*, self, 32) + 2992, 0, self);
     return self;
 }
 

@@ -10,7 +10,7 @@ extern "C" void __fastcall Lights_Destruct(BYTE*, void*); // aeffects.cpp
 extern "C" BYTE* __fastcall MarineQueue_Init(BYTE*, void*);
 extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*, void*, BYTE*, DWORD);
 extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*, void*);
-extern "C" void FUN_605900(); KING_ALIAS("_FUN_605900", "_GridMesh_Refine")
+extern "C" void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh);
 extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);
 extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);
 extern "C" void __fastcall GridEdge_Destruct(BYTE*,void*);
@@ -101,7 +101,7 @@ extern "C" void __fastcall MarineGreed_Update(BYTE* self, void*)
     } while (F(BYTE*, self, 40));
     while ((unsigned)F(WORD, self, 38) < CallVirt<unsigned>(F(void*, self, 4), 8)) {
         BYTE* node = MarineQueue_TopNode(F(BYTE*, self, 32), 0);
-        CallC(FUN_605900, F(void*, node, 32), self);
+        GridMesh_Refine((BYTE*)(F(void*, node, 32)), self);
     }
 }
 
@@ -234,7 +234,7 @@ extern "C" int __fastcall MarineGreed_Refine(BYTE* self, void*)
     }
     for (unsigned i = 0; i < g_marineRefinementLimit && (unsigned)F(WORD, self, 38) < desired; ++i) {
         node = MarineQueue_TopNode(F(BYTE*, self, 32), 0);
-        CallC(FUN_605900, F(void*, node, 32), self);
+        GridMesh_Refine((BYTE*)(F(void*, node, 32)), self);
     }
     return 1;
 }
@@ -693,9 +693,9 @@ extern "C" DWORD __fastcall MarineMesh_DrainEdges(BYTE* self, void*)
 extern "C" DWORD __fastcall MarineMesh_ConstructGrid(BYTE*,void*,const DWORD*,float,float,DWORD);
 extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE*,void*,DWORD,DWORD,DWORD);
 extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);
-extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
-extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
-extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
+extern "C" int __fastcall Node_Remove(BYTE* self, void*);
+extern "C" void __fastcall Object_Destroy(BYTE* s);
+extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s);
 extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD*, const DWORD*, const DWORD*, float);
 KING_VAR(AsmLabel, g_marineMeshVtable, 652ff8)
 KING_VAR(AsmLabel, g_marineTaskVtable, 653040)
@@ -742,12 +742,12 @@ extern "C" void __fastcall MarineTask_Destruct(BYTE* self, void*)
     F(void*,self,76)=g_marineTaskSecondaryVtable;
     BYTE* owner=F(BYTE*,self,108);
     if(owner) { MarineTask_ReleaseMesh(owner,0); operator delete(owner); F(void*,self,108)=0; }
-    CallThis(FUN_5ef780,self);
+    Node_Remove(self, 0);
     F(DWORD,self,124)=F(DWORD,self,128)=0;
-    CallThis(FUN_5d3290,self?self+76:0);
+    Object_Destroy(self?self+76:0);
     void* data=F(void*,self,72);
     if(data) operator delete(data);
-    CallThis(FUN_5ef660,self);
+    Sce5ef660_Destroy(self);
 }
 extern "C" BYTE* __fastcall MarineTask_Delete(BYTE* self, void*, DWORD flags)
 {
@@ -973,9 +973,9 @@ extern "C" void __fastcall MarineTask_Frame(BYTE* self, void*, DWORD first, DWOR
 }
 
 // Marine task deferred bounds and update dispatch.
-extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
-extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
-extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
+extern "C" void* __fastcall Camera_Get(BYTE* self, void*, void* out);
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg);
+extern "C" int __fastcall View_SphereClip(BYTE* s, void*, const float* sp);
 extern "C" void __fastcall MarineTask_DrawPending(BYTE*,void*,const float*,const float*,BYTE*);
 KING_VAR(float, g_mt_axisX, 702620)
 KING_VAR(float, g_mt_axisY, 702624)
@@ -997,21 +997,21 @@ extern "C" void __fastcall MarineTask_DeferredBounds(BYTE* self, void*)
 {
     if(F(DWORD,self,56)<20) {
         float scratch[12],matrix[12]={0},direction[3],position[3];
-        const DWORD* result=CallThis<const DWORD*>(FUN_5dbcc0,F(void*,self,36),scratch);
+        const DWORD* result=(const DWORD*)Camera_Get((BYTE*)(F(void*,self,36)), 0, scratch);
         for(unsigned i=0;i<12;++i) F(DWORD,matrix,i*4)=result[i];
         MarineTask_TransformAxis(matrix,direction);
         for(unsigned i=0;i<3;++i) position[i]=MarineTask_QuietCoordinate(matrix+9+i);
         MarineTask_SetBounds(F(BYTE*,self,32),0,(DWORD*)position,(DWORD*)direction);
         ++F(DWORD,self,56);
     } else F(DWORD,self,44)=1;
-    CallThis(FUN_5d32f0,self,1);
+    Queue_PostEvent(self, 0, 1);
 }
 extern "C" DWORD __fastcall MarineTask_DispatchUpdate(BYTE* self, void*, DWORD unused, BYTE* event)
 {
     bool active=F(DWORD,self,116)!=0;
-    if(!CallThis<DWORD>(FUN_5b4fc0,event,self+136)) return 0;
+    if(!(DWORD)View_SphereClip(event, 0, (const float*)(self+136))) return 0;
     float matrix[12],direction[3],position[3];
-    CallThis(FUN_5dbcc0,F(void*,self,112),matrix);
+    Camera_Get((BYTE*)(F(void*,self,112)), 0, matrix);
     MarineTask_TransformAxis(matrix,direction);
     for(unsigned i=0;i<3;++i) position[i]=MarineTask_QuietCoordinate(matrix+9+i);
     float planar[3]={direction[0],direction[1],0};
@@ -1029,13 +1029,13 @@ extern "C" DWORD __fastcall MarineTask_DispatchUpdate(BYTE* self, void*, DWORD u
 }
 
 // Marine task construction and scene resources.
-extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
-extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")
-extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
-extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
-extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
-extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
-extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+extern "C" BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind);
+extern "C" BYTE* __fastcall Object_Construct(BYTE* s, void*, const char* name);
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
+extern "C" int __fastcall Queue_PostEvent2(BYTE* self, void*, int arg);
+extern "C" BYTE* __fastcall Scenes_Find(BYTE* self, void*, const char* name);
+extern "C" BYTE* __fastcall Room_FindObject(BYTE* self, void*, const char* name);
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
 KING_VAR(AsmLabel, g_marineNodeBaseVtable, 650430)
 KING_VAR(AsmLabel, g_marineNodeName, 685c24)
 KING_VAR(AsmLabel, g_marineCommonLibrary, 672688)
@@ -1050,36 +1050,36 @@ static bool MarineTask_NameEqual(const char* a,const char* b)
 }
 extern "C" BYTE* __fastcall MarineTask_Construct(BYTE* self, void*, BYTE* world)
 {
-    CallThis(FUN_5ef6d0,self,g_marineNodeName,24);
+    Node_Construct(self, 0, g_marineNodeName, 24);
     F(DWORD,self,72)=F(DWORD,self,56)=F(DWORD,self,48)=F(DWORD,self,52)=0;
     F(void*,self,0)=g_marineNodeBaseVtable;
     BYTE* secondary=self+76;
-    CallThis(FUN_5d3110,secondary,g_marineNodeName);
+    Object_Construct(secondary, 0, g_marineNodeName);
     for(unsigned i=136;i<=148;i+=4) F(DWORD,self,i)=0;
     F(void*,self,0)=g_marineTaskVtable;F(void*,secondary,0)=g_marineTaskSecondaryVtable;
     g_marineRecordedState=world;F(BYTE*,self,112)=world;
-    CallThis(FUN_5d3570,world+2992,secondary);
-    CallThis(FUN_5d33d0,secondary,1);
+    Owner_Attach(world+2992, 0, secondary);
+    Queue_PostEvent2(secondary, 0, 1);
     F(DWORD,self,120)=F(DWORD,self,116)=F(DWORD,self,132)=0;
     BYTE* meshOwner=(BYTE*)operator new(4);
     if(meshOwner) meshOwner=MarineMesh_Create(meshOwner,0,3284664320u,1163575296u,0,
                                             1166843904u,1157234688u,g_mt_frameValue,0);
     F(BYTE*,self,108)=meshOwner;
     float scratch[12],matrix[12]={0},direction[3],position[3];
-    const DWORD* result=CallThis<const DWORD*>(FUN_5dbcc0,world,scratch);
+    const DWORD* result=(const DWORD*)Camera_Get(world, 0, scratch);
     for(unsigned i=0;i<12;++i) F(DWORD,matrix,i*4)=result[i];
     MarineTask_TransformAxis(matrix,direction);
     for(unsigned i=0;i<3;++i) position[i]=MarineTask_QuietCoordinate(matrix+9+i);
     MarineTask_RebuildBounds(F(BYTE*,self,108),0,(DWORD*)position,(DWORD*)direction);
     if(F(DWORD,F(void*,self,112),524)) {
-        BYTE* library=CallThis<BYTE*>(FUN_5d9290,F(void*,self,112),g_marineCommonLibrary);
-        BYTE* node=CallThis<BYTE*>(FUN_5ef390,library,g_marineRainNodeName);
+        BYTE* library=Scenes_Find((BYTE*)(F(void*,self,112)), 0, g_marineCommonLibrary);
+        BYTE* node=Room_FindObject(library, 0, g_marineRainNodeName);
         if(!node) CallC(FUN_60aad0,0x88762715u,g_marineErrorFormat,g_marineTaskFile,46,g_marineDate);
         F(DWORD,self,44)=F(DWORD,node,44);
-        CallThis(FUN_5d2190,self,node);
+        Node_Link(self, 0, node);
         F(DWORD,self,36)=F(DWORD,node,36);
     }
-    BYTE* library=CallThis<BYTE*>(FUN_5d9290,F(void*,self,112),g_marineCommonLibrary);
+    BYTE* library=Scenes_Find((BYTE*)(F(void*,self,112)), 0, g_marineCommonLibrary);
     unsigned count=F(unsigned,library,72);
     BYTE* material=0;
     if(count) {
@@ -1097,7 +1097,7 @@ extern "C" BYTE* __fastcall MarineTask_Construct(BYTE* self, void*, BYTE* world)
 }
 
 // Marine pending-state quad rendering and camera field of view.
-extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
 KING_VAR(float, g_mq_zero, 64c264)
 KING_VAR(float, g_mq_one, 64c250)
 KING_VAR(float, g_mq_half, 64c258)
@@ -1161,7 +1161,7 @@ extern "C" void __fastcall MarineTask_DrawPending(BYTE* self,void*,const float* 
     Vec3_Diff(&point,&center,&temporary);
     Vec3_Diff(&point,&point,&lower);
     Fx_Set2Vec((BYTE*)vertices[3],0,&point,&normal,0,0x3f800000);
-    CallThis(FUN_5b1020,event,F(DWORD,self,152),1,0,0);
+    Material_Select(event, 0, (BYTE*)(F(DWORD,self,152)), 1, 0, 0);
     BYTE* device=(BYTE*)g_mt_frameValue;
     CallStd((void(*)())F(void*,F(void*,device,0),80),device,136,1);
     device=(BYTE*)g_mt_frameValue;
@@ -1386,7 +1386,7 @@ extern "C" void __fastcall MarineParticlePool_Render(BYTE* self,void*,BYTE* devi
         MarineMatrix_RotateZ(rotation,F(float,F(BYTE*,self,12)+offset,52));
         MarineMatrix_Multiply(matrix,(float*)translation,(float*)rotation);
         CallStd((void(*)())F(void*,F(void*,device,0),44),device,1,matrix);
-        CallThis(FUN_5b1020,event,material,0,0,0);
+        Material_Select(event, 0, (BYTE*)material, 0, 0, 0);
         CallStd((void(*)())F(void*,F(void*,device,0),80),device,136,1);
         CallStd((void(*)())F(void*,F(void*,device,0),100),device,1,66,F(void*,self,8),F(DWORD,self,24),0);
     }
@@ -1687,7 +1687,7 @@ extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE* self,void*,DWOR
 
 // ---------------------------------------------------------------------------
 #include <stdarg.h>
-extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
 // [FUN_60aa60..$L_60aab3] a grid message: printf-style text, fatal for level 2, else logged
@@ -1702,6 +1702,6 @@ extern "C" void __cdecl Grd_Message(int level, const char* fmt, ...)
     if (level == 2)
         Sys_Fatal(text, 0);
     else
-        CallC(FUN_5d2ba0, text, 0);
+        Sys_Log(text, 0);
 }
 
