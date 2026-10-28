@@ -9,30 +9,32 @@
 
 extern "C" double __cdecl AI_Now();
 KING_ALIAS("_AI_Now", "_Ai_Clock")
-extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
-extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
+extern "C" char** __fastcall CharVec_Construct(char** self, void*, const char* s);
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
-extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
-extern "C" void FUN_4471f0(); KING_ALIAS("_FUN_4471f0", "@CharVec_Erase@16")
-extern "C" void FUN_47aad0(); KING_ALIAS("_FUN_47aad0", "@Bytes_Reserve@12")
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
+extern "C" BYTE* __fastcall CharVec_Erase(void* s, void*, BYTE* first, BYTE* last);
+extern "C" void __fastcall Bytes_Reserve(BYTE** self, void*, unsigned n);
 extern "C" void FUN_47ab20(); KING_ALIAS("_FUN_47ab20", "@CharVec_PushBack@12")
 extern "C" void FUN_410df0(); KING_ALIAS("_FUN_410df0", "@CharVec_Str@8")
 extern "C" void FUN_407320(); KING_ALIAS("_FUN_407320", "@CharVec_Equals@12")
 extern "C" void FUN_483c10(); KING_ALIAS("_FUN_483c10", "_AI_UpdateSwitch")
-extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
-extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
-extern "C" void FUN_473420(); KING_ALIAS("_FUN_473420", "_Players_Append")
-extern "C" void FUN_474720(); KING_ALIAS("_FUN_474720", "@Player_Load@12")
-extern "C" void FUN_480650(); KING_ALIAS("_FUN_480650", "_Save_RebaseTime")
-extern "C" void FUN_422390(); KING_ALIAS("_FUN_422390", "_Player_Register")
-extern "C" void FUN_420000(); KING_ALIAS("_FUN_420000", "_Rec_4015a0Both")
-extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
+extern "C" int __cdecl Save_ParseHeader(int** cur, int* id, int** data, int* size);
+extern "C" int __cdecl Save_BlockEnd(BYTE** out, BYTE* data, int size);
+extern "C" BYTE* __cdecl Players_Append(int kind);
+extern "C" void __fastcall Player_Load(BYTE* self, void*, BYTE** cur);
+extern "C" void __cdecl Save_RebaseTime(double* t);
+extern "C" DWORD* __cdecl Player_Register(DWORD* out, BYTE* p);
+extern "C" void __cdecl Rec_4015a0Both(int id);
+extern "C" int* __fastcall Int_Set(int* s, void*, int a);
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+extern "C" void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
-extern "C" void FUN_475b20(); KING_ALIAS("_FUN_475b20", "@Player_Save@12")
+extern "C" void __fastcall Player_Save(BYTE* self, void*, BYTE* s);
+extern "C" BYTE* __cdecl AI_ListData(BYTE* node);
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
 extern "C" void FUN_4810e0(); KING_ALIAS("_FUN_4810e0", "_Save_Town")
+extern "C" void __cdecl Save_Present(BYTE** v, BYTE* p);
 extern "C" void FUN_481790(); KING_ALIAS("_FUN_481790", "_Save_Present")
 extern "C" void FUN_482320(); KING_ALIAS("_FUN_482320", "_Save_Ambush")
 typedef char AsmLabel[1];
@@ -66,7 +68,7 @@ struct E12 { DWORD a, b, key; };
 
 extern "C" BYTE* __fastcall SvRec480550_Construct(BYTE* self, void*, int a)
 {
-    CallThis(FUN_470900, self, a);
+    CharVec_Construct((char**)self, 0, (const char*)a);
     for (int i = 16; i <= 48; i += 4)
         F(int, self, i) = 0;
     return self;
@@ -74,7 +76,7 @@ extern "C" BYTE* __fastcall SvRec480550_Construct(BYTE* self, void*, int a)
 
 extern "C" BYTE* __fastcall SvRec480580_Construct(BYTE* self, void*, int a)
 {
-    CallThis(FUN_470900, self, a);
+    CharVec_Construct((char**)self, 0, (const char*)a);
     F(int, self, 16) = 0;
     F(int, self, 20) = 0;
     return self;
@@ -113,7 +115,7 @@ extern "C" void __fastcall PtrVec_Reserve(BYTE** self, void*, unsigned n)
     BYTE* p = CallThis<BYTE*>(FUN_44ac60, self, n, first, last);
     int cap = (int)(self[2] - self[0]) >> 2;
     if (cap)
-        CallC(FUN_44b4a0, self[0], cap * 4);
+        Ai_PoolFree(self[0], cap * 4);
     self[0] = p;
     self[1] = p + size * 4;
     self[2] = p + n * 4;
@@ -196,7 +198,7 @@ static void Chunk_Close(SaveChunk* c)
 
 static void Save_Bytes(BYTE* s, const void* p, int n)
 {
-    CallThis(FUN_46e460, s, F(BYTE*, s, 4), (const BYTE*)p, (const BYTE*)p + n);
+    CharVec_InsertRange((BYTE**)s, 0, F(BYTE*, s, 4), (BYTE*)((const BYTE*)p), (BYTE*)((const BYTE*)p + n));
 }
 
 // the name (a vector<char> at +0): its length, then its bytes one by one
@@ -226,7 +228,7 @@ void __cdecl Save_Player(BYTE* s, BYTE* p)
 {
     SaveChunk c;
     Chunk_Open(&c, s, (const DWORD*)g_tagPLYR);
-    CallThis(FUN_475b20, p, s);
+    Player_Save(p, 0, s);
     Chunk_Close(&c);
 }
 
@@ -237,7 +239,7 @@ void __cdecl Save_Players(BYTE* s)
     Chunk_Open(&c, s, (const DWORD*)g_tagPLRS);
     BYTE* head = (BYTE*)g_ordrPlayers;
     for (BYTE* it = *(BYTE**)head; it != (BYTE*)g_ordrPlayers; it = *(BYTE**)it)
-        Save_Player(s, CallC<BYTE*>(FUN_40a9f0, it));
+        Save_Player(s, AI_ListData(it));
     Chunk_Close(&c);
 }
 
@@ -254,7 +256,7 @@ void __cdecl Save_Routes(BYTE* s)
     SaveChunk c;
     Chunk_Open(&c, s, (const DWORD*)g_tagPRSS);
     for (BYTE* n = *(BYTE**)g_68cf6c; n != g_68cf6c; n = *(BYTE**)n)
-        CallC(FUN_481790, s, F(BYTE*, n, 8));
+        Save_Present((BYTE**)s, F(BYTE*, n, 8));
     Chunk_Close(&c);
 }
 
@@ -332,11 +334,11 @@ void __cdecl Load_FixPlayers()
 {
     BYTE* head = (BYTE*)g_ordrPlayers;
     for (BYTE* it = *(BYTE**)head; it != (BYTE*)g_ordrPlayers; it = *(BYTE**)it) {
-        BYTE* p = CallC<BYTE*>(FUN_40a9f0, it);
+        BYTE* p = AI_ListData(it);
         if (!F(BYTE, p, 792)) {
             int id;
-            CallThis(FUN_426280, &id, it);
-            CallC(FUN_420000, id);
+            Int_Set(&id, 0, (int)it);
+            Rec_4015a0Both(id);
         } else {
             AiError(0, 100, (const char*)s_svldFile, (const char*)s_svldId, 741, "Internal error 08457",
                     &g_ordrEmpty, &g_ordrEmpty);
@@ -355,13 +357,13 @@ struct LoadChunkS {
 static bool LoadChunk_Open(LoadChunkS* c, BYTE** cur, const void* tag)
 {
     c->cur = cur;
-    CallC(FUN_490c40, cur, &c->tag, &c->a, &c->b);
+    Save_ParseHeader((int**)cur, (int*)&c->tag, (int**)&c->a, &c->b);
     return c->tag == *(const DWORD*)tag;
 }
 
 static void LoadChunk_Close(LoadChunkS* c)
 {
-    CallC(FUN_490c70, c->cur, c->a, c->b);
+    Save_BlockEnd(c->cur, (BYTE*)c->a, c->b);
 }
 
 extern "C" {
@@ -371,22 +373,22 @@ void __cdecl Load_Player(BYTE** cur)
 {
     LoadChunkS c;
     if (LoadChunk_Open(&c, cur, g_tagPLYR)) {
-        BYTE* p = CallC<BYTE*>(FUN_473420, &g_ordrEmpty);
-        CallThis(FUN_474720, p, cur);
-        CallC(FUN_480650, p + 784);
-        CallC(FUN_480650, p + 104);
+        BYTE* p = Players_Append((int)&g_ordrEmpty);
+        Player_Load(p, 0, cur);
+        Save_RebaseTime((double*)(p + 784));
+        Save_RebaseTime((double*)(p + 104));
         for (BYTE* e = F(BYTE*, p, 136); e != F(BYTE*, p, 140); e += 8)
-            CallC(FUN_480650, e);
+            Save_RebaseTime((double*)e);
         for (int k = 508; k <= 512; k += 4) {
             BYTE* r = F(BYTE*, p, k);
             if (!r)
                 continue;
             for (BYTE* e = F(BYTE*, r, 28); e != F(BYTE*, F(BYTE*, p, k), 32); e += 144) {
-                CallC(FUN_480650, e + 72);
-                CallC(FUN_480650, e + 80);
+                Save_RebaseTime((double*)(e + 72));
+                Save_RebaseTime((double*)(e + 80));
             }
         }
-        CallC(FUN_422390, &cur, p);
+        Player_Register((DWORD*)&cur, p);
     }
     LoadChunk_Close(&c);
 }
@@ -398,8 +400,8 @@ static void Load_NameInto(BYTE** cur, BYTE** v)
 {
     int n = F(int, *cur, 0);
     *cur += 4;
-    CallThis(FUN_4471f0, v, v[0], v[1]);
-    CallThis(FUN_47aad0, v, n);
+    CharVec_Erase(v, 0, v[0], v[1]);
+    Bytes_Reserve(v, 0, n);
     for (int i = n; i > 0; i--) {
         BYTE c = **cur;
         (*cur)++;
@@ -410,7 +412,7 @@ static void Load_NameInto(BYTE** cur, BYTE** v)
 static void NameVec_Free(BYTE** v)
 {
     if (v[2] != v[0])
-        CallC(FUN_44b4a0, v[0], v[2] - v[0]);
+        Ai_PoolFree(v[0], v[2] - v[0]);
 }
 
 // the first record of [first, last) whose name ([FUN_410df0]) is name
@@ -546,11 +548,14 @@ KING_VAR(AsmLabel, s_aiStream66ff3c, 66ff3c)
 KING_VAR(AsmLabel, s_errOpen66ff58, 66ff58)
 KING_VAR(AsmLabel, s_errRead66ff40, 66ff40)
 KING_VAR(char, g_empty68d1c0s, 68d1c0)
+extern "C" void __cdecl Ai_LoadState(BYTE* p);
 extern "C" void FUN_482a70(); KING_ALIAS("_FUN_482a70", "_Ai_LoadState")    // reads the AI state from a buffer
-extern "C" void FUN_477780(); KING_ALIAS("_FUN_477780", "_Players_Each4776b0")
-extern "C" void FUN_478910(); KING_ALIAS("_FUN_478910", "_Routes_Each477600")
-extern "C" void FUN_478950(); KING_ALIAS("_FUN_478950", "_Ambushes_Each477600")
+extern "C" void __cdecl Players_Each4776b0();
+extern "C" void __cdecl Routes_Each477600();
+extern "C" void __cdecl Ambushes_Each477600();
+extern "C" void __cdecl Load_RelinkPlayers();
 extern "C" void FUN_482d20(); KING_ALIAS("_FUN_482d20", "_Load_RelinkPlayers")
+extern "C" void __cdecl Load_FixPlayers();
 extern "C" void FUN_483320(); KING_ALIAS("_FUN_483320", "_Load_FixPlayers")
 
 // [FUN_4835d0] loads the AI state from its stream in a saved game, then fixes the links
@@ -568,22 +573,22 @@ extern "C" void __cdecl AI_LoadFromStorage(IStorage* stg)
     if (s->Read(p, st.cbSize.LowPart, &read) < 0)
         AiError(0, 1, (const char*)s_svldFile, (const char*)s_svldId, 802, s_errRead66ff40, &g_empty68d1c0s, &g_empty68d1c0s);
     s->Release();
-    CallC(FUN_482a70, p);
+    Ai_LoadState(p);
     operator delete(p);
-    CallC(FUN_477780);
-    CallC(FUN_478910);
-    CallC(FUN_478950);
-    CallC(FUN_482d20);
-    CallC(FUN_483320);
+    Players_Each4776b0();
+    Routes_Each477600();
+    Ambushes_Each477600();
+    Load_RelinkPlayers();
+    Load_FixPlayers();
 }
 
 // ---------------------------------------------------------------------------
 // Relinking after a load
 
-extern "C" void FUN_4175c0(); KING_ALIAS("_FUN_4175c0", "_Player_MarkListed")
-extern "C" void FUN_417770(); KING_ALIAS("_FUN_417770", "_Player_Retire")
-extern "C" void FUN_419490(); KING_ALIAS("_FUN_419490", "@Market_Get@8")
-extern "C" void FUN_448a60(); KING_ALIAS("_FUN_448a60", "@Vec36_At@12")
+extern "C" void __cdecl Player_MarkListed(BYTE* id);
+extern "C" void __cdecl Player_Retire(BYTE* id);
+extern "C" void* __fastcall Market_Get(const int* s, void*);
+extern "C" BYTE* __fastcall Vec36_At(void* s, void*, int i);
 KING_VAR(BYTE**, g_towns68cc98, 68cc98)
 KING_VAR(BYTE**, g_towns68cc9c, 68cc9c)
 KING_VAR(BYTE**, g_68cf00, 68cf00)
@@ -607,14 +612,14 @@ KING_VAR(AsmLabel, s_err66fee8, 66fee8)
 static int Relink_Id(BYTE* it)
 {
     int id;
-    CallThis(FUN_426280, &id, it);
+    Int_Set(&id, 0, (int)it);
     return id;
 }
 
 // the town of a player of state 256/257 counts it, and the player's slot there gets its id and the flag
 static int Relink_Slot(BYTE* it, int line, DWORD flag)
 {
-    BYTE* p = CallC<BYTE*>(FUN_40a9f0, it);
+    BYTE* p = AI_ListData(it);
     F(int, g_towns68cc98[F(int, p, 112)], 40)++;
     int t = F(int, CallC<BYTE*>(FUN_40a9f0, it), 112);
     if (t == -1)
@@ -633,7 +638,7 @@ static int Relink_Slot(BYTE* it, int line, DWORD flag)
                 &g_ordrEmpty, &g_ordrEmpty);
     int id = Relink_Id(it);
     k = F(int, CallC<BYTE*>(FUN_40a9f0, it), 116);
-    BYTE* e = CallThis<BYTE*>(FUN_448a60, CallThis<BYTE*>(FUN_419490, &t) + 28, k);
+    BYTE* e = Vec36_At((BYTE*)Market_Get(&t, 0) + 28, 0, k);
     F(int, e, 8) = id;
     k = F(int, CallC<BYTE*>(FUN_40a9f0, it), 116);
     F(DWORD, F(BYTE*, g_towns68cc98[t], 28) + k * 36, 4) |= flag;
@@ -652,7 +657,7 @@ void __cdecl Load_RelinkPlayers()
     g_68d18c = 0;
     for (BYTE* it = *(BYTE**)g_ordrPlayers; it != (BYTE*)g_ordrPlayers; it = *(BYTE**)it) {
         if (F(BYTE, CallC<BYTE*>(FUN_40a9f0, it), 488))
-            CallC(FUN_4175c0, Relink_Id(it));
+            Player_MarkListed((BYTE*)(Relink_Id(it)));
         if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 256) {
             int t = Relink_Slot(it, 653, 1);
             int k = F(int, CallC<BYTE*>(FUN_40a9f0, it), 116);
@@ -666,8 +671,8 @@ void __cdecl Load_RelinkPlayers()
             Relink_Slot(it, 676, 2);
         }
         if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 5)
-            CallC(FUN_417770, Relink_Id(it));
-        BYTE* p = CallC<BYTE*>(FUN_40a9f0, it);
+            Player_Retire((BYTE*)(Relink_Id(it)));
+        BYTE* p = AI_ListData(it);
         if (F(int, p, 152) != F(int, p, 156))
             g_68d18c++;
     }
@@ -699,15 +704,15 @@ KING_VAR(AsmLabel, g_tag66fe38, 66fe38)
 KING_VAR(AsmLabel, g_tag66fe30, 66fe30)
 KING_VAR(void*, g_pr68d11c, 68d11c)
 extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
-extern "C" void FUN_41bd30(); KING_ALIAS("_FUN_41bd30", "_Presents_Append")
-extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
-extern "C" void FUN_4488e0(); KING_ALIAS("_FUN_4488e0", "@Vec16_FreeStorage@8")
+extern "C" int* __cdecl Presents_Append(int* out, int v);
+extern "C" int* __fastcall Int_Copy(int* s, void*, const int* src);
+extern "C" void __fastcall Vec16_FreeStorage(BYTE** v, int);
 extern "C" void FUN_466400(); KING_ALIAS("_FUN_466400", "_UninitFill16")
 extern "C" void FUN_467180(); KING_ALIAS("_FUN_467180", "@Vec16_Reserve@16")
-extern "C" void FUN_472410(); KING_ALIAS("_FUN_472410", "@DriverRec_Load@12")
-extern "C" void FUN_478ac0(); KING_ALIAS("_FUN_478ac0", "@Orders144_Destroy@8")
-extern "C" void FUN_481740(); KING_ALIAS("_FUN_481740", "_Save_Read3Doubles")
-extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void __fastcall DriverRec_Load(BYTE* s, void*, DWORD** pp);
+extern "C" void __fastcall Orders144_Destroy(BYTE** self, void*);
+extern "C" void __cdecl Save_Read3Doubles(BYTE** cursor, DWORD* out);
+extern "C" void** __fastcall Vec_Construct(void** self, void*, int);
 
 static DWORD Pr_32(BYTE** c) { DWORD v = F(DWORD, *c, 0); *c += 4; return v; }
 static void Pr_64(BYTE** c, BYTE* to) { F(DWORD, to, 0) = F(DWORD, *c, 0); F(DWORD, to, 4) = F(DWORD, *c, 4); *c += 8; }
@@ -737,8 +742,8 @@ static BYTE* Pr_Record32(BYTE** cur)
 static void Pr_Record48(BYTE* e, BYTE** cur)
 {
     if (BYTE* old = F(BYTE*, e, 20)) {
-        CallThis(FUN_478ac0, old + 28);
-        CallThis(FUN_4488e0, old + 16);
+        Orders144_Destroy((BYTE**)(old + 28), 0);
+        Vec16_FreeStorage((BYTE**)(old + 16), 0);
         operator delete(old);
     }
     BYTE* r = (BYTE*)operator new(48);
@@ -751,11 +756,11 @@ static void Pr_Record48(BYTE* e, BYTE** cur)
         BYTE alloc[2];
         CallThis(FUN_467180, r + 16, 19, alloc);
         F(BYTE*, r, 20) = CallC<BYTE*>(FUN_466400, F(BYTE*, r, 16), 19, t, r);
-        CallThis(FUN_487730, r + 28, alloc + 1);
+        Vec_Construct((void**)(r + 28), 0, (int)(alloc + 1));
         F(DWORD, r, 40) = 0;
     }
     F(BYTE*, e, 20) = r;
-    CallThis(FUN_472410, r, cur);
+    DriverRec_Load(r, 0, (DWORD**)cur);
 }
 
 extern "C" {
@@ -787,7 +792,7 @@ void __cdecl Load_Present(BYTE** cur)
         F(DWORD, e, 16) = Pr_32(cur);
         F(DWORD, e, 24) = Pr_32(cur);
         F(DWORD, e, 0) = Pr_32(cur);
-        CallC(FUN_481740, cur, e + 32);
+        Save_Read3Doubles(cur, (DWORD*)(e + 32));
         F(DWORD, e, 80) = Pr_32(cur);
         F(DWORD, e, 60) = Pr_32(cur);
         F(DWORD, e, 56) = Pr_32(cur);
@@ -799,7 +804,7 @@ void __cdecl Load_Present(BYTE** cur)
         F(BYTE, e, 104) = **cur;
         *cur += 1;
         F(DWORD, e, 108) = Pr_32(cur);
-        CallC(FUN_480650, e + 96);
+        Save_RebaseTime((double*)(e + 96));
         while (*c.cur != (BYTE*)(c.a + c.b)) {
             LoadChunkS s;
             LoadChunk_Open(&s, cur, g_tag66fe38);
@@ -811,12 +816,12 @@ void __cdecl Load_Present(BYTE** cur)
         }
         if (BYTE* r = F(BYTE*, e, 20))
             for (BYTE* o = F(BYTE*, r, 28); o != F(BYTE*, F(BYTE*, e, 20), 32); o += 144) {
-                CallC(FUN_480650, o + 72);
-                CallC(FUN_480650, o + 80);
+                Save_RebaseTime((double*)(o + 72));
+                Save_RebaseTime((double*)(o + 80));
             }
         int it, copy;
-        CallC(FUN_41bd30, &it, e);
-        CallThis(FUN_41d300, &copy, &it);
+        Presents_Append(&it, (int)e);
+        Int_Copy(&copy, 0, &it);
         ((void (__cdecl*)(int, int))g_pr68d11c)(copy, 1);
     }
     LoadChunk_Close(&c);
@@ -827,7 +832,8 @@ void __cdecl Load_Present(BYTE** cur)
 // === saving a present (FUN_481790)
 
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
-extern "C" void FUN_4722c0(); KING_ALIAS("_FUN_4722c0", "@Rec4722c0_Save@12")
+extern "C" void __fastcall Rec4722c0_Save(DWORD* self, void*, BYTE* stream);
+extern "C" void __cdecl Save_Doubles3(BYTE* s, const double* v);
 extern "C" void FUN_4816d0(); KING_ALIAS("_FUN_4816d0", "_Save_Doubles3")
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
@@ -844,7 +850,7 @@ static void Sp_End(Sp_Block* b) { CallC(FUN_490ce0, b->v, &b->mark); }
 
 static void Sp_Put(BYTE** v, const void* p, int n)
 {
-    CallThis(FUN_46e460, v, v[1], (const BYTE*)p, (const BYTE*)p + n);
+    CharVec_InsertRange(v, 0, v[1], (BYTE*)((const BYTE*)p), (BYTE*)((const BYTE*)p + n));
 }
 
 extern "C" {
@@ -859,7 +865,7 @@ void __cdecl Save_Present(BYTE** v, BYTE* p)
     static const int first[] = {8, 12, 16, 24, 0};
     for (int k : first)
         Sp_Put(v, p + k, 4);
-    CallC(FUN_4816d0, v, p + 32);
+    Save_Doubles3((BYTE*)v, (const double*)(p + 32));
     Sp_Put(v, p + 80, 4);
     Sp_Put(v, p + 60, 4);
     Sp_Put(v, p + 56, 4);
@@ -885,7 +891,7 @@ void __cdecl Save_Present(BYTE** v, BYTE* p)
     if (BYTE* o = F(BYTE*, p, 20)) {
         Sp_Block b;
         Sp_Begin(&b, v, g_tag66fe30);
-        CallThis(FUN_4722c0, o, v);
+        Rec4722c0_Save((DWORD*)o, 0, (BYTE*)v);
         Sp_End(&b);
     }
     Sp_End(&outer);
@@ -895,8 +901,8 @@ void __cdecl Save_Present(BYTE** v, BYTE* p)
 
 // === loading a town (FUN_481330)
 
-extern "C" void FUN_447230(); KING_ALIAS("_FUN_447230", "@CharVec_Clear@8")
-extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // console: print (text, x)
+extern "C" BYTE* __fastcall CharVec_Clear(void* s, void*);
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 KING_VAR(AsmLabel, s_svld66fe14, 66fe14)
 KING_VAR(AsmLabel, s_svld66fdfc, 66fdfc)
 KING_VAR(AsmLabel, s_svld66d5ac, 66d5ac)
@@ -912,11 +918,11 @@ void __cdecl Load_Town(BYTE** cur)
     if (LoadChunk_Open(&c, cur, g_tagTOWN)) {
         BYTE* v[3];
         char alloc;
-        CallThis(FUN_487730, v, &alloc);
+        Vec_Construct((void**)v, 0, (int)&alloc);
         int n = F(int, *cur, 0);
         *cur += 4;
-        CallThis(FUN_447230, v);
-        CallThis(FUN_47aad0, v, n);
+        CharVec_Clear(v, 0);
+        Bytes_Reserve(v, 0, n);
         for (; n; n--) {
             BYTE ch = **cur;
             (*cur)++;
@@ -946,10 +952,10 @@ void __cdecl Load_Town(BYTE** cur)
                 if (node[0] == 0xFFFFFFFF) {
                     AiError(0, 200, (const char*)s_svldFile, (const char*)s_svldId, 256, s_svld66fdfc, &g_ordrEmpty,
                             &g_ordrEmpty);
-                    CallC(FUN_5d2ba0, s_svld66d5ac, node[2]);
-                    CallC(FUN_5d2ba0, s_svld66d5ac, node[1]);
+                    Sys_Log(s_svld66d5ac, node[2]);
+                    Sys_Log(s_svld66d5ac, node[1]);
                 }
-                CallC(FUN_480650, node + 4);
+                Save_RebaseTime((double*)(node + 4));
                 BYTE* entry = F(BYTE*, *it, 28) + idx * 16;
                 if (!F(DWORD*, entry, 8))
                     F(DWORD*, entry, 8) = node;
@@ -1008,7 +1014,7 @@ void __cdecl Ai_LoadState(BYTE* p)
 
 // === saving the AI state (FUN_4833a0)
 
-extern "C" void FUN_480680(); KING_ALIAS("_FUN_480680", "_Ai_SaveGlobals")
+extern "C" void __cdecl Ai_SaveGlobals(BYTE** v);
 KING_VAR(AsmLabel, s_sv66ff24, 66ff24)
 KING_VAR(AsmLabel, s_sv66ff14, 66ff14)
 
@@ -1029,7 +1035,7 @@ void __cdecl AI_SaveToStorage(IStorage* stg)
     v[2] = p + 262144;
     int mark;
     CallC(FUN_490c90, v, (const char*)g_tagAll66fec0, &mark);
-    CallC(FUN_480680, v);
+    Ai_SaveGlobals(v);
     Save_Players((BYTE*)v);
     Save_Towns((BYTE*)v);
     Save_Routes((BYTE*)v);
@@ -1043,7 +1049,7 @@ void __cdecl AI_SaveToStorage(IStorage* stg)
                 &g_empty68d1c0s);
     s->Release();
     if (v[2] - v[0])
-        CallC(FUN_44b4a0, v[0], (int)(v[2] - v[0]));
+        Ai_PoolFree(v[0], (int)(v[2] - v[0]));
 }
 
 } // extern "C"

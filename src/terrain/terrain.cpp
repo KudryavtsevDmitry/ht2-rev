@@ -11,8 +11,9 @@ typedef char AsmLabel[1];
 typedef int Ints[1];
 typedef DWORD Dwords[1];
 
+extern "C" void __cdecl Noise_Seed(unsigned seed);
 extern "C" void FUN_616ca0(); KING_ALIAS("_FUN_616ca0", "_Noise_Seed")    // seeds the noise tables
-extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // the scene object with this name (0, name)
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report
 
 KING_VAR(Ints, g_perm, 72b068)                 // noise permutation
@@ -134,7 +135,7 @@ BYTE* __fastcall Decals_Construct(BYTE* self, void*, int owner, int n, int c, in
     F(int, self, 16) = 0;
     F(int, self, 28) = -1;
     F(int, self, 8) = 0;
-    CallC(FUN_616ca0, 2158);
+    Noise_Seed(2158);
     return self;
 }
 
@@ -192,7 +193,7 @@ BYTE* __fastcall RoomObjects_Construct(BYTE* self, void*, int a, int b)
 void __fastcall RoomObjects_Attach(BYTE* self, void*)
 {
     const char* name = F(int, g_6cec6c, 1316) ? s_roomTr : s_roomAa;
-    BYTE* room = CallC<BYTE*>(FUN_5ef2b0, 0, name);
+    BYTE* room = Scene_FindObject(0, name);
     if (!room)
         CallC(FUN_60aad0, 0x88760115, (const char*)s_fileLine, (const char*)s_terrainFile, 810,
               (const char*)s_buildDate);
@@ -220,9 +221,9 @@ void __fastcall RoomObjects_Clear(BYTE* self, void*)
 
 }
 
-extern "C" void FUN_60bbb0(); KING_ALIAS("_FUN_60bbb0", "@Mesh_Clear@4")
-extern "C" void FUN_5f4a90(); KING_ALIAS("_FUN_5f4a90", "@Value_Free@4")
-extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
+extern "C" void __fastcall Mesh_Clear(BYTE* s);
+extern "C" void __fastcall Value_Free(int* s);
+extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s);
 KING_VAR(char, g_vtbl6532ec, 6532ec)
 KING_VAR(char, g_vtbl653308, 653308)
 
@@ -237,7 +238,7 @@ void __fastcall Terrain614490_Destroy(BYTE* self, void*)
         CallVirt(o, 0, 1);
         F(BYTE*, self, 4) = 0;
     }
-    CallThis(FUN_60bbb0, self);
+    Mesh_Clear(self);
 }
 
 // [FUN_619ae0] destructor
@@ -246,18 +247,21 @@ void __fastcall Terrain619ae0_Destroy(BYTE* self, void*)
     int* back = F(int*, self, 76);
     F(void*, self, 0) = &g_vtbl653308;
     *back = 0;
-    CallThis(FUN_5f4a90, self + 64);
+    Value_Free((int*)(self + 64));
     if (F(void*, self, 60))
         operator delete(F(void*, self, 60));
-    CallThis(FUN_5ef660, self);
+    Sce5ef660_Destroy(self);
 }
 
 }
 
-extern "C" void FUN_60c2b0(); KING_ALIAS("_FUN_60c2b0", "@GridMesh_Frame@8")
+extern "C" int __fastcall GridMesh_Frame(BYTE* s,void*);
+extern "C" void __fastcall Terrain_PlacePlants(BYTE* s, void*, BYTE** l);
 extern "C" void FUN_619c20(); KING_ALIAS("_FUN_619c20", "@Terrain_PlacePlants@12")
+extern "C" void __fastcall TerrainPart_Draw(BYTE* self, void*, BYTE* view);
 extern "C" void FUN_619850(); KING_ALIAS("_FUN_619850", "@TerrainPart_Draw@12")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // reports an error code with file, line and date
+extern "C" void __fastcall Decals_Reset16(BYTE* self, void*);
 extern "C" void FUN_617100(); KING_ALIAS("_FUN_617100", "@Decals_Reset16@8")
 extern "C" __declspec(dllimport) DWORD __stdcall timeGetTime(void);
 
@@ -268,15 +272,15 @@ void __fastcall Terrain615670_Update(BYTE** self, void*, int frame)
 {
     if (frame == F(int, F(BYTE*, g_6cec6c, 1356), 464)) {
         F(DWORD, self[0], 104) = timeGetTime();
-        CallThis(FUN_60c2b0, self[0]);
+        GridMesh_Frame(self[0], 0);
     }
     CallVirt(F(BYTE*, self[0], 4), 24, self[27], frame);
     BYTE** p = self + 20;
     if (p[0] && p[1] && p[2] && p[3] && p[4]) {
         BYTE* parts[6] = {p[1], p[2], p[3], p[4], p[5], 0};
-        CallThis(FUN_619c20, p[0], parts);
+        Terrain_PlacePlants(p[0], 0, parts);
         for (int i = 1; i <= 5; i++)
-            CallThis(FUN_619850, p[i], frame);
+            TerrainPart_Draw(p[i], 0, (BYTE*)frame);
     }
 }
 
@@ -298,15 +302,15 @@ void __fastcall Terrain616770_SetCorners(BYTE** self, void*, BYTE** c, int n)
     }
     if (self[21] && self[22] && self[23] && self[24] && self[25])
         for (int i = 21; i <= 25; i++)
-            CallThis(FUN_617100, self[i]);
+            Decals_Reset16(self[i], 0);
 }
 
 }
 
-extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
-extern "C" void FUN_4b8720(); KING_ALIAS("_FUN_4b8720", "_Fx_FindByName")
-extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
-extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // named object: constructor (name, kind)
+extern "C" BYTE* __fastcall Scenes_Find(BYTE* self, void*, const char* name);
+extern "C" BYTE* __cdecl Fx_FindByName(const char* name, BYTE* table);
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
+extern "C" BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind);
 KING_VAR(BYTE*, g_696224, 696224)
 KING_VAR(BYTE*, g_d3dDevice720908, 720908)
 
@@ -332,13 +336,13 @@ void __fastcall TerrainPart_Draw(BYTE* self, void*, BYTE* view)
     if (!F(int, self, 8))
         return;
     if (!F(BYTE*, self, 16)) {
-        int t = CallThis<int>(FUN_5d9290, g_696224, F(int, self, 24));
-        F(int, self, 16) = CallC<int>(FUN_4b8720, F(int, self, 20), t);
+        int t = (int)Scenes_Find(g_696224, 0, (const char*)(F(int, self, 24)));
+        F(int, self, 16) = (int)Fx_FindByName((const char*)(F(int, self, 20)), (BYTE*)t);
         if (!F(int, self, 16))
             CallC(FUN_60aad0, 2289444629u, " File = %s, Line = #%ld, Date = %s ",
                             "C:\\Nek\\VRAPPLVS\\terrain\\terrain.cpp", 745, "Jan 16 2003");
     }
-    CallThis(FUN_5b1020, view, F(int, self, 16), 0, 0, 0);
+    Material_Select(view, 0, (BYTE*)(F(int, self, 16)), 0, 0, 0);
     Dev_SetRenderState(g_d3dDevice720908, 136, 1);
     unsigned n = F(unsigned, self, 8);
     if (n <= 1023) {
@@ -369,7 +373,7 @@ void __fastcall Terrain6199a0_CreateTrees(BYTE* self, void*)
             continue;
         BYTE* o = (BYTE*)operator new(80);
         if (o) {
-            CallThis(FUN_5ef6d0, o, "sharpTerrainTree", 9);
+            Node_Construct(o, 0, "sharpTerrainTree", 9);
             F(int, o, 60) = 0;
             F(int, o, 64) = 7;
             F(void*, o, 0) = &g_vtbl653308;
@@ -401,7 +405,7 @@ void __fastcall Terrain6199a0_CreateTrees(BYTE* self, void*)
 // x87 functions of the unit: height tables and vector copies
 
 extern "C" void __cdecl rewind(FILE* f);
-extern "C" void FUN_5ab0f0(); KING_ALIAS("_FUN_5ab0f0", "_File_ReadShort")    // a 16-bit word from a file
+extern "C" int __cdecl File_ReadShort(FILE* f);
 
 // [FUN_613a80] (tdata.cpp) reads 257x257 16-bit heights into the floats at a 16-byte stride
 extern "C" int __fastcall Tile_ReadHeights(BYTE* self,void*,FILE* f)
@@ -409,7 +413,7 @@ extern "C" int __fastcall Tile_ReadHeights(BYTE* self,void*,FILE* f)
     if(!f) return 0;
     rewind(f);
     static WORD raw[257*257];
-    for(int i=0;i<257*257;i++) raw[i]=CallC<WORD>(FUN_5ab0f0,f);
+    for(int i=0;i<257*257;i++) raw[i]=(WORD)File_ReadShort(f);
     for(int i=0;i<257*257;i++)
         F(float,self,i*16)=(float)((((double)raw[i]*1.5259021893143654e-05f-0.5f)*100.0f)+474.8999938964844f);
     return 1;
@@ -526,7 +530,9 @@ extern "C" int __fastcall Terrain_SegmentHits(BYTE* s, void*, const float* a, co
     return CallThis<int>(FUN_6157a0, s, &pb, b, c, d, e) != 0;
 }
 
+extern "C" void __fastcall RoomObjects_Clear(BYTE* self, void*);
 extern "C" void FUN_619bd0(); KING_ALIAS("_FUN_619bd0", "@RoomObjects_Clear@8")
+extern "C" void __fastcall Decals_Free(BYTE* self, void*);
 extern "C" void FUN_6170d0(); KING_ALIAS("_FUN_6170d0", "@Decals_Free@8")
 
 // [FUN_6148a0] frees the terrain's objects: the device object, room objects and five decal sets
@@ -539,14 +545,14 @@ extern "C" void __fastcall Terrain_FreeObjects(BYTE* self, int)
     }
     BYTE* r = *(BYTE**)(self + 80);
     if (r) {
-        CallThis(FUN_619bd0, r);
+        RoomObjects_Clear(r, 0);
         operator delete(r);
         *(BYTE**)(self + 80) = 0;
     }
     for (int off = 84; off <= 100; off += 4) {
         BYTE* p = *(BYTE**)(self + off);
         if (p) {
-            CallThis(FUN_6170d0, p);
+            Decals_Free(p, 0);
             operator delete(p);
             *(BYTE**)(self + off) = 0;
         }
@@ -665,9 +671,9 @@ extern "C" void __cdecl TerInit_614260() { g_ter728834 = (float)x87_cos((double)
 
 // === the terrain view update (FUN_614960)
 
-extern "C" void FUN_614ce0(); KING_ALIAS("_FUN_614ce0", "@TGrid_FollowCamera@20")
-extern "C" void FUN_60cae0(); KING_ALIAS("_FUN_60cae0", "@Grid_DrainQueue@8")
-extern "C" void FUN_60c6b0(); KING_ALIAS("_FUN_60c6b0", "@GridMesh_Reprioritise@8")
+extern "C" void __fastcall TGrid_FollowCamera(BYTE* s, void*, const float* pos, const float* dir, const DWORD* origin);
+extern "C" void __fastcall Grid_DrainQueue(BYTE* self, void*);
+extern "C" void __fastcall GridMesh_Reprioritise(BYTE* s,void*);
 KING_VAR(float, g_tv6532cc, 6532cc)
 KING_VAR(float, g_tv64f3f8, 64f3f8)
 KING_VAR(float, g_tv64da10, 64da10)
@@ -692,7 +698,7 @@ float* __fastcall TerrainView_Move(BYTE* s, void*, const float* pos, const float
     static const float px[3] = {1.0f, 0, 0}, ny[3] = {0, -1.0f, 0};
     bool quick = l < g_tv6532cc && (c > g_ter728834 || -(double)g_ter728834 > c);
     if (!quick) {
-        CallThis(FUN_60cae0, m);
+        Grid_DrainQueue(m, 0);
         if (!F(int, g_6cec6c, 1316)) {
             double x1 = (double)pos[0] - g_tv64da10, y1 = (double)pos[1] + g_tv64f3f8;
             double d1 = x87_sqrt(x1 * x1 + y1 * y1);
@@ -707,14 +713,14 @@ float* __fastcall TerrainView_Move(BYTE* s, void*, const float* pos, const float
     memcpy(m + 68, pos, 12);
     memcpy(m + 80, look, 12);
     memcpy(m + 92, up, 12);
-    CallThis(FUN_614ce0, F(BYTE*, m, 4), m + 68, m + 80, m + 92);
+    TGrid_FollowCamera(F(BYTE*, m, 4), 0, (const float*)(m + 68), (const float*)(m + 80), (const DWORD*)(m + 92));
     F(int, m, 28) = 1;
     F(int, m, 24) = 1;
     if (quick) {
         F(int, F(BYTE*, s, 0), 24) = 1;
         F(int, F(BYTE*, s, 0), 28) = 1;
     } else
-        CallThis(FUN_60c6b0, F(BYTE*, s, 0));
+        GridMesh_Reprioritise(F(BYTE*, s, 0), 0);
     memcpy(s + 4, pos, 12);
     float* u = (float*)(s + 16);
     double n = x87_sqrt((double)dir[0] * dir[0] + (double)dir[1] * dir[1] + (double)dir[2] * dir[2]);
@@ -767,9 +773,9 @@ void __fastcall Terrain_CreateDecals(BYTE* s, void*, int a)
 
 // === the terrain normal at a point (FUN_615350)
 
-extern "C" void FUN_608ab0(); KING_ALIAS("_FUN_608ab0", "@Tiles_Table@16")
-extern "C" void FUN_608ea0(); KING_ALIAS("_FUN_608ea0", "@Tile_Normal@20")
-extern "C" void Tn_floor(); KING_ALIAS("_Tn_floor", "_floor")
+extern "C" BYTE* __fastcall Tiles_Table(BYTE** self, void*, DWORD x, DWORD y);
+extern "C" void __fastcall Tile_Normal(BYTE* self, void*, DWORD x, DWORD y, DWORD* out);
+extern "C" double __cdecl floor(double);
 extern "C" void Tn_ceil(); KING_ALIAS("_Tn_ceil", "_ceil")
 extern "C" Vec3* __cdecl Vec3_Diff(Vec3* out, const Vec3* a, const Vec3* b);
 extern "C" Vec3* __cdecl Vec3_Sum(Vec3* out, const Vec3* a, const Vec3* b);
@@ -781,7 +787,7 @@ KING_VAR(float, g_tn653244, 653244)
 static Vec3 Tn_At(BYTE* tiles, int i, int j)
 {
     Vec3 n;
-    CallThis(FUN_608ea0, CallThis<BYTE*>(FUN_608ab0, tiles, i, j), i, j, &n);
+    Tile_Normal(Tiles_Table((BYTE**)tiles, 0, i, j), 0, i, j, (DWORD*)&n);
     return n;
 }
 
@@ -800,8 +806,8 @@ Vec3* __fastcall Terrain_NormalAt(BYTE** s, void*, float x, float y, Vec3* out)
     }
     float u = (float)(((double)x - F(float, g, 40136)) / F(float, g, 40152));
     float v = (float)(((double)y - F(float, g, 40148)) / F(float, g, 40156));
-    int i0 = (int)(CallC<double>(Tn_floor, (double)(u / (double)g_tn653240)) * g_tn653240);
-    int j0 = (int)(CallC<double>(Tn_floor, (double)(v / (double)g_tn653244)) * g_tn653244);
+    int i0 = (int)(floor((double)(u / (double)g_tn653240)) * g_tn653240);
+    int j0 = (int)(floor((double)(v / (double)g_tn653244)) * g_tn653244);
     int i1 = (int)(CallC<double>(Tn_ceil, (double)(u / (double)g_tn653240)) * g_tn653240);
     int j1 = (int)(CallC<double>(Tn_ceil, (double)(v / (double)g_tn653244)) * g_tn653244);
     float fu = (float)((u - (double)(__int64)i0) / g_tn653240);
@@ -887,7 +893,7 @@ void __cdecl Noise_Seed(unsigned seed)
 
 // === placing the terrain view (FUN_614f70)
 
-extern "C" void FUN_60cb10(); KING_ALIAS("_FUN_60cb10", "@Grid_RemoveUnusedPoints@8")
+extern "C" void __fastcall Grid_RemoveUnusedPoints(BYTE* self, void*);
 
 // grid m refocused at pos looking along look with up
 static void Tp_Focus(BYTE* m, const float* pos, const float* look, const float* up)
@@ -895,7 +901,7 @@ static void Tp_Focus(BYTE* m, const float* pos, const float* look, const float* 
     memcpy(m + 68, pos, 12);
     memcpy(m + 80, look, 12);
     memcpy(m + 92, up, 12);
-    CallThis(FUN_614ce0, F(BYTE*, m, 4), m + 68, m + 80, m + 92);
+    TGrid_FollowCamera(F(BYTE*, m, 4), 0, (const float*)(m + 68), (const float*)(m + 80), (const DWORD*)(m + 92));
     F(int, m, 28) = 1;
     F(int, m, 24) = 1;
 }
@@ -907,7 +913,7 @@ extern "C" {
 // reprioritised and its unused points dropped
 void __fastcall TerrainView_Place(BYTE* s, void*, const float* pos, const float* dir, const float* up)
 {
-    CallThis(FUN_60cae0, F(BYTE*, s, 0));
+    Grid_DrainQueue(F(BYTE*, s, 0), 0);
     double h = F(float, s, 40) * (double)g_ns64c258;
     float hf = (float)h;
     if (!(h + F(float, s, 28) < pos[0]) && !((double)F(float, s, 28) - hf > pos[0]) &&
@@ -926,8 +932,8 @@ void __fastcall TerrainView_Place(BYTE* s, void*, const float* pos, const float*
         if (da == db)
             Tp_Focus(F(BYTE*, s, 0), pos, both, up);
     }
-    CallThis(FUN_60c6b0, F(BYTE*, s, 0));
-    CallThis(FUN_60cb10, F(BYTE*, s, 0));
+    GridMesh_Reprioritise(F(BYTE*, s, 0), 0);
+    Grid_RemoveUnusedPoints(F(BYTE*, s, 0), 0);
 }
 
 } // extern "C"
@@ -936,10 +942,10 @@ void __fastcall TerrainView_Place(BYTE* s, void*, const float* pos, const float*
 
 extern "C" void Tg_Height(); KING_ALIAS("_Tg_Height", "@Grid_HeightAt@12")
 extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
-extern "C" void Tg_LengthSq(); KING_ALIAS("_Tg_LengthSq", "_Vec3_LengthSq")
+extern "C" double __cdecl Vec3_LengthSq(const Vec3* v);
 extern "C" void Tg_DivBy(); KING_ALIAS("_Tg_DivBy", "_Vec3_DivBy")
 extern "C" void Tg_Scaled(); KING_ALIAS("_Tg_Scaled", "_Vec3_Scaled")
-extern "C" void Tg_Sub(); KING_ALIAS("_Tg_Sub", "_Vec3_Sub")
+extern "C" Vec3* __cdecl Vec3_Sub(Vec3* out, const Vec3* a, const Vec3* b);
 KING_VAR(float, g_tg728810, 728810)
 KING_VAR(float, g_tg728814, 728814)
 KING_VAR(float, g_tg728818, 728818)
@@ -983,7 +989,7 @@ int __fastcall Ground_SweepSphere(BYTE* s, void*, const float* a, const float* b
     Vec3_SetThis(&e1, 0, p1.x - p3.x, p1.y - p3.y, p1.z - p3.z);
     Vec3_SetThis(&e2, 0, p2.x - p4.x, p2.y - p4.y, p2.z - p4.z);
     Vec3 nr = {e1.z * e2.y - e1.y * e2.z, e1.x * e2.z - e2.x * e1.z, e2.x * e1.y - e1.x * e2.y}, nn;
-    float len = (float)x87_sqrt(CallC<double>(Tg_LengthSq, &nr));
+    float len = (float)x87_sqrt(Vec3_LengthSq(&nr));
     CallC(Tg_DivBy, &nn, &nr, *(DWORD*)&len);
     double d = -((double)M.y * nn.y + (double)M.x * nn.x + (double)nn.z * M.z);
     float da = (float)((double)nn.x * A.x + (double)nn.y * A.y + (double)nn.z * A.z + d);
@@ -1014,7 +1020,7 @@ int __fastcall Ground_SweepSphere(BYTE* s, void*, const float* a, const float* b
     *at = t1;
     Vec3_SetThis(&t1, 0, nn.x, nn.y, nn.z);
     *n = t1;
-    CallC(Tg_Sub, &at2, at, CallC<Vec3*>(Tg_Scaled, &t1, n, *(DWORD*)&r));
+    Vec3_Sub(&at2, at, CallC<Vec3*>(Tg_Scaled, &t1, n, *(DWORD*)&r));
     *at = at2;
     return 1;
 }
@@ -1023,8 +1029,7 @@ int __fastcall Ground_SweepSphere(BYTE* s, void*, const float* a, const float* b
 
 // === reading three terrain tiles and their normals (FUN_613b50)
 
-extern "C" void Tn_TileHeight(); KING_ALIAS("_Tn_TileHeight", "@Tile_Height@16")
-extern "C" int __cdecl rand(void);
+extern "C" float __fastcall Tile_Height(BYTE* self, void*, DWORD x, DWORD y);
 KING_VAR(AsmLabel, s_tn6724b0, 6724b0)
 KING_VAR(AsmLabel, s_tn685ce4, 685ce4)
 KING_VAR(AsmLabel, s_tn6724f8, 6724f8)
@@ -1038,13 +1043,13 @@ KING_VAR(float, g_tn64c258, 64c258)
 // the height of grid point (i, j) through the tile table of terrain s
 static float Tn_HeightAt(BYTE* s, int i, int j)
 {
-    BYTE* t = CallThis<BYTE*>(FUN_608ab0, s, i, j);
+    BYTE* t = Tiles_Table((BYTE**)s, 0, i, j);
     return F(float, t, (((unsigned)i % 257) * 257 + (unsigned)j % 257) * 16);
 }
 
 static float Tn_TileH(BYTE* s, int i, int j)
 {
-    return CallThis<float>(Tn_TileHeight, CallThis<BYTE*>(FUN_608ab0, s, i, j), i, j);
+    return Tile_Height(Tiles_Table((BYTE**)s, 0, i, j), 0, i, j);
 }
 
 static int Tn_Fail(int line)
@@ -1092,18 +1097,18 @@ int __fastcall Terrain_ReadTiles(BYTE* s, void*, FILE** f, int n)
                 Vec3_SetThis(&B, 0, xm - xp, y - y, Tn_TileH(s, 0, j) - h1);
             }
             Vec3 N = {B.z * A.y - B.y * A.z, B.x * A.z - A.x * B.z, A.x * B.y - B.x * A.y};
-            float len = (float)x87_sqrt(CallC<double>(Tg_LengthSq, &N));
+            float len = (float)x87_sqrt(Vec3_LengthSq(&N));
             Vec3 nn = *CallC<Vec3*>(Tg_DivBy, &t, &N, *(DWORD*)&len);
             if (nn.x > g_tn64d690 && nn.x < g_tn64c304 && nn.y > g_tn64d690 && nn.y < g_tn64c304) {
                 float r1 = (float)(rand() * (double)g_tn64c254);
                 nn.x = (float)((rand() * (double)g_tn64c254 - r1) * g_tn64c258);
                 float r2 = (float)(rand() * (double)g_tn64c254);
                 nn.y = (float)((rand() * (double)g_tn64c254 - r2) * g_tn64c258);
-                double l = x87_sqrt(CallC<double>(Tg_LengthSq, &nn));
+                double l = x87_sqrt(Vec3_LengthSq(&nn));
                 Vec3_SetThis(&t, 0, (float)(nn.x / l), (float)(nn.y / l), (float)(nn.z / l));
                 nn = t;
             }
-            BYTE* tile = CallThis<BYTE*>(FUN_608ab0, s, i, j);
+            BYTE* tile = Tiles_Table((BYTE**)s, 0, i, j);
             F(Vec3, tile, (((unsigned)i % 257) * 257 + (unsigned)j % 257) * 16 + 4) = nn;
         }
     }
@@ -1130,8 +1135,8 @@ double __fastcall Terrain_HeightAt(BYTE** s, void*, float x, float y)
         return g_th6532f8;
     float u = (float)(((double)x - F(float, g, 40136)) / F(float, g, 40152));
     float v = (float)(((double)y - F(float, g, 40148)) / F(float, g, 40156));
-    int x0 = (int)(CallC<double>(Tn_floor, (double)(u / (double)g_tn653240)) * g_tn653240);
-    int y0 = (int)(CallC<double>(Tn_floor, (double)(v / (double)g_tn653244)) * g_tn653244);
+    int x0 = (int)(floor((double)(u / (double)g_tn653240)) * g_tn653240);
+    int y0 = (int)(floor((double)(v / (double)g_tn653244)) * g_tn653244);
     int x1 = (int)(CallC<double>(Tn_ceil, (double)(u / (double)g_tn653240)) * g_tn653240);
     int y1 = (int)(CallC<double>(Tn_ceil, (double)(v / (double)g_tn653244)) * g_tn653244);
     double fud = (u - (double)(__int64)x0) / g_tn653240;
@@ -1151,7 +1156,7 @@ double __fastcall Terrain_HeightAt(BYTE** s, void*, float x, float y)
     BYTE* t = F(BYTE*, g, 40192);
     if (fv == 0)
     {
-        float h0 = (float)CallThis<double>(Tn_TileHeight, CallThis<BYTE*>(FUN_608ab0, t, x0, y0), x0, y0);
+        float h0 = (float)(double)Tile_Height(Tiles_Table((BYTE**)t, 0, x0, y0), 0, x0, y0);
         return ((double)Th_Sample(t, x1, y0) - h0) * fu + h0;
     }
     if (fv == g_tn64c250)
@@ -1222,7 +1227,7 @@ KING_VAR(float, g_tg728838, 728838)               // the sea level
 KING_VAR(float, g_tg728808, 728808)               // the tree line
 KING_VAR(AsmLabel, g_tgSizes, 685d70)             // the plant sizes 685d70 .. 685d84
 KING_VAR(double, g_tg64b938, 64b938)
-extern "C" void Tg_AddAssign(); KING_ALIAS("_Tg_AddAssign", "@Vec3_AddAssign@16")
+extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
 extern "C" void Tg_Nop(); KING_ALIAS("_Tg_Nop", "_Fw_Nop")
 
 static float Tg_Size(int k)
@@ -1238,8 +1243,8 @@ static void Tg_Cell(BYTE* s, const float* fwd, float k, float cx, float cy, int 
     float b = (float)((double)fwd[1] * k);
     double gx = a * g_tg64c334 + cx;
     float gy = (float)((double)(float)((double)b * g_tg64c334) + cy);
-    ix = (int)CallC<double>(Tn_floor, gx / F(float, T, 56 + ox));
-    iy = (int)CallC<double>(Tn_floor, (double)gy / F(float, T, 60 + ox));
+    ix = (int)floor(gx / F(float, T, 56 + ox));
+    iy = (int)floor((double)gy / F(float, T, 60 + ox));
 }
 
 // a lattice point (ix, iy) jittered by its noise into pos; false when the lattice has nothing there
@@ -1256,7 +1261,7 @@ static bool Tg_Point(BYTE* s, int ix, int iy, int ox, float kx, float ky, float*
     off.x = (float)(noise[0] * (double)g_tg653354 * cell);
     off.y = (float)((double)(float)(noise[1] * (double)g_tg653354) * cell);
     off.z = (float)((double)(float)(noise[2] * (double)g_tg653354) * cell);
-    CallThis(Tg_AddAssign, pos, &tmp, &off);
+    Vec3_AddAssign((Vec3*)pos, 0, &tmp, &off);
     return true;
 }
 
@@ -1722,22 +1727,20 @@ double __fastcall Grid_HeightAt(BYTE* s, void*, const float* p)
 
 #include <stdlib.h>
 
-extern "C" void Tb_Set(); KING_ALIAS("_Tb_Set", "@Vec3_SetThis@20")
-extern "C" void Tb_Level32(); KING_ALIAS("_Tb_Level32", "_Grid_Level32")
-extern "C" void Tb_TaskAlloc(); KING_ALIAS("_Tb_TaskAlloc", "@GridTask_Alloc@16")
-extern "C" void Tb_Reset(); KING_ALIAS("_Tb_Reset", "@Grid_Reset@16")
-extern "C" void Tb_MakeNode(); KING_ALIAS("_Tb_MakeNode", "@TGrid_MakeNode@16")
-extern "C" void Tb_NodeInit(); KING_ALIAS("_Tb_NodeInit", "@TNode_Init@16")
-extern "C" void Tb_ObjInit(); KING_ALIAS("_Tb_ObjInit", "@GridObj_Construct@8")
-extern "C" void Tb_Sample(); KING_ALIAS("_Tb_Sample", "@Terrain_Sample@16")
+extern "C" int __cdecl Grid_Level32(void);
+extern "C" int __fastcall GridTask_Alloc(BYTE* self,void*,int n,int m);
+extern "C" void __fastcall Grid_Reset(BYTE* self, void*, int n, int m);
+extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, const DWORD* xy);
+extern "C" WORD* __fastcall TNode_Init(BYTE* self, void*, const DWORD* p, WORD v);
+extern "C" BYTE* __fastcall GridObj_Construct(BYTE* self, void*);
+extern "C" float __fastcall Terrain_Sample(BYTE** self, void*, DWORD x, DWORD y);
+extern "C" float __fastcall TGrid_Height(BYTE* self, void*, const DWORD* xy);
 extern "C" void Tb_Height(); KING_ALIAS("_Tb_Height", "@TGrid_Height@12")
-extern "C" void Tb_Priority(); KING_ALIAS("_Tb_Priority", "@TGridCamera_NodePriority@12")
-extern "C" void Tb_Insert(); KING_ALIAS("_Tb_Insert", "@MarineQueue_InsertDeferredNode@12")
-extern "C" void Tb_NewCell(); KING_ALIAS("_Tb_NewCell", "@Grid_NewCell@24")
-extern "C" void Tb_SetTris(); KING_ALIAS("_Tb_SetTris", "@TerrainCell_SetTriangles@16")
-extern "C" void Tb_RemoveCell(); KING_ALIAS("_Tb_RemoveCell", "@Grid_RemoveCell@12")
-extern "C" void Tb_Follow(); KING_ALIAS("_Tb_Follow", "@TGrid_FollowCamera@20")
-extern "C" void Tb_Reprio(); KING_ALIAS("_Tb_Reprio", "@GridMesh_Reprioritise@8")
+extern "C" double __fastcall TGridCamera_NodePriority(BYTE* s, void*, BYTE* node);
+extern "C" DWORD __fastcall MarineQueue_InsertDeferredNode(BYTE* self, void*, BYTE* node);
+extern "C" BYTE* __fastcall Grid_NewCell(BYTE* s, void*, WORD* a, WORD* b, WORD* c, unsigned level);
+extern "C" DWORD __fastcall TerrainCell_SetTriangles(BYTE* self,void*,BYTE* first,BYTE* second);
+extern "C" void __fastcall Grid_RemoveCell(BYTE* self, void*, BYTE* s);
 extern "C" void Tb_Error(); KING_ALIAS("_Tb_Error", "_Grd_ReportError")
 KING_VAR(AsmLabel, g_tb6533a8, 6533a8)
 KING_VAR(AsmLabel, g_tb65338c, 65338c)
@@ -1761,7 +1764,7 @@ static BYTE* Tb_Cell(WORD* a, WORD* b, WORD* c)
         return 0;
     F(BYTE*, n, 4) = n + 4;
     F(BYTE*, n, 8) = n + 4;
-    CallThis(Tb_ObjInit, n + 12);
+    GridObj_Construct(n + 12, 0);
     F(void*, n, 0) = &g_tb652f00;
     F(int, n, 68) = 0;
     F(int, n, 64) = 0;
@@ -1777,7 +1780,7 @@ static BYTE* Tb_Cell(WORD* a, WORD* b, WORD* c)
 
 static float Tb_Height(BYTE* G, const void* xy)
 {
-    return (float)CallThis<double>(Tb_Height, G, xy);
+    return (float)(double)TGrid_Height(G, 0, (const DWORD*)xy);
 }
 
 // the height error (+32), the camera priority (+28) and the queue for cell n of mesh s
@@ -1790,8 +1793,8 @@ static void Tb_Finish(BYTE* s, BYTE* n, double ha, const DWORD* c, const DWORD* 
         d = -d;
     F(float, n, 32) = (float)d;
     F(WORD, s, 42)++;
-    F(float, n, 28) = (float)CallThis<double>(Tb_Priority, F(BYTE*, s, 4), n + 12);
-    CallThis(Tb_Insert, F(BYTE*, s, 36), n);
+    F(float, n, 28) = (float)TGridCamera_NodePriority(F(BYTE*, s, 4), 0, n + 12);
+    MarineQueue_InsertDeferredNode(F(BYTE*, s, 36), 0, n);
 }
 
 // the larger of r and the float of x*x + y*y
@@ -1829,7 +1832,7 @@ static void Tb_CellA(BYTE* s, BYTE* n)
     F(float, n, 44) = (float)mx;
     F(float, n, 48) = my;
     F(float, n, 52) = (float)x87_sqrt(r);
-    float ha = (float)CallThis<double>(Tb_Sample, F(BYTE*, G, 40192), F(DWORD, va, 8), F(DWORD, va, 12));
+    float ha = (float)(double)Terrain_Sample((BYTE**)(F(BYTE*, G, 40192)), 0, F(DWORD, va, 8), F(DWORD, va, 12));
     Tb_Finish(s, n, ha, (const DWORD*)(vc + 8), mid);
 }
 
@@ -1859,7 +1862,7 @@ static void Tb_CellB(BYTE* s, BYTE* n)
     r = Tb_Max(r, (double)bx - mx, (double)by - my);
     r = Tb_Max(r, (double)cx - mx, (double)cy - my);
     float t[3];
-    CallThis(Tb_Set, t, mx, my, (float)x87_sqrt(r));
+    Vec3_SetThis((Vec3*)t, 0, mx, my, (float)x87_sqrt(r));
     memcpy(n + 44, t, 12);
     float ha = Tb_Height(G, va + 8);
     Tb_Finish(s, n, ha, (const DWORD*)(vc + 8), mid);
@@ -1886,11 +1889,11 @@ int __fastcall TGridMesh_Build(BYTE* s, void*, const float* pos, float sizeX, fl
         F(int, G, 44) = 0;
         F(int, G, 40) = 0;
         float z[3];
-        CallThis(Tb_Set, z, 0.0f, 0.0f, 0.0f);
+        Vec3_SetThis((Vec3*)z, 0, 0.0f, 0.0f, 0.0f);
         memcpy(G + 4, z, 12);
-        CallThis(Tb_Set, z, 0.0f, 0.0f, 0.0f);
+        Vec3_SetThis((Vec3*)z, 0, 0.0f, 0.0f, 0.0f);
         memcpy(G + 16, z, 12);
-        CallThis(Tb_Set, z, 0.0f, 0.0f, 0.0f);
+        Vec3_SetThis((Vec3*)z, 0, 0.0f, 0.0f, 0.0f);
         memcpy(G + 28, z, 12);
         F(void*, G, 0) = &g_tb65338c;
         F(int, G, 40196) = F(int, s, 108);
@@ -1918,14 +1921,14 @@ int __fastcall TGridMesh_Build(BYTE* s, void*, const float* pos, float sizeX, fl
     F(float, G, 40164) = 0;
     F(float, G, 40168) = 0;
     float v[3];
-    CallThis(Tb_Set, v, 0.0f, (float)(sy * g_tb64c258), 0.0f);
+    Vec3_SetThis((Vec3*)v, 0, 0.0f, (float)(sy * g_tb64c258), 0.0f);
     memcpy(G + 40172, v, 12);
     F(float, G, 52) = 24.0f;
     F(float, G, 56) = 24.0f;
     CallVirt(G, 8, nx << 8, ny << 8);
     F(BYTE*, s, 4) = G;
-    CallThis(Tb_TaskAlloc, s, CallC<int>(Tb_Level32), cells);
-    CallThis(Tb_Reset, s, CallC<int>(Tb_Level32), cells);
+    GridTask_Alloc(s, 0, Grid_Level32(), cells);
+    Grid_Reset(s, 0, Grid_Level32(), cells);
     for (unsigned i = 0; i < cells; i++)
     {
         BYTE* e = (BYTE*)operator new(20);
@@ -1949,10 +1952,10 @@ int __fastcall TGridMesh_Build(BYTE* s, void*, const float* pos, float sizeX, fl
         {
             DWORD pt[2] = {i << 8, j << 8};
             BYTE node[40];
-            BYTE* r = CallThis<BYTE*>(Tb_MakeNode, F(BYTE*, s, 4), node, pt);
+            BYTE* r = (BYTE*)TGrid_MakeNode(F(BYTE*, s, 4), 0, (float*)node, pt);
             memcpy(F(BYTE*, s, 16) + F(WORD, s, 40) * 40, r, 40);
             WORD k = F(WORD, s, 40);
-            vx[j * (nx + 1) + i] = CallThis<WORD*>(Tb_NodeInit, F(BYTE*, s, 12) + k * 16, pt, k);
+            vx[j * (nx + 1) + i] = TNode_Init(F(BYTE*, s, 12) + k * 16, 0, pt, k);
             F(WORD, s, 40)++;
         }
 #define VX(a, b) vx[(b) * (nx + 1) + (a)]
@@ -1973,8 +1976,8 @@ int __fastcall TGridMesh_Build(BYTE* s, void*, const float* pos, float sizeX, fl
             }
             else
             {
-                tris[k] = CallThis<BYTE*>(Tb_NewCell, s, VX(i, j - 1), VX(i - 1, j - 1), VX(i - 1, j), 0);
-                tris[k + 1] = CallThis<BYTE*>(Tb_NewCell, s, VX(i - 1, j), VX(i, j), VX(i, j - 1), 0);
+                tris[k] = Grid_NewCell(s, 0, VX(i, j - 1), VX(i - 1, j - 1), VX(i - 1, j), 0);
+                tris[k + 1] = Grid_NewCell(s, 0, VX(i - 1, j), VX(i, j), VX(i, j - 1), 0);
             }
         }
 #undef VX
@@ -2004,12 +2007,12 @@ int __fastcall TGridMesh_Build(BYTE* s, void*, const float* pos, float sizeX, fl
             }
         }
     for (unsigned m = 0; m < (k + 1) >> 1; m++)
-        CallThis(Tb_SetTris, F(BYTE**, s, 8)[m], tris[2 * m], tris[2 * m + 1]);
+        TerrainCell_SetTriangles(F(BYTE**, s, 8)[m], 0, tris[2 * m], tris[2 * m + 1]);
     BYTE** sq = F(BYTE**, s, 8);
-    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, sq[0], 0), 12));
-    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[0], 4), 12));
-    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[8], 0), 12));
-    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[8], 4), 12));
+    Grid_RemoveCell(s, 0, F(BYTE*, F(BYTE*, sq[0], 0), 12));
+    Grid_RemoveCell(s, 0, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[0], 4), 12));
+    Grid_RemoveCell(s, 0, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[8], 0), 12));
+    Grid_RemoveCell(s, 0, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[8], 4), 12));
     // the links checked along the queue's two lists
     BYTE* q = F(BYTE*, s, 36);
     BYTE* c = F(BYTE*, q, 0);
@@ -2038,10 +2041,10 @@ int __fastcall TGridMesh_Build(BYTE* s, void*, const float* pos, float sizeX, fl
             break;
         c -= 4;
     }
-    CallThis(Tb_Follow, F(BYTE*, s, 4), s + 68, s + 80, s + 92);
+    TGrid_FollowCamera(F(BYTE*, s, 4), 0, (const float*)(s + 68), (const float*)(s + 80), (const DWORD*)(s + 92));
     F(int, s, 28) = 1;
     F(int, s, 24) = 1;
-    CallThis(Tb_Reprio, s);
+    GridMesh_Reprioritise(s, 0);
     free(vx);
     free(tris);
     return 1;

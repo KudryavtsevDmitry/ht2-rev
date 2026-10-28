@@ -12,16 +12,20 @@ typedef char AsmLabel[1];
 typedef DWORD Dwords[1];
 extern "C" int __cdecl rand();
 
+extern "C" void __fastcall Node_Unlink(BYTE* self, void*);
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
-extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
-extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
+extern "C" void __cdecl Sys_Log(const char* text, int value);
+extern "C" void __fastcall Owner_Clear(BYTE* self, void*);
+extern "C" void __fastcall Media_Destroy(BYTE* s);
 extern "C" void FUN_5c4410(); KING_ALIAS("_FUN_5c4410", "@Media_Destroy@4")
 extern "C" void FUN_5cc930(); KING_ALIAS("_FUN_5cc930", "@Trees_Construct@8")
-extern "C" void FUN_5f4a90(); KING_ALIAS("_FUN_5f4a90", "@Value_Free@4")
-extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
-extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void __fastcall Value_Free(int* s);
+extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s);
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+extern "C" void __fastcall Med5ce930_Destroy(BYTE* s);
 extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 KING_VAR(AsmLabel, g_vtbl6518e4, 6518e4)
 KING_VAR(AsmLabel, g_vtbl64d81c, 64d81c)
@@ -30,14 +34,21 @@ KING_VAR(BYTE*, g_70ebe4, 70ebe4)
 KING_VAR(int, g_707f94, 707f94)
 KING_VAR(int, g_707f98, 707f98)
 KING_VAR(WORD, g_quadIndex, 707f9c)
+extern "C" int __cdecl Msavi_CreateStreamingBuffer();
 extern "C" void FUN_5c2800(); KING_ALIAS("_FUN_5c2800", "_Msavi_CreateStreamingBuffer")    // msavi: create the sound buffer
+extern "C" int __fastcall Entry_Apply(BYTE* self, void*, const DWORD* src, DWORD size);
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
+extern "C" int __cdecl Gate_Start(const char* name);
 extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
-extern "C" void FUN_6022a0(); KING_ALIAS("_FUN_6022a0", "_Dp_Shutdown")
+extern "C" int __cdecl Dp_Shutdown();
+extern "C" void __fastcall MsgBuf_Destroy(BYTE* self, int);
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void __cdecl File_WriteInt(int v, FILE* f);
 extern "C" void FUN_5ab160(); KING_ALIAS("_FUN_5ab160", "_File_WriteInt")  // write an int to a file (value, file)
+extern "C" BYTE* __fastcall Media_Construct(BYTE* s, void*, int a);
 extern "C" void FUN_5c3f20(); KING_ALIAS("_FUN_5c3f20", "@Media_Construct@12")
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, int n);
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
 
 // msavi
@@ -82,7 +93,7 @@ KING_VAR(AsmLabel, s_treeShadow, 67f9ac)
 
 static __forceinline void Log(const char* s, int v)
 {
-    CallC(FUN_5d2ba0, s, v);
+    Sys_Log(s, v);
 }
 
 static __forceinline void Release(BYTE* com)
@@ -96,14 +107,7 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
     return (*(R(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
 }
 
-extern "C" void FUN_5cfb30(); KING_ALIAS("_FUN_5cfb30", "_Poly_Draw")
-extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
-extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in seconds, returns double
-extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")
-extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
-extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
-extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
-extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" double __cdecl Tsc_Now();
 KING_VAR(int, g_67faa0, 67faa0)
 KING_VAR(int, g_71e800, 71e800)
 KING_VAR(int, g_71e7d4, 71e7d4)
@@ -124,18 +128,25 @@ extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" size_t __cdecl fwrite(const void* p, size_t size, size_t n, FILE* f);
 extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, int mode);   // scene.cpp
 extern "C" void __cdecl Video_SetPalette(const BYTE* rgb, DWORD first, DWORD count);    // video_mode.cpp
-extern "C" void FUN_5be8c0(); KING_ALIAS("_FUN_5be8c0", "@ScrollBar_Layout@40")    // lays out list rows (thiscall on the drop part)
+extern "C" void __fastcall ScrollBar_Layout(BYTE* s, void*, short range, short* at, int a3, int a4, int w, int h, int along, int across);
 extern "C" void List_RowCallback(); KING_ALIAS("_List_RowCallback", "_List_KeepSelection")
+extern "C" int __fastcall List_VisibleRows(BYTE* s);
 extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")    // visible rows of a list
 extern "C" void FUN_6303c4(); KING_ALIAS("_FUN_6303c4", "_ICDecompress")    // ICDecompress
 extern "C" void FUN_6303b8(); KING_ALIAS("_FUN_6303b8", "_ICSendMessage@16")    // ICSendMessage
+extern "C" long __cdecl Media_Start();
 extern "C" void FUN_5c29d0(); KING_ALIAS("_FUN_5c29d0", "_Media_Start")
+extern "C" void __fastcall Video_DrawFrame(BYTE* self, void*, BYTE* surf, int x, int y, int w, int h);
 extern "C" void FUN_5c1d40(); KING_ALIAS("_FUN_5c1d40", "@Video_DrawFrame@28")    // draws the video frame
+extern "C" void __fastcall NetValue_Write(BYTE* s, void*, BYTE* m);
 extern "C" void FUN_5c34a0(); KING_ALIAS("_FUN_5c34a0", "@NetValue_Write@12")
+extern "C" int __cdecl Dp_Send(int a, int b);
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
-extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
+extern "C" void __fastcall DpMessage_Reset(BYTE* self, void*);
+extern "C" int __fastcall Rec_Step(BYTE* s, void*, int forward);
 extern "C" void FUN_5c49b0(); KING_ALIAS("_FUN_5c49b0", "@Rec_Step@12")    // next record time (forward)
-extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
+extern "C" int __cdecl File_ReadInt(FILE* f);
+extern "C" void __fastcall Node_ReadHistory(BYTE* s, void*, int a, int b);
 extern "C" void FUN_5c4d30(); KING_ALIAS("_FUN_5c4d30", "@Node_ReadHistory@16")
 KING_VAR(DWORD, g_msaviBlock, 702f74)
 KING_VAR(AsmLabel, s_aviReadError, 67f418)
@@ -189,7 +200,7 @@ void __fastcall List_Clear(BYTE* self, void*)
         return;
     BYTE* it;
     while ((it = F(BYTE*, head, 8)) != 0) {
-        CallThis(FUN_5d21b0, it);
+        Node_Unlink(it, 0);
         CallVirt(it, 0, 1);
     }
     CallVirt(head, 0, 1);
@@ -302,7 +313,7 @@ int __cdecl Msavi_Open(BYTE* format, WaveRead read, int ctx)
     }
     g_msavi702f78[0] = 0;
     g_msavi702f78[1] = 0;
-    int hr = CallC<int>(FUN_5c2800);
+    int hr = Msavi_CreateStreamingBuffer();
     if (hr < 0) {
         Log(s_msaviNoBuffer, hr);
         return hr;
@@ -404,7 +415,7 @@ void __fastcall Table_Clear(BYTE* self, void*)
         BYTE* it = F(BYTE*, self, 8 + k * 32);
         while (it) {
             BYTE* next = F(BYTE*, it, 8);
-            CallThis(FUN_5d21b0, it);
+            Node_Unlink(it, 0);
             if (it)
                 CallVirt(it, 0, 1);
             it = next;
@@ -415,7 +426,7 @@ void __fastcall Table_Clear(BYTE* self, void*)
 // [FUN_5c3130]
 void __fastcall Table_Link(BYTE* self, void*, BYTE* e)
 {
-    CallThis(FUN_5d2190, e, self + (F(DWORD, e, 12) % 10) * 32);
+    Node_Link(e, 0, self + (F(DWORD, e, 12) % 10) * 32);
 }
 
 static BYTE* NewEntry()
@@ -500,7 +511,7 @@ int __fastcall Table_Set(BYTE* self, void*, int key, int type, int a, int b)
             return 0;
         }
     }
-    CallThis(FUN_5c36e0, e, a, b);
+    Entry_Apply(e, 0, (const DWORD*)a, b);
     return 1;
 }
 
@@ -520,7 +531,7 @@ BYTE* __fastcall List_Add(BYTE* self, void*, int key, int type, int v)
         F(int, e, 16) = type;
         F(int, e, 20) = v;
     }
-    CallThis(FUN_5d2190, e, self);
+    Node_Link(e, 0, self);
     return e;
 }
 
@@ -534,7 +545,7 @@ BYTE* __fastcall List_Add6(BYTE* self, void*, int key, int a, int b)
         F(int, e, 20) = a;
         F(int, e, 24) = b;
     }
-    CallThis(FUN_5d2190, e, self);
+    Node_Link(e, 0, self);
     return e;
 }
 
@@ -549,7 +560,7 @@ BYTE* __fastcall List_Add5(BYTE* self, void*, int key, int a, int c, int b)
         F(int, e, 28) = c;
         F(int, e, 24) = b;
     }
-    CallThis(FUN_5d2190, e, self);
+    Node_Link(e, 0, self);
     return e;
 }
 
@@ -558,7 +569,7 @@ void __fastcall List_DeleteAll(BYTE* self, void*)
 {
     BYTE* it;
     while ((it = F(BYTE*, self, 8)) != 0) {
-        CallThis(FUN_5d21b0, it);
+        Node_Unlink(it, 0);
         CallVirt(it, 0, 1);
     }
 }
@@ -579,7 +590,7 @@ void __fastcall Music_Play(BYTE* self, void*, const char* name, int volume, int 
     F(int, self, 432) = 0;
     F(int, self, 436) = 0;
     F(int, self, 440) = 1;
-    CallC(FUN_6021f0, buf);
+    Gate_Start(buf);
     F(int, self, 416) = 1;
     if (volume)
         CallC(FUN_602510, volume, 0);
@@ -590,7 +601,7 @@ void __fastcall Music_Stop(BYTE* self, void*)
 {
     if (F(int, self, 416)) {
         Sleep(1000);
-        CallC(FUN_6022a0);
+        Dp_Shutdown();
         F(int, self, 416) = 0;
         F(int, self, 428) = 0;
         F(int, self, 420) = 0;
@@ -604,7 +615,7 @@ void __fastcall Pool_Keep(BYTE* self, void*, BYTE* p)
         return;
     int n = F(int, self, 7920);
     if (n >= 999) {
-        CallThis(FUN_602e80, p);
+        MsgBuf_Destroy(p, 0);
         operator delete(p);
         return;
     }
@@ -619,10 +630,10 @@ void __fastcall Rec_Close(BYTE* self, void*)
     if (!f)
         return;
     if (F(int, self, 7936)) {
-        CallC(FUN_5ab160, 0xFFFFFF00, f);
-        CallC(FUN_5ab160, 4, F(FILE*, self, 7928));
-        CallC(FUN_5ab160, F(int, self, 7940), F(FILE*, self, 7928));
-        CallC(FUN_5ab160, 4, F(FILE*, self, 7928));
+        File_WriteInt(0xFFFFFF00, f);
+        File_WriteInt(4, F(FILE*, self, 7928));
+        File_WriteInt(F(int, self, 7940), F(FILE*, self, 7928));
+        File_WriteInt(4, F(FILE*, self, 7928));
         F(int, self, 7936) = 0;
     }
     fclose(F(FILE*, self, 7928));
@@ -634,16 +645,16 @@ void __fastcall Rec_Mark(BYTE* self, void*)
 {
     FILE* f = F(FILE*, self, 7928);
     if (f && F(int, self, 7936)) {
-        CallC(FUN_5ab160, 0xFFFFF000, f);
-        CallC(FUN_5ab160, 0, F(FILE*, self, 7928));
-        CallC(FUN_5ab160, 0, F(FILE*, self, 7928));
+        File_WriteInt(0xFFFFF000, f);
+        File_WriteInt(0, F(FILE*, self, 7928));
+        File_WriteInt(0, F(FILE*, self, 7928));
     }
 }
 
 // [FUN_5c5310]
 BYTE* __fastcall Timeline_Construct(BYTE* self, void*, int a)
 {
-    CallThis(FUN_5c3f20, self, a);
+    Media_Construct(self, 0, a);
     F(void*, self, 0) = g_vtbl651b00;
     F(int, self, 8368) = F(int, g_707f6c, 432) * 10000 + 1000;
     return self;
@@ -877,7 +888,7 @@ int __cdecl Get70ebf8()
 // [FUN_5cdc10]
 BYTE* __fastcall TreeShadow_Construct(BYTE* self, void*)
 {
-    CallThis(FUN_5f19b0, self, (const char*)s_treeShadow, 5, 1);
+    NodeN_Construct(self, 0, (const char*)s_treeShadow, 5, 1);
     static const int offs[] = {56, 60, 172, 176, 180, 184, 188, 192, 196, 200, 204, 212, 216, 220};
     for (int k = 0; k < 14; k++)
         F(int, self, offs[k]) = 0;
@@ -917,8 +928,7 @@ void __fastcall List_Layout(BYTE* self, void*, int h)
     Style_Assign((DWORD*)(c + 104), 0, (DWORD*)(self + 104));
     Style_Assign((DWORD*)(c + 140), 0, (DWORD*)(self + 140));
     Style_Assign((DWORD*)(c + 176), 0, (DWORD*)(self + 176));
-    CallThis(FUN_5be8c0, F(BYTE*, self, 340), 0, self + 332, (void*)List_RowCallback, self,
-            F(int, self, 344) + F(int, self, 308) + h * 2, h, 0, 0);
+    ScrollBar_Layout(F(BYTE*, self, 340), 0, 0, (short*)(self + 332), (int)((void*)List_RowCallback), (int)self, F(int, self, 344) + F(int, self, 308) + h * 2, h, 0, 0);
     int d = F(int, self, 52) - F(int, self, 44) - h;
     int dy = 2;
     BYTE* font = F(BYTE*, self, 16);
@@ -951,11 +961,11 @@ void __fastcall List_Select(BYTE* self, void*, int i)
         top = i;
         F(BYTE*, self, 336) = F(BYTE*, self, 300);
     }
-    while (i >= CallThis<int>(FUN_5c06d0, self) + top) {
+    while (i >= List_VisibleRows(self) + top) {
         top++;
         F(BYTE*, self, 336) = F(BYTE*, F(BYTE*, self, 336), 8);
     }
-    if (F(int, self, 328) - CallThis<int>(FUN_5c06d0, self) <= 0)
+    if (F(int, self, 328) - List_VisibleRows(self) <= 0)
         F(WORD, self, 332) = 0;
     else
         F(WORD, self, 332) = (WORD)top;
@@ -1083,10 +1093,10 @@ int __fastcall Avi_Update(BYTE* self, void*, int a, int b, int c, int d, int e)
         return 2;
     if (st == 1) {
         F(int, self, 2208) = 2;
-        CallC(FUN_5c29d0);
-        F(double, self, 2216) = CallC<double>(FUN_6037e0);
+        Media_Start();
+        F(double, self, 2216) = Tsc_Now();
     }
-    int t = (int)((CallC<double>(FUN_6037e0) - F(double, self, 2216)) * F(double, self, 2224) * 0.001);
+    int t = (int)((Tsc_Now() - F(double, self, 2216)) * F(double, self, 2224) * 0.001);
     int n = F(int, self, 2180);
     if (t > n + 10) {
         F(int, self, 2180) = n + 10;
@@ -1109,7 +1119,7 @@ int __fastcall Avi_Update(BYTE* self, void*, int a, int b, int c, int d, int e)
         F(int, self, 2192) = 0;
         return 1;
     }
-    CallThis(FUN_5c1d40, self, a, b, c, d, e);
+    Video_DrawFrame(self, 0, (BYTE*)a, b, c, d, e);
     return 0;
 }
 
@@ -1144,17 +1154,17 @@ void __fastcall Net_FlushFrame(BYTE* self, void*)
         return;
     BYTE* buf = rec + 8336;
     for (BYTE* n = F(BYTE*, self, 8); n; n = F(BYTE*, n, 8))
-        CallThis(FUN_5c34a0, n, buf);
+        NetValue_Write(n, 0, buf);
     if (F(int, g_707f6c, 416))
-        CallC(FUN_6021b0, F(BYTE*, buf, 4), F(BYTE*, buf, 8) - F(BYTE*, buf, 4));
+        Dp_Send((int)(F(BYTE*, buf, 4)), F(BYTE*, buf, 8) - F(BYTE*, buf, 4));
     rec = F(BYTE*, self, 32);
     if (F(int, rec, 7936) && F(FILE*, rec, 7928)) {
-        CallC(FUN_5ab160, -1, F(FILE*, rec, 7928));
-        CallC(FUN_5ab160, F(BYTE*, buf, 8) - F(BYTE*, buf, 4), F(FILE*, F(BYTE*, self, 32), 7928));
+        File_WriteInt(-1, F(FILE*, rec, 7928));
+        File_WriteInt(F(BYTE*, buf, 8) - F(BYTE*, buf, 4), F(FILE*, F(BYTE*, self, 32), 7928));
         fwrite(F(BYTE*, buf, 4), F(BYTE*, buf, 8) - F(BYTE*, buf, 4), 1, F(FILE*, F(BYTE*, self, 32), 7928));
-        CallC(FUN_5ab160, F(BYTE*, buf, 8) - F(BYTE*, buf, 4), F(FILE*, F(BYTE*, self, 32), 7928));
+        File_WriteInt(F(BYTE*, buf, 8) - F(BYTE*, buf, 4), F(FILE*, F(BYTE*, self, 32), 7928));
     }
-    CallThis(FUN_602df0, buf);
+    DpMessage_Reset(buf, 0);
 }
 
 // [FUN_5c36e0] stores a value into the entry's target by its type
@@ -1203,15 +1213,15 @@ int __fastcall Rec_SeekTime(BYTE* self, void*, int t, int* next)
 {
     FILE* f = F(FILE*, self, 7928);
     long pos = ftell(f);
-    int r = CallThis<int>(FUN_5c49b0, self, 1);
+    int r = Rec_Step(self, 0, 1);
     if (r == -1)
-        r = CallThis<int>(FUN_5c49b0, self, 0);
+        r = Rec_Step(self, 0, 0);
     int dir = r >= t ? -1 : 1;
     int cur = r;
     for (;;) {
         long p = ftell(f);
         if (dir == 1) {
-            int r2 = CallThis<int>(FUN_5c49b0, self, 1);
+            int r2 = Rec_Step(self, 0, 1);
             if (r2 == -1) {
                 *next = cur;
                 return cur;
@@ -1224,7 +1234,7 @@ int __fastcall Rec_SeekTime(BYTE* self, void*, int t, int* next)
             pos = p;
             cur = r2;
         } else {
-            int r2 = CallThis<int>(FUN_5c49b0, self, 0);
+            int r2 = Rec_Step(self, 0, 0);
             if (r2 == -1) {
                 *next = cur;
                 return cur;
@@ -1244,28 +1254,28 @@ void __fastcall Rec_ReadHeader(BYTE* self, void*, int unused, int b)
 {
     FILE* f = F(FILE*, self, 7928);
     long start = ftell(f);
-    int v = CallC<int>(FUN_5ab140, f);
+    int v = File_ReadInt(f);
     while (v != -16) {
         if (v == -256) {
             fseek(f, start, 0);
             return;
         }
         if (v == -1) {
-            CallThis(FUN_5c4d30, self, start, b);
+            Node_ReadHistory(self, 0, start, b);
         } else {
-            int n = CallC<int>(FUN_5ab140, f) + 4;
+            int n = File_ReadInt(f) + 4;
             fseek(f, ftell(f) + n, 0);
         }
-        v = CallC<int>(FUN_5ab140, f);
+        v = File_ReadInt(f);
     }
-    if (CallC<int>(FUN_5ab140, f) == 4) {
-        F(int, self, 7940) = CallC<int>(FUN_5ab140, f) != 0;
-        CallC<int>(FUN_5ab140, f);
+    if (File_ReadInt(f) == 4) {
+        F(int, self, 7940) = File_ReadInt(f) != 0;
+        File_ReadInt(f);
         return;
     }
-    F(int, self, 7940) = CallC<int>(FUN_5ab140, f);
-    CallC<int>(FUN_5ab140, f);
-    CallC<int>(FUN_5ab140, f);
+    F(int, self, 7940) = File_ReadInt(f);
+    File_ReadInt(f);
+    File_ReadInt(f);
 }
 
 }
@@ -1302,11 +1312,11 @@ void __fastcall List_AddNamed(BYTE* self, void*, const char* name)
     } else {
         while (F(BYTE*, c, 8))
             c = F(BYTE*, c, 8);
-        CallThis(FUN_5d2190, it, c);
+        Node_Link(it, 0, c);
         F(BYTE*, self, 300) = it;
     }
     F(int, self, 328)++;
-    if (F(int, self, 328) > CallThis<int>(FUN_5c06d0, self))
+    if (F(int, self, 328) > List_VisibleRows(self))
         F(short, F(BYTE*, self, 340), 296)++;
     List_Select(self, 0, 0);
 }
@@ -1315,8 +1325,8 @@ void __fastcall List_AddNamed(BYTE* self, void*, const char* name)
 void __fastcall Media5c53e0_Destroy(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl651b00;
-    CallThis(FUN_5d3460, self + 2992);
-    CallThis(FUN_5c4410, self);
+    Owner_Clear(self + 2992, 0);
+    Media_Destroy(self);
 }
 
 // [FUN_5cc930] the trees: parameters, a root branch and 100 56-byte leaves
@@ -1336,7 +1346,7 @@ BYTE* __fastcall Trees_Construct(BYTE* self, void*)
     if (a) {
         BYTE* p = a;
         for (int i = 0; i < 100; i++, p += 56) {
-            CallStd(FUN_4011e0, p, 12, 4, FUN_4bd4d0);
+            Array_ForEach(p, 12, 4, FUN_4bd4d0);
             memcpy(p, g_7025f0, 48);
         }
     }
@@ -1390,10 +1400,10 @@ void __cdecl Effects_FreeTrees()
 // [FUN_5c8780]
 void __fastcall Media5c8780_Destroy(BYTE* self, void*)
 {
-    CallThis(FUN_5f4a90, self + 64);
+    Value_Free((int*)(self + 64));
     if (F(void*, self, 60))
         operator delete(F(void*, self, 60));
-    CallThis(FUN_5ef660, self);
+    Sce5ef660_Destroy(self);
 }
 
 // [FUN_5ceae0]
@@ -1401,7 +1411,7 @@ void __fastcall Media5ceae0_Destroy(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl651dec;
     operator delete(F(void*, self, 172));
-    CallThis(FUN_5ce930, self);
+    Med5ce930_Destroy(self);
 }
 
 }
@@ -1459,11 +1469,16 @@ extern "C" BYTE* __cdecl Media_FindFmt2(BYTE* obj, int a, int b)
 
 
 // ---------------------------------------------------------------------------
+extern "C" void __fastcall Table_Clear(BYTE* self, void*);
 extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
+extern "C" void __fastcall List_DeleteAll(BYTE* self, void*);
 extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
+extern "C" void __fastcall Timeline_Reset(BYTE* self, void*);
 extern "C" void FUN_5c53b0(); KING_ALIAS("_FUN_5c53b0", "@Timeline_Reset@8")
-extern "C" void FUN_5e02f0(); KING_ALIAS("_FUN_5e02f0", "@View_PlaceCamera@4")
+extern "C" void __fastcall View_PlaceCamera(BYTE* s);
+extern "C" int __fastcall Media_ClearList(BYTE* self, void*);
 extern "C" void FUN_5c4940(); KING_ALIAS("_FUN_5c4940", "@Media_ClearList@8")
+extern "C" void __fastcall Tree_Grow(BYTE* s, void*, int depth, const BYTE* m, BYTE* b);
 extern "C" void FUN_5cc6b0(); KING_ALIAS("_FUN_5cc6b0", "@Tree_Grow@20")
 
 // [FUN_5cda30] +4
@@ -1472,23 +1487,23 @@ extern "C" int __fastcall Media_Get4(BYTE* self, void*) { return F(int, self, 4)
 // [FUN_5c4910] clears the table (+7976), the list (+8300) and then 5e02f0
 extern "C" void __fastcall Media_Clear5c4910(BYTE* self, void*)
 {
-    CallThis(FUN_5c2fe0, self + 7976);
-    CallThis(FUN_5c33a0, self + 8300);
-    CallThis(FUN_5e02f0, self);
+    Table_Clear(self + 7976, 0);
+    List_DeleteAll(self + 8300, 0);
+    View_PlaceCamera(self);
 }
 
 // [FUN_5c5380] resets the timeline, frees all 1000 slots and runs 5c4940
 extern "C" void __fastcall Media_Reset5c5380(BYTE* self, void*)
 {
-    CallThis(FUN_5c53b0, self);
+    Timeline_Reset(self, 0);
     memset(self + 8372, 0, 1000);
-    CallThis(FUN_5c4940, self);
+    Media_ClearList(self, 0);
 }
 
 // [FUN_5cc680] 5cc6b0(0, b, obj) (passing this on), then obj's vtbl+8(1.0)
 extern "C" void __fastcall Media_Call5cc680(void* self, void*, int a, int b, BYTE* obj)
 {
-    CallThis(FUN_5cc6b0, self, 0, b, obj);
+    Tree_Grow((BYTE*)self, 0, 0, (const BYTE*)b, obj);
     CallVirt(obj, 8, 1.0f);
 }
 
@@ -1507,7 +1522,7 @@ extern "C" int __fastcall Media_ClearList(BYTE* self, void*)
         BYTE* p = F(BYTE*, self, 3920 + n * 4);
         if (p)
         {
-            CallThis(FUN_602e80, p);
+            MsgBuf_Destroy(p, 0);
             operator delete(p);
         }
     }
@@ -1525,16 +1540,19 @@ extern "C" int __stdcall Media_Zero19(int, int, int, int, int, int, int, int, in
 extern "C" void __fastcall Light_DestructBase(BYTE* self, void*) { F(void*, self, 0) = g_vt64d81c; }
 
 // ---------------------------------------------------------------------------
+extern "C" BYTE* __fastcall Table_Add(BYTE* self, void*, int key, int type, int v);
 extern "C" void FUN_5c3020(); KING_ALIAS("_FUN_5c3020", "@Table_Add@20")
+extern "C" BYTE* __fastcall Table_Add5(BYTE* self, void*, int key, int a, int c, int b);
 extern "C" void FUN_5c30d0(); KING_ALIAS("_FUN_5c30d0", "@Table_Add5@24")
 extern "C" void $L_5c6120(); KING_ALIAS("_$L_5c6120", "_View_ShowNamed")
+extern "C" int __cdecl Msavi_Restore();
 extern "C" void FUN_5c2ce0(); KING_ALIAS("_FUN_5c2ce0", "_Msavi_Restore")
+extern "C" int __cdecl Msavi_FillBuffer();
 extern "C" void FUN_5c2a50(); KING_ALIAS("_FUN_5c2a50", "_Msavi_FillBuffer")
 KING_VAR(BYTE*, g_md702fa0, 702fa0)
 KING_VAR(AsmLabel, s_md67f728, 67f728)
 KING_VAR(AsmLabel, s_md67f70c, 67f70c)
 KING_VAR(AsmLabel, s_md67f6e8, 67f6e8)
-extern "C" void __cdecl Sys_Log(const char* text, int value);
 
 // [FUN_5c6080] registers the three controls of this item in the owner's table (+7976) from index n
 extern "C" void __fastcall Item_Register(BYTE* self, void*, BYTE* owner, int n)
@@ -1542,13 +1560,13 @@ extern "C" void __fastcall Item_Register(BYTE* self, void*, BYTE* owner, int n)
     BYTE* t = owner + 7976;
     F(int, self, 368) = n + 1;
     F(int, self, 364) = n;
-    F(int, self, 360) = CallThis<int>(FUN_5c3020, t, n, 2, self);
+    F(int, self, 360) = (int)Table_Add(t, 0, n, 2, (int)self);
     int k = F(int, self, 368);
     F(int, self, 368) = k + 1;
-    F(int, self, 352) = CallThis<int>(FUN_5c3020, t, k, 1, F(int, self, 324));
+    F(int, self, 352) = (int)Table_Add(t, 0, k, 1, F(int, self, 324));
     k = F(int, self, 368);
     F(int, self, 368) = k + 1;
-    F(int, self, 356) = CallThis<int>(FUN_5c30d0, t, k, self, $L_5c6120, 64);
+    F(int, self, 356) = (int)Table_Add5(t, 0, k, (int)self, (int)$L_5c6120, 64);
     F(DWORD, self, 208) |= 5;
     F(int, self, 372) = 1;
 }
@@ -1558,13 +1576,13 @@ extern "C" long __cdecl Media_Start()
 {
     if (!g_md702fa0)
         return (long)0x80004005;
-    long r = CallC<long>(FUN_5c2ce0);
+    long r = (long)Msavi_Restore();
     if (r < 0)
     {
         Sys_Log(s_md67f728, r);
         return r;
     }
-    r = CallC<long>(FUN_5c2a50);
+    r = (long)Msavi_FillBuffer();
     if (r < 0)
     {
         Sys_Log(s_md67f70c, r);
@@ -1583,9 +1601,11 @@ extern "C" long __cdecl Media_Start()
 // ---------------------------------------------------------------------------
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
 extern "C" void FUN_5ab160(); KING_ALIAS("_FUN_5ab160", "_File_WriteInt")    // writes an int to a file (v, file)
+extern "C" int __fastcall Avi_Start(BYTE* self, void*);
 extern "C" void FUN_5c2450(); KING_ALIAS("_FUN_5c2450", "@Avi_Start@8")
 extern "C" void FUN_6303b8(); KING_ALIAS("_FUN_6303b8", "_ICSendMessage@16")
 extern "C" void FUN_6303b2(); KING_ALIAS("_FUN_6303b2", "_ICClose@4")
+extern "C" void __cdecl Set702f94();
 extern "C" void FUN_5c2f00(); KING_ALIAS("_FUN_5c2f00", "_Set702f94")
 KING_VAR(BYTE*, g_md707f6c, 707f6c)
 KING_VAR(int, g_md7208b8, 7208b8)
@@ -1599,20 +1619,20 @@ extern "C" void __fastcall Media_RecordBlock(BYTE* self, void*, BYTE* rec)
     BYTE* p = F(BYTE*, rec, 4);
     int n = F(BYTE*, rec, 8) - p;
     if (F(int, g_md707f6c, 416))
-        CallC(FUN_6021b0, p, n);
+        Dp_Send((int)p, n);
     FILE* f = F(FILE*, self, 7928);
     if (!f || !F(int, self, 7936))
         return;
-    CallC(FUN_5ab160, -1, f);
-    CallC(FUN_5ab160, F(BYTE*, rec, 8) - F(BYTE*, rec, 4), F(FILE*, self, 7928));
+    File_WriteInt(-1, f);
+    File_WriteInt(F(BYTE*, rec, 8) - F(BYTE*, rec, 4), F(FILE*, self, 7928));
     fwrite(F(BYTE*, rec, 4), F(BYTE*, rec, 8) - F(BYTE*, rec, 4), 1, F(FILE*, self, 7928));
-    CallC(FUN_5ab160, F(BYTE*, rec, 8) - F(BYTE*, rec, 4), F(FILE*, self, 7928));
+    File_WriteInt(F(BYTE*, rec, 8) - F(BYTE*, rec, 4), F(FILE*, self, 7928));
 }
 
 // [FUN_5c12a0] closes the media player: frees its buffers, events and the device (+2176)
 extern "C" void __fastcall Media_Close(BYTE* self, void*)
 {
-    CallThis(FUN_5c2450, self);
+    Avi_Start(self, 0);
     if (F(void*, self, 4)) { operator delete(F(void*, self, 4)); F(void*, self, 4) = 0; }
     if (F(void*, self, 0)) { operator delete(F(void*, self, 0)); F(void*, self, 0) = 0; }
     if (F(void*, self, 2200)) { operator delete(F(void*, self, 2200)); F(void*, self, 2200) = 0; }
@@ -1627,7 +1647,7 @@ extern "C" void __fastcall Media_Close(BYTE* self, void*)
     }
     F(int, self, 2208) = 0;
     g_md7208b8 = 0;
-    CallC(FUN_5c2f00);
+    Set702f94();
 }
 
 
@@ -1645,10 +1665,11 @@ extern "C" void FUN_5ce5b0(); KING_ALIAS("_FUN_5ce5b0", "@Med5ce5b0_Destroy@4")
 extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 extern "C" void FUN_5ceae0(); KING_ALIAS("_FUN_5ceae0", "@Media5ceae0_Destroy@8")
 extern "C" void FUN_5cf170(); KING_ALIAS("_FUN_5cf170", "@Thunk5cf170@4")
-extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
+extern "C" void __fastcall Fw_UnloadRoom(BYTE* self, void*);
 extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
 extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
-extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")
+extern "C" char* __fastcall App_Path(BYTE* s, void*, const char* name);
+extern "C" const char* __cdecl Dd_ErrorText(DWORD hr, const char* where);
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
 
 static BYTE* Med_DeleteAfter(BYTE* self, int flags, void (*dtor)())
@@ -1698,16 +1719,16 @@ extern "C" int __fastcall Med_Forward8(BYTE* s, void*, int a) { return CallVirt<
 // [$L_5c4310] unloads the room, then the two players at +7976 and +8300
 extern "C" void __fastcall Med_Unload(BYTE* s)
 {
-    CallThis(FUN_5da8a0, s);
+    Fw_UnloadRoom(s, 0);
     F(int, s, 488) = 0;
-    CallThis(FUN_5c2fe0, s + 7976);
-    CallThis(FUN_5c33a0, s + 8300);
+    Table_Clear(s + 7976, 0);
+    List_DeleteAll(s + 8300, 0);
 }
 
 // [$L_5c4100] vtbl+188 with the translated text
 extern "C" int __fastcall Med_5c4100(BYTE* s, void*, int a)
 {
-    const char* t = CallThis<const char*>(FUN_5dc230, s, (const char*)s_med671204);
+    const char* t = (const char*)App_Path(s, 0, (const char*)s_med671204);
     return CallVirt<int>(s, 188, t, a, 0);
 }
 
@@ -1738,37 +1759,39 @@ extern "C" void __fastcall Med_5ce990(BYTE* s, void*, BYTE* a)
     void* fn = *(void**)(F(BYTE*, o, 0) + 116);
     int r = ((int(__stdcall*)(BYTE*, int, int, BYTE*, int, int))fn)(o, 1, 66, s + 60, F(int, s, 36), 0);
     if (r)
-        CallC(FUN_5d4c10, r, 0);
+        Dd_ErrorText(r, 0);
 }
 
-extern "C" void FUN_5ab110(); KING_ALIAS("_FUN_5ab110", "_File_WriteShort")
-extern "C" void Med_fwrite(); KING_ALIAS("_Med_fwrite", "_fwrite")
+extern "C" void __cdecl File_WriteShort(int v, FILE* f);
 
 // [$L_5d21e0] writes the chunk tag 65534, then +8 and +4
 extern "C" void __fastcall Med_Write5d21e0(BYTE* s, void*, void* f)
 {
-    CallC(FUN_5ab110, 65534, f);
+    File_WriteShort(65534, (FILE*)f);
     int v = F(int, s, 8);
-    CallC(Med_fwrite, &v, 4, 1, f);
+    fwrite(&v, 4, 1, (FILE*)f);
     int w = F(int, s, 4);
-    CallC(Med_fwrite, &w, 4, 1, f);
+    fwrite(&w, 4, 1, (FILE*)f);
 }
 
 // ---------------------------------------------------------------------------
 // Sound channels, list boxes and their readers.
 
+extern "C" BYTE* __fastcall Branch_Construct(BYTE* self, void*, BYTE* parent, int v);
 extern "C" void FUN_5cba00(); KING_ALIAS("_FUN_5cba00", "@Branch_Construct@16")
-extern "C" void FUN_5f36d0(); KING_ALIAS("_FUN_5f36d0", "@Obj_DrawTested@16")
-extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
-extern "C" void FUN_5cf3f0(); KING_ALIAS("_FUN_5cf3f0", "@Obj_Notify104@8")
+extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b);
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
+extern "C" void __fastcall Obj_Notify104(BYTE* self, void*);
+extern "C" int __fastcall List_IndexOf300(BYTE* self, void*);
 extern "C" void FUN_5c0c00(); KING_ALIAS("_FUN_5c0c00", "@List_IndexOf300@8")
+extern "C" void __fastcall List_Select(BYTE* self, void*, int i);
 extern "C" void FUN_5c0c20(); KING_ALIAS("_FUN_5c0c20", "@List_Select@12")
-extern "C" void FUN_5ab0f0(); KING_ALIAS("_FUN_5ab0f0", "_File_ReadShort")
+extern "C" int __cdecl File_ReadShort(FILE* f);
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
-extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg);
 extern "C" void Med_printf(); KING_ALIAS("_Med_printf", "_printf")
-extern "C" void Med_exit(); KING_ALIAS("_Med_exit", "_exit")
-extern "C" void Med_fread(); KING_ALIAS("_Med_fread", "_fread")
+extern "C" void __cdecl exit(int code);
+extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 KING_VAR(float, g_med64c264, 64c264)
 KING_VAR(double, g_med64b678, 64b678)
 KING_VAR(AsmLabel, s_med67fad0, 67fad0)
@@ -1785,7 +1808,7 @@ static BYTE* Med_Channel(BYTE* s, int off, int a)
         F(BYTE*, s, off) = 0;
         return 0;
     }
-    return F(BYTE*, s, off) = CallThis<BYTE*>(FUN_5cba00, o, s, a);
+    return F(BYTE*, s, off) = Branch_Construct(o, 0, s, a);
 }
 // [$L_5cbb30]
 extern "C" BYTE* __fastcall Med_Channel8(BYTE* s, void*, int a) { return Med_Channel(s, 8, a); }
@@ -1799,7 +1822,7 @@ extern "C" BYTE* __fastcall Med_Channel12(BYTE* s, void*, int a)
     if (F(BYTE*, s, 12))
         return F(BYTE*, s, 12);
     BYTE* o = (BYTE*)operator new(40);
-    F(BYTE*, s, 12) = o ? CallThis<BYTE*>(FUN_5cba00, o, s, a) : 0;
+    F(BYTE*, s, 12) = o ? Branch_Construct(o, 0, s, a) : 0;
     F(DWORD, F(BYTE*, s, 12), 24) = 0x3f800000;
     return F(BYTE*, s, 12);
 }
@@ -1810,11 +1833,11 @@ extern "C" int __fastcall Med_5cf310(BYTE* s, void*, int a, BYTE* b)
     if (!F(int, s, 64))
         return 0;
     F(int, s, 32) = 0;
-    int r = CallThis<int>(FUN_5f36d0, s, a, b);
+    int r = Obj_DrawTested(s, 0, a, b);
     if (!r)
         return r;
-    CallThis(FUN_5b1020, b, F(int, s, 124), 0, 0, 0);
-    CallThis(FUN_5cf3f0, s - 32);
+    Material_Select(b, 0, (BYTE*)(F(int, s, 124)), 0, 0, 0);
+    Obj_Notify104(s - 32, 0);
     return 1;
 }
 
@@ -1827,7 +1850,7 @@ extern "C" void __fastcall Med_5cf410(BYTE* s)
     CallVirt(o, 20, F(double, F(BYTE*, s, 100), 2960));
     o = F(BYTE*, s, 96);
     if (F(double, o, 16) > g_med64b678) {
-        CallThis(FUN_5d32f0, s, 1);
+        Queue_PostEvent(s, 0, 1);
         return;
     }
     if (o)
@@ -1845,7 +1868,7 @@ extern "C" void __fastcall Med_5ce640(BYTE* s, void*, int a, int b)
         if (!(F(double, o, 16) > g_med64b678)) {
             if (F(BYTE*, s, 24) == o)
                 F(BYTE*, s, 24) = next;
-            CallThis(FUN_5d21b0, o);
+            Node_Unlink(o, 0);
             if (o)
                 CallVirt(o, 0, 1);
         }
@@ -1865,11 +1888,11 @@ extern "C" int __fastcall Med_ListKey(BYTE* s, void*, int key, int up)
     if (key == 13)
         return F(int, s, 28) | 0x8000;
     if (key == 38) {
-        CallThis(FUN_5c0c20, s, CallThis<int>(FUN_5c0c00, s) - 1);
+        List_Select(s, 0, List_IndexOf300(s, 0) - 1);
         return 32806;
     }
     if (key == 40) {
-        CallThis(FUN_5c0c20, s, CallThis<int>(FUN_5c0c00, s) + 1);
+        List_Select(s, 0, List_IndexOf300(s, 0) + 1);
         return 32808;
     }
     return key;
@@ -1878,14 +1901,14 @@ extern "C" int __fastcall Med_ListKey(BYTE* s, void*, int key, int up)
 // [$L_5d2230] reads the chunk (tag 65534, then the flags +8 and +4)
 extern "C" void __fastcall Med_Read5d2230(BYTE* s, void*, void* f)
 {
-    if (CallC<int>(FUN_5ab0f0, f) != 65534) {
+    if (File_ReadShort((FILE*)f) != 65534) {
         CallC(Med_printf, (const char*)s_med67fad0);
-        CallC(Med_exit, 0);
+        exit(0);
     }
     int v;
-    CallC(Med_fread, &v, 4, 1, f);
+    fread(&v, 4, 1, (FILE*)f);
     F(int, s, 8) = v ? 1 : 0;
-    CallC(Med_fread, &v, 4, 1, f);
+    fread(&v, 4, 1, (FILE*)f);
     F(int, s, 4) = v ? 1 : 0;
 }
 
@@ -1915,8 +1938,9 @@ extern "C" int __fastcall Med_ListMouse(BYTE* s, void*, int msg, int x, int y)
     return F(int, s, 28) | 0x8000;
 }
 
+extern "C" void __fastcall Music_Stop(BYTE* self, void*);
 extern "C" void FUN_5c3a80(); KING_ALIAS("_FUN_5c3a80", "@Music_Stop@8")
-extern "C" void FUN_5e3010(); KING_ALIAS("_FUN_5e3010", "@CGameApp_Destruct@8")
+extern "C" void __fastcall CGameApp_Destruct(CGameApp* self, void*);
 extern "C" void Med_VecDtor(); KING_ALIAS("_Med_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 KING_VAR(AsmLabel, g_med65195c, 65195c)
 KING_VAR(AsmLabel, g_med651dcc, 651dcc)
@@ -1924,20 +1948,20 @@ KING_VAR(AsmLabel, g_med651dcc, 651dcc)
 // [FUN_5c3260]
 extern "C" void __fastcall Med5c3260_Destroy(BYTE* s)
 {
-    CallThis(FUN_5c33a0, s);
+    List_DeleteAll(s, 0);
     F(void*, s, 0) = g_med64d81c;
 }
 // [FUN_5c3990] (vtable 65195c)
 extern "C" void __fastcall Med5c3990_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_med65195c;
-    CallThis(FUN_5c3a80, s);
-    CallThis(FUN_5e3010, s);
+    Music_Stop(s, 0);
+    CGameApp_Destruct((CGameApp*)s, 0);
 }
 // [FUN_5c2f80] the table, then the ten 32-byte channels
 extern "C" void __fastcall Med5c2f80_Destroy(BYTE* s)
 {
-    CallThis(FUN_5c2fe0, s);
+    Table_Clear(s, 0);
     CallStd(Med_VecDtor, s, 32, 10, FUN_5ce630);
 }
 // [FUN_5ce930] (vtable 651dcc) frees +40 and +56
@@ -1952,15 +1976,19 @@ extern "C" void __fastcall Med5ce930_Destroy(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors and destructors (exception frames dropped).
 
-extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
+extern "C" void __fastcall Handle_Release(BYTE* self, void*);
+extern "C" void __fastcall Node5f1a70_Destroy(BYTE* s);
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
-extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
+extern "C" int __fastcall Node_Remove(BYTE* self, void*);
+extern "C" void __fastcall Rec_Close(BYTE* self, void*);
 extern "C" void FUN_5c4340(); KING_ALIAS("_FUN_5c4340", "@Rec_Close@8")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void __fastcall Med5c3260_Destroy(BYTE* s);
 extern "C" void FUN_5c3260(); KING_ALIAS("_FUN_5c3260", "@Med5c3260_Destroy@4")
+extern "C" void __fastcall Med5c2f80_Destroy(BYTE* s);
 extern "C" void FUN_5c2f80(); KING_ALIAS("_FUN_5c2f80", "@Med5c2f80_Destroy@4")
-extern "C" void FUN_5ddb40(); KING_ALIAS("_FUN_5ddb40", "@MainView_Destroy@4")
-extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
+extern "C" void __fastcall MainView_Destroy(BYTE* s);
+extern "C" void __fastcall Object_Destroy(BYTE* s);
 KING_VAR(AsmLabel, g_med651e80, 651e80)
 KING_VAR(AsmLabel, g_med651e34, 651e34)
 KING_VAR(AsmLabel, g_med651db0, 651db0)
@@ -1972,10 +2000,10 @@ extern "C" void __fastcall Med5cf370_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_med651e80;
     F(void*, s, 32) = g_med651e34;
-    CallThis(FUN_5ef780, s + 32);
-    CallThis(FUN_5d33b0, s);
-    CallThis(FUN_5f1a70, s ? s + 32 : 0);
-    CallThis(FUN_5d3290, s);
+    Node_Remove(s + 32, 0);
+    Handle_Release(s, 0);
+    Node5f1a70_Destroy(s ? s + 32 : 0);
+    Object_Destroy(s);
 }
 // [FUN_5ce5b0] a sound list (vtable 651db0) deletes its sounds (+24, next +8)
 extern "C" void __fastcall Med5ce5b0_Destroy(BYTE* s)
@@ -1995,20 +2023,21 @@ extern "C" void __fastcall Media_Destroy(BYTE* s)
     F(void*, s, 0) = g_med651a20;
     if (F(int, g_med707f6c, 416))
         operator delete(F(void*, s, 7924));
-    CallThis(FUN_5c4340, s);
-    CallThis(FUN_602e80, s + 8336);
-    CallThis(FUN_5c3260, s + 8300);
-    CallThis(FUN_5c2f80, s + 7976);
-    CallThis(FUN_5ddb40, s);
+    Rec_Close(s, 0);
+    MsgBuf_Destroy(s + 8336, 0);
+    Med5c3260_Destroy(s + 8300);
+    Med5c2f80_Destroy(s + 7976);
+    MainView_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
 // Constructors, destructors and setup (exception frames dropped).
 
-extern "C" void FUN_5dc4d0(); KING_ALIAS("_FUN_5dc4d0", "@MainView_Construct@12")
+extern "C" BYTE* __fastcall MainView_Construct(BYTE* self, void*, int arg);
+extern "C" BYTE* __fastcall Lights5c2f10_Construct(BYTE* s, void*, int x);
 extern "C" void FUN_5c2f10(); KING_ALIAS("_FUN_5c2f10", "@Lights5c2f10_Construct@12")
-extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
-extern "C" void FUN_5e3150(); KING_ALIAS("_FUN_5e3150", "@CGameApp_Construct@16")
+extern "C" BYTE* __fastcall DpMessage_Construct(BYTE* self, void*);
+extern "C" CGameApp* __fastcall CGameApp_Construct(CGameApp* self, void*, const char* iniName, const char* iniDir);
 extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
 #include <string.h>
 KING_VAR(AsmLabel, g_med651948, 651948)
@@ -2025,8 +2054,8 @@ extern "C" void __cdecl Media_ExitHook(void);
 // [FUN_5c3f20] constructor (a): the media player (vtable 651a20); with sound (707f6c +416) its device name from the ini
 extern "C" BYTE* __fastcall Media_Construct(BYTE* s, void*, int a)
 {
-    CallThis(FUN_5dc4d0, s, a);
-    CallThis(FUN_5c2f10, s + 7976, s);
+    MainView_Construct(s, 0, a);
+    Lights5c2f10_Construct(s + 7976, 0, (int)s);
     F(int, s, 8304) = 0;
     F(int, s, 8308) = 0;
     F(void*, s, 8300) = g_med651948;
@@ -2034,7 +2063,7 @@ extern "C" BYTE* __fastcall Media_Construct(BYTE* s, void*, int a)
     F(int, s, 8316) = -1;
     F(int, s, 8320) = 0;
     F(BYTE*, s, 8332) = s;
-    CallThis(FUN_602be0, s + 8336);
+    DpMessage_Construct(s + 8336, 0);
     F(int, s, 7960) = 0;
     F(void*, s, 0) = g_med651a20;
     F(int, s, 7924) = 0;
@@ -2061,7 +2090,7 @@ extern "C" BYTE* __fastcall Media_Construct(BYTE* s, void*, int a)
 // [FUN_5c3800] constructor (a, b): the sound system (vtable 65195c, also 707f6c); network test mode from the ini
 extern "C" BYTE* __fastcall SoundSystem_Construct(BYTE* s, void*, int a, int b)
 {
-    CallThis(FUN_5e3150, s, a, b);
+    CGameApp_Construct((CGameApp*)s, 0, (const char*)a, (const char*)b);
     F(int, s, 408) = 0;
     F(int, s, 412) = 0;
     F(void*, s, 0) = g_med65195c;
@@ -2074,7 +2103,7 @@ extern "C" BYTE* __fastcall SoundSystem_Construct(BYTE* s, void*, int a, int b)
     F(int, s, 416) = strcmp(buf, (const char*)s_med672994) == 0 ? 1 : 0;
     if (F(int, s, 416)) {
         char t[12] = "nettest";
-        if (CallC<int>(FUN_6021f0, t))
+        if (Gate_Start(t))
             F(int, s, 416) = 0;
     }
     F(int, s, 440) = 1;
@@ -2090,8 +2119,8 @@ extern "C" BYTE* __fastcall SoundSystem_Construct(BYTE* s, void*, int a, int b)
 // ---------------------------------------------------------------------------
 // Scroll bar construction and chat (exception frames dropped).
 
-extern "C" void FUN_6021d0(); KING_ALIAS("_FUN_6021d0", "_Dp_SendTo")
-extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" int __cdecl Dp_SendTo(int to, int a, int b);
+extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, int n);
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 typedef BYTE (__cdecl* MedChatFn)(const char*, int);
 
@@ -2101,10 +2130,10 @@ extern "C" int __fastcall Media_SendChat(BYTE* s, void*, int, const char* text)
     if (F(int, g_med707f6c, 420) != 2)
         return 1;
     BYTE pkt[32];
-    CallThis(FUN_602be0, pkt);
+    DpMessage_Construct(pkt, 0);
     size_t n = strlen(text);
     if (n > 64) {
-        CallThis(FUN_602e80, pkt);
+        MsgBuf_Destroy(pkt, 0);
         return 0;
     }
     int id = F(int, g_med707f6c, 440);
@@ -2114,18 +2143,18 @@ extern "C" int __fastcall Media_SendChat(BYTE* s, void*, int, const char* text)
     F(int, g_med707f6c, 440)++;
     d[0] = (BYTE)id;
     memcpy(d + 2, text, n + 1);
-    CallThis(FUN_603110, pkt, 901, d, (int)n + 3);
-    CallC(FUN_6021d0, F(int, s, 408), F(BYTE*, pkt, 4), F(BYTE*, pkt, 8) - F(BYTE*, pkt, 4));
-    CallThis(FUN_602e80, pkt);
+    Msg_Write120(pkt, 0, 901, d, (int)n + 3);
+    Dp_SendTo(F(int, s, 408), (int)(F(BYTE*, pkt, 4)), F(BYTE*, pkt, 8) - F(BYTE*, pkt, 4));
+    MsgBuf_Destroy(pkt, 0);
     return 1;
 }
 
 // ---------------------------------------------------------------------------
 // Constructors and surfaces (exception frames dropped).
 
-extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const char* name);
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
-extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
 KING_VAR(AsmLabel, s_q20_67fa68, 67fa68)
 KING_VAR(AsmLabel, g_q20_68d1c0, 68d1c0)
 KING_VAR(AsmLabel, g_q20_64c26c, 64c26c)
@@ -2138,8 +2167,8 @@ KING_VAR(int, g_q20_720908, 720908)
 // its owner (or the world's +524), its entry (+156) the world room list item called name
 extern "C" BYTE* __fastcall MediaObj_Construct(BYTE* s, void*, BYTE* w, const char* name, BYTE* owner)
 {
-    CallThis(FUN_5d31e0, s, 100, (const char*)s_q20_67fa68);
-    CallThis(FUN_5f19b0, s + 32, (BYTE*)g_q20_68d1c0, 5, 1);
+    Object_ConstructKind(s, 0, 100, (const char*)s_q20_67fa68);
+    NodeN_Construct(s + 32, 0, (const char*)((BYTE*)g_q20_68d1c0), 5, 1);
     F(void*, s, 32) = g_q20_64c26c;
     F(int, s, 88) = 0;
     F(int, s, 92) = 0;
@@ -2151,7 +2180,7 @@ extern "C" BYTE* __fastcall MediaObj_Construct(BYTE* s, void*, BYTE* w, const ch
     if (o)
         CallVirt(o, 20, 0, s ? s + 32 : 0);
     F(BYTE*, s, 100) = w;
-    CallThis(FUN_5d3570, w + 2992, s);
+    Owner_Attach(w + 2992, 0, s);
     BYTE* l = F(BYTE*, w, 468);
     int n = F(int, l, 72), i = 0;
     for (; i < n; i++)
@@ -2167,11 +2196,14 @@ extern "C" BYTE* __fastcall MediaObj_Construct(BYTE* s, void*, BYTE* w, const ch
 // Network item destructor, sorted list box insert (exception frames dropped).
 
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
-extern "C" void FUN_6030b0(); KING_ALIAS("_FUN_6030b0", "@Msg_Write45@16")
+extern "C" void __fastcall Msg_Write45(BYTE* self, int, int id, DWORD x);
+extern "C" void __fastcall Media_RecordBlock(BYTE* self, void*, BYTE* rec);
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
+extern "C" void __fastcall Timeline_Clear(BYTE* self, void*, int t);
 extern "C" void FUN_5c5c00(); KING_ALIAS("_FUN_5c5c00", "@Timeline_Clear@12")
+extern "C" void __fastcall Pool_Keep(BYTE* self, void*, BYTE* p);
 extern "C" void FUN_5c40b0(); KING_ALIAS("_FUN_5c40b0", "@Pool_Keep@12")
-extern "C" void FUN_5a47f0(); KING_ALIAS("_FUN_5a47f0", "@Wea5a47f0_Destroy@4")
+extern "C" void __fastcall Wea5a47f0_Destroy(BYTE* s);
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
 extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")
 extern "C" void FUN_5c0c20(); KING_ALIAS("_FUN_5c0c20", "@List_Select@12")
@@ -2188,26 +2220,26 @@ extern "C" void __fastcall NetItem_Destroy(BYTE* s)
     for (int o = 352; o <= 360; o += 4) {
         if (!F(BYTE*, s, o))
             continue;
-        CallThis(FUN_5d21b0, F(BYTE*, s, o));
+        Node_Unlink(F(BYTE*, s, o), 0);
         if (F(BYTE*, s, o))
             CallVirt(F(BYTE*, s, o), 0, 1);
     }
     if (!F(int, s, 372) && (F(int, g_med707f6c, 416) || F(int, F(BYTE*, s, 36), 7928))) {
         BYTE a[32];
-        CallThis(FUN_602be0, a);
-        CallThis(FUN_6030b0, a, F(int, s, 364), 0);
-        CallThis(FUN_5c3630, F(BYTE*, s, 36), a);
-        CallThis(FUN_5c5c00, F(BYTE*, s, 36), F(int, s, 364));
+        DpMessage_Construct(a, 0);
+        Msg_Write45(a, 0, F(int, s, 364), 0);
+        Media_RecordBlock(F(BYTE*, s, 36), 0, a);
+        Timeline_Clear(F(BYTE*, s, 36), 0, F(int, s, 364));
         BYTE* m = (BYTE*)operator new(28);
-        BYTE* p = m ? CallThis<BYTE*>(FUN_602be0, m) : 0;
+        BYTE* p = m ? DpMessage_Construct(m, 0) : 0;
         BYTE d[8];
         F(int, d, 0) = F(int, s, 364);
         d[4] = 0;
-        CallThis(FUN_603110, p, 904, d, 5);
-        CallThis(FUN_5c40b0, F(BYTE*, s, 36), p);
-        CallThis(FUN_602e80, a);
+        Msg_Write120(p, 0, 904, d, 5);
+        Pool_Keep(F(BYTE*, s, 36), 0, p);
+        MsgBuf_Destroy(a, 0);
     }
-    CallThis(FUN_5a47f0, s);
+    Wea5a47f0_Destroy(s);
 }
 
 // [FUN_5c0f00] (text): a list box line (16 bytes, vtable 6518e4, its text +12) inserted in order into the list
@@ -2233,7 +2265,7 @@ extern "C" void __fastcall ListBox_AddSorted(BYTE* s, void*, const char* text)
         while (F(BYTE*, e, 8) && strcmp(text, F(const char*, e, 12)) > 0)
             e = F(BYTE*, e, 8);
         if (strcmp(text, F(const char*, e, 12)) > 0) {
-            CallThis(FUN_5d2190, n, e);
+            Node_Link(n, 0, e);
         } else if (!F(BYTE*, e, 4)) {
             F(BYTE*, s, 336) = n;
             F(BYTE*, s, 300) = n;
@@ -2241,34 +2273,36 @@ extern "C" void __fastcall ListBox_AddSorted(BYTE* s, void*, const char* text)
             F(BYTE*, n, 8) = e;
             F(BYTE*, e, 4) = n;
         } else {
-            CallThis(FUN_5d2190, n, F(BYTE*, e, 4));
+            Node_Link(n, 0, F(BYTE*, e, 4));
         }
         F(BYTE*, s, 300) = n;
     }
     F(int, s, 328)++;
-    if (F(int, s, 328) > CallThis<int>(FUN_5c06d0, s))
+    if (F(int, s, 328) > List_VisibleRows(s))
         F(WORD, F(BYTE*, s, 340), 296)++;
-    CallThis(FUN_5c0c20, s, 0);
+    List_Select(s, 0, 0);
 }
 
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
+extern "C" void __fastcall NetItem_Destroy(BYTE* s);
 extern "C" void FUN_5c6210(); KING_ALIAS("_FUN_5c6210", "@NetItem_Destroy@4")
 // [$L_5c6060]
 extern "C" BYTE* __fastcall Dtor5c6060_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5c6210, s);
+    NetItem_Destroy(s);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" void __fastcall Med5cf370_Destroy(BYTE* s);
 extern "C" void FUN_5cf370(); KING_ALIAS("_FUN_5cf370", "@Med5cf370_Destroy@4")
 // [$L_5cf2f0]
 extern "C" BYTE* __fastcall Dtor5cf2f0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_5cf370, s);
+    Med5cf370_Destroy(s);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -2295,7 +2329,7 @@ extern "C" void __fastcall Med5cdcb0_Destruct(BYTE* s, void*)
 {
     F(BYTE, s, 40) |= 1;
     F(void*, s, 0) = g_q47_651d64;
-    CallThis(FUN_5f1a70, s);
+    Node5f1a70_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
@@ -2344,12 +2378,12 @@ extern "C" BYTE* __fastcall PtrTable500_Construct(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
 
-extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
 // [$L_5c6120] shows the scene object named name in the view o (resets +256 by slot 36, then slot 40 with the object
 // and the text after the name)
 extern "C" void __cdecl View_ShowNamed(BYTE* o, const char* name)
 {
-    int obj = CallC<int>(FUN_5ef2b0, 0, name);
+    int obj = (int)Scene_FindObject(0, name);
     const char* rest = name + strlen(name) + 1;
     if (obj && rest) {
         CallVirt(o + 256, 36);
@@ -2360,6 +2394,7 @@ extern "C" void __cdecl View_ShowNamed(BYTE* o, const char* name)
 // ---------------------------------------------------------------------------
 // The media thread start.
 
+extern "C" int __cdecl Msavi_OpenSound(HWND w);
 extern "C" void FUN_5c24a0(); KING_ALIAS("_FUN_5c24a0", "_Msavi_OpenSound")
 extern "C" void Mfc_AfxBeginThread(); KING_ALIAS("_Mfc_AfxBeginThread", "_Afx_BeginThread@24")
 KING_VAR(int, g_q54_702f60, 702f60)
@@ -2380,8 +2415,8 @@ extern "C" void __cdecl Media_StartThread(int w, int d)
     g_q54_702f5c = CreateEventA(0, 0, 0, 0);
     if (!d) {
         g_q54_702f9c = 1;
-        if (CallC<int>(FUN_5c24a0, g_q54_702f60) < 0) {
-            CallC(FUN_5d2ba0, (const char*)s_q54_67f854, 0);
+        if (Msavi_OpenSound((HWND)g_q54_702f60) < 0) {
+            Sys_Log((const char*)s_q54_67f854, 0);
             return;
         }
     } else {
@@ -2395,8 +2430,8 @@ extern "C" void __cdecl Media_StartThread(int w, int d)
 // ---------------------------------------------------------------------------
 // Polygon span fill.
 
-ASM_FUNC(FUN_5fedbc, _Span_SelectFlat)
-ASM_FUNC(FUN_5fef04, _Span_DrawFlat)
+extern "C" void __cdecl Span_SelectFlat(int mode, int alt);
+extern "C" void __cdecl Span_DrawFlat(BYTE* dst, int count, int light, int dlight, int c, int z, int dz, WORD* zbuf);
 KING_VAR(int, g_q56_71e7dc, 71e7dc)
 KING_VAR(int, g_q56_71e7d8, 71e7d8)
 KING_VAR(int, g_q56_71e7bc, 71e7bc)
@@ -2407,7 +2442,7 @@ KING_VAR(int, g_q56_70f3f0, 70f3f0)
 // right, 24 bytes a row: x in 12.20 fixed point, z at +20) with the color c; mode | 2 set first
 extern "C" void __cdecl Span_FillRows(int mode, int c)
 {
-    CallC(FUN_5fedbc, mode | 2, 0);
+    Span_SelectFlat(mode | 2, 0);
     int y = g_q56_71e7dc;
     int row = y * g_q56_71e7bc;
     if (y > g_q56_71e7d8)
@@ -2422,7 +2457,7 @@ extern "C" void __cdecl Span_FillRows(int mode, int c)
             x++;
         if (x <= r) {
             int n = r - x + 1;
-            CallC(FUN_5fef04, g_q56_70f3d8 * x + g_q56_71e7c4 + row, n, z, (e[7805] - z) / n, c, 0, 0, 0);
+            Span_DrawFlat((BYTE*)(g_q56_70f3d8 * x + g_q56_71e7c4 + row), n, z, (e[7805] - z) / n, c, 0, 0, 0);
         }
         y++;
         e += 6;
@@ -2435,7 +2470,9 @@ extern "C" void __cdecl Span_FillRows(int mode, int c)
 // ---------------------------------------------------------------------------
 // The media thread.
 
+extern "C" int __cdecl Msavi_HandleNotification();
 extern "C" void FUN_5c2ba0(); KING_ALIAS("_FUN_5c2ba0", "_Msavi_HandleNotification")
+extern "C" int __cdecl Msavi_Free();
 extern "C" void FUN_5c26f0(); KING_ALIAS("_FUN_5c26f0", "_Msavi_Free")
 KING_VAR(AsmLabel, s_q58_67f830, 67f830)
 KING_VAR(AsmLabel, s_q58_67f818, 67f818)
@@ -2448,11 +2485,11 @@ extern "C" unsigned __cdecl Media_ThreadProc(void*)
     for (;;) {
         DWORD r = MsgWaitForMultipleObjects(2, &g_q54_702f58, FALSE, INFINITE, QS_ALLINPUT);
         if (r == 0) {
-            long hr = CallC<long>(FUN_5c2ba0);
+            long hr = (long)Msavi_HandleNotification();
             if (hr < 0) {
                 if (hr != (long)0x80004005) {
-                    CallC(FUN_5d2ba0, (const char*)s_q58_67f830, hr);
-                    CallC(FUN_5d2ba0, (const char*)s_q58_67f818, 0);
+                    Sys_Log((const char*)s_q58_67f830, hr);
+                    Sys_Log((const char*)s_q58_67f818, 0);
                 }
                 g_q54_702f94 = 1;
                 break;
@@ -2467,7 +2504,7 @@ extern "C" unsigned __cdecl Media_ThreadProc(void*)
         if (g_q54_702f94)
             break;
     }
-    CallC(FUN_5c26f0);
+    Msavi_Free();
     CloseHandle(g_q54_702f58);
     CloseHandle(g_q54_702f5c);
     return 1;
@@ -2577,11 +2614,10 @@ extern "C" int __fastcall Edit_Key(BYTE* s, void*, int key, int type)
 // ---------------------------------------------------------------------------
 // Drawing a list.
 
-extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")
-extern "C" void FUN_5be1d0(); KING_ALIAS("_FUN_5be1d0", "@Ctl_DrawAll@24")
+extern "C" void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* text, DWORD color, int raw);
+extern "C" int __fastcall Ctl_DrawAll(BYTE* self, void*, int a, int x, int y, int focus);
 extern "C" void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int a5, int light, int dark,
                                       int dx, int dy, int fill, BYTE* bmp, int pattern);    // controls.cpp
-extern "C" int __fastcall List_VisibleRows(BYTE* s);
 // [$L_5c0920] draws list s at x, y on dst: the controls, the frame (+312..+324 in the style of +104), the rows
 // from the first shown (+336) while they fit (+308), the chosen one (+300) in its font (+20) and colour (+108);
 // the scroll bar (+340) is hidden (+40 = 1) when all rows fit
@@ -2589,7 +2625,7 @@ extern "C" int __fastcall List_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int
 {
     int line = F(int, F(BYTE*, s, 16), 20);
     int top = F(int, s, 48) + line + y + 2;
-    CallThis(FUN_5be1d0, s, dst, x, y, a4);
+    Ctl_DrawAll(s, 0, (int)dst, x, y, a4);
     int r[4];
     r[0] = F(int, s, 312) + F(int, s, 44) + x;
     r[1] = F(int, s, 316) + F(int, s, 48) + y;
@@ -2600,8 +2636,7 @@ extern "C" int __fastcall List_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int
     int dy = line;
     for (BYTE* e = F(BYTE*, s, 336); e && dy < F(int, s, 308); e = F(BYTE*, e, 8)) {
         bool sel = e == F(BYTE*, s, 300);
-        CallC(FUN_5ea1b0, dst, r[0] + 2, top + dy, F(int, s, 320) - F(int, s, 312) - 2,
-              sel ? F(BYTE*, s, 20) : F(BYTE*, s, 16), F(const char*, e, 12), sel ? F(int, s, 108) : F(int, s, 72), 0);
+        Font_DrawText(dst, r[0] + 2, top + dy, F(int, s, 320) - F(int, s, 312) - 2, sel ? F(BYTE*, s, 20) : F(BYTE*, s, 16), (const BYTE*)(F(const char*, e, 12)), sel ? F(int, s, 108) : F(int, s, 72), 0);
         dy += F(int, F(BYTE*, s, 16), 20) + F(int, s, 344);
     }
     F(int, F(BYTE*, s, 340), 40) = F(int, s, 328) > List_VisibleRows(s) ? 0 : 1;
@@ -2624,10 +2659,11 @@ KING_VAR(BYTE*, g_q128_707f6c, 707f6c)
 // [$L_5c37e0] exit hook: stops the music, then runs the previous hook (707f70)
 extern "C" void __cdecl Media_ExitHook(void)
 {
-    CallThis(FUN_5c3a80, g_q128_707f6c);
+    Music_Stop(g_q128_707f6c, 0);
     ((void(__cdecl*)())g_med707f70)();
 }
 
+extern "C" int __fastcall Avi_ReadAudio(BYTE* self, void*, BYTE* buf, DWORD* len);
 extern "C" void FUN_5c1b20(); KING_ALIAS("_FUN_5c1b20", "@Avi_ReadAudio@16")
 KING_VAR(int, g_q156_702f54, 702f54)
 // [$L_5c1360] audio stream callback: reads up to n bytes from stream s into buf, stores the count in *got and
@@ -2635,7 +2671,7 @@ KING_VAR(int, g_q156_702f54, 702f54)
 extern "C" int __cdecl Avi_AudioRead(int n, void* buf, int* got, BYTE* s)
 {
     int v = n;
-    int r = CallThis<int>(FUN_5c1b20, s, buf, &v);
+    int r = Avi_ReadAudio(s, 0, (BYTE*)buf, (DWORD*)&v);
     *got = v;
     g_q156_702f54 += v;
     return r;
@@ -2743,7 +2779,7 @@ extern "C" int __cdecl Sound_PlayAt(BYTE* a, unsigned k)
     }
     char buf[256];
     sprintf(buf, (const char*)s_q168_67f994);
-    CallC(FUN_5d2ba0, buf, 0);
+    Sys_Log(buf, 0);
     return 0;
 }
 
@@ -2930,7 +2966,7 @@ extern "C" BYTE* __fastcall Stream_Construct(BYTE* s, void*, int n, float x, flo
 // === drawing a video frame (FUN_5c1d40)
 
 KING_VAR(AsmLabel, s_vf67f42c, 67f42c)
-extern "C" void FUN_5d3ab0(); KING_ALIAS("_FUN_5d3ab0", "_Mode_TextureLevel")    // the texture level: 2 for 565, 3 for 555 surfaces
+extern "C" int __cdecl Mode_TextureLevel(void);
 
 static WORD Vf_565(DWORD v)
 {
@@ -2956,7 +2992,7 @@ void __fastcall Video_DrawFrame(BYTE* self, void*, BYTE* surf, int x, int y, int
     typedef HRESULT(__stdcall * LockFn)(BYTE*, void*, void*, DWORD, void*);
     typedef HRESULT(__stdcall * UnlockFn)(BYTE*, void*);
     if ((*(LockFn*)(*(BYTE**)surf + 100))(surf, 0, desc, 33, 0)) {
-        CallC(FUN_5d2ba0, (const char*)s_vf67f42c, 0);
+        Sys_Log((const char*)s_vf67f42c, 0);
         return;
     }
     int width = desc[3], height = desc[2], pitch = desc[4];
@@ -2980,8 +3016,8 @@ void __fastcall Video_DrawFrame(BYTE* self, void*, BYTE* surf, int x, int y, int
     BYTE* src = F(BYTE*, self, 2204);
     BYTE* dst = bits + pitch * y + x * 2;
     if ((F(BYTE, self, 2240) & 1) && (srcW != (unsigned)w || srcH != (unsigned)h)) {
-        int mode = CallC<int>(FUN_5d3ab0);
-        if (mode == 2 || (mode = CallC<int>(FUN_5d3ab0)) == 3) {
+        int mode = Mode_TextureLevel();
+        if (mode == 2 || (mode = Mode_TextureLevel()) == 3) {
             unsigned acc = 0;
             for (unsigned r = (unsigned)h; r; r--, acc += srcH, dst += pitch) {
                 unsigned row = (srcH - acc / (unsigned)h - 1) * srcW;
@@ -2994,8 +3030,8 @@ void __fastcall Video_DrawFrame(BYTE* self, void*, BYTE* surf, int x, int y, int
             }
         }
     } else {
-        int mode = CallC<int>(FUN_5d3ab0);
-        if (mode == 2 || (mode = CallC<int>(FUN_5d3ab0)) == 3) {
+        int mode = Mode_TextureLevel();
+        if (mode == 2 || (mode = Mode_TextureLevel()) == 3) {
             if (h) {
                 int step = -(int)(bpp * srcW);
                 int start = (srcH - 1) * bpp * srcW;
@@ -3029,11 +3065,15 @@ KING_VAR(int, g_av7208b8, 7208b8)
 KING_VAR(BYTE*, g_av720920, 720920)
 KING_VAR(int, g_av702f54, 702f54)
 
+extern "C" void __fastcall Media_Close(BYTE* self, void*);
 extern "C" void FUN_5c12a0(); KING_ALIAS("_FUN_5c12a0", "@Media_Close@8")
+extern "C" BSTR __cdecl AnsiToBstr(const char* s, int len);
 extern "C" void FUN_5c1990(); KING_ALIAS("_FUN_5c1990", "_AnsiToBstr")    // a BSTR of an ANSI string (text, length)
 extern "C" void FUN_6303be(); KING_ALIAS("_FUN_6303be", "_ICOpen@12")    // ICOpen
 extern "C" void FUN_6303b8(); KING_ALIAS("_FUN_6303b8", "_ICSendMessage@16")    // ICSendMessage
+extern "C" void __cdecl Media_StartThread(int w, int d);
 extern "C" void FUN_5c2e60(); KING_ALIAS("_FUN_5c2e60", "_Media_StartThread")
+extern "C" int __cdecl Msavi_Open(BYTE* format, WaveRead read, int ctx);
 extern "C" void FUN_5c2750(); KING_ALIAS("_FUN_5c2750", "_Msavi_Open")
 
 // a COM method (stdcall, this pushed) at vtbl+off of o
@@ -3062,7 +3102,7 @@ extern "C" {
 // (+2224), the audio stream (+16, index +4) and the playing thread; 0 when done, else an error code or 1
 int __fastcall Video_Open(BYTE* self, void*, const char* path, int bits, int scale, int thread)
 {
-    CallThis(FUN_5c12a0, self);
+    Media_Close(self, 0);
     F(int, self, 2240) = scale;
     BYTE* obj = 0;
     HRESULT hr = CoCreateInstance(*(const IID*)(char*)g_avClsid651938, 0, 7, *(const IID*)(char*)g_avIid67f408, (void**)&obj);
@@ -3078,7 +3118,7 @@ int __fastcall Video_Open(BYTE* self, void*, const char* path, int bits, int sca
             Av_Com<ULONG>(obj, 8);
         return 1;
     }
-    void* name = CallC<void*>(FUN_5c1990, path, -1);
+    void* name = (void*)AnsiToBstr(path, -1);
     hr = Av_Com(obj, 28, name);
     if (hr) {
         SysFreeString((BSTR)name);
@@ -3099,7 +3139,7 @@ int __fastcall Video_Open(BYTE* self, void*, const char* path, int bits, int sca
         memset(info, 0, sizeof info);
         Av_Com(obj, 44, 0, info, 64, &out, &out, &out);
         if (info[2] & 0x10000)
-            CallC(FUN_5d2ba0, (const char*)s_av67f3f8, 0);
+            Sys_Log((const char*)s_av67f3f8, 0);
         memset(self + 1108, 0, 40);
         Av_Com(obj, 68, 0, self + 44, 40, &out);
         memcpy(self + 1108, self + 44, 40);
@@ -3115,7 +3155,7 @@ int __fastcall Video_Open(BYTE* self, void*, const char* path, int bits, int sca
         F(int, self, 1124) = 0;
         F(BYTE*, self, 2172) = self + 1108 + F(int, self, 1108);
         if (CallStd<int>(FUN_6303b8, ic, 16395, self + 44, self + 1108)) {
-            CallC(FUN_5d2ba0, (const char*)s_av67f3e4, 0);
+            Sys_Log((const char*)s_av67f3e4, 0);
             goto fail;
         }
         if (CallStd<int>(FUN_6303b8, F(void*, self, 2176), 16396, self + 44, self + 1108))
@@ -3150,14 +3190,14 @@ int __fastcall Video_Open(BYTE* self, void*, const char* path, int bits, int sca
                 Av_Com<ULONG>(obj, 8);
             return 0;
         }
-        CallC(FUN_5c2e60, g_av720920, thread);
+        Media_StartThread((int)g_av720920, thread);
         F(HANDLE, self, 40) = CreateFileA(path, 0x80000000, 1, 0, 3, 0, 0);
         DWORD info2[16];
         Av_Com(obj, 48, 0, info2, 64, &out, &out);
         Av_Com(obj, 56, 0, self + 12);
         Av_Com(obj, 72, 0, self + 16, 18, &out);
         g_av702f54 = 0;
-        CallC(FUN_5c2750, self + 16, (void*)Avi_AudioRead, self);
+        Msavi_Open(self + 16, (WaveRead)((void*)Avi_AudioRead), (int)self);
         F(double, self, 2232) = (double)(__int64)(DWORD)(F(WORD, self, 30) * F(int, self, 20));
         int n2 = F(int, self, 12);
         F(BYTE*, self, 4) = Av_Records(n2);
@@ -3192,15 +3232,16 @@ fail:
 // === waiting for the network music (FUN_5c3c50)
 
 extern "C" void FUN_602bc0(); KING_ALIAS("_FUN_602bc0", "@Stream_Construct@8")
-extern "C" void FUN_602bd0(); KING_ALIAS("_FUN_602bd0", "@Gate_602bd0@8")
-extern "C" void FUN_600b60(); KING_ALIAS("_FUN_600b60", "_Tsc_Now")
-extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")
-extern "C" void FUN_601c10(); KING_ALIAS("_FUN_601c10", "_Providers_Call601c70")
-extern "C" void FUN_603170(); KING_ALIAS("_FUN_603170", "@DpMessage_Set@16")
-extern "C" void FUN_6032f0(); KING_ALIAS("_FUN_6032f0", "@Gate_Set24@8")
-extern "C" void FUN_6034e0(); KING_ALIAS("_FUN_6034e0", "@Stream_ReadBlob@20")
-extern "C" void FUN_601060(); KING_ALIAS("_FUN_601060", "_Net_Receive")    // the next received message (stream); 0 when there is one
+extern "C" void __fastcall Gate_602bd0(BYTE* s, int);
+extern "C" void __cdecl Providers_Rebuild();
+extern "C" int __cdecl Providers_Call601c70(unsigned i, int a, int b, int c);
+extern "C" void __fastcall DpMessage_Set(BYTE* self, void*, const BYTE* p, int n);
+extern "C" int __fastcall Gate_Set24(BYTE* self, int);
+extern "C" int __fastcall Stream_ReadBlob(BYTE* self, void*, DWORD* id, void* buf, DWORD* size);
+extern "C" int __cdecl Net_Receive(BYTE* m);
+extern "C" int __fastcall Msg_NextType(BYTE* s, void*, int* type);
 extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // a message's next record type (out); 0 when there is one
+extern "C" int __fastcall Msg_SkipRecord(BYTE* s, void*);
 extern "C" void FUN_603300(); KING_ALIAS("_FUN_603300", "@Msg_SkipRecord@8")    // skips to the next record; 0 when there is one
 KING_VAR(double, g_nm707f88, 707f88)
 KING_VAR(double, g_nm64b5f0, 64b5f0)
@@ -3217,47 +3258,47 @@ void __fastcall Music_WaitNetwork(BYTE* m, void*, const char* name, char* out)
     BYTE s[40];
     CallThis(FUN_602bc0, s);
     F(int, s, 12) = 0;
-    F(double, s, 16) = CallC<double>(FUN_600b60);
+    F(double, s, 16) = Tsc_Now();
     if (F(int, m, 416) && !F(int, m, 420)) {
         if (!F(int, m, 428)) {
-            double t = CallC<double>(FUN_6037e0);
+            double t = Tsc_Now();
             double lim = g_nm707f88 + g_nm64b5f0;
-            if (CallC<double>(FUN_6037e0) > lim) {
+            if (Tsc_Now() > lim) {
                 g_nm707f88 = t;
-                CallC(FUN_6016f0);
-                if (CallC<int>(FUN_601c10, F(int, m, 424), 0, 8, g_nm67f880))
+                Providers_Rebuild();
+                if (Providers_Call601c70(F(int, m, 424), 0, 8, (int)g_nm67f880))
                     goto done;
                 F(int, m, 428) = 1;
             }
         }
         if (F(int, m, 428)) {
-            double t = CallC<double>(FUN_6037e0);
+            double t = Tsc_Now();
             double lim = g_nm707f88 + g_nm64b730;
-            if (CallC<double>(FUN_6037e0) > lim) {
+            if (Tsc_Now() > lim) {
                 BYTE q[32];
-                CallThis(FUN_602be0, q);
-                CallThis(FUN_603110, q, 902, name, (int)strlen(name) + 1);
-                CallC(FUN_6021b0, F(BYTE*, q, 4), F(BYTE*, q, 8) - F(BYTE*, q, 4));
+                DpMessage_Construct(q, 0);
+                Msg_Write120(q, 0, 902, (const BYTE*)name, (int)strlen(name) + 1);
+                Dp_Send((int)(F(BYTE*, q, 4)), F(BYTE*, q, 8) - F(BYTE*, q, 4));
                 g_nm707f88 = t;
-                CallThis(FUN_602e80, q);
+                MsgBuf_Destroy(q, 0);
             }
             BYTE r[32];
-            CallThis(FUN_602be0, r);
-            for (int more = CallC<int>(FUN_601060, s); !more; more = CallC<int>(FUN_601060, s)) {
+            DpMessage_Construct(r, 0);
+            for (int more = Net_Receive(s); !more; more = Net_Receive(s)) {
                 if (F(int, s, 0) != 4)
                     continue;
-                CallThis(FUN_603170, r, F(BYTE*, s, 4), F(int, s, 8));
-                if (CallThis<int>(FUN_6032f0, r))
+                DpMessage_Set(r, 0, F(BYTE*, s, 4), F(int, s, 8));
+                if (Gate_Set24(r, 0))
                     continue;
                 DWORD type, id, size;
                 BYTE blob[256];
                 bool found = false;
-                while (!CallThis<int>(FUN_6031e0, r, &type)) {
-                    if (type == 120 && !CallThis<int>(FUN_6034e0, r, &id, blob, &size) && id == 901) {
+                while (!Msg_NextType(r, 0, (int*)&type)) {
+                    if (type == 120 && !Stream_ReadBlob(r, 0, &id, blob, &size) && id == 901) {
                         found = true;
                         break;
                     }
-                    if (CallThis<int>(FUN_603300, r))
+                    if (Msg_SkipRecord(r, 0))
                         break;
                 }
                 if (!found)
@@ -3273,17 +3314,18 @@ void __fastcall Music_WaitNetwork(BYTE* m, void*, const char* name, char* out)
                 }
                 break;
             }
-            CallThis(FUN_602e80, r);
+            MsgBuf_Destroy(r, 0);
         }
     }
 done:
-    CallThis(FUN_602bd0, s);
+    Gate_602bd0(s, 0);
 }
 
 } // extern "C"
 
 // === network object messages (FUN_5c5910)
 
+extern "C" BYTE* __fastcall Table_Find(BYTE* self, void*, int key);
 extern "C" void FUN_5c3160(); KING_ALIAS("_FUN_5c3160", "@Table_Find@12")
 
 struct Om_Matrix { DWORD d[12]; };      // a matrix passed by value
@@ -3294,7 +3336,7 @@ typedef void (__fastcall* Om_Create)(BYTE* self, void*, char* name, char* a, cha
 // else 1 with *o set
 static int Om_Find(BYTE* s, DWORD key, BYTE** o)
 {
-    BYTE* e = CallThis<BYTE*>(FUN_5c3160, s + 7976, key);
+    BYTE* e = Table_Find(s + 7976, 0, key);
     if (!e || F(int, e, 16) != 2)
         return 0;
     *o = F(BYTE*, e, 20);
@@ -3345,7 +3387,7 @@ int __fastcall Media_ObjectMessage(BYTE* s, void*, int id, BYTE* msg, int)
 
 // === stepping through the records of a recording (FUN_5c49b0)
 
-static int Rs_Int(FILE* f) { return CallC<int>(FUN_5ab140, f); }
+static int Rs_Int(FILE* f) { return File_ReadInt(f); }
 
 // the time of a record's header: a packed word (kind 4: the low 20 bits to +7940, the rest in seconds) or the
 // next two ints (+7940, the time)
@@ -3376,7 +3418,7 @@ int __fastcall Rec_Step(BYTE* s, void*, int forward)
                 return -1;
             }
             if (t == -1)
-                CallThis(FUN_5c4d30, s, 0, 0);
+                Node_ReadHistory(s, 0, 0, 0);
             else {
                 int n = Rs_Int(f) + 4;
                 fseek(f, ftell(f) + n, 0);
@@ -3409,7 +3451,7 @@ int __fastcall Rec_Step(BYTE* s, void*, int forward)
         }
         if (t == -1) {
             long q = ftell(f);
-            CallThis(FUN_5c4d30, s, 0, 0);
+            Node_ReadHistory(s, 0, 0, 0);
             fseek(f, q - 8, 0);
         } else
             fseek(f, ftell(f) - 8, 0);
@@ -3507,7 +3549,7 @@ void __fastcall NetObject_Create(BYTE* s, void*, BYTE* m, BYTE* o, BYTE* c, DWOR
     F(int, s, 368) = k + 1;
     F(BYTE*, s, 356) = List_Add5(m + 8300, 0, k, (int)s, (int)(void*)Node_NetName, 20);
     BYTE msg[32];
-    CallThis(FUN_602be0, msg);
+    DpMessage_Construct(msg, 0);
     BYTE d[256];
     memset(d, 0, sizeof d);     // the original sent the stack bytes between the fields
     strncpy((char*)d, F(const char*, F(BYTE*, o, 36), 60), 24);
@@ -3518,17 +3560,17 @@ void __fastcall NetObject_Create(BYTE* s, void*, BYTE* m, BYTE* o, BYTE* c, DWOR
     F(DWORD, d, 140) = x;
     F(float, d, 130) = f;
     F(int, d, 160) = F(int, s, 364);
-    CallThis(FUN_603110, msg, id, d, 250);
+    Msg_Write120(msg, 0, id, d, 250);
     Media_RecordBlock(m, 0, msg);
     BYTE* q = (BYTE*)operator new(28);
     if (q)
-        q = CallThis<BYTE*>(FUN_602be0, q);
+        q = DpMessage_Construct(q, 0);
     BYTE e[8];
     F(int, e, 0) = F(int, s, 364);
     e[4] = 1;
-    CallThis(FUN_603110, q, 904, e, 5);
+    Msg_Write120(q, 0, 904, e, 5);
     Pool_Keep(m, 0, q);
-    CallThis(FUN_602e80, msg);
+    MsgBuf_Destroy(msg, 0);
 }
 
 } // extern "C"
@@ -3564,12 +3606,12 @@ int __cdecl Msavi_OpenSound(HWND w)
     int hr = ((int(__stdcall*)(void*, BYTE**, void*))g_impDirectSoundCreate)(0, &g_msavi702f98, 0);
     if (hr < 0) {
         g_msavi702f98 = 0;
-        CallC(FUN_5d2ba0, s_ds67f534, hr);
+        Sys_Log(s_ds67f534, hr);
         return hr;
     }
     hr = Com(g_msavi702f98, 24, w, 2);
     if (hr < 0) {
-        CallC(FUN_5d2ba0, s_ds67f500, hr);
+        Sys_Log(s_ds67f500, hr);
         return hr;
     }
     DWORD d[9];
@@ -3578,13 +3620,13 @@ int __cdecl Msavi_OpenSound(HWND w)
     d[1] = 1;
     hr = Com(g_msavi702f98, 12, d, &prim, 0);
     if (hr < 0) {
-        CallC(FUN_5d2ba0, s_ds67f4d8, hr);
+        Sys_Log(s_ds67f4d8, hr);
         return hr;
     }
     DWORD caps[24];
     caps[0] = 96;
     if (int r = Com(g_msavi702f98, 16, caps)) {
-        CallC(FUN_5d2ba0, s_ds67f4c0, r);
+        Sys_Log(s_ds67f4c0, r);
         return (int)0x80004005;
     }
     WORD ch, bits;
@@ -3599,7 +3641,7 @@ int __cdecl Msavi_OpenSound(HWND w)
         ch = 1;
         bits = 8;
     } else {
-        CallC(FUN_5d2ba0, s_ds67f44c, 0);
+        Sys_Log(s_ds67f44c, 0);
         return (int)0x80004005;
     }
     Ms_WaveFormat wf;
@@ -3614,7 +3656,7 @@ int __cdecl Msavi_OpenSound(HWND w)
     if (hr < 0) {
         char text[256];
         sprintf(text, s_ds67f468, bits, ch);
-        CallC(FUN_5d2ba0, text, hr);
+        Sys_Log(text, hr);
         return hr;
     }
     if (prim)
@@ -3677,7 +3719,7 @@ static void Sh2_Report(char* buf, const char* fmt, BYTE* n)
         name = (const char*)s_shUnknown;
     const float* p = (const float*)(n + 20);
     CallC(Sh2_sprintf, buf, fmt, name, (double)p[0], (double)p[1], (double)p[2]);
-    CallC(FUN_5d2ba0, buf, 0);
+    Sys_Log(buf, 0);
 }
 
 extern "C" {
@@ -3726,8 +3768,8 @@ int __fastcall Shadow_Attach(BYTE* s, void*, BYTE* n, BYTE* mat, const float* p,
 
 // === reading the light schedule (5c4130)
 
-extern "C" void Ls_NextToken(); KING_ALIAS("_Ls_NextToken", "_NextToken")
-extern "C" void Ls_LightUpdate(); KING_ALIAS("_Ls_LightUpdate", "@Light_Update@20")
+extern "C" char* __cdecl NextToken(char** pp);
+extern "C" void __fastcall Light_Update(BYTE* self, void*, int a, int b, int c);
 extern "C" char* __cdecl fgets(char*, int, FILE*);
 KING_VAR(AsmLabel, s_lsMode, 673398)       // "r"
 KING_VAR(AsmLabel, s_lsSpace, 67f8a8)      // "SPACE"
@@ -3741,7 +3783,7 @@ extern "C" {
 // with SEND, to the list +8300
 void __fastcall Lights_ReadSchedule(BYTE* s, void*, int a, int b, int c)
 {
-    CallThis(Ls_LightUpdate, s, a, b, c);
+    Light_Update(s, 0, a, b, c);
     const char* name = F(const char*, s, 7924);
     if (!name)
         return;
@@ -3753,11 +3795,11 @@ void __fastcall Lights_ReadSchedule(BYTE* s, void*, int a, int b, int c)
         char line[64];
         fgets(line, 60, f);
         char* ctx = line;
-        char* t = CallC<char*>(Ls_NextToken, &ctx);
+        char* t = NextToken(&ctx);
         if (!t)
             continue;
         int n = atoi(t);
-        t = CallC<char*>(Ls_NextToken, &ctx);
+        t = NextToken(&ctx);
         int kind;
         if (!strcmp(t, (const char*)s_lsSpace))
             kind = 1;
@@ -3765,11 +3807,11 @@ void __fastcall Lights_ReadSchedule(BYTE* s, void*, int a, int b, int c)
             kind = 0;
         else
             continue;
-        t = CallC<char*>(Ls_NextToken, &ctx);
+        t = NextToken(&ctx);
         if (!t)
             continue;
-        obj = CallC<int>(FUN_5ef2b0, 0, t);
-        t = CallC<char*>(Ls_NextToken, &ctx);
+        obj = (int)Scene_FindObject(0, t);
+        t = NextToken(&ctx);
         if (!t) {
             if (F(int, F(BYTE*, F(BYTE*, s, 468), 120), 80) == obj)
                 F(DWORD, s, 3020) |= 0x40000000;
@@ -3785,16 +3827,9 @@ void __fastcall Lights_ReadSchedule(BYTE* s, void*, int a, int b, int c)
 // === the chat receive loop (FUN_5c5740)
 
 extern "C" void Cr_StreamConstruct(); KING_ALIAS("_Cr_StreamConstruct", "@Stream_Construct@8")
-extern "C" void Cr_StreamEnd(); KING_ALIAS("_Cr_StreamEnd", "@Gate_602bd0@8")
-extern "C" void Cr_TscNow(); KING_ALIAS("_Cr_TscNow", "_Tsc_Now")
-extern "C" void Cr_Receive(); KING_ALIAS("_Cr_Receive", "_Net_Receive")
-extern "C" void Cr_MsgSet(); KING_ALIAS("_Cr_MsgSet", "@DpMessage_Set@16")
-extern "C" void Cr_Set24(); KING_ALIAS("_Cr_Set24", "@Gate_Set24@8")
 extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // the next field tag of a message (out)
 extern "C" void FUN_603300(); KING_ALIAS("_FUN_603300", "@Msg_SkipRecord@8")    // whether a message is read to its end
-extern "C" void Cr_ReadBlob(); KING_ALIAS("_Cr_ReadBlob", "@Stream_ReadBlob@20")
-extern "C" void Cr_ReadInt(); KING_ALIAS("_Cr_ReadInt", "@Stream_ReadInt@16")
-extern "C" void Cr_Write45(); KING_ALIAS("_Cr_Write45", "@Msg_Write45@16")
+extern "C" int __fastcall Stream_ReadInt(BYTE* self, void*, DWORD* id, DWORD* out);
 
 extern "C" {
 
@@ -3803,45 +3838,45 @@ extern "C" {
 void __fastcall Chat_Receive(BYTE* s, void*, int a, int, int)
 {
     BYTE msg[32], st[16];
-    CallThis(FUN_602be0, msg);
+    DpMessage_Construct(msg, 0);
     CallThis(Cr_StreamConstruct, st);
     F(int, st, 12) = 0;
-    CallC<double>(Cr_TscNow);
+    Tsc_Now();
     while (F(int, s, 416)) {
-        if (CallC<int>(Cr_Receive, st))
+        if (Net_Receive(st))
             break;
         if (F(int, st, 0) != 4)
             continue;
         F(int, s, 408) = F(int, st, 12);
-        CallThis(Cr_MsgSet, msg, F(BYTE*, st, 4), F(int, st, 8));
-        if (CallThis<int>(Cr_Set24, msg))
+        DpMessage_Set(msg, 0, F(BYTE*, st, 4), F(int, st, 8));
+        if (Gate_Set24(msg, 0))
             continue;
         for (;;) {
             int tag;
-            if (CallThis<int>(FUN_6031e0, msg, &tag))
+            if (Msg_NextType(msg, 0, &tag))
                 break;
             DWORD id;
             if (tag == 120) {
                 char buf[256];
                 DWORD len;
-                if (!CallThis<int>(Cr_ReadBlob, msg, &id, buf, &len) && id == 902)
+                if (!Stream_ReadBlob(msg, 0, &id, buf, &len) && id == 902)
                     Media_SendChat(s, 0, (int)buf, (const char*)a);
             } else if (tag == 45) {
                 DWORD v;
-                if (!CallThis<int>(Cr_ReadInt, msg, &id, &v) && id == 902) {
+                if (!Stream_ReadInt(msg, 0, &id, &v) && id == 902) {
                     BYTE m2[32];
-                    CallThis(FUN_602be0, m2);
-                    CallThis(Cr_Write45, m2, 901, 0);
-                    CallC(FUN_6021d0, F(int, s, 408), F(BYTE*, m2, 4), F(BYTE*, m2, 8) - F(BYTE*, m2, 4));
-                    CallThis(FUN_602e80, m2);
+                    DpMessage_Construct(m2, 0);
+                    Msg_Write45(m2, 0, 901, 0);
+                    Dp_SendTo(F(int, s, 408), (int)(F(BYTE*, m2, 4)), F(BYTE*, m2, 8) - F(BYTE*, m2, 4));
+                    MsgBuf_Destroy(m2, 0);
                 }
             }
-            if (CallThis<int>(FUN_603300, msg))
+            if (Msg_SkipRecord(msg, 0))
                 break;
         }
     }
-    CallThis(Cr_StreamEnd, st);
-    CallThis(FUN_602e80, msg);
+    Gate_602bd0(st, 0);
+    MsgBuf_Destroy(msg, 0);
 }
 
 } // extern "C"
@@ -3865,17 +3900,17 @@ int __cdecl Msavi_CreateStreamingBuffer()
 {
     BYTE* fmt = g_msaviFormat;
     if (!fmt) {
-        CallC(FUN_5d2ba0, (const char*)s_msaviSbNoFormat, 0);
+        Sys_Log((const char*)s_msaviSbNoFormat, 0);
         return (int)0x80004005;
     }
     BYTE* ds = g_msavi702f98;
     if (!ds || !g_msaviEvent || !g_msaviStopEvent) {
         if (!ds)
-            CallC(FUN_5d2ba0, (const char*)s_msaviCreate, 0);
+            Sys_Log((const char*)s_msaviCreate, 0);
         if (!g_msaviEvent)
-            CallC(FUN_5d2ba0, (const char*)s_msaviCreate, 1);
+            Sys_Log((const char*)s_msaviCreate, 1);
         if (!g_msaviStopEvent)
-            CallC(FUN_5d2ba0, (const char*)s_msaviCreate, 2);
+            Sys_Log((const char*)s_msaviCreate, 2);
         return (int)0x80004005;
     }
     unsigned align = F(WORD, fmt, 12);
@@ -3892,13 +3927,13 @@ int __cdecl Msavi_CreateStreamingBuffer()
     desc[4] = (DWORD)fmt;
     int hr = Com(ds, 12, desc, &g_msaviBuffer, 0);
     if (hr < 0) {
-        CallC(FUN_5d2ba0, (const char*)s_msaviSbNoBuffer, hr);
+        Sys_Log((const char*)s_msaviSbNoBuffer, hr);
         return hr;
     }
     hr = Com(g_msaviBuffer, 0, (BYTE*)g_iidNotify, &g_msavi702fa4);
     if (hr < 0) {
         g_msavi702fa4 = 0;
-        CallC(FUN_5d2ba0, (const char*)s_msaviNoNotify, hr);
+        Sys_Log((const char*)s_msaviNoNotify, hr);
         return hr;
     }
     DWORD* pos = g_msavi702f78;
@@ -3910,7 +3945,7 @@ int __cdecl Msavi_CreateStreamingBuffer()
     pos[5] = (DWORD)g_msaviStopEvent;
     hr = Com(g_msavi702fa4, 12, 3, pos);
     if (hr < 0) {
-        CallC(FUN_5d2ba0, (const char*)s_msaviNoPositions, hr);
+        Sys_Log((const char*)s_msaviNoPositions, hr);
         return hr;
     }
     return 0;
@@ -3924,14 +3959,14 @@ KING_VAR(BYTE*, g_q57_71e7ec, 71e7ec)
 KING_VAR(int, g_q57_71e7f8, 71e7f8)
 KING_VAR(int, g_q57_71e7e8, 71e7e8)
 KING_VAR(int, g_q57_71e7b0, 71e7b0)
-extern "C" void Sp_FogColor(); KING_ALIAS("_Sp_FogColor", "@Palette_FogColor@12")
+extern "C" DWORD __fastcall Palette_FogColor(BYTE* self, void*, int z);
 
 // [FUN_5cf480] fills the spans of the rows 71e7dc..71e7d8 like Span_FillRows, with u (+8 of the edges) stepped
 // along the span and c; with mode bit 2 the fog colour (71e7b0) follows u; the second buffer (71e7e8, 71e7f8
 // a row) gets 2 bytes a pixel
 extern "C" void __cdecl Span_FillRowsU(int mode, int c)
 {
-    CallC(FUN_5fedbc, mode | 2, 1);
+    Span_SelectFlat(mode | 2, 1);
     int y = g_q56_71e7dc;
     int row = y * g_q56_71e7bc;
     int row2 = g_q57_71e7f8 * y * 2;
@@ -3958,9 +3993,8 @@ extern "C" void __cdecl Span_FillRowsU(int mode, int c)
             }
             int u = ((du * frac) >> 6) + e[2];
             if (mode & 4)
-                g_q57_71e7b0 = CallThis<int>(Sp_FogColor, g_q57_71e7ec, u);
-            CallC(FUN_5fef04, g_q56_71e7c4 + g_q56_70f3d8 * x + row, xr - x + 1, z, dz, c, u, du >> 2,
-                g_q57_71e7e8 + row2 + x * 2);
+                g_q57_71e7b0 = (int)Palette_FogColor(g_q57_71e7ec, 0, u);
+            Span_DrawFlat((BYTE*)(g_q56_71e7c4 + g_q56_70f3d8 * x + row), xr - x + 1, z, dz, c, u, du >> 2, (WORD*)(g_q57_71e7e8 + row2 + x * 2));
         }
         y++;
         e += 6;
@@ -3973,7 +4007,8 @@ extern "C" void __cdecl Span_FillRowsU(int mode, int c)
 
 // === affine span fill into a rotated surface (FUN_5cf920)
 
-ASM_FUNC(FUN_5feb87, _Span_SelectTextured)
+extern "C" void __cdecl Span_SelectTextured(int mode, int alt);
+extern "C" void __cdecl Span_DrawTextured(BYTE* dst, int count, int u, int v, int du, int dv, int z, int dz, WORD* zbuf, int light, int dlight);
 ASM_FUNC(FUN_5fee7c, _Span_DrawTextured)
 KING_VAR(int, g_q58_702e90, 702e90)
 KING_VAR(int, g_q58_72007c, 72007c)
@@ -3983,7 +4018,7 @@ KING_VAR(DWORD, g_q58_702e8c, 702e8c)
 // right: (x + 1) * pitch - bpp - y); mode | 2
 extern "C" void __cdecl Span_FillRowsRotated(int unused, int mode)
 {
-    CallC(FUN_5feb87, mode | 2, (g_q58_702e8c >> 14) & 1);
+    Span_SelectTextured(mode | 2, (g_q58_702e8c >> 14) & 1);
     for (int y = g_q56_71e7dc; y <= g_q56_71e7d8; y++) {
         int* e = &g_q56_70f3f0 + y * 6;
         int u = e[3], v = e[4];
@@ -4007,7 +4042,7 @@ extern "C" void __cdecl Span_FillRowsRotated(int unused, int mode)
         u += (frac * du) >> 4;
         v += (frac * dv) >> 4;
         if (mode & 4)
-            g_q57_71e7b0 = CallThis<int>(Sp_FogColor, g_q57_71e7ec, e[2]);
+            g_q57_71e7b0 = (int)Palette_FogColor(g_q57_71e7ec, 0, e[2]);
         CallC(FUN_5fee7c, g_q56_71e7c4 + dst, xr - x + 1, u, v, du, dv, e[2], 0, g_q57_71e7e8);
         g_q58_72007c++;
     }
@@ -4050,8 +4085,8 @@ extern "C" void __cdecl Span_DrawPerspective(int x, int xr, int k, int u1, int v
             dv = (mode - v) >> k;
         }
         if (fog)
-            g_q57_71e7b0 = CallThis<int>(Sp_FogColor, g_q57_71e7ec, f);
-        CallC(FUN_5fee7c, g_q56_71e7c4 + dst, n, u, v, du, dv, f, dw, buf, g0, dg);
+            g_q57_71e7b0 = (int)Palette_FogColor(g_q57_71e7ec, 0, f);
+        Span_DrawTextured((BYTE*)(g_q56_71e7c4 + dst), n, u, v, du, dv, f, dw, (WORD*)buf, g0, dg);
         g_q58_72007c++;
         g0 = g;
         dst += g_q56_70f3d8 * n;
@@ -4065,11 +4100,11 @@ extern "C" void __cdecl Span_DrawPerspective(int x, int xr, int k, int u1, int v
 
 // === handing an object to the 70ebf0 hook (FUN_5c8930)
 
-extern "C" void FUN_5ed660(); KING_ALIAS("_FUN_5ed660", "@Room_AddNode@12")
+extern "C" void __fastcall Room_AddNode(BYTE* self, void*, BYTE* n);
 KING_VAR(int, g_q59_702650, 702650)
 KING_VAR(int, g_q59_702654, 702654)
 KING_VAR(int, g_q59_702658, 702658)
-extern "C" void Ho_NodeRoot(); KING_ALIAS("_Ho_NodeRoot", "@Node_Root@8")
+extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);
 
 // [FUN_5c8930] when object o's attachment (+60) is a kind 12 record and the hook 70ebf0 is set: unlinks o (vtbl+36)
 // and relinks it under its +36 at the position 702650 (its old one as a translation matrix), and calls the hook
@@ -4089,13 +4124,13 @@ extern "C" int __cdecl Object_HandToHook(BYTE* o, int a)
     BYTE m[48];
     CallC(FUN_5abc40, m, v);
     int bits = (F(DWORD, at, 0) >> 8) & 15;
-    BYTE* root = CallThis<BYTE*>(Ho_NodeRoot, o);
+    BYTE* root = Node_Root(o, 0);
     BYTE* parent = F(BYTE*, o, 36);
     CallVirt(o, 36);
     pos[0] = g_q59_702650;
     pos[1] = g_q59_702654;
     pos[2] = g_q59_702658;
-    CallThis(FUN_5ed660, parent, o);
+    Room_AddNode(parent, 0, o);
     F(int, at, 8) = 2;
     DWORD* n = (DWORD*)operator new(8);
     F(DWORD*, at, 12) = n;
@@ -4121,7 +4156,7 @@ extern "C" int __cdecl Object_HandToHook(BYTE* o, int a)
 
 // === a debug line node (FUN_5c85a0)
 
-extern "C" void Ln_NodeConstruct(); KING_ALIAS("_Ln_NodeConstruct", "@Node_Construct@16")
+extern "C" BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind);
 KING_VAR(AsmLabel, g_ln651ca0, 651ca0)
 KING_VAR(char, s_ln67f980, 67f980)
 KING_VAR(float, g_ln702634, 702634)
@@ -4145,7 +4180,7 @@ BYTE* __cdecl LineNode_Create(BYTE* o, const float* p)
 {
     BYTE* n = (BYTE*)operator new(76);
     if (n) {
-        CallThis(Ln_NodeConstruct, n, &s_ln67f980, 9);
+        Node_Construct(n, 0, &s_ln67f980, 9);
         F(int, n, 60) = 0;
         F(int, n, 64) = 7;
         F(void*, n, 0) = g_ln651ca0;
@@ -4166,7 +4201,7 @@ BYTE* __cdecl LineNode_Create(BYTE* o, const float* p)
     F(float*, n, 72) = pts;
     Ln_Point(pts, p, g_q243_64c330);
     Ln_Point(F(float*, n, 72) + 3, p, g_q188_64c350);
-    CallVirt(CallThis<BYTE*>(Ho_NodeRoot, o), 20, 0, n);
+    CallVirt(Node_Root(o, 0), 20, 0, n);
     F(BYTE, n, 40) &= ~1;
     return n;
 }
@@ -4329,7 +4364,7 @@ BYTE* __fastcall Fountain_Construct(BYTE* s, void*, int n, float px, float py, f
         if (!F(BYTE*, s, 24))
             F(BYTE*, s, 24) = st;
         else
-            CallThis(FUN_5d2190, st, F(BYTE*, s, 24));
+            Node_Link(st, 0, F(BYTE*, s, 24));
     }
     return s;
 }
@@ -4339,11 +4374,9 @@ BYTE* __fastcall Fountain_Construct(BYTE* s, void*, int n, float px, float py, f
 // === writing a shared value into a network message (FUN_5c34a0)
 
 extern "C" void Nw_ToAngles(); KING_ALIAS("_Nw_ToAngles", "_Matrix_ToAngles")
-extern "C" void Nw_GetWorld(); KING_ALIAS("_Nw_GetWorld", "@Node_GetWorld@12")
-extern "C" void Nw_Write7(); KING_ALIAS("_Nw_Write7", "@Msg_Write7@20")
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);
+extern "C" void __fastcall Msg_Write7(BYTE* self, int, int id, const float* f, BYTE b);
 extern "C" void Nw_Write42(); KING_ALIAS("_Nw_Write42", "@Msg_Write42@20")
-extern "C" void Nw_Write45(); KING_ALIAS("_Nw_Write45", "@Msg_Write45@16")
-extern "C" void Nw_Write120(); KING_ALIAS("_Nw_Write120", "@Msg_Write120@20")
 KING_VAR(AsmLabel, g_nw7025f0, 7025f0)
 struct Nw_V3 { DWORD d[3]; };
 
@@ -4362,20 +4395,20 @@ void __fastcall NetValue_Write(BYTE* s, void*, BYTE* m)
     case 1: {
         float mx[12];
         memcpy(mx, g_nw7025f0, 48);
-        CallThis(Nw_GetWorld, o, mx);
+        Node_GetWorld(o, 0, mx);
         double d[6];
         Nw_V3 r[4];
         memcpy(r, mx, 48);
         CallC(Nw_ToAngles, r[0], r[1], r[2], r[3], &d[0], &d[1], &d[2], &d[5], &d[4], &d[3]);
         float f[6] = {(float)d[0], (float)d[1], (float)d[2], (float)d[3], (float)d[4], (float)d[5]};
-        CallThis(Nw_Write7, m, id, f, 0);
+        Msg_Write7(m, 0, id, f, 0);
         break;
     }
     case 0:
-        CallThis(Nw_Write45, m, id, F(int, o, 56));
+        Msg_Write45(m, 0, id, F(int, o, 56));
         break;
     case 3:
-        CallThis(Nw_Write45, m, id, F(int, o, 0));
+        Msg_Write45(m, 0, id, F(int, o, 0));
         break;
     case 4:
         CallThis(Nw_Write42, m, id, F(int, o, 0), F(int, o, 4));
@@ -4383,11 +4416,11 @@ void __fastcall NetValue_Write(BYTE* s, void*, BYTE* m)
     case 5: {
         BYTE buf[132];
         CallC((void (*)())F(void*, s, 28), o, buf, F(int, s, 24));
-        CallThis(Nw_Write120, m, id, buf + 12, F(int, s, 24));
+        Msg_Write120(m, 0, id, buf + 12, F(int, s, 24));
         break;
     }
     case 6:
-        CallThis(Nw_Write120, m, id, o, F(int, s, 24));
+        Msg_Write120(m, 0, id, o, F(int, s, 24));
         break;
     }
 }
@@ -4541,10 +4574,9 @@ int __fastcall Plume_Quad(BYTE* s, void*, BYTE* buf, unsigned idx, float t, floa
 
 extern "C" void Pl_Update(); KING_ALIAS("_Pl_Update", "@Sparks_AlongPolygon@32")
 extern "C" void Pl_Length(); KING_ALIAS("_Pl_Length", "_Vec3_Length")
-extern "C" void Pl_Count(); KING_ALIAS("_Pl_Count", "@Media_Get4@8")
-extern "C" void Pl_RenderMaterial(); KING_ALIAS("_Pl_RenderMaterial", "@Render_Material@8")
-extern "C" void Pl_Material(); KING_ALIAS("_Pl_Material", "@Material_Select@24")
-extern "C" void Pl_floor(); KING_ALIAS("_Pl_floor", "_floor")
+extern "C" int __fastcall Media_Get4(BYTE* self, void*);
+extern "C" BYTE* __fastcall Render_Material(BYTE* self, void*);
+extern "C" double __cdecl floor(double);
 KING_VAR(BYTE*, g_pl70ebe4, 70ebe4)
 KING_VAR(BYTE, g_pl708450, 708450)    // the vertex buffer
 KING_VAR(WORD, g_pl707f9c, 707f9c)    // the quad indices
@@ -4563,10 +4595,10 @@ extern "C" {
 void __cdecl Plume_Draw(BYTE* r, int mat, const float* pos, int a4, float h, int a6, int a7, float mid, int a9)
 {
     CallThis(Pl_Update, g_pl70ebe4, pos, a4, *(DWORD*)&h, a6, a7, a9);
-    int n = CallThis<int>(Pl_Count, g_pl70ebe4);
+    int n = Media_Get4(g_pl70ebe4, 0);
     float fade = 1.0f;
     if (!a9) {
-        const float* c = CallThis<const float*>(Pl_RenderMaterial, r);
+        const float* c = (const float*)Render_Material(r, 0);
         float d[3] = {c[0] - pos[0], c[1] - pos[1], c[2] - pos[2]};
         double len = CallC<double>(Pl_Length, d) * g_pl64c268;
         if (len > g_pq64c250)
@@ -4577,7 +4609,7 @@ void __cdecl Plume_Draw(BYTE* r, int mat, const float* pos, int a4, float h, int
         fade = (float)(g_pq64c250 - len);
     }
     float nf = (float)n;
-    int k = (int)CallC<double>(Pl_floor, (double)nf * g_pl64c328);
+    int k = (int)floor((double)nf * g_pl64c328);
     int q = 0;
     float span = h * g_pl64d2f8;
     if (k > 0) {
@@ -4608,7 +4640,7 @@ void __cdecl Plume_Draw(BYTE* r, int mat, const float* pos, int a4, float h, int
     if (!q)
         return;
     if (mat)
-        CallThis(Pl_Material, r, mat, 0, 0, 0);
+        Material_Select(r, 0, (BYTE*)mat, 0, 0, 0);
     Com(g_bm720908, 104, 4, 322, &g_pl708450, q * 4, &g_pl707f9c, q * 6, 0);
 }
 
@@ -4701,7 +4733,6 @@ KING_VAR(float, g_sb64c25c, 64c25c)
 KING_VAR(float, g_sb64c458, 64c458)
 KING_VAR(BYTE*, g_sb7025b8, 7025b8)
 
-extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b);
 struct Sb_V { float x, y, z; };
 
 static Sb_V Sb_Set(double x, double y, double z)
@@ -4767,7 +4798,7 @@ int __fastcall Obj_BillboardDraw(BYTE* s, void*, int a, BYTE* v)
     memcpy(s + 116, Rec24_Set(tmp, 0, (const DWORD*)&V2, col, 0x3f800000, 0x3f800000), 24);
     Sb_V V3 = Sb_Set((double)R.x - B.x, (double)R.y - B.y, (double)R.z - B.z);
     memcpy(s + 140, Rec24_Set(tmp, 0, (const DWORD*)&V3, col, 0x3f800000, 0), 24);
-    CallThis(FUN_5b1020, v, F(int, s, 64), 0, 0, 0);
+    Material_Select(v, 0, (BYTE*)(F(int, s, 64)), 0, 0, 0);
     Com(g_rbDevice, 80, 136, 1);
     Com(g_rbDevice, 100, 5, 322, s + 68, 4, 0);
     return Obj_DrawTested(s, 0, a, v);
@@ -4777,7 +4808,6 @@ int __fastcall Obj_BillboardDraw(BYTE* s, void*, int a, BYTE* v)
 
 // === a bent strip along points (FUN_5c6830)
 
-extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 KING_VAR(BYTE, g_bs707f90, 707f90)
 
 KING_VAR(AsmLabel, g_bsVerts, 70cf70)            // 24-byte vertices, three per point
@@ -4908,7 +4938,6 @@ void __cdecl Sign_Swing(const float* v, BYTE* o, int h)
 
 // === keeping a list's selection on screen (a callback at $L_5c0700)
 
-extern "C" void Ls_VisibleRows(); KING_ALIAS("_Ls_VisibleRows", "@List_VisibleRows@4")
 
 extern "C" {
 
@@ -4949,7 +4978,7 @@ void __cdecl List_KeepSelection(BYTE* l)
     int shown = 0, row = 0;
     if (!e)
         return;
-    while (row < CallThis<int>(Ls_VisibleRows, l))
+    while (row < List_VisibleRows(l))
     {
         if (e == F(BYTE*, l, 300))
             shown = 1;
@@ -5112,20 +5141,10 @@ void __fastcall Sparks_AlongPolygon(BYTE* s, void*, const float* p, const float*
 
 // === the media frame: recording, network messages, replay position (a method at $L_5c4f10)
 
-extern "C" void Mf_MsgNew(); KING_ALIAS("_Mf_MsgNew", "@DpMessage_Construct@8")
-extern "C" void Mf_MsgFree(); KING_ALIAS("_Mf_MsgFree", "@MsgBuf_Destroy@8")
-extern "C" void Mf_MsgSet(); KING_ALIAS("_Mf_MsgSet", "@DpMessage_Set@16")
 extern "C" void Mf_StreamNew(); KING_ALIAS("_Mf_StreamNew", "@Stream_Construct@8")
-extern "C" void Mf_StreamFree(); KING_ALIAS("_Mf_StreamFree", "@Gate_602bd0@8")
-extern "C" void Mf_Set24(); KING_ALIAS("_Mf_Set24", "@Gate_Set24@8")
-extern "C" void Mf_Now(); KING_ALIAS("_Mf_Now", "_Tsc_Now")
-extern "C" void Mf_Flush(); KING_ALIAS("_Mf_Flush", "@Net_FlushFrame@8")
-extern "C" void Mf_WriteInt(); KING_ALIAS("_Mf_WriteInt", "_File_WriteInt")
-extern "C" void Mf_Record(); KING_ALIAS("_Mf_Record", "@Media_RecordBlock@12")
-extern "C" void Mf_Receive(); KING_ALIAS("_Mf_Receive", "_Net_Receive")
-extern "C" void Mf_Seek(); KING_ALIAS("_Mf_Seek", "@Rec_SeekTime@16")
-extern "C" void Mf_Header(); KING_ALIAS("_Mf_Header", "@Rec_ReadHeader@16")
-extern "C" void Mf_Next(); KING_ALIAS("_Mf_Next", "@Msg_SkipRecord@8")
+extern "C" void __fastcall Net_FlushFrame(BYTE* self, void*);
+extern "C" int __fastcall Rec_SeekTime(BYTE* self, void*, int t, int* next);
+extern "C" void __fastcall Rec_ReadHeader(BYTE* self, void*, int unused, int b);
 KING_VAR(BYTE*, g_mf707f6c, 707f6c)
 KING_VAR(double, g_mf64b730, 64b730)
 KING_VAR(double, g_mf64b678, 64b678)
@@ -5140,78 +5159,78 @@ extern "C" {
 void __fastcall Media_Frame(BYTE* m, void*)
 {
     BYTE msg[40], g[24];
-    CallThis(Mf_MsgNew, msg);
+    DpMessage_Construct(msg, 0);
     CallThis(Mf_StreamNew, g);
     F(int, g, 12) = 0;
-    F(double, g, 16) = CallC<double>(Mf_Now);
+    F(double, g, 16) = Tsc_Now();
     if (F(int, m, 7944))
     {
         if (F(int, g_mf707f6c, 416) || F(int, m, 7936))
         {
-            CallThis(Mf_Flush, m + 8300);
+            Net_FlushFrame(m + 8300, 0);
             FILE* fp = F(FILE*, m, 7928);
             if (F(int, m, 7936) && fp)
             {
-                CallC(Mf_WriteInt, -16, fp);
-                CallC(Mf_WriteInt, 8, F(FILE*, m, 7928));
-                CallC(Mf_WriteInt, ++F(int, m, 7940), F(FILE*, m, 7928));
-                CallC(Mf_WriteInt, (int)(F(double, m, 2968) * g_mf64b730), F(FILE*, m, 7928));
-                CallC(Mf_WriteInt, 8, F(FILE*, m, 7928));
+                File_WriteInt(-16, fp);
+                File_WriteInt(8, F(FILE*, m, 7928));
+                File_WriteInt(++F(int, m, 7940), F(FILE*, m, 7928));
+                File_WriteInt((int)(F(double, m, 2968) * g_mf64b730), F(FILE*, m, 7928));
+                File_WriteInt(8, F(FILE*, m, 7928));
             }
         }
         while (F(int, m, 7920) > 0)
         {
             int n = F(int, m, 7920);
-            CallThis(Mf_Record, m, F(BYTE*, m, 3916 + n * 4));
+            Media_RecordBlock(m, 0, F(BYTE*, m, 3916 + n * 4));
             n = --F(int, m, 7920);
             if (BYTE* b = F(BYTE*, m, 3920 + n * 4))
             {
-                CallThis(Mf_MsgFree, b);
+                MsgBuf_Destroy(b, 0);
                 operator delete(b);
             }
         }
-        if (F(int, g_mf707f6c, 416) && !CallC<int>(Mf_Receive, g))
+        if (F(int, g_mf707f6c, 416) && !Net_Receive(g))
         {
             do
             {
                 F(int, g_mf707f6c, 408) = F(int, g, 12);
                 if (F(int, g, 0) == 4)
                 {
-                    CallThis(Mf_MsgSet, msg, F(int, g, 4), F(int, g, 8));
-                    if (!CallThis<int>(Mf_Set24, msg))
+                    DpMessage_Set(msg, 0, (const BYTE*)(F(int, g, 4)), F(int, g, 8));
+                    if (!Gate_Set24(msg, 0))
                         do
                             CallVirt(m, 220, msg, 0, 0);
-                        while (!CallThis<int>(Mf_Next, msg));
+                        while (!Msg_SkipRecord(msg, 0));
                     FILE* fp = F(FILE*, m, 7928);
                     if (F(int, m, 7936) && fp)
                     {
-                        CallC(Mf_WriteInt, -1, fp);
+                        File_WriteInt(-1, fp);
                         int len = F(int, msg, 8) - F(int, msg, 4);
-                        CallC(Mf_WriteInt, len, F(FILE*, m, 7928));
+                        File_WriteInt(len, F(FILE*, m, 7928));
                         fwrite(F(void*, msg, 4), F(int, msg, 8) - F(int, msg, 4), 1, F(FILE*, m, 7928));
-                        CallC(Mf_WriteInt, F(int, msg, 8) - F(int, msg, 4), F(FILE*, m, 7928));
+                        File_WriteInt(F(int, msg, 8) - F(int, msg, 4), F(FILE*, m, 7928));
                     }
                     if (!F(int, m, 7944))
                         break;
                 }
-            } while (!CallC<int>(Mf_Receive, g));
+            } while (!Net_Receive(g));
         }
         if (F(int, m, 7932) && F(int, m, 7928))
         {
             double& pos = F(double, m, 7968);
             if (pos == g_mf64b678)
-                CallThis(Mf_Header, m, 0, 0);
+                Rec_ReadHeader(m, 0, 0, 0);
             int next;
             if (x87_fabs(F(double, m, 7960)) < g_mf64b748 && F(int, m, 7952))
             {
-                int at = CallThis<int>(Mf_Seek, m, (int)pos, &next);
-                CallThis(Mf_Header, m, 0, 0);
+                int at = Rec_SeekTime(m, 0, (int)pos, &next);
+                Rec_ReadHeader(m, 0, 0, 0);
                 pos = F(int, m, 7952) > 0 ? (double)(next + 1) : (double)(at - 1);
             }
             else
             {
-                int at = CallThis<int>(Mf_Seek, m, (int)pos, &next);
-                CallThis(Mf_Header, m, 0, 0);
+                int at = Rec_SeekTime(m, 0, (int)pos, &next);
+                Rec_ReadHeader(m, 0, 0, 0);
                 float k;
                 if (at > next || (double)at > pos)
                     k = 0;
@@ -5221,14 +5240,14 @@ void __fastcall Media_Frame(BYTE* m, void*)
                     k = 0;
                 else
                     k = (float)((pos - at) / (next - at));
-                CallThis(Mf_Header, m, 1, *(int*)&k);
+                Rec_ReadHeader(m, 0, 1, *(int*)&k);
                 pos = F(double, m, 2960) * F(double, m, 7960) * g_mf64b730 + pos;
             }
             F(int, m, 7952) = 0;
         }
     }
-    CallThis(Mf_StreamFree, g);                                   // FUN_602b60 takes the stream in ECX
-    CallThis(Mf_MsgFree, msg);
+    Gate_602bd0(g, 0);                                   // FUN_602b60 takes the stream in ECX
+    MsgBuf_Destroy(msg, 0);
 }
 
 } // extern "C"
@@ -5335,15 +5354,6 @@ void __cdecl Strip_Draw(float* p, int n, float w, float r, float dx, float dy, f
 // === a node's animation history read back (FUN_5c4d30 with its tail $L_5c4d76) and its net name ($L_5c5ea0
 //     with its tail $L_5c5f18)
 
-extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
-extern "C" void Ah_ReadInt(); KING_ALIAS("_Ah_ReadInt", "_File_ReadInt")
-extern "C" void Ah_Fatal(); KING_ALIAS("_Ah_Fatal", "_Sys_Fatal")
-extern "C" void Ah_MsgNew(); KING_ALIAS("_Ah_MsgNew", "@DpMessage_Construct@8")
-extern "C" void Ah_MsgSet(); KING_ALIAS("_Ah_MsgSet", "@DpMessage_Set@16")
-extern "C" void Ah_MsgAtEnd(); KING_ALIAS("_Ah_MsgAtEnd", "@Gate_Set24@8")
-extern "C" void Ah_MsgFree(); KING_ALIAS("_Ah_MsgFree", "@MsgBuf_Destroy@8")
-extern "C" void Ah_Root(); KING_ALIAS("_Ah_Root", "@Node_Root@8")
-extern "C" void Ah_MsgDone(); KING_ALIAS("_Ah_MsgDone", "@Msg_SkipRecord@8")
 KING_VAR(char, g_ahNetFmt, 67f920)
 KING_VAR(char, g_ahNetLong, 67f8f0)
 
@@ -5354,21 +5364,21 @@ extern "C" {
 void __fastcall Node_ReadHistory(BYTE* s, void*, int a, int b)
 {
     FILE* f = F(FILE*, s, 7928);
-    int n = CallC<int>(Ah_ReadInt, f);
+    int n = File_ReadInt(f);
     if (n < 0 || n > 1000000)
-        CallC(Ah_Fatal, "Animation history by frame has too long size", 0);
+        Sys_Fatal("Animation history by frame has too long size", 0);
     BYTE* buf = (BYTE*)operator new(n);
     fread(buf, n, 1, F(FILE*, s, 7928));
-    CallC(Ah_ReadInt, F(FILE*, s, 7928));
+    File_ReadInt(F(FILE*, s, 7928));
     __declspec(align(8)) BYTE msg[32];
-    CallThis(Ah_MsgNew, msg);
-    CallThis(Ah_MsgSet, msg, buf, n);
-    if (!CallThis<int>(Ah_MsgAtEnd, msg))
+    DpMessage_Construct(msg, 0);
+    DpMessage_Set(msg, 0, buf, n);
+    if (!Gate_Set24(msg, 0))
         do
             CallVirt(s, 220, msg, a, b);
-        while (!CallThis<int>(Ah_MsgDone, msg));
+        while (!Msg_SkipRecord(msg, 0));
     operator delete(buf);
-    CallThis(Ah_MsgFree, msg);
+    MsgBuf_Destroy(msg, 0);
 }
 
 // [$L_5c5ea0..$L_5c5f18] the name of object o (its node +256) for the net in dst: the root's module and room
@@ -5376,13 +5386,13 @@ void __fastcall Node_ReadHistory(BYTE* s, void*, int a, int b)
 char* __cdecl Node_NetName(BYTE* o, char* dst)
 {
     BYTE* n = o ? o + 256 : 0;
-    const char* mod = F(const char*, CallThis<BYTE*>(Ah_Root, n), 12);
-    const char* room = F(const char*, F(BYTE*, CallThis<BYTE*>(Ah_Root, n), 36), 60);
+    const char* mod = F(const char*, Node_Root(n, 0), 12);
+    const char* room = F(const char*, F(BYTE*, Node_Root(n, 0), 36), 60);
     if (strlen(room) + strlen(mod) + 2 > 20)
     {
         char buf[32];
         sprintf(buf, &g_ahNetFmt, mod, room, F(int, o, 344));
-        CallC(Ah_Fatal, &g_ahNetLong, buf);
+        Sys_Fatal(&g_ahNetLong, buf);
     }
     strncpy(dst, mod, strlen(mod) + 1);
     return strncpy(dst + strlen(mod) + 1, room, strlen(room) + 1);
@@ -5392,7 +5402,7 @@ char* __cdecl Node_NetName(BYTE* o, char* dst)
 
 // === the scene's light colours for a frame (FUN_5ca660 with its tail $L_5ca70c)
 
-extern "C" void Lc_Channel(); KING_ALIAS("_Lc_Channel", "_Light_Channel")    // a light channel's flicker at time t (0 without the effects table)
+extern "C" float __cdecl Light_Channel(const float* p);
 KING_VAR(BYTE*, g_lc7025b8, 7025b8)
 KING_VAR(float, g_lc64c308, 64c308)
 KING_VAR(float, g_lc64c250, 64c250)
@@ -5436,11 +5446,11 @@ void __cdecl Sky_LightColours(int t)
     float base0 = F(float, g, 520), base1 = F(float, g, 524), base2 = F(float, g, 528);
     float a0 = F(float, a, 108), a1 = F(float, a, 112), a2 = F(float, a, 116);
     float b0 = F(float, b, 108), b1 = F(float, b, 112), b2 = F(float, b, 116);
-    double v = CallC<double>(Lc_Channel, t);
+    double v = (double)Light_Channel((const float*)t);
     float r = (float)(v + (b0 + a0) * g_lc64c308 + base0);
-    v = CallC<double>(Lc_Channel, t);
+    v = (double)Light_Channel((const float*)t);
     float gr = (float)(v + (b1 + a1) * g_lc64c308 + base1);
-    v = CallC<double>(Lc_Channel, t);
+    v = (double)Light_Channel((const float*)t);
     double bl = v + (b2 + a2) * g_lc64c308 + base2;
     if (!(r <= g_lc64c250))
         r = 1.0f;
@@ -5473,13 +5483,10 @@ void __cdecl Sky_LightColours(int t)
 
 extern "C" void Mr_ToAngles(); KING_ALIAS("_Mr_ToAngles", "_Matrix_ToAngles")
 extern "C" void Mr_FromPose(); KING_ALIAS("_Mr_FromPose", "_Matrix_FromPose")
-extern "C" void Mr_GetWorld(); KING_ALIAS("_Mr_GetWorld", "@Node_GetWorld@12")
-extern "C" void Mr_Read7(); KING_ALIAS("_Mr_Read7", "@Msg_ReadType7@20")
-extern "C" void Mr_ReadFloat(); KING_ALIAS("_Mr_ReadFloat", "@Stream_ReadFloat@16")
-extern "C" void Mr_ReadInt(); KING_ALIAS("_Mr_ReadInt", "@Stream_ReadInt@16")
-extern "C" void Mr_ReadBlob(); KING_ALIAS("_Mr_ReadBlob", "@Stream_ReadBlob@20")
-extern "C" void Mr_ResGet(); KING_ALIAS("_Mr_ResGet", "@Resources_Get@12")
-extern "C" void Mr_ResLoad(); KING_ALIAS("_Mr_ResLoad", "@Resource_Load@12")
+extern "C" int __fastcall Msg_ReadType7(BYTE* self, int, int* id, float* f, int* b);
+extern "C" int __fastcall Stream_ReadFloat(BYTE* self, void*, DWORD* id, float* out);
+extern "C" int __fastcall Resources_Get(BYTE** self, void*, int id);
+extern "C" void __fastcall Resource_Load(BYTE* self, void*, BYTE* ctx);
 extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // the message's next record type (out); 0 when there is one
 KING_VAR(AsmLabel, g_mr7025f0, 7025f0)
 KING_VAR(BYTE, g_mrBlob702fb8, 702fb8)
@@ -5509,7 +5516,7 @@ extern "C" {
 int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
 {
     int type;
-    if (CallThis<int>(FUN_6031e0, m, &type))
+    if (Msg_NextType(m, 0, &type))
         return 0;
     int id;
     switch (type)
@@ -5518,7 +5525,7 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
     {
         float f[6];
         int extra;
-        if (CallThis<int>(Mr_Read7, m, &id, f, &extra))
+        if (Msg_ReadType7(m, 0, &id, f, &extra))
             return 0;
         if (ease)
         {
@@ -5527,7 +5534,7 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
             BYTE* node = (BYTE*)Table_Value(s + 7976, 0, id);
             if (!node)
                 return 1;
-            CallThis(Mr_GetWorld, node, mx);
+            Node_GetWorld(node, 0, mx);
             double x, y, z, head, pitch, roll;
             Mr_V3 r[4];
             memcpy(r, mx, 48);
@@ -5548,7 +5555,7 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
     case 45:
     {
         DWORD v;
-        if (CallThis<int>(Mr_ReadInt, m, &id, &v))
+        if (Stream_ReadInt(m, 0, (DWORD*)&id, &v))
             return 0;
         if (F(int, s, 7932))
         {
@@ -5558,9 +5565,9 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
                 BYTE* o = F(BYTE*, e, 20);
                 if (o)
                 {
-                    BYTE* r = CallThis<BYTE*>(Mr_ResGet, s + 704, F(int, o, 344));
+                    BYTE* r = (BYTE*)Resources_Get((BYTE**)(s + 704), 0, F(int, o, 344));
                     if (r)
-                        CallThis(Mr_ResLoad, r, s + 704);
+                        Resource_Load(r, 0, s + 704);
                 }
                 return 1;
             }
@@ -5570,7 +5577,7 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
     case 42:
     {
         float v;
-        int r = CallThis<int>(Mr_ReadFloat, m, &id, &v);
+        int r = Stream_ReadFloat(m, 0, (DWORD*)&id, &v);
         double d = v;
         if (r)
             return 0;
@@ -5579,7 +5586,7 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
     case 120:
     {
         DWORD size;
-        if (CallThis<int>(Mr_ReadBlob, m, &id, &g_mrBlob702fb8, &size))
+        if (Stream_ReadBlob(m, 0, (DWORD*)&id, &g_mrBlob702fb8, &size))
             return 0;
         int r = Table_Set(s + 7976, 0, id, 6, (int)&g_mrBlob702fb8, size);
         if (r)
@@ -5595,28 +5602,26 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
 // ---------------------------------------------------------------------------
 // Batch 32: the tree generator
 
-extern "C" void Tg_FindFmt2(); KING_ALIAS("_Tg_FindFmt2", "_Media_FindFmt2")
-extern "C" void Tg_FindFmt1(); KING_ALIAS("_Tg_FindFmt1", "_Media_FindFmt1")
+extern "C" BYTE* __cdecl Media_FindFmt2(BYTE* obj, int a, int b);
+extern "C" BYTE* __cdecl Media_FindFmt1(BYTE* obj, int a);
 extern "C" void Tg_PlayAt(); KING_ALIAS("_Tg_PlayAt", "_Sound_PlayAt")
-extern "C" void Tg_LineNode(); KING_ALIAS("_Tg_LineNode", "_LineNode_Create")
-extern "C" void Tg_SkyColours(); KING_ALIAS("_Tg_SkyColours", "_Sky_LightColours")
-extern "C" void Tg_Camera(); KING_ALIAS("_Tg_Camera", "@Render_Material@8")
-extern "C" void Tg_Length(); KING_ALIAS("_Tg_Length", "_Vec3_Length")
-extern "C" void Tg_SwingStep(); KING_ALIAS("_Tg_SwingStep", "_Swing_Step")
-extern "C" void Tg_SwingQuarters(); KING_ALIAS("_Tg_SwingQuarters", "_Swing_Quarters")
-extern "C" void Tg_MatSelect(); KING_ALIAS("_Tg_MatSelect", "@Material_Select@24")
-extern "C" void Tg_Inverse(); KING_ALIAS("_Tg_Inverse", "_Matrix_Inverse")
+extern "C" BYTE* __cdecl LineNode_Create(BYTE* o, const float* p);
+extern "C" void __cdecl Sky_LightColours(int t);
+extern "C" double __cdecl Vec3_Length(const Vec3* v);
+extern "C" double __cdecl Swing_Step(float* x, float* v, float* w, float k, float m, float a6, float dt);
+extern "C" void __cdecl Swing_Quarters(float t, float a, float b, float* p0, float* p1, float* p2, float* p3);
+extern "C" Matrix* __cdecl Matrix_Inverse(Matrix* out, const Matrix* m);
 extern "C" void Tg_Ribbon(); KING_ALIAS("_Tg_Ribbon", "_Ribbon_DrawSegment")
-extern "C" void Tg_Strip(); KING_ALIAS("_Tg_Strip", "_Strip_Draw")
-extern "C" void Tg_Arch(); KING_ALIAS("_Tg_Arch", "_Strip_DrawArch")
-extern "C" void Tg_Beam(); KING_ALIAS("_Tg_Beam", "_Beam_Draw")
+extern "C" void __cdecl Strip_Draw(float* p, int n, float w, float r, float dx, float dy, float u0);
+extern "C" void __cdecl Strip_DrawArch(float* p, int n, float w, float a, float b, float c, float tv);
+extern "C" void __cdecl Beam_Draw(int flip, const float* a, const float* b, const float* n, float len, float t);
 extern "C" void Tg_Plume(); KING_ALIAS("_Tg_Plume", "_Plume_Draw")
-extern "C" void Tg_Set(); KING_ALIAS("_Tg_Set", "@Vec3_SetThis@20")
-extern "C" void Tg_RotateBy(); KING_ALIAS("_Tg_RotateBy", "_Vec3_RotateBy")
-extern "C" void Tg_DivScalar(); KING_ALIAS("_Tg_DivScalar", "_Vec3_DivScalar")
-extern "C" void Tg_Add(); KING_ALIAS("_Tg_Add", "_Vec3_Add")
-extern "C" void Tg_Sub(); KING_ALIAS("_Tg_Sub", "_Vec3_Sub")
-extern "C" void Tg_Negated(); KING_ALIAS("_Tg_Negated", "_Vec3_Negated")
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
+extern "C" Vec3* __cdecl Vec3_RotateBy(Vec3* out, const Vec3* v, const Matrix* m);
+extern "C" float* __cdecl Vec3_DivScalar(float* out, const float* v, float k);
+extern "C" Vec3* __cdecl Vec3_Add(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" Vec3* __cdecl Vec3_Sub(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" Vec3* __cdecl Vec3_Negated(Vec3* out, const Vec3* v);
 extern "C" int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o);
 
 KING_VAR(float, tg_64c904, 64c904)
@@ -5660,7 +5665,7 @@ static void Tg_Normal(BYTE* fr, BYTE* ctx, int mat, float* n)
     TS(16) = (float)-(double)(&tg_ahead702620)[0];
     TS(20) = (float)-(double)(&tg_ahead702620)[1];
     TS(24) = (float)-(double)(&tg_ahead702620)[2];
-    const float* M = CallC<float*>(Tg_Inverse, TB(mat), ctx + 4208);
+    const float* M = (float*)Matrix_Inverse((Matrix*)(TB(mat)), (const Matrix*)(ctx + 4208));
     n[0] = (float)(((double)TS(24) * M[6] + (double)TS(20) * M[3]) + (double)TS(16) * M[0]);
     n[1] = (float)(((double)TS(24) * M[7] + (double)TS(20) * M[4]) + (double)TS(16) * M[1]);
     n[2] = (float)(((double)TS(24) * M[8] + (double)TS(20) * M[5]) + (double)TS(16) * M[2]);
@@ -5668,7 +5673,7 @@ static void Tg_Normal(BYTE* fr, BYTE* ctx, int mat, float* n)
 
 static void Tg_Set3(BYTE* fr, int at, double x, double y, double z)
 {
-    CallThis(Tg_Set, TB(at), (float)x, (float)y, (float)z);
+    Vec3_SetThis((Vec3*)(TB(at)), 0, (float)x, (float)y, (float)z);
 }
 
 // the ribbon from a (88) to b (76) with normal n and the three trailing floats (bits)
@@ -5720,25 +5725,25 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
         TI(256) = F(int, data, 4);
         D = TB(220);
         if (!TI(252))
-            TI(252) = (lv % 2) ? CallC<int>(Tg_FindFmt2, o, lv - 1, lv) : CallC<int>(Tg_FindFmt2, o, lv, lv + 1);
+            TI(252) = (lv % 2) ? (int)Media_FindFmt2(o, lv - 1, lv) : (int)Media_FindFmt2(o, lv, lv + 1);
         if (!TI(256) && (F(BYTE, rec, 0) & 1))
-            TI(256) = CallC<int>(Tg_FindFmt1, o, lv);
+            TI(256) = (int)Media_FindFmt1(o, lv);
     } else if (kind == 10) {
         BYTE* p = (BYTE*)operator new(48);
         if (p)
             memset(p, 0, 48);
         TI(128) = (int)p;
         memcpy(TB(220), data + 8, 32);
-        TI(252) = (lv % 2) ? CallC<int>(Tg_FindFmt2, o, lv - 1, lv) : CallC<int>(Tg_FindFmt2, o, lv, lv + 1);
-        TI(256) = (F(BYTE, rec, 0) & 1) ? CallC<int>(Tg_FindFmt1, o, lv) : 0;
+        TI(252) = (lv % 2) ? (int)Media_FindFmt2(o, lv - 1, lv) : (int)Media_FindFmt2(o, lv, lv + 1);
+        TI(256) = (F(BYTE, rec, 0) & 1) ? (int)Media_FindFmt1(o, lv) : 0;
         TI(264) = CallC<int>(Tg_PlayAt, o, (F(DWORD, rec, 0) >> 8) & 15);
         if (F(BYTE, rec, 0) & 2) {
             BYTE* q = (BYTE*)TI(128);
             if (!F(BYTE*, q, 44)) {
                 memcpy(TB(376), o + 20, 16);
-                TI(260) = CallC<int>(Tg_LineNode, o, TB(376));
+                TI(260) = (int)LineNode_Create(o, (const float*)(TB(376)));
             } else {
-                TI(260) = CallC<int>(Tg_LineNode, o, F(BYTE*, q, 44) + 212);
+                TI(260) = (int)LineNode_Create(o, (const float*)(F(BYTE*, q, 44) + 212));
             }
         } else {
             TI(260) = 0;
@@ -5758,20 +5763,20 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
 
     // the base and its light
     memcpy(TB(132), o + 20, 16);
-    CallC(Tg_SkyColours, TB(132));
+    Sky_LightColours((int)(TB(132)));
     memcpy(TB(132), o + 20, 16);
     int flip = (int)((double)TS(136) * TS(132)) & 1;
     double A = (double)TS(144) * tg_64c904;
     TS(104) = (float)A;
     TS(128) = (float)(A * tg_64c328);
-    const float* cam = CallThis<float*>(Tg_Camera, ctx);
+    const float* cam = (float*)Render_Material(ctx, 0);
     TS(16) = (float)((double)cam[0] - TS(132));
     TS(20) = (float)((double)cam[1] - TS(136));
     TS(24) = (float)((double)cam[2] - TS(140));
     TI(44) = TI(16);
     TI(48) = TI(20);
     TI(52) = TI(24);
-    double fade = tg_64c250 - CallC<double>(Tg_Length, TB(44)) * tg_64c268;
+    double fade = tg_64c250 - Vec3_Length((const Vec3*)(TB(44))) * tg_64c268;
     TS(196) = (float)fade;
     if (fade < tg_64c264)
         TI(196) = 0;
@@ -5789,15 +5794,15 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
         TS(28) = (float)((double)TI(28) * tg_64c254);
         float dt = (float)F(double, ctx, 8480);
         float old = F(float, D, 12);
-        F(float, D, 12) = (float)CallC<double>(Tg_SwingStep, D + 8, D + 4, D, TS(104), TS(28), old, dt);
+        F(float, D, 12) = (float)Swing_Step((float*)(D + 8), (float*)(D + 4), (float*)D, TS(104), TS(28), old, dt);
         TI(28) = rand();
         old = F(float, D, 28);
         TS(28) = (float)((double)TI(28) * tg_64c254);
         dt = (float)F(double, ctx, 8480);
-        F(float, D, 28) = (float)CallC<double>(Tg_SwingStep, D + 24, D + 20, D + 16, TS(104), TS(28), old, dt);
+        F(float, D, 28) = (float)Swing_Step((float*)(D + 24), (float*)(D + 20), (float*)(D + 16), TS(104), TS(28), old, dt);
         TS(56) = (float)((double)F(float, D, 0) * tg_64c904);
         TS(60) = (float)((double)F(float, D, 16) * tg_64c904);
-        CallC(Tg_SwingQuarters, TS(104), F(float, D, 4), F(float, D, 20), TB(204), TB(208), TB(212), TB(216));
+        Swing_Quarters(TS(104), F(float, D, 4), F(float, D, 20), (float*)(TB(204)), (float*)(TB(208)), (float*)(TB(212)), (float*)(TB(216)));
     }
     if (BYTE* f2 = F(BYTE*, D, 32)) {
         TI(28) = F(WORD, F(BYTE*, f2, 76), 20);
@@ -5983,7 +5988,7 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
     TI(80) = 0;
     TI(84) = 0;
     if (BYTE* f2 = F(BYTE*, D, 32))
-        CallThis(Tg_MatSelect, ctx, f2, 0, 0, 0);
+        Material_Select(ctx, 0, f2, 0, 0, 0);
 
     const double k = tg_64c258;
     float n[3];
@@ -6001,7 +6006,7 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
             TI(96) = TI(156);
         } else {
             if (TS(196) > tg_64b840)
-                CallC(Tg_Strip, TB(148), 1, TS(128), TS(104), TS(56), TS(60), Tg_Bits(Tg_Half(fr)));
+                Strip_Draw((float*)(TB(148)), 1, TS(128), TS(104), TS(56), TS(60), Tg_Bits(Tg_Half(fr)));
             double dx = (double)TS(184) - TS(172);
             TS(36) = (float)((double)TS(188) - TS(176));
             TS(40) = (float)((double)TS(192) - TS(180));
@@ -6054,7 +6059,7 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
         int s = ((F(DWORD, rec, 0) >> 8) & 15);
         if (s == 3) {
             if (TS(196) > tg_64b840)
-                CallC(Tg_Arch, TB(148), 1, TS(128), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
+                Strip_DrawArch((float*)(TB(148)), 1, TS(128), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
             Tg_Set3(fr, 32, (double)TS(184) - TS(172), (double)TS(188) - TS(176), (double)TS(192) - TS(180));
             Tg_Set3(fr, 64, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
             Tg_Set3(fr, 44, (double)TS(64) + TS(184), (double)TS(68) + TS(188), (double)TS(72) + TS(192));
@@ -6072,7 +6077,7 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
             TI(16) = TI(32);
             TI(20) = TI(36);
             TI(24) = TI(40);
-            const float* M = CallC<float*>(Tg_Inverse, TB(536), ctx + 4208);
+            const float* M = (float*)Matrix_Inverse((Matrix*)(TB(536)), (const Matrix*)(ctx + 4208));
             double nz = ((double)TS(24) * M[8] + (double)TS(20) * M[5]) + (double)TS(16) * M[2];
             double ny = ((double)TS(24) * M[7] + (double)TS(20) * M[4]) + (double)TS(16) * M[1];
             double nx = ((double)TS(24) * M[6] + (double)TS(20) * M[3]) + (double)TS(16) * M[0];
@@ -6090,8 +6095,8 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
             TI(328) = TI(32);
             TI(332) = TI(36);
             TI(336) = TI(40);
-            const float* M = CallC<float*>(Tg_Inverse, TB(680), ctx + 4208);
-            const float* R = CallC<float*>(Tg_RotateBy, TB(404), TB(328), M);
+            const float* M = (float*)Matrix_Inverse((Matrix*)(TB(680)), (const Matrix*)(ctx + 4208));
+            const float* R = (float*)Vec3_RotateBy((Vec3*)(TB(404)), (const Vec3*)(TB(328)), (const Matrix*)M);
             memcpy(n, R, 12);
         }
         Tg_DrawRibbon(fr, flip, n, Tg_Fm1, Tg_F1, Tg_F03);
@@ -6100,7 +6105,7 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
         return 1;
     }
     case 5: {
-        CallC(Tg_Arch, TB(148), 2, (float)((double)TS(128) * tg_651cf0), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
+        Strip_DrawArch((float*)(TB(148)), 2, (float)((double)TS(128) * tg_651cf0), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
         Tg_Set3(fr, 32, (double)TS(184) - TS(172), (double)TS(188) - TS(176), (double)TS(192) - TS(180));
         Tg_Set3(fr, 64, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
         Tg_Set3(fr, 44, (double)TS(184) + TS(64), (double)TS(188) + TS(68), (double)TS(192) + TS(72));
@@ -6118,34 +6123,34 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
         TI(352) = TI(32);
         TI(356) = TI(36);
         TI(360) = TI(40);
-        const float* M = CallC<float*>(Tg_Inverse, TB(584), ctx + 4208);
-        const float* R = CallC<float*>(Tg_RotateBy, TB(452), TB(352), M);
-        CallC(Tg_Beam, flip, TB(88), TB(76), R, Tg_Bits(Tg_F1), Tg_Bits(Tg_F05));
+        const float* M = (float*)Matrix_Inverse((Matrix*)(TB(584)), (const Matrix*)(ctx + 4208));
+        const float* R = (float*)Vec3_RotateBy((Vec3*)(TB(452)), (const Vec3*)(TB(352)), (const Matrix*)M);
+        Beam_Draw(flip, (const float*)(TB(88)), (const float*)(TB(76)), R, Tg_Bits(Tg_F1), Tg_Bits(Tg_F05));
         if (F(BYTE, rec, 0) & 1)
             Tg_DrawPlume(fr, ctx, D, F(DWORD, rec, 0), Tg_F1, Tg_F05);
         return 1;
     }
     case 6: {
-        CallC(Tg_Arch, TB(148), 1, (float)((double)TS(128) * tg_64d2f8), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
+        Strip_DrawArch((float*)(TB(148)), 1, (float)((double)TS(128) * tg_64d2f8), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
         Tg_Set3(fr, 32, (double)TS(184) - TS(172), (double)TS(188) - TS(176), (double)TS(192) - TS(180));
         TI(268) = TI(32);
         TI(272) = TI(36);
         TI(276) = TI(40);
-        BYTE* h = CallC<BYTE*>(Tg_DivScalar, TB(392), TB(268), Tg_Bits(Tg_F2));
-        const int* r = CallC<int*>(Tg_Add, TB(428), TB(184), h);
+        BYTE* h = (BYTE*)Vec3_DivScalar((float*)(TB(392)), (const float*)(TB(268)), Tg_Bits(Tg_F2));
+        const int* r = (int*)Vec3_Add((Vec3*)(TB(428)), (const Vec3*)(TB(184)), (const Vec3*)h);
         TI(76) = r[0];
         TI(80) = r[1];
         TI(84) = r[2];
-        BYTE* d = CallC<BYTE*>(Tg_Sub, TB(464), TB(184), TB(148));
-        BYTE* q = CallC<BYTE*>(Tg_DivScalar, TB(440), d, Tg_Bits(Tg_F4));
-        r = CallC<int*>(Tg_Add, TB(416), TB(148), q);
+        BYTE* d = (BYTE*)Vec3_Sub((Vec3*)(TB(464)), (const Vec3*)(TB(184)), (const Vec3*)(TB(148)));
+        BYTE* q = (BYTE*)Vec3_DivScalar((float*)(TB(440)), (const float*)d, Tg_Bits(Tg_F4));
+        r = (int*)Vec3_Add((Vec3*)(TB(416)), (const Vec3*)(TB(148)), (const Vec3*)q);
         TI(88) = r[0];
         TI(92) = r[1];
         TI(96) = r[2];
-        const float* M = CallC<float*>(Tg_Inverse, TB(776), ctx + 4208);
-        BYTE* ng = CallC<BYTE*>(Tg_Negated, TB(476), &tg_ahead702620);
-        const float* R = CallC<float*>(Tg_RotateBy, TB(132), ng, M);
-        CallC(Tg_Beam, flip, TB(88), TB(76), R, Tg_Bits(Tg_F1), Tg_Bits(Tg_F04));
+        const float* M = (float*)Matrix_Inverse((Matrix*)(TB(776)), (const Matrix*)(ctx + 4208));
+        BYTE* ng = (BYTE*)Vec3_Negated((Vec3*)(TB(476)), (const Vec3*)&tg_ahead702620);
+        const float* R = (float*)Vec3_RotateBy((Vec3*)(TB(132)), (const Vec3*)ng, (const Matrix*)M);
+        Beam_Draw(flip, (const float*)(TB(88)), (const float*)(TB(76)), R, Tg_Bits(Tg_F1), Tg_Bits(Tg_F04));
         if (F(BYTE, rec, 0) & 1)
             Tg_DrawPlume(fr, ctx, D, F(DWORD, rec, 0), Tg_F1, Tg_F04);
         return 1;
@@ -6164,7 +6169,7 @@ int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
 // Batch 32: the tree generator's still trees
 
 extern "C" void Tg_Markers(); KING_ALIAS("_Tg_Markers", "_Marker_DrawRays")
-extern "C" void Tg_Axes(); KING_ALIAS("_Tg_Axes", "_Axes_Draw")
+extern "C" void __cdecl Axes_Draw(int a, int b, int c, int d, int e);
 
 #define TS(o) (*(float*)(fr + (o)))
 #define TI(o) (*(int*)(fr + (o)))
@@ -6172,7 +6177,7 @@ extern "C" void Tg_Axes(); KING_ALIAS("_Tg_Axes", "_Axes_Draw")
 
 static void Tg2_Set3(BYTE* fr, int at, double x, double y, double z)
 {
-    CallThis(Tg_Set, TB(at), (float)x, (float)y, (float)z);
+    Vec3_SetThis((Vec3*)(TB(at)), 0, (float)x, (float)y, (float)z);
 }
 
 // the marker rays from a to b (3 floats each at the frame offsets) with the three trailing floats (bits)
@@ -6219,7 +6224,7 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
     TI(28) = TI(16);
     TS(20) = (float)x;
     TS(24) = (float)y;
-    CallC(Tg_SkyColours, TB(20));
+    Sky_LightColours((int)(TB(20)));
     memcpy(TB(76), o + 20, 16);
     int flip = (int)((double)TS(80) * TS(76)) & 1;
     double A = (double)TS(88) * tg_64c904;
@@ -6357,7 +6362,7 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
     TI(228) = TI(56);
     TI(72) = 0;
     if (BYTE* f2 = F(BYTE*, data, 0))
-        CallThis(Tg_MatSelect, ctx, f2, 0, 0, 0);
+        Material_Select(ctx, 0, f2, 0, 0, 0);
     TI(176) = 0;
     TI(172) = 0;
     TI(168) = 0;
@@ -6381,7 +6386,7 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
     case 1: {
         TI(44) = lv % 2;
         TI(16) = half;
-        CallC(Tg_Strip, TB(100), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(half));
+        Strip_Draw((float*)(TB(100)), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(half));
         double dx = (double)TS(136) - TS(124);
         double dy = (double)TS(140) - TS(128);
         TI(148) = TI(112);
@@ -6406,7 +6411,7 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
     }
     case 2: {
         TI(16) = half;
-        CallC(Tg_Strip, TB(100), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(half));
+        Strip_Draw((float*)(TB(100)), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(half));
         double dx = (double)TS(136) - TS(124);
         double dy = (double)TS(140) - TS(128);
         TS(36) = (float)dy;
@@ -6431,7 +6436,7 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
         break;
     }
     case 3:
-        CallC(Tg_Arch, TB(100), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
+        Strip_DrawArch((float*)(TB(100)), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
         Tg2_Set3(fr, 32, (double)TS(136) - TS(124), (double)TS(140) - TS(128), (double)TS(144) - TS(132));
         Tg2_Set3(fr, 20, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
         Tg2_Set3(fr, 48, (double)TS(136) + TS(20), (double)TS(24) + TS(140), (double)TS(28) + TS(144));
@@ -6460,7 +6465,7 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
             Tg2_Plume(fr, ctx, data, rec, Tg_F1, Tg_F03);
         break;
     case 5: {
-        CallC(Tg_Arch, TB(100), 2, (float)((double)TS(160) * tg_651cf0), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
+        Strip_DrawArch((float*)(TB(100)), 2, (float)((double)TS(160) * tg_651cf0), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
         Tg2_Set3(fr, 32, (double)TS(136) - TS(124), (double)TS(140) - TS(128), (double)TS(144) - TS(132));
         Tg2_Set3(fr, 20, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
         Tg2_Set3(fr, 48, (double)TS(136) + TS(20), (double)TS(24) + TS(140), (double)TS(28) + TS(144));
@@ -6471,31 +6476,31 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
         TI(232) = TI(32);
         TI(236) = TI(36);
         TI(240) = TI(40);
-        BYTE* h = CallC<BYTE*>(Tg_DivScalar, TB(244), TB(232), Tg_Bits(Tg_F2));
-        const int* r = CallC<int*>(Tg_Add, TB(256), TB(112), h);
+        BYTE* h = (BYTE*)Vec3_DivScalar((float*)(TB(244)), (const float*)(TB(232)), Tg_Bits(Tg_F2));
+        const int* r = (int*)Vec3_Add((Vec3*)(TB(256)), (const Vec3*)(TB(112)), (const Vec3*)h);
         TI(148) = r[0];
         TI(152) = r[1];
         TI(156) = r[2];
-        CallC(Tg_Axes, flip, TB(148), TB(64), Tg_F1, Tg_F05);
+        Axes_Draw(flip, (int)(TB(148)), (int)(TB(64)), Tg_F1, Tg_F05);
         if (F(BYTE, rec, 0) & 1)
             Tg2_Plume(fr, ctx, data, rec, Tg_F1, Tg_F05);
         break;
     }
     case 6: {
-        CallC(Tg_Strip, TB(100), 1, (float)((double)TS(160) * tg_64d2f8), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
-        BYTE* d = CallC<BYTE*>(Tg_Sub, TB(268), TB(136), TB(124));
-        BYTE* h = CallC<BYTE*>(Tg_DivScalar, TB(292), d, Tg_Bits(Tg_F2));
-        const int* r = CallC<int*>(Tg_Add, TB(316), TB(136), h);
+        Strip_Draw((float*)(TB(100)), 1, (float)((double)TS(160) * tg_64d2f8), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
+        BYTE* d = (BYTE*)Vec3_Sub((Vec3*)(TB(268)), (const Vec3*)(TB(136)), (const Vec3*)(TB(124)));
+        BYTE* h = (BYTE*)Vec3_DivScalar((float*)(TB(292)), (const float*)d, Tg_Bits(Tg_F2));
+        const int* r = (int*)Vec3_Add((Vec3*)(TB(316)), (const Vec3*)(TB(136)), (const Vec3*)h);
         TI(64) = r[0];
         TI(68) = r[1];
         TI(72) = r[2];
-        d = CallC<BYTE*>(Tg_Sub, TB(304), TB(136), TB(100));
-        BYTE* q = CallC<BYTE*>(Tg_DivScalar, TB(280), d, Tg_Bits(Tg_F4));
-        r = CallC<int*>(Tg_Add, TB(76), TB(100), q);
+        d = (BYTE*)Vec3_Sub((Vec3*)(TB(304)), (const Vec3*)(TB(136)), (const Vec3*)(TB(100)));
+        BYTE* q = (BYTE*)Vec3_DivScalar((float*)(TB(280)), (const float*)d, Tg_Bits(Tg_F4));
+        r = (int*)Vec3_Add((Vec3*)(TB(76)), (const Vec3*)(TB(100)), (const Vec3*)q);
         TI(148) = r[0];
         TI(152) = r[1];
         TI(156) = r[2];
-        CallC(Tg_Axes, flip, TB(148), TB(64), Tg_F1, Tg_F04);
+        Axes_Draw(flip, (int)(TB(148)), (int)(TB(64)), Tg_F1, Tg_F04);
         if (F(BYTE, rec, 0) & 1)
             Tg2_Plume(fr, ctx, data, rec, Tg_F1, Tg_F04);
         break;
@@ -6515,17 +6520,7 @@ int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
 // ---------------------------------------------------------------------------
 // Batch 32: the host's reply
 
-extern "C" void Hr32_MsgConstruct(); KING_ALIAS("_Hr32_MsgConstruct", "@DpMessage_Construct@8")
 extern "C" void Hr32_StreamConstruct(); KING_ALIAS("_Hr32_StreamConstruct", "@Stream_Construct@8")
-extern "C" void Hr32_Now(); KING_ALIAS("_Hr32_Now", "_Tsc_Now")
-extern "C" void Hr32_Receive(); KING_ALIAS("_Hr32_Receive", "_Net_Receive")
-extern "C" void Hr32_StreamDone(); KING_ALIAS("_Hr32_StreamDone", "@Gate_602bd0@8")
-extern "C" void Hr32_MsgDestroy(); KING_ALIAS("_Hr32_MsgDestroy", "@MsgBuf_Destroy@8")
-extern "C" void Hr32_MsgSet(); KING_ALIAS("_Hr32_MsgSet", "@DpMessage_Set@16")
-extern "C" void Hr32_MsgStart(); KING_ALIAS("_Hr32_MsgStart", "@Gate_Set24@8")
-extern "C" void Hr32_NextType(); KING_ALIAS("_Hr32_NextType", "@Msg_NextType@12")
-extern "C" void Hr32_ReadBlob(); KING_ALIAS("_Hr32_ReadBlob", "@Stream_ReadBlob@20")
-extern "C" void Hr32_Skip(); KING_ALIAS("_Hr32_Skip", "@Msg_SkipRecord@8")
 
 extern "C" {
 
@@ -6537,33 +6532,33 @@ int __fastcall Net_HostReply(BYTE* self, void*, void* out, void* size)
     BYTE fr[60];    // the asm frame from ESP+12: the stream at +8, the message at +32
     BYTE* s = fr + 8;
     BYTE* m = fr + 32;
-    CallThis(Hr32_MsgConstruct, m);
+    DpMessage_Construct(m, 0);
     CallThis(Hr32_StreamConstruct, s);
     F(int, s, 12) = 0;
-    F(double, s, 16) = CallC<double>(Hr32_Now);
+    F(double, s, 16) = Tsc_Now();
     int r = 0;
-    if (!CallC<int>(Hr32_Receive, s) && F(int, s, 12) == F(int, self, 412)) {
+    if (!Net_Receive(s) && F(int, s, 12) == F(int, self, 412)) {
         if (F(int, s, 0) == 2) {
             r = 2;
         } else if (F(int, s, 0) == 4) {
-            CallThis(Hr32_MsgSet, m, F(int, s, 4), F(int, s, 8));
-            if (!CallThis<int>(Hr32_MsgStart, m)) {
+            DpMessage_Set(m, 0, (const BYTE*)(F(int, s, 4)), F(int, s, 8));
+            if (!Gate_Set24(m, 0)) {
                 for (;;) {
-                    if (CallThis<int>(Hr32_NextType, m, (int*)fr))
+                    if (Msg_NextType(m, 0, (int*)fr))
                         break;
-                    if (F(int, fr, 0) == 120 && !CallThis<int>(Hr32_ReadBlob, m, (int*)(fr + 4), out, size) &&
+                    if (F(int, fr, 0) == 120 && !Stream_ReadBlob(m, 0, (DWORD*)((int*)(fr + 4)), out, (DWORD*)size) &&
                         F(int, fr, 4) == 950) {
                         r = 1;
                         break;
                     }
-                    if (CallThis<int>(Hr32_Skip, m))
+                    if (Msg_SkipRecord(m, 0))
                         break;
                 }
             }
         }
     }
-    CallThis(Hr32_StreamDone, s);
-    CallThis(Hr32_MsgDestroy, m);
+    Gate_602bd0(s, 0);
+    MsgBuf_Destroy(m, 0);
     return r;
 }
 

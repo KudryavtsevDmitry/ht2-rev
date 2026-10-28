@@ -13,9 +13,12 @@
 
 typedef char AsmLabel[1];
 
+extern "C" BYTE* __fastcall Node_Next(BYTE* self, void*);
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 extern "C" void FUN_5bc430(); KING_ALIAS("_FUN_5bc430", "@Path_SideDistance@20")    // distance of a point to segment i, returns double
+extern "C" void __fastcall Control_FitSize(BYTE* s, void*);
 extern "C" void FUN_5bdc80(); KING_ALIAS("_FUN_5bdc80", "@Control_FitSize@8")    // relayout
+extern "C" BYTE* __fastcall Control_Construct(BYTE* s, void*, const char* name, int id);
 extern "C" void FUN_5bd5e0(); KING_ALIAS("_FUN_5bd5e0", "@Control_Construct@16")    // base control constructor (a, flags)
 
 KING_VAR(int, g_702f24, 702f24)
@@ -30,13 +33,14 @@ KING_VAR(AsmLabel, g_vtbl65186c, 65186c)
 
 static __forceinline BYTE* Next(BYTE* c)
 {
-    return CallThis<BYTE*>(FUN_5d3080, c);
+    return Node_Next(c, 0);
 }
 
-extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")    // fills a rectangle
+extern "C" void __cdecl Surface_FillRect(BYTE* s, const int* r, DWORD color, int raw);
 extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")    // draws a pattern
-extern "C" void FUN_5b9020(); KING_ALIAS("_FUN_5b9020", "_Image_Tile")    // tiles a bitmap
-extern "C" void FUN_5b7f20(); KING_ALIAS("_FUN_5b7f20", "_Surface_VLine")    // vertical line
+extern "C" void __cdecl Image_Tile(BYTE* dst, int* r, BYTE* img);
+extern "C" void __cdecl Surface_VLine(BYTE* s, int x, int y1, int y2, int color, int raw);
+extern "C" void __cdecl Surface_HLine(BYTE* s, int y, int x1, int x2, int color, int raw);
 extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")    // horizontal line
 extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);   // framework.cpp
 extern "C" int __fastcall Window_Set80(BYTE* self, void*, int v);               // renderer.cpp
@@ -192,7 +196,7 @@ void __fastcall Ctl_LayoutColumn(BYTE* self, void*, int gap)
         F(int, c, 56) = F(int, self, 60) + w;
         y += F(int, c, 52) - F(int, c, 44) + gap;
     }
-    CallThis(FUN_5bdc80, self);
+    Control_FitSize(self, 0);
 }
 
 // [FUN_5be130] puts the children side by side
@@ -216,7 +220,7 @@ void __fastcall Ctl_LayoutRow(BYTE* self, void*, int gap)
         F(int, c, 52) = F(int, self, 60) + h;
         x += F(int, c, 56) - F(int, c, 48) + gap;
     }
-    CallThis(FUN_5bdc80, self);
+    Control_FitSize(self, 0);
 }
 
 // [FUN_5be5a0] the first visible child that handles (a, b)
@@ -259,7 +263,7 @@ void __fastcall Ctl_SetStyle5(BYTE* self, void*, const DWORD* s, int n)
 // [FUN_5bf750]
 BYTE* __fastcall Button_Construct(BYTE* self, void*, int a, int flags)
 {
-    CallThis(FUN_5bd5e0, self, a, flags);
+    Control_Construct(self, 0, (const char*)a, flags);
     F(void*, self, 0) = g_vtbl651838;
     if (flags & 2)
         F(DWORD, self, 32) |= 0x100;
@@ -272,7 +276,7 @@ BYTE* __fastcall Button_Construct(BYTE* self, void*, int a, int flags)
 // [FUN_5bf820]
 BYTE* __fastcall Button_ConstructId(BYTE* self, void*, int a, int flags, int id)
 {
-    CallThis(FUN_5bd5e0, self, a, flags);
+    Control_Construct(self, 0, (const char*)a, flags);
     F(void*, self, 0) = g_vtbl651838;
     if (flags & 2)
         F(DWORD, self, 32) |= 0x100;
@@ -293,7 +297,7 @@ void __fastcall Panel_Clear(BYTE* self, void*)
 // [FUN_5bfd80]
 BYTE* __fastcall Panel_Construct(BYTE* self, void*, int a, int b, int w, int c, int h)
 {
-    CallThis(FUN_5bd5e0, self, a, b);
+    Control_Construct(self, 0, (const char*)a, b);
     F(void*, self, 0) = g_vtbl65186c;
     F(int, self, 288) = 0;
     F(int, self, 292) = 0;
@@ -310,7 +314,7 @@ BYTE* __fastcall Panel_Construct(BYTE* self, void*, int a, int b, int w, int c, 
 BYTE* __fastcall Panel_ConstructRect(BYTE* self, void*, int a, int b, int w, int c, int x0, int y0, int x1,
                                      int y1, int h)
 {
-    CallThis(FUN_5bd5e0, self, a, b);
+    Control_Construct(self, 0, (const char*)a, b);
     F(void*, self, 0) = g_vtbl65186c;
     F(int, self, 288) = 0;
     F(int, self, 292) = 0;
@@ -338,7 +342,7 @@ void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int 
 {
     int old;
     if (flags & 2) {
-        CallC(FUN_5b6f90, dst, r, color, 0);
+        Surface_FillRect(dst, r, color, 0);
     } else if (flags & 4) {
         Bitmap_Draw(dst, r[0] + dx, r[1] + dy, bmp);
     } else if (flags & 8) {
@@ -346,7 +350,7 @@ void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int 
     } else if (flags & 32) {
         old = Window_Set80(dst, 0, 2);
         F(int, dst, 88) = fill;
-        CallC(FUN_5b9020, dst, r, bmp);
+        Image_Tile(dst, (int*)r, bmp);
         Window_Set80(dst, 0, old);
     } else if (flags & 64) {
         old = Window_Set80(dst, 0, 2);
@@ -356,7 +360,7 @@ void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int 
     } else if (flags & 1) {
         old = Window_Set80(dst, 0, 2);
         F(int, dst, 88) = fill;
-        CallC(FUN_5b6f90, dst, r, color, 0);
+        Surface_FillRect(dst, r, color, 0);
         Window_Set80(dst, 0, old);
     } else if (flags & 16) {
         old = Window_Set80(dst, 0, 3);
@@ -365,17 +369,17 @@ void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int 
         Window_Set80(dst, 0, old);
     }
     if (flags & 0x100) {
-        CallC(FUN_5b7f20, dst, r[0], r[1], r[3], light, 0);
-        CallC(FUN_5b7ce0, dst, r[3], r[0], r[2], dark, 0);
-        CallC(FUN_5b7f20, dst, r[2], r[3], r[1], dark, 0);
-        CallC(FUN_5b7ce0, dst, r[1], r[2], r[0], light, 0);
+        Surface_VLine(dst, r[0], r[1], r[3], light, 0);
+        Surface_HLine(dst, r[3], r[0], r[2], dark, 0);
+        Surface_VLine(dst, r[2], r[3], r[1], dark, 0);
+        Surface_HLine(dst, r[1], r[2], r[0], light, 0);
     } else if (flags & 0x200) {
         old = Window_Set80(dst, 0, 2);
         F(int, dst, 88) = fill;
-        CallC(FUN_5b7f20, dst, r[0], r[1], r[3], light, 0);
-        CallC(FUN_5b7ce0, dst, r[3], r[0], r[2], dark, 0);
-        CallC(FUN_5b7f20, dst, r[2], r[3], r[1], dark, 0);
-        CallC(FUN_5b7ce0, dst, r[1], r[2], r[0], light, 0);
+        Surface_VLine(dst, r[0], r[1], r[3], light, 0);
+        Surface_HLine(dst, r[3], r[0], r[2], dark, 0);
+        Surface_VLine(dst, r[2], r[3], r[1], dark, 0);
+        Surface_HLine(dst, r[1], r[2], r[0], light, 0);
         Window_Set80(dst, 0, old);
     }
 }
@@ -465,9 +469,10 @@ extern "C" void __cdecl Ctl_SetOrigin(int a, int b, int c)
 
 
 // ---------------------------------------------------------------------------
+extern "C" BYTE* __fastcall Ctl_Owner(BYTE* self, void*);
 extern "C" void FUN_5bcfe0(); KING_ALIAS("_FUN_5bcfe0", "@Ctl_Owner@8")
 extern "C" void FUN_5bcff0(); KING_ALIAS("_FUN_5bcff0", "@Path_Join@12")
-extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
 
 // [FUN_5bd260] adds a control to the chain *this: 5bcff0 with every member, then links it after the last
 extern "C" void __fastcall Chain_AddControl(BYTE** self, void*, BYTE* c)
@@ -478,16 +483,16 @@ extern "C" void __fastcall Chain_AddControl(BYTE** self, void*, BYTE* c)
         *self = c;
         return;
     }
-    if (CallThis<BYTE*>(FUN_5bcfe0, p))
+    if (Ctl_Owner(p, 0))
     {
         do
         {
             CallThis(FUN_5bcff0, p, c);
-            p = CallThis<BYTE*>(FUN_5bcfe0, p);
-        } while (CallThis<BYTE*>(FUN_5bcfe0, p));
+            p = Ctl_Owner(p, 0);
+        } while (Ctl_Owner(p, 0));
     }
     CallThis(FUN_5bcff0, p, c);
-    CallThis(FUN_5d2190, c + 16, p ? p + 16 : 0);
+    Node_Link(c + 16, 0, p ? p + 16 : 0);
 }
 
 // [FUN_5bda20] whether (x, y) is inside [+44, +52] x [+48, +56]
@@ -503,8 +508,11 @@ extern "C" int __fastcall Ctl_Contains(BYTE* self, void*, int x, int y)
 
 
 // ---------------------------------------------------------------------------
+extern "C" int __fastcall Ctl_DrawFace(BYTE* s, void*, BYTE* dst, int x, int y, int focus);
 extern "C" void FUN_5bd940(); KING_ALIAS("_FUN_5bd940", "@Ctl_DrawFace@24")
+extern "C" BYTE* __fastcall Ctl_Dispatch(BYTE* self, void*, int a, int b);
 extern "C" void FUN_5be5a0(); KING_ALIAS("_FUN_5be5a0", "@Ctl_Dispatch@16")
+extern "C" void __fastcall Ctl_Select(BYTE* self, void*, BYTE* child);
 extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
 KING_VAR(int, g_ct67f3d8, 67f3d8)
@@ -516,7 +524,7 @@ KING_VAR(CtHook, g_ct702f4c, 702f4c)
 // the first child (from +288) that holds the input (+36)
 static BYTE* Ct_Captured(BYTE* self)
 {
-    for (BYTE* c = F(BYTE*, self, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c))
+    for (BYTE* c = F(BYTE*, self, 288); c; c = Node_Next(c, 0))
         if (F(int, c, 36))
             return c;
     return 0;
@@ -533,8 +541,8 @@ extern "C" int __fastcall Ctl_DrawAll(BYTE* self, void*, int a, int x, int y, in
         CallVirt(c, 28, a, F(int, self, 44) + x, F(int, self, 48) + y, focus);
         return 1;
     }
-    CallThis(FUN_5bd940, self, a, x, y, focus);
-    for (BYTE* s = F(BYTE*, self, 288); s; s = CallThis<BYTE*>(FUN_5d3080, s))
+    Ctl_DrawFace(self, 0, (BYTE*)a, x, y, focus);
+    for (BYTE* s = F(BYTE*, self, 288); s; s = Node_Next(s, 0))
         CallVirt(s, 28, a, x + F(int, self, 44), y + F(int, self, 48), (focus && s == F(BYTE*, self, 292)) ? 1 : 0);
     return 0;
 }
@@ -549,11 +557,11 @@ extern "C" int __fastcall Ctl_PointTo(BYTE* self, void*, int x, int y)
     BYTE* c = Ct_Captured(self);
     if (c)
         return CallVirt<int>(c, 36, rx, ry);
-    BYTE* s = CallThis<BYTE*>(FUN_5be5a0, self, rx, ry);
+    BYTE* s = Ctl_Dispatch(self, 0, rx, ry);
     if (!s)
         return 0;
     if (g_ct67f3d8 && !g_ct702f24 && !(F(DWORD, s, 32) & 0x40000000))
-        CallThis(FUN_5bdba0, self, s);
+        Ctl_Select(self, 0, s);
     if (g_ct702f3c != s && !g_ct702f24 && !CallVirt<int>(s, 44))
     {
         g_ct702f3c = s;
@@ -588,14 +596,16 @@ extern "C" BYTE* __fastcall Con5be850_DeletingDestructor(BYTE* s, void*, int fla
 extern "C" BYTE* __fastcall Con5bf7b0_DeletingDestructor(BYTE* s, void*, int flags) { return Con_DeleteAfter(s, flags, FUN_5bf7d0); }
 
 extern "C" void FUN_5be130(); KING_ALIAS("_FUN_5be130", "@Ctl_LayoutRow@12")
+extern "C" int __fastcall Ctl_PointTo(BYTE* self, void*, int x, int y);
 extern "C" void FUN_5be630(); KING_ALIAS("_FUN_5be630", "@Ctl_PointTo@16")
 extern "C" void FUN_5be5a0(); KING_ALIAS("_FUN_5be5a0", "@Ctl_Dispatch@16")
+extern "C" int __fastcall Ctl_Contains(BYTE* self, void*, int x, int y);
 extern "C" void FUN_5bda20(); KING_ALIAS("_FUN_5bda20", "@Ctl_Contains@16")
 
 // [$L_5bf740]
 extern "C" int __fastcall Con_5bf740(BYTE* s) { return CallThis<int>(FUN_5be130, s, 4); }
 // [$L_5c06b0]
-extern "C" int __fastcall Con_5c06b0(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_5be630, s, a, b); }
+extern "C" int __fastcall Con_5c06b0(BYTE* s, void*, int a, int b) { return Ctl_PointTo(s, 0, a, b); }
 
 // the command of a toggled control: its id (+28) plus the new state's bit, as a command (0x8000)
 static int Con_ToggleCommand(BYTE* s, unsigned mask)
@@ -640,9 +650,9 @@ extern "C" int __fastcall Con_CheckMouse(BYTE* s, void*, int msg, int, int)
 // [$L_5be5f0] a point (x, y): FUN_5be5a0 relative to the origin (+44, +48), else FUN_5bda20
 extern "C" int __fastcall Con_5be5f0(BYTE* s, void*, int x, int y)
 {
-    if (CallThis<int>(FUN_5be5a0, s, x - F(int, s, 44), y - F(int, s, 48)))
+    if ((int)Ctl_Dispatch(s, 0, x - F(int, s, 44), y - F(int, s, 48)))
         return 1;
-    return CallThis<int>(FUN_5bda20, s, x, y);
+    return Ctl_Contains(s, 0, x, y);
 }
 
 // ---------------------------------------------------------------------------
@@ -669,7 +679,7 @@ static void Con_ClearGroup(BYTE* s, unsigned keep)
 {
     for (BYTE* o = F(BYTE*, s, 4); o; o = F(BYTE*, o, 4))
         F(unsigned, o, 284) &= keep;
-    for (BYTE* o = CallThis<BYTE*>(FUN_5d3080, s); o; o = CallThis<BYTE*>(FUN_5d3080, o))
+    for (BYTE* o = Node_Next(s, 0); o; o = Node_Next(o, 0))
         F(unsigned, o, 284) &= keep;
 }
 
@@ -753,11 +763,15 @@ extern "C" void __fastcall Con_PictureSize(BYTE* s)
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
+extern "C" void __cdecl Gui_Reset702f24();
 extern "C" void FUN_5bd590(); KING_ALIAS("_FUN_5bd590", "_Gui_Reset702f24")
+extern "C" void __cdecl Ctl_SetOrigin(int a, int b, int c);
 extern "C" void FUN_5bd560(); KING_ALIAS("_FUN_5bd560", "_Ctl_SetOrigin")
 extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
 extern "C" void FUN_5bd940(); KING_ALIAS("_FUN_5bd940", "@Ctl_DrawFace@24")
+extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);
 extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
+extern "C" void __cdecl Text_Draw(int a, int b, int c, BYTE* font, const char* s, int d, int e);
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
 
 // [$L_5bfa80] a push button: a press (513) holds it, the release (514) over it gives its command
@@ -766,7 +780,7 @@ extern "C" int __fastcall Con_ButtonMouse(BYTE* s, void*, int msg, int x, int y)
     if (msg == 514) {
         if (F(int, s, 40))
             return 514;
-        CallC(FUN_5bd590);
+        Gui_Reset702f24();
         if (CallVirt<int>(s, 24, x, y)) {
             F(unsigned, s, 284) &= ~2u;
             return F(int, s, 28) | 0x8000;
@@ -778,7 +792,7 @@ extern "C" int __fastcall Con_ButtonMouse(BYTE* s, void*, int msg, int x, int y)
     if (F(int, s, 40))
         return 513;
     F(unsigned, s, 284) |= 2;
-    CallC(FUN_5bd560, s, x, y);
+    Ctl_SetOrigin((int)s, x, y);
     return F(int, s, 28) | 0xc000;
 }
 
@@ -805,7 +819,7 @@ extern "C" void __fastcall Con_Size(BYTE* s)
     } else {
         F(int, s, 48) = 0;
         F(int, s, 44) = 0;
-        int w = CallThis<int>(FUN_5ea0e0, F(BYTE*, s, 16), F(int, s, 12));
+        int w = Font_TextWidth(F(BYTE*, s, 16), 0, (const char*)(F(int, s, 12)));
         F(int, s, 52) = w + F(int, s, 44) + 4;
         F(int, s, 56) = F(int, F(BYTE*, s, 16), 20) + F(int, s, 48) + 4;
     }
@@ -820,7 +834,7 @@ extern "C" void __fastcall Con_Size(BYTE* s)
 // [$L_5befd0] a scroll bar: a press on a part (+324) starts it, on the track pages (3 or 4), the release ends it
 extern "C" int __fastcall Con_ScrollMouse(BYTE* s, void*, int msg, int x, int y)
 {
-    BYTE* hit = CallThis<BYTE*>(FUN_5be5a0, s, x - F(int, s, 44), y - F(int, s, 48));
+    BYTE* hit = Ctl_Dispatch(s, 0, x - F(int, s, 44), y - F(int, s, 48));
     if (msg == 514) {
         if (F(int, s, 324) == -1)
             return 514;
@@ -828,19 +842,19 @@ extern "C" int __fastcall Con_ScrollMouse(BYTE* s, void*, int msg, int x, int y)
             F(unsigned, hit, 284) &= ~6u;
         F(int, s, 324) = -1;
         if (s == g_con702f24)
-            CallC(FUN_5bd590);
+            Gui_Reset702f24();
         return 32768;
     }
     if (msg != 513)
         return msg;
     if (!hit) {
-        BYTE* n = CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288));
+        BYTE* n = Node_Next(F(BYTE*, s, 288), 0);
         F(int, s, 324) = x - F(int, s, 44) < F(int, n, 44) ? 4 : 3;
     } else {
-        CallThis(FUN_5bdba0, s, hit);
+        Ctl_Select(s, 0, hit);
         F(int, s, 324) = CallVirt<int>(hit, 32, 513, x - F(int, s, 44), y - F(int, s, 48)) & ~0x8000;
     }
-    CallC(FUN_5bd560, s, x, y);
+    Ctl_SetOrigin((int)s, x, y);
     return 32768;
 }
 
@@ -849,17 +863,17 @@ extern "C" int __fastcall Con_GroupMouse(BYTE* s, void*, int msg, int x, int y)
 {
     if (F(int, s, 40))
         return msg;
-    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c))
+    for (BYTE* c = F(BYTE*, s, 288); c; c = Node_Next(c, 0))
         if (F(int, c, 36)) {
             if (CallVirt<int>(c, 24, x - F(int, s, 44), y - F(int, s, 48)))
                 return CallVirt<int>(c, 32, msg, x - F(int, s, 44), y - F(int, s, 48));
             return 32768;
         }
-    BYTE* hit = CallThis<BYTE*>(FUN_5be5a0, s, x - F(int, s, 44), y - F(int, s, 48));
+    BYTE* hit = Ctl_Dispatch(s, 0, x - F(int, s, 44), y - F(int, s, 48));
     if (!hit)
         return msg;
     if (msg == 513)
-        CallThis(FUN_5bdba0, s, hit);
+        Ctl_Select(s, 0, hit);
     if (hit == F(BYTE*, s, 292))
         return CallVirt<int>(hit, 32, msg, x - F(int, s, 44), y - F(int, s, 48));
     return msg;
@@ -868,11 +882,11 @@ extern "C" int __fastcall Con_GroupMouse(BYTE* s, void*, int msg, int x, int y)
 // [$L_5bf940] draws the control, then its text (+12, font +16) aligned (+32 bits 12, 13) in the state's color
 extern "C" int __fastcall Con_DrawText(BYTE* s, void*, int a, int b, int c, int d)
 {
-    CallThis(FUN_5bd940, s, a, b, c, d);
+    Ctl_DrawFace(s, 0, (BYTE*)a, b, c, d);
     BYTE* font = F(BYTE*, s, 16);
     if (!font)
         return 0;
-    int w = CallThis<int>(FUN_5ea0e0, font, F(int, s, 12));
+    int w = Font_TextWidth(font, 0, (const char*)(F(int, s, 12)));
     int pad = F(int, s, 60);
     int x;
     if (F(int, s, 32) & 0x1000)
@@ -888,7 +902,7 @@ extern "C" int __fastcall Con_DrawText(BYTE* s, void*, int a, int b, int c, int 
     if (!d)
         st &= 2;
     int k = (st & 3) + 2;
-    CallC(FUN_5ea170, a, x, y, font, F(int, s, 12), F(int, s, k * 36), 0);
+    Text_Draw(a, x, y, font, (const char*)(F(int, s, 12)), F(int, s, k * 36), 0);
     return 0;
 }
 
@@ -901,7 +915,7 @@ extern "C" void __fastcall Con_ScrollLayout(BYTE* s)
     BYTE* c = F(BYTE*, s, 288);
     CallVirt(c, 20);
     F(int, s, 304) += F(int, c, F(int, s, 328) == 1 ? 52 : 56);
-    c = CallThis<BYTE*>(FUN_5d3080, c);
+    c = Node_Next(c, 0);
     CallVirt(c, 20);
     int e;
     if (F(int, s, 328) == 1) {
@@ -912,7 +926,7 @@ extern "C" void __fastcall Con_ScrollLayout(BYTE* s)
         e = F(int, c, 56);
     }
     e -= F(int, c, 44);
-    c = CallThis<BYTE*>(FUN_5d3080, c);
+    c = Node_Next(c, 0);
     CallVirt(c, 20);
     int mode = F(int, s, 328);
     F(int, s, 308) += F(int, c, 44) - F(int, c, mode == 1 ? 52 : 56);
@@ -946,13 +960,13 @@ extern "C" int __fastcall Con_SliderMove(BYTE* s, void*, int x, int y)
             if (F(BYTE*, s, 292))
                 F(int, F(BYTE*, s, 292), 284) = 0;
             if (s == g_con702f24)
-                CallC(FUN_5bd590);
+                Gui_Reset702f24();
         }
     }
     x -= F(int, s, 44);
     y -= F(int, s, 48);
     if (F(int, s, 324) == 1) {
-        CallThis(FUN_5d3080, F(BYTE*, s, 288));
+        Node_Next(F(BYTE*, s, 288), 0);
         int half = F(int, s, 312) / 2;
         int lo = F(int, s, 304), hi = F(int, s, 308);
         int p = F(int, s, 328) == 1 ? x : y;
@@ -968,8 +982,8 @@ extern "C" int __fastcall Con_SliderMove(BYTE* s, void*, int x, int y)
             CallC(hook, F(int, s, 336));
     }
     if (F(int, s, 324) == -1) {
-        BYTE* h = CallThis<BYTE*>(FUN_5be5a0, s, x, y);
-        CallThis(FUN_5bdba0, s, h);
+        BYTE* h = Ctl_Dispatch(s, 0, x, y);
+        Ctl_Select(s, 0, h);
         if (h)
             return CallVirt<int>(h, 36, x, y);
     }
@@ -997,7 +1011,7 @@ extern "C" void __fastcall Con5bf7d0_Destroy(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors and window resizing (exception frames dropped).
 
-extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void __fastcall Node_Unlink(BYTE* self, void*);
 KING_VAR(AsmLabel, g_con65179c, 65179c)
 
 // [FUN_5bda90] a control group (vtable 65179c) deletes its children (from +288) and the first one
@@ -1006,8 +1020,8 @@ extern "C" void __fastcall ConGroup_Destroy(BYTE* s)
     F(void*, s, 0) = g_con65179c;
     BYTE* c = F(BYTE*, s, 288);
     if (c) {
-        for (BYTE* o = CallThis<BYTE*>(FUN_5d3080, c); o; o = CallThis<BYTE*>(FUN_5d3080, c)) {
-            CallThis(FUN_5d21b0, o);
+        for (BYTE* o = Node_Next(c, 0); o; o = Node_Next(c, 0)) {
+            Node_Unlink(o, 0);
             if (o)
                 CallVirt(o, 0, 1);
         }
@@ -1021,7 +1035,9 @@ extern "C" void __fastcall ConGroup_Destroy(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors, destructors and setup (exception frames dropped).
 
+extern "C" BYTE* __fastcall ScrollBar_Construct(BYTE* s, void*, const char* name, int id, int b, int kind);
 extern "C" void FUN_5be700(); KING_ALIAS("_FUN_5be700", "@ScrollBar_Construct@24")
+extern "C" void __fastcall Ctl_AddChild(BYTE* self, void*, BYTE* child, BYTE* after);
 extern "C" void FUN_5bdbf0(); KING_ALIAS("_FUN_5bdbf0", "@Ctl_AddChild@16")
 #include <string.h>
 KING_VAR(AsmLabel, g_con6518b0, 6518b0)
@@ -1050,7 +1066,7 @@ extern "C" BYTE* __fastcall Control_Construct(BYTE* s, void*, const char* name, 
     int w = 0, h = 0;
     if (g_con702f40) {
         h = F(int, g_con702f40, 20);
-        w = CallThis<int>(FUN_5ea0e0, g_con702f40, name);
+        w = Font_TextWidth(g_con702f40, 0, name);
     }
     F(int, s, 52) = w + 6;
     F(int, s, 56) = h + 4;
@@ -1084,9 +1100,9 @@ extern "C" BYTE* __fastcall ListBox_Construct(BYTE* s, void*, const char* name, 
     F(int, s, 296) = 0;
     F(WORD, s, 332) = 0;
     BYTE* m = (BYTE*)operator new(344);
-    F(BYTE*, s, 340) = m ? CallThis<BYTE*>(FUN_5be700, m, (BYTE*)g_con68d1c0, id, id, 0) : 0;
+    F(BYTE*, s, 340) = m ? ScrollBar_Construct(m, 0, (const char*)((BYTE*)g_con68d1c0), id, id, 0) : 0;
     F(int, F(BYTE*, s, 340), 340) = 1;
-    CallThis(FUN_5bdbf0, s, F(BYTE*, s, 340), 0);
+    Ctl_AddChild(s, 0, F(BYTE*, s, 340), 0);
     F(int, s, 308) = rows;
     F(int, s, 328) = 0;
     F(int, s, 312) = 1;
@@ -1102,6 +1118,7 @@ extern "C" BYTE* __fastcall ListBox_Construct(BYTE* s, void*, const char* name, 
 // ---------------------------------------------------------------------------
 // Scroll bar construction and chat (exception frames dropped).
 
+extern "C" BYTE* __fastcall Button_ConstructId(BYTE* self, void*, int a, int flags, int id);
 extern "C" void FUN_5bf820(); KING_ALIAS("_FUN_5bf820", "@Button_ConstructId@20")
 KING_VAR(AsmLabel, g_con651804, 651804)
 KING_VAR(AsmLabel, g_con6517d0, 6517d0)
@@ -1117,10 +1134,10 @@ extern "C" BYTE* __fastcall ScrollBar_Construct(BYTE* s, void*, const char* name
     for (int k = 0; k < 3; k++) {
         BYTE* m = (BYTE*)operator new(288);
         if (m) {
-            CallThis(FUN_5bf820, m, (BYTE*)g_con68d1c0, b, k);
+            Button_ConstructId(m, 0, (int)((BYTE*)g_con68d1c0), b, k);
             F(void*, m, 0) = g_con6517d0;
         }
-        CallThis(FUN_5bdbf0, s, m, 0);
+        Ctl_AddChild(s, 0, m, 0);
     }
     F(int, s, 324) = -1;
     F(int, s, 340) = 1;
@@ -1176,6 +1193,7 @@ extern "C" int __fastcall Thunk5c06a0(BYTE* s) { return q238_ConGroup_Destroy(s)
 
 // === laying out a scroll bar (FUN_5be8c0)
 
+extern "C" DWORD __fastcall Style_Assign(DWORD* self, void*, const DWORD* s);
 extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
 
@@ -1184,7 +1202,7 @@ extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
 static BYTE* Sb_Child(BYTE* s, BYTE* c)
 {
     for (int k = 68; k <= 176; k += 36)
-        CallThis(FUN_5bd5a0, c + k, s + k);
+        Style_Assign((DWORD*)(c + k), 0, (const DWORD*)(s + k));
     int m = F(int, s, 60), len = F(int, s, 312);
     F(int, c, 44) = m + 1;
     F(int, c, 48) = F(int, s, 64) + m + 1;
@@ -1257,13 +1275,13 @@ void __fastcall ScrollBar_Layout(BYTE* s, void*, short range, short* at, int a3,
     F(int, s, 308) = b - (2 * len + 2) - m;
     BYTE* c = Sb_Child(s, F(BYTE*, s, 288));
     Sb_Move(s, c, along, F(int, s, 320));
-    c = Sb_Child(s, CallThis<BYTE*>(FUN_5d3080, c));
+    c = Sb_Child(s, Node_Next(c, 0));
     if (short r = F(short, s, 296)) {
         int lo = F(int, s, 304);
         int t = (int)((double)(F(int, s, 308) - lo) * (double)*F(short*, s, 300) / (double)r + (double)lo);
         Sb_Move(s, c, t, F(int, s, 320));
     }
-    c = Sb_Child(s, CallThis<BYTE*>(FUN_5d3080, c));
+    c = Sb_Child(s, Node_Next(c, 0));
     Sb_Move(s, c, F(int, s, 312) - F(int, s, 60) + F(int, s, 308), F(int, s, 320));
 }
 
@@ -1275,6 +1293,7 @@ KING_VAR(int, g_sd702f34, 702f34)
 KING_VAR(int, g_sd702f2c, 702f2c)
 extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")
 extern "C" void FUN_5bd590(); KING_ALIAS("_FUN_5bd590", "_Gui_Reset702f24")
+extern "C" int __fastcall Ctl_DrawAll(BYTE* self, void*, int a, int x, int y, int focus);
 extern "C" void FUN_5be1d0(); KING_ALIAS("_FUN_5be1d0", "@Ctl_DrawAll@24")
 extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
@@ -1303,7 +1322,7 @@ int __fastcall ScrollBar_Draw(BYTE* s, void*, BYTE* surf, int x, int y, int acti
     F(int, CallThis<BYTE*>(FUN_5d3080, c), 40) = F(int, s, 40);
     F(int, CallThis<BYTE*>(FUN_5d3080, CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288))), 40) = F(int, s, 40);
     if (F(int, s, 324) == 3 || F(int, s, 324) == 4) {
-        BYTE* t = CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288));
+        BYTE* t = Node_Next(F(BYTE*, s, 288), 0);
         int at = g_sd702f34 - F(int, s, 44) - g_sd702f2c;
         if (at < F(int, t, 44))
             F(int, s, 324) = 4;
@@ -1311,7 +1330,7 @@ int __fastcall ScrollBar_Draw(BYTE* s, void*, BYTE* surf, int x, int y, int acti
             F(int, s, 324) = 3;
         else {
             F(int, s, 324) = -1;
-            CallC(FUN_5bd590);
+            Gui_Reset702f24();
         }
     }
     short* pos = F(short*, s, 300);
@@ -1344,7 +1363,7 @@ int __fastcall ScrollBar_Draw(BYTE* s, void*, BYTE* surf, int x, int y, int acti
     if (moved)
         if (Sb_Callback cb = F(Sb_Callback, s, 332))
             cb(F(int, s, 336));
-    BYTE* t = CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288));
+    BYTE* t = Node_Next(F(BYTE*, s, 288), 0);
     bool horiz = F(int, s, 328) == 1;
     int lo = F(int, s, 304);
     if (range) {
@@ -1357,7 +1376,7 @@ int __fastcall ScrollBar_Draw(BYTE* s, void*, BYTE* surf, int x, int y, int acti
         Sb_MoveTo(t, lo, F(int, t, 48));
     else
         Sb_MoveTo(t, F(int, t, 44), lo);
-    CallThis(FUN_5be1d0, s, surf, x, y, active);
+    Ctl_DrawAll(s, 0, (int)surf, x, y, active);
     const char* title = F(const char*, s, 12);
     if (!horiz || !title || !*title)
         return 0;
@@ -1370,16 +1389,15 @@ int __fastcall ScrollBar_Draw(BYTE* s, void*, BYTE* surf, int x, int y, int acti
         while (*p && *p != 10)
             p++;
         *p = 0;
-        int w = CallThis<int>(FUN_5ea0e0, F(BYTE*, s, 16), start);
+        int w = Font_TextWidth(F(BYTE*, s, 16), 0, start);
         int tx = (F(int, s, 52) - 2 * F(int, s, 60) - F(int, s, 44)) / 2 - w / 2 + F(int, s, 60) + F(int, s, 44) + x;
         base += F(int, F(BYTE*, s, 16), 20);
         int f = active ? F(int, s, 284) : F(int, s, 284) & 2;
         DWORD color = F(DWORD, s, ((f & 3) + 2) * 36);
-        CallC(FUN_5ea170, surf, tx, base - 2, F(BYTE*, s, 16), start, color, 0);
+        Text_Draw((int)surf, tx, base - 2, F(BYTE*, s, 16), start, color, 0);
     }
     if (!(F(BYTE, s, 32) & 8))
-        CallC(FUN_5b7ce0, surf, base, F(int, s, 44) + F(int, s, 60) + x, F(int, s, 52) - F(int, s, 60) + x,
-              F(DWORD, s, 72), 0);
+        Surface_HLine(surf, base, F(int, s, 44) + F(int, s, 60) + x, F(int, s, 52) - F(int, s, 60) + x, F(DWORD, s, 72), 0);
     return 0;
 }
 
@@ -1467,10 +1485,10 @@ BYTE* __fastcall Ctl_FindNearest(BYTE** s, void*, BYTE* p, double* dist, int* id
 
 // === drawing a text field ($L_5c0350)
 
-extern "C" void FUN_5ea020(); KING_ALIAS("_FUN_5ea020", "@Font_CharWidth@12")
-extern "C" void FUN_5ea050(); KING_ALIAS("_FUN_5ea050", "@Font_TextWidthN@16")
-extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")
-extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+extern "C" int __fastcall Font_CharWidth(BYTE* self, void*, int c);
+extern "C" int __fastcall Font_TextWidthN(BYTE* self, void*, const char* s, int n);
+extern "C" void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* text, DWORD color, int raw);
+extern "C" double __cdecl Tsc_Now();
 KING_VAR(float, g_tf6518ac, 6518ac)
 
 extern "C" {
@@ -1480,7 +1498,7 @@ extern "C" {
 // (three lines in +108) when focused
 int __fastcall TextField_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int focus)
 {
-    CallThis(FUN_5bd940, s, dst, x, y, focus);
+    Ctl_DrawFace(s, 0, dst, x, y, focus);
     BYTE* font = F(BYTE*, s, 16);
     if (!font)
         return 0;
@@ -1492,22 +1510,22 @@ int __fastcall TextField_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int focus
     int len = (int)strlen(text);
     if (len < F(int, s, 296))
         F(int, s, 296) = len;
-    int wc = CallThis<int>(FUN_5ea050, font, text, F(int, s, 296));
+    int wc = Font_TextWidthN(font, 0, text, F(int, s, 296));
     char c = text[F(int, s, 296)];
-    int cw = c ? CallThis<int>(FUN_5ea020, F(BYTE*, s, 16), c) : F(int, F(BYTE*, s, 16), 24);
+    int cw = c ? Font_CharWidth(F(BYTE*, s, 16), 0, c) : F(int, F(BYTE*, s, 16), 24);
     int start = 0;
     if (cw + wc + left > right) {
         for (int over = cw - right + wc + left; over > 0; start++)
-            over -= CallThis<int>(FUN_5ea020, F(BYTE*, s, 16), F(const char*, s, 288)[start]);
-        wc = CallThis<int>(FUN_5ea050, F(BYTE*, s, 16), F(const char*, s, 288) + start, F(int, s, 296) - start);
+            over -= Font_CharWidth(F(BYTE*, s, 16), 0, F(const char*, s, 288)[start]);
+        wc = Font_TextWidthN(F(BYTE*, s, 16), 0, F(const char*, s, 288) + start, F(int, s, 296) - start);
     }
     int color = F(int, s, ((F(int, s, 284) & 3) + 2) * 36);
-    CallC(FUN_5ea1b0, dst, left, ty, right - left, F(BYTE*, s, 16), F(const char*, s, 288) + start, color, 0);
-    if ((int)(CallC<double>(FUN_6037e0) * g_tf6518ac) % 2 && (F(BYTE, s, 284) & 1) && focus) {
+    Font_DrawText(dst, left, ty, right - left, F(BYTE*, s, 16), (const BYTE*)(F(const char*, s, 288) + start), color, 0);
+    if ((int)(Tsc_Now() * g_tf6518ac) % 2 && (F(BYTE, s, 284) & 1) && focus) {
         int x0 = left + wc, x1 = left + wc + cw;
-        CallC(FUN_5b7ce0, dst, ty, x0, x1, F(int, s, 108), 0);
-        CallC(FUN_5b7ce0, dst, ty - 1, x0, x1, F(int, s, 108), 0);
-        CallC(FUN_5b7ce0, dst, ty - 2, x0, x1, F(int, s, 108), 0);
+        Surface_HLine(dst, ty, x0, x1, F(int, s, 108), 0);
+        Surface_HLine(dst, ty - 1, x0, x1, F(int, s, 108), 0);
+        Surface_HLine(dst, ty - 2, x0, x1, F(int, s, 108), 0);
     }
     return 0;
 }
@@ -1521,14 +1539,14 @@ extern "C" void __fastcall Panel_GridLayout(BYTE* s, void*, int n, int gx, int g
     if (F(DWORD, s, 32) & 0x300)
         F(int, s, 60) = 1;
     int count = 0;
-    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c))
+    for (BYTE* c = F(BYTE*, s, 288); c; c = Node_Next(c, 0))
         count++;
     if (n < 0)
         n = -n;
     else
         n = count / n + (count % n != 0);
     int w = 0, h = 0;
-    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c)) {
+    for (BYTE* c = F(BYTE*, s, 288); c; c = Node_Next(c, 0)) {
         if (w < F(int, c, 52) - F(int, c, 44))
             w = F(int, c, 52) - F(int, c, 44);
         if (h < F(int, c, 56) - F(int, c, 48))
@@ -1554,20 +1572,18 @@ extern "C" void __fastcall Panel_GridLayout(BYTE* s, void*, int n, int gx, int g
             y += h + gy;
             if (i % n == 0)
                 break;
-            c = CallThis<BYTE*>(FUN_5d3080, c);
+            c = Node_Next(c, 0);
         }
-        if (!c || !CallThis<BYTE*>(FUN_5d3080, c))
+        if (!c || !Node_Next(c, 0))
             break;
         x += w + gx;
-        c = CallThis<BYTE*>(FUN_5d3080, c);
+        c = Node_Next(c, 0);
     }
-    CallThis(FUN_5bdc80, s);
+    Control_FitSize(s, 0);
 }
 
 // === a control's size from its contents (FUN_5bdc80)
 
-extern "C" void Cs_TextWidth(); KING_ALIAS("_Cs_TextWidth", "@Font_TextWidth@12")
-extern "C" void Cs_NodeNext(); KING_ALIAS("_Cs_NodeNext", "@Node_Next@8")
 
 extern "C" {
 
@@ -1595,7 +1611,7 @@ void __fastcall Control_FitSize(BYTE* s, void*)
     }
     else
     {
-        int tw = CallThis<int>(Cs_TextWidth, F(BYTE*, s, 16), F(int, s, 12));
+        int tw = Font_TextWidth(F(BYTE*, s, 16), 0, (const char*)(F(int, s, 12)));
         F(int, s, 52) = tw + F(int, s, 44) + 4;
         F(int, s, 56) = F(int, F(BYTE*, s, 16), 20) + F(int, s, 48) + 4;
     }
@@ -1608,7 +1624,7 @@ void __fastcall Control_FitSize(BYTE* s, void*)
         F(int, s, 52) = F(int, s, 44);
     if (F(int, s, 56) < F(int, s, 48))
         F(int, s, 56) = F(int, s, 48);
-    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(Cs_NodeNext, c))
+    for (BYTE* c = F(BYTE*, s, 288); c; c = Node_Next(c, 0))
     {
         if (w < F(int, c, 52))
             w = F(int, c, 52);
@@ -1697,7 +1713,7 @@ extern "C" int __fastcall Control_OnEvent(BYTE* self, void*, const short* ev)
 // child accepts it (virtual +44) and passes the key on; the arrows return 32768.
 static BYTE* Pk_Next(BYTE* self, BYTE* n)
 {
-    n = CallThis<BYTE*>(FUN_5d3080, n);
+    n = Node_Next(n, 0);
     return n ? n : F(BYTE*, self, 288);
 }
 static bool Pk_Skip(BYTE* n) { return (F(DWORD, n, 32) & 65536) || F(int, n, 40); }
@@ -1736,7 +1752,7 @@ extern "C" int __fastcall Panel_OnKey(BYTE* self, void*, int key, int isChar)
         if (!n) {
             n = focus;
             while (F(BYTE*, n, 8))
-                n = CallThis<BYTE*>(FUN_5d3080, n);
+                n = Node_Next(n, 0);
         }
         int i = 0;
         for (; i < 1000 && Pk_Skip(n); i++) {
@@ -1744,7 +1760,7 @@ extern "C" int __fastcall Panel_OnKey(BYTE* self, void*, int key, int isChar)
             if (!n) {
                 n = F(BYTE*, self, 292);
                 while (F(BYTE*, n, 8))
-                    n = CallThis<BYTE*>(FUN_5d3080, n);
+                    n = Node_Next(n, 0);
             }
         }
         if (i != 1000)

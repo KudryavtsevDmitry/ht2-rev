@@ -19,24 +19,13 @@ extern "C" void __fastcall Engine_4eec20(BYTE* self, void*);            // carph
 extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, float* c, float* d, float* e,
                                            float* f);                    // world.cpp
 
-extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<12 bytes>::insert_aux
-extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
-extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
-extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
+extern "C" void __fastcall Media5c53e0_Destroy(BYTE* self, void*);
+extern "C" BYTE* __fastcall Timeline_Construct(BYTE* self, void*, int a);
 extern "C" void FUN_5dbbb0(); KING_ALIAS("_FUN_5dbbb0", "@Fw_ResetRenderer@24")
-extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
-extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
-extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
-extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
-extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
-extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
-ASM_FUNC(FUN_4e4d82, _Sound_PlayPannedCos)
+extern "C" BYTE* __fastcall SoundSystem_Construct(BYTE* s, void*, int a, int b);
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
-extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
-extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
-extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);
 
 KING_VAR(int, g_6cec68, 6cec68)
 KING_VAR(int, g_6968ac, 6968ac)
@@ -116,12 +105,12 @@ extern "C" void __cdecl Obj6968ac_Clear()
 extern "C" void __fastcall Wnd4e0140_Destruct(BYTE* self, void*)
 {
     F(void*, self, 0) = g_vtbl64d6c8;
-    CallThis(FUN_5c53e0, self);
+    Media5c53e0_Destroy(self, 0);
 }
 
 extern "C" BYTE* __fastcall Wnd4e01d0_Construct(BYTE* self, void*, int a)
 {
-    CallThis(FUN_5c5310, self, a);
+    Timeline_Construct(self, 0, a);
     F(void*, self, 0) = g_vtbl64d6c8;
     g_6968ac = 0;
     return self;
@@ -152,7 +141,7 @@ extern "C" void __cdecl Path_Join(const char* a, const char* b, char* out)
 
 extern "C" BYTE* __fastcall Ini4e1e10_Construct(BYTE* self, void*, const char* name)
 {
-    CallThis(FUN_5c3800, self, name, 0);
+    SoundSystem_Construct(self, 0, (int)name, 0);
     F(void*, self, 0) = g_vtbl64d830;
     return self;
 }
@@ -176,7 +165,7 @@ extern "C" void __fastcall Node_Position(BYTE* self, void*, Vec3Bits* out)
     for (int i = 0; i < 4; i++)
         F(Vec3, &m, i * 12) = Vec3();
     if (F(void*, self, 48)) {
-        CallThis(FUN_5f25c0, F(void*, self, 48), &m);
+        Node_GetWorld((BYTE*)(F(void*, self, 48)), 0, &m);
         *out = F(Vec3Bits, &m, 36);
         return;
     }
@@ -186,17 +175,9 @@ extern "C" void __fastcall Node_Position(BYTE* self, void*, Vec3Bits* out)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
-extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_55f000(); KING_ALIAS("_FUN_55f000", "_Trailer_HitchCheck")    // whether a vehicle can take another (vehicle, other)
-extern "C" void FUN_4f1180(); KING_ALIAS("_FUN_4f1180", "@Body_SetUpright@4")
-extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
-extern "C" void FUN_55f5f0(); KING_ALIAS("_FUN_55f5f0", "_Truck_HitchTrailer")
-extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
-extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
-extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
-extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" BYTE* __cdecl Objects_Find(const char* name);
+extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);
 KING_VAR(DWORD, g_702650, 702650)
 KING_VAR(DWORD, g_702654, 702654)
 KING_VAR(DWORD, g_702658, 702658)
@@ -218,8 +199,8 @@ KING_VAR(float, g_eng702638, 702638)
 KING_VAR(float, g_ten64c450, 64c450)          // 10.0
 KING_VAR(AsmLabel, g_strOvation, 678540)
 
-extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
-extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
+extern "C" int __cdecl Bodies_Overlap(BYTE* a, const float* ma, const float* pa, BYTE* b, const float* mb, const float* pb, float* out);
+extern "C" int __cdecl Bodies_Pair(BYTE* a, int a1, int a2, BYTE* b, int b1, int b2, int x);
 
 // Collision routines consume both the world transform and its inverse.
 extern "C" int __cdecl SceneObj_Collide(BYTE* a, BYTE* b, DWORD arg)
@@ -229,7 +210,7 @@ extern "C" int __cdecl SceneObj_Collide(BYTE* a, BYTE* b, DWORD arg)
     SceneObj_Matrix1(b, 0, &worldB);
     SceneObj_Matrix2(a, 0, &inverseA);
     SceneObj_Matrix2(b, 0, &inverseB);
-    return CallC<int>(FUN_591c30, a, &worldA, &inverseA, b, &worldB, &inverseB, arg);
+    return Bodies_Overlap(a, (const float*)&worldA, (const float*)&inverseA, b, (const float*)&worldB, (const float*)&inverseB, (float*)arg);
 }
 
 extern "C" int __cdecl SceneObj_CollideShape(void* shape, DWORD arg2, DWORD arg3,
@@ -240,7 +221,7 @@ extern "C" int __cdecl SceneObj_CollideShape(void* shape, DWORD arg2, DWORD arg3
     Matrix world, inverse;
     SceneObj_Matrix1(object, 0, &world);
     SceneObj_Matrix2(object, 0, &inverse);
-    return CallC<int>(FUN_5928d0, shape, arg2, arg3, object, &world, &inverse, arg5);
+    return Bodies_Pair((BYTE*)shape, arg2, arg3, object, (int)&world, (int)&inverse, arg5);
 }
 
 KING_VAR(BYTE*, g_effectManager, 6f6910)
@@ -250,7 +231,7 @@ extern "C" const Matrix* __fastcall SceneEffect_Start(BYTE* self, void*, DWORD k
                                                        const Matrix* transform)
 {
     if (g_effectManager)
-        CallThis(FUN_5f25c0, F(BYTE*, g_effectManager, 340), self + 80);
+        Node_GetWorld(F(BYTE*, g_effectManager, 340), 0, self + 80);
     F(DWORD, self, 232) = 0;
     F(DWORD, self, 316) = key;
     double now = Game_Time();
@@ -267,7 +248,6 @@ KING_VAR(float, g_positionResetThreshold, 650624)
 KING_VAR(AsmLabel, g_setPosition1, 67d4cc)
 KING_VAR(AsmLabel, g_setPosition2, 67d4c0)
 KING_VAR(AsmLabel, g_setPlace, 67d4b4)
-extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 
 KING_VAR(short, g_sceneCommandCode, 67d10a)
 KING_VAR(BYTE*, g_sceneCommandList, 6f653c)
@@ -311,20 +291,20 @@ extern "C" void __fastcall SceneTexture_Advance(BYTE* self, void*)
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_4e1e10(); KING_ALIAS("_FUN_4e1e10", "@Ini4e1e10_Construct@12")
+extern "C" BYTE* __fastcall Ini4e1e10_Construct(BYTE* self, void*, const char* name);
 KING_VAR(AsmLabel, g_ini696750, 696750)
 KING_VAR(AsmLabel, s_6733b0, 6733b0)
 
 // [FUN_4e1de0] constructs the ini object 696750 on 6733b0
 extern "C" void* __cdecl Startup_Ini696750()
 {
-    return CallThis<void*>(FUN_4e1e10, g_ini696750, (char*)s_6733b0);
+    return (void*)Ini4e1e10_Construct((BYTE*)g_ini696750, 0, (char*)s_6733b0);
 }
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
-extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")    // resources: send a message (id, kind, size, data)
+extern "C" int __fastcall Resources_Get(BYTE** self, void*, int id);
+extern "C" int __fastcall Resources_SetData(BYTE** s, void*, int id, int a, unsigned size, const void* data);
 KING_VAR(int, g_suTypeClass5, 6ce344)
 KING_VAR(int, g_suCarTypeCount, 6ce32c)
 KING_VAR(BYTE*, g_su6ef204, 6ef204)
@@ -354,7 +334,7 @@ extern "C" int __cdecl Net_CreateById(BYTE* res, int kind, const char* name, con
         F(SuBlob48, msg, 44) = state;
         strncpy((char*)msg + 92, name, 31);
         strncpy((char*)msg + 124, name2, 31);
-        CallThis(FUN_5e52b0, res + 704, id, kind, 156, msg);
+        Resources_SetData((BYTE**)(res + 704), 0, id, kind, 156, msg);
         return 0;
     }
     if (cls != 3)
@@ -376,8 +356,8 @@ extern "C" int __cdecl Net_CreateById(BYTE* res, int kind, const char* name, con
     strncpy(code, name + 5, 2);
     code[2] = 0;
     BYTE* table = res + 704;
-    CallThis(FUN_5e52b0, table, oid, code, 160, msg);
-    BYTE* r = CallThis<BYTE*>(FUN_5e5370, table, oid);
+    Resources_SetData((BYTE**)table, 0, oid, (int)code, 160, msg);
+    BYTE* r = (BYTE*)Resources_Get((BYTE**)table, 0, oid);
     if (g_su6ef204)
     {
         F(int, r, 16) = F(int, g_su6ef204, 16);
@@ -388,14 +368,15 @@ extern "C" int __cdecl Net_CreateById(BYTE* res, int kind, const char* name, con
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
-extern "C" void FUN_50a5a0(); KING_ALIAS("_FUN_50a5a0", "_VehTech_Load")
-extern "C" void FUN_506f50(); KING_ALIAS("_FUN_506f50", "_Car_CopyTypeNames")
+extern "C" int __cdecl Ini_ReadInt(const char* section, const char* key, int def, int* out, const char* file);
+extern "C" int __cdecl VehTech_Load();
+extern "C" void __cdecl Car_CopyTypeNames();
 extern "C" void FUN_4e260c(); KING_ALIAS("_FUN_4e260c", "_World_Fatal")
+extern "C" void __cdecl Startup_ReadSection();
 extern "C" void FUN_4df950(); KING_ALIAS("_FUN_4df950", "_Startup_ReadSection")
-extern "C" void FUN_508000(); KING_ALIAS("_FUN_508000", "_VehCache_Load")
-extern "C" void FUN_508300(); KING_ALIAS("_FUN_508300", "_CarTypes_Read")
-extern "C" void FUN_50a740(); KING_ALIAS("_FUN_50a740", "_ObjTypes_Read")
+extern "C" int __cdecl VehCache_Load(void);
+extern "C" void __cdecl CarTypes_Read(const char* path, int unused);
+extern "C" void __cdecl ObjTypes_Read(const char* path, int edit);
 KING_VAR(AsmLabel, s_su671518, 671518)
 KING_VAR(AsmLabel, s_su672ec8, 672ec8)      // the ini file
 KING_VAR(AsmLabel, s_su6730ac, 6730ac)
@@ -442,29 +423,29 @@ extern "C" void __cdecl Startup_ReadOptions()
     g_su696c70 = Startup_IniIs(s_su673084);
     g_su672d80 = Startup_IniIs(s_su673070);
     int v;
-    CallC(FUN_603b70, (char*)s_su6730a0, (char*)s_su673064, -1, &v, (char*)s_su672ec8);
+    Ini_ReadInt((char*)s_su6730a0, (char*)s_su673064, -1, &v, (char*)s_su672ec8);
     g_su696c58 = v;
-    CallC(FUN_4df950);
+    Startup_ReadSection();
     g_su6ce36c = (void*)FUN_4e260c;
     g_su697858 = (void*)FUN_4e260c;
-    g_su697860 = CallC<int>(FUN_508000);
+    g_su697860 = VehCache_Load();
     if (g_su697860)
     {
-        g_su697860 = CallC<int>(FUN_50a5a0);
+        g_su697860 = VehTech_Load();
         if (g_su697860)
             return;
     }
-    CallC(FUN_508300, (BYTE*)g_su696bc8, 1);
-    CallC(FUN_506f50);
-    CallC(FUN_50a740, (BYTE*)g_su696bc8, 1);
+    CarTypes_Read((const char*)((BYTE*)g_su696bc8), 1);
+    Car_CopyTypeNames();
+    ObjTypes_Read((const char*)((BYTE*)g_su696bc8), 1);
 }
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_507fa0(); KING_ALIAS("_FUN_507fa0", "_Carat_ReadFill2")    // reads a 5-float ini value (section, key, default, out, file, n)
+extern "C" int __cdecl Carat_ReadFill2(int a, int b, int fill, int c, int d, int n);
 extern "C" void FUN_4e12d0(); KING_ALIAS("_FUN_4e12d0", "_Path_Join")    // a path moved to a drive (path, drive, out)
-extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
-extern "C" void FUN_5d2ef0(); KING_ALIAS("_FUN_5d2ef0", "_Sys_Exit")
+extern "C" int __cdecl Table71e858_Get(int i);
+extern "C" void __cdecl Sys_Exit(const char* msg);
 KING_VAR(AsmLabel, s_su672eb8, 672eb8)
 KING_VAR(AsmLabel, s_su673050, 673050)
 KING_VAR(AsmLabel, s_su67305c, 67305c)
@@ -528,10 +509,10 @@ extern "C" void __cdecl Startup_ReadSection()
     g_su696be4 = Startup_OptIs(s_su673008, s_su6729a8);
     g_su696be8 = Startup_OptIs(s_su672ffc, s_su6729a8);
     g_su696bec = Startup_OptIs(s_su672ff0, s_su6729a8);
-    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fe4, 0, (char*)g_su696bf0, (char*)s_su672ec8, 5);
-    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fd8, 10, (char*)g_su696c04, (char*)s_su672ec8, 5);
-    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fcc, 380, (char*)g_su696c18, (char*)s_su672ec8, 5);
-    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fc0, 430, (char*)g_su696c2c, (char*)s_su672ec8, 5);
+    Carat_ReadFill2((int)((char*)s_su672eb8), (int)((char*)s_su672fe4), 0, (int)((char*)g_su696bf0), (int)((char*)s_su672ec8), 5);
+    Carat_ReadFill2((int)((char*)s_su672eb8), (int)((char*)s_su672fd8), 10, (int)((char*)g_su696c04), (int)((char*)s_su672ec8), 5);
+    Carat_ReadFill2((int)((char*)s_su672eb8), (int)((char*)s_su672fcc), 380, (int)((char*)g_su696c18), (int)((char*)s_su672ec8), 5);
+    Carat_ReadFill2((int)((char*)s_su672eb8), (int)((char*)s_su672fc0), 430, (int)((char*)g_su696c2c), (int)((char*)s_su672ec8), 5);
     g_su696c44 = 1.5f;
     g_su696c54 = Startup_OptIs(s_su672fb8, s_su672994);
     g_su696c48 = Startup_OptIs(s_su672fb0, s_su6729a8);
@@ -585,7 +566,7 @@ static char* Startup_DirOf(const char* key, int fatal)
         end[1] = 0;
     }
     else if (fatal)
-        CallC(FUN_5d2ef0, CallC<const char*>(FUN_5d2e50, 1));
+        Sys_Exit((const char*)Table71e858_Get(1));
     return p;
 }
 
@@ -662,7 +643,7 @@ extern "C" void __cdecl Startup_FindCd()
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_568b10(); KING_ALIAS("_FUN_568b10", "_Helicopters_Init")
+extern "C" void __cdecl Helicopters_Init(void* scene);
 extern "C" int __cdecl Copter_LoadHook(BYTE* rec, int flags);
 extern "C" int __cdecl Item_OnEvent(BYTE* it, int e);    // vehicle.cpp
 extern "C" int __cdecl TrashBox_LoadHook(BYTE* rec, int flags);
@@ -683,7 +664,7 @@ extern "C" void __cdecl Obj_HookHandlers(BYTE* o)
     g_su6ef250 = F(void*, o, 2712);
     F(void*, o, 2712) = (void*)Item_OnEvent;
     if (!F(int, g_su6cec6c, 1316) && F(int, g_su6cec6c, 1300) <= 1)
-        CallC(FUN_568b10, o);
+        Helicopters_Init(o);
     g_su6cf3a0 = F(void*, o, 2708);
     F(void*, o, 2708) = (void*)TrashBox_LoadHook;
     g_su6cf3a4 = F(void*, o, 2712);
@@ -718,22 +699,24 @@ extern "C" BYTE* __fastcall Sta4e1db0_DeletingDestructor(BYTE* s, void*, int fla
     return s;
 }
 
+extern "C" void __cdecl Static6974a8_Init(void);
 extern "C" void FUN_4e24ca(); KING_ALIAS("_FUN_4e24ca", "_Static6974a8_Init")
 extern "C" void FUN_5dfa90(); KING_ALIAS("_FUN_5dfa90", "@View_RenderRoom@4")
 extern "C" void FUN_5dff20(); KING_ALIAS("_FUN_5dff20", "_Matrix_Angles@16")
-extern "C" void FUN_5de600(); KING_ALIAS("_FUN_5de600", "@View_BeginFrame@4")
-extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
-extern "C" void FUN_4eb230(); KING_ALIAS("_FUN_4eb230", "_Tables_Clear697608")
-extern "C" void FUN_57cab0(); KING_ALIAS("_FUN_57cab0", "_Race_ResetState")
-extern "C" void FUN_53fd60(); KING_ALIAS("_FUN_53fd60", "_Cars_ResetGlobals")
-extern "C" void FUN_557510(); KING_ALIAS("_FUN_557510", "_Car_ClearGlobals6ef2b8")
-extern "C" void FUN_578100(); KING_ALIAS("_FUN_578100", "_Joy_SetAutoCenter")
-extern "C" void FUN_4e35cf(); KING_ALIAS("_FUN_4e35cf", "_World_ReadMapSymbols")
+extern "C" void __fastcall View_BeginFrame(BYTE* s);
+extern "C" double __cdecl Tsc_Now();
+extern "C" void __cdecl Tables_Clear697608();
+extern "C" void __cdecl Race_ResetState();
+extern "C" void __cdecl Cars_ResetGlobals();
+extern "C" void __cdecl Car_ClearGlobals6ef2b8();
+extern "C" int __cdecl Joy_SetAutoCenter(int on);
+extern "C" void __cdecl World_ReadMapSymbols();
+extern "C" void __fastcall VehicleSounds_Find(BYTE* s);
 extern "C" void FUN_4e0280(); KING_ALIAS("_FUN_4e0280", "@VehicleSounds_Find@4")
-extern "C" void FUN_53fcf0(); KING_ALIAS("_FUN_53fcf0", "_Race_Start")
-extern "C" void FUN_52ad30(); KING_ALIAS("_FUN_52ad30", "_Cars_LoadCollision")
-extern "C" void FUN_5c5370(); KING_ALIAS("_FUN_5c5370", "@Thunk5c5370@4")
-extern "C" void FUN_4b9570(); KING_ALIAS("_FUN_4b9570", "_Effects_Init")
+extern "C" void __cdecl Race_Start(int a, int b, int c, int d);
+extern "C" void __cdecl Cars_LoadCollision();
+extern "C" int __fastcall Thunk5c5370(BYTE* s);
+extern "C" void __cdecl Effects_Init(BYTE* w);
 KING_VAR(AsmLabel, s_sta671204, 671204)
 KING_VAR(double, g_sta64b658, 64b658)
 KING_VAR(double, g_sta696d08, 696d08)
@@ -749,7 +732,7 @@ extern "C" BYTE* __fastcall King_At704(BYTE* s) { return s + 704; }
 // [$L_4e1e30]
 extern "C" void __fastcall King_Set340(BYTE* s) { F(int, s, 340) = 1; }
 // [$L_4e24c0]
-extern "C" void __cdecl King_4e24c0() { CallC(FUN_4e24ca); }
+extern "C" void __cdecl King_4e24c0() { Static6974a8_Init(); }
 
 // [$L_4e0160]
 extern "C" int __fastcall King_4e0160(BYTE* s, void*, int a)
@@ -771,13 +754,13 @@ extern "C" int __fastcall King_4e0930(BYTE* s, void*, int a, int b, int c, int d
 // [$L_4e0b80] the game clock (+2968) less the scaled real time to 696d08, resets, 696c78..696c8c cleared
 extern "C" int __fastcall King_4e0b80(BYTE* s)
 {
-    CallThis(FUN_5de600, s);
-    double t = CallC<double>(FUN_6037e0) * g_sta64b658;
+    View_BeginFrame(s);
+    double t = Tsc_Now() * g_sta64b658;
     g_sta696d08 = F(double, s, 2968) - t;
-    CallC(FUN_4eb230);
-    CallC(FUN_57cab0);
-    CallC(FUN_53fd60);
-    CallC(FUN_557510);
+    Tables_Clear697608();
+    Race_ResetState();
+    Cars_ResetGlobals();
+    Car_ClearGlobals6ef2b8();
     DWORD* z = (DWORD*)g_sta696c78;
     z[0] = z[1] = z[2] = z[3] = z[4] = z[5] = 0;
     return 0;
@@ -786,36 +769,37 @@ extern "C" int __fastcall King_4e0b80(BYTE* s)
 // [$L_4e0560] the world's start
 extern "C" void __fastcall King_4e0560(BYTE* s)
 {
-    CallC(FUN_578100, 0);
-    CallC(FUN_4e35cf);
-    CallThis(FUN_4e0280, g_sta6d1cd0);
-    CallC(FUN_53fcf0, s, (BYTE*)g_sta696750, 980, g_sta6968d4);
+    Joy_SetAutoCenter(0);
+    World_ReadMapSymbols();
+    VehicleSounds_Find((BYTE*)g_sta6d1cd0);
+    Race_Start((int)s, (int)((BYTE*)g_sta696750), 980, g_sta6968d4);
     g_sta672d84 = (WORD)(g_sta67d10a + 1);
-    CallC(FUN_52ad30);
+    Cars_LoadCollision();
     F(float, s, 9376) = (float)F(double, s, 3048);
     F(float, s, 9380) = (float)F(double, s, 3056);
-    CallThis(FUN_5c5370, s);
-    CallC(FUN_4b9570, s);
+    Thunk5c5370(s);
+    Effects_Init(s);
 }
 
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
 extern "C" void FUN_4bac00(); KING_ALIAS("_FUN_4bac00", "_Effects_Shutdown")
-extern "C" void FUN_5e0180(); KING_ALIAS("_FUN_5e0180", "@Fw_Clear5e0180@8")
-extern "C" void FUN_56eea0(); KING_ALIAS("_FUN_56eea0", "_World_FreeAll")
+extern "C" void __fastcall Fw_Clear5e0180(BYTE* self, void*);
+extern "C" void __cdecl World_FreeAll();
+extern "C" void __cdecl Startup_Call53fd30();
 ASM_FUNC(FUN_53fd30, _Startup_Call53fd30)
-extern "C" void FUN_5c5910(); KING_ALIAS("_FUN_5c5910", "@Media_ObjectMessage@20")
+extern "C" int __fastcall Media_ObjectMessage(BYTE* s, void*, int id, BYTE* msg, int);
 extern "C" void FUN_56d0f0(); KING_ALIAS("_FUN_56d0f0", "_CopterNet_Handle")
 extern "C" void FUN_586d90(); KING_ALIAS("_FUN_586d90", "_SceneObj_DispatchCommand")
 extern "C" void FUN_46d7f0(); KING_ALIAS("_FUN_46d7f0", "_Ai_NetMessage")
 extern "C" void FUN_4bc540(); KING_ALIAS("_FUN_4bc540", "_Fx_HandleMessage")
-extern "C" void FUN_53fd40(); KING_ALIAS("_FUN_53fd40", "_World_ResetAll")
-extern "C" void FUN_4e0630(); KING_ALIAS("_FUN_4e0630", "@Obj_4e0630@12")
-extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
-extern "C" void FUN_5c5380(); KING_ALIAS("_FUN_5c5380", "@Media_Reset5c5380@8")
-extern "C" void FUN_4b9b90(); KING_ALIAS("_FUN_4b9b90", "_Effects_SetupWorld")
-extern "C" void FUN_5e30c0(); KING_ALIAS("_FUN_5e30c0", "@CGameApp_SetMousePos@16")
+extern "C" void __cdecl World_ResetAll(void);
+extern "C" void __fastcall Obj_4e0630(void* self, void*, const Rect16* r);
+extern "C" void __cdecl World_ClearHits();
+extern "C" void __fastcall Media_Reset5c5380(BYTE* self, void*);
+extern "C" void __cdecl Effects_SetupWorld(BYTE* w);
+extern "C" void __fastcall CGameApp_SetMousePos(CGameApp* self, void*, int x, int y);
 extern "C" void Sta_sprintf(); KING_ALIAS("_Sta_sprintf", "_sprintf")
 KING_VAR(int, g_sta6d2078, 6d2078)
 KING_VAR(int, g_sta696cb8, 696cb8)
@@ -831,25 +815,25 @@ KING_VAR(AsmLabel, g_sta6d1948, 6d1948)
 KING_VAR(AsmLabel, g_sta696b08, 696b08)
 KING_VAR(AsmLabel, g_sta696910, 696910)
 
-extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
+extern "C" int __fastcall Words295_Reset(BYTE* self, void*);
 
 // [$L_4e05e0] leaving the world
 extern "C" void __fastcall King_LeaveWorld(BYTE* s)
 {
     CallThis(FUN_4bac00, s);
-    CallThis(FUN_5e0180, s);
-    CallC(FUN_56eea0);
+    Fw_Clear5e0180(s, 0);
+    World_FreeAll();
     g_sta6d2078 = 0;
     g_sta696cb8 = 0;
     CallC(Sta_sprintf, (char*)g_sta696cbc, (const char*)s_sta673340);
-    CallC(FUN_53fd30);
-    CallC(FUN_578100, 0);
+    Startup_Call53fd30();
+    Joy_SetAutoCenter(0);
 }
 
 // [$L_4e0ce0] a command for the first part that takes it
 extern "C" int __fastcall King_Command(BYTE* s, void*, int a, int b, int c)
 {
-    if (CallThis<int>(FUN_5c5910, s, a, b, c))
+    if (Media_ObjectMessage(s, 0, a, (BYTE*)b, c))
         return 1;
     if (CallC<int>(FUN_56d0f0, a, b, c) || CallC<int>(FUN_586d90, a, b, c) || CallC<int>(FUN_46d7f0, a, b, c)
         || CallC<int>(FUN_4bc540, a, b, c))
@@ -861,19 +845,19 @@ extern "C" int __fastcall King_Command(BYTE* s, void*, int a, int b, int c)
 extern "C" void __fastcall King_EnterWorld(BYTE* s)
 {
     g_sta6d2078 = 0;
-    CallC(FUN_53fd40);
+    World_ResetAll();
     int rect[4] = {0, 40, 640, 300};
-    CallThis(FUN_4e0630, s, rect);
+    Obj_4e0630(s, 0, (const Rect16*)rect);
     g_sta6974bc = 0;
     g_sta6d1db0 = 1;
     g_sta6d1db1 = 0;
     g_sta67b2b8 = 0;
-    CallC(FUN_4e5ea8);
-    CallThis(FUN_5c5380, s);
-    CallC(FUN_4b9b90, s);
+    World_ClearHits();
+    Media_Reset5c5380(s, 0);
+    Effects_SetupWorld(s);
     F(int, s, 3028) = 0;
-    CallThis(FUN_5e30c0, (BYTE*)g_sta696750, g_sta696850 / 2, g_sta696854 / 2);
-    CallThis(FUN_530020, (BYTE*)g_sta6d1948);
+    CGameApp_SetMousePos((CGameApp*)((BYTE*)g_sta696750), 0, g_sta696850 / 2, g_sta696854 / 2);
+    Words295_Reset((BYTE*)g_sta6d1948, 0);
     DWORD* p = (DWORD*)g_sta696b08;
     for (int i = 0; i < 36; i++)
         p[i] = 0;
@@ -885,11 +869,11 @@ extern "C" void __fastcall King_EnterWorld(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors, destructors and setup (exception frames dropped).
 
-extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
-extern "C" void FUN_5de0a0(); KING_ALIAS("_FUN_5de0a0", "@World_SetupPasses@4")
-extern "C" void FUN_531290(); KING_ALIAS("_FUN_531290", "@Car_Construct@20")
-extern "C" void FUN_532430(); KING_ALIAS("_FUN_532430", "@Car_SetupDashboard@8")
-extern "C" void FUN_53e320(); KING_ALIAS("_FUN_53e320", "@Controls_Construct@12")
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
+extern "C" void __fastcall World_SetupPasses(BYTE* w);
+extern "C" BYTE* __fastcall Car_Construct(BYTE* self, void*, int kind, BYTE* s, int net);
+extern "C" void __fastcall Car_SetupDashboard(BYTE* self, void*);
+extern "C" BYTE* __fastcall Controls_Construct(BYTE* s, void*, BYTE* game);
 extern "C" void FUN_56e5a0(); KING_ALIAS("_FUN_56e5a0", "_CopterScreen_Start")
 KING_VAR(BYTE*, g_staCar6d2078, 6d2078)
 KING_VAR(BYTE*, g_sta6cec6c, 6cec6c)
@@ -898,19 +882,19 @@ KING_VAR(AsmLabel, s_sta672ec8, 672ec8)
 // [$L_4e07b0] the world's start: the player's truck (1636 bytes, kind 99), its controls in a single player game
 extern "C" void __fastcall King_CreatePlayer(BYTE* s)
 {
-    CallThis(FUN_5de0a0, s);
+    World_SetupPasses(s);
     BYTE* m = (BYTE*)operator new(1636);
-    g_staCar6d2078 = m ? CallThis<BYTE*>(FUN_531290, m, 99, s, (BYTE*)g_sta696750) : 0;
+    g_staCar6d2078 = m ? Car_Construct(m, 0, 99, s, (int)((BYTE*)g_sta696750)) : 0;
     F(int, g_staCar6d2078, 1404) |= 128;
-    CallThis(FUN_5d3570, s + 2992, g_staCar6d2078);
+    Owner_Attach(s + 2992, 0, g_staCar6d2078);
     F(int, g_staCar6d2078, 1404) |= 64;
     F(int, g_staCar6d2078, 1404) |= 1;
-    CallThis(FUN_532430, g_staCar6d2078);
+    Car_SetupDashboard(g_staCar6d2078, 0);
     int mode = F(int, g_sta6cec6c, 1316);
     if (mode == 1 || mode == 0) {
         BYTE* m2 = (BYTE*)operator new(88);
-        F(BYTE*, g_staCar6d2078, 1632) = m2 ? CallThis<BYTE*>(FUN_53e320, m2, s) : 0;
-        CallThis(FUN_5d3570, s + 2992, F(BYTE*, g_staCar6d2078, 1632));
+        F(BYTE*, g_staCar6d2078, 1632) = m2 ? Controls_Construct(m2, 0, s) : 0;
+        Owner_Attach(s + 2992, 0, F(BYTE*, g_staCar6d2078, 1632));
         F(int, F(BYTE*, g_staCar6d2078, 1632), 80) = 1;
     }
     CallC(FUN_56e5a0, s, (const char*)s_sta672ec8);
@@ -919,12 +903,12 @@ extern "C" void __fastcall King_CreatePlayer(BYTE* s)
 // ---------------------------------------------------------------------------
 // Small static setup and teardown procs, destructors and thunks.
 
-extern "C" void FUN_4bdef0(); KING_ALIAS("_FUN_4bdef0", "@Vec3_SetThis@20")
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
 KING_VAR(AsmLabel, g_q47_6974a8, 6974a8)
 // [FUN_4e24ca] sets the static vector 6974a8 to 1, 1, 1
 extern "C" void __cdecl Static6974a8_Init(void)
 {
-    CallThis(FUN_4bdef0, (void*)g_q47_6974a8, 1.0f, 1.0f, 1.0f);
+    Vec3_SetThis((Vec3*)((void*)g_q47_6974a8), 0, 1.0f, 1.0f, 1.0f);
 }
 
 // ---------------------------------------------------------------------------
@@ -976,16 +960,16 @@ extern "C" int __fastcall Sta_Media4df850(BYTE* s, void*, STA94_PARAMS)
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 KING_VAR(char, g_q197_696750, 696750)
-extern "C" void q197_FUN_4e1de0(); KING_ALIAS("_q197_FUN_4e1de0", "_Startup_Ini696750")
-extern "C" void q197_FUN_4e1e60(); KING_ALIAS("_q197_FUN_4e1e60", "@CKingApp_Destruct@8")
+extern "C" void* __cdecl Startup_Ini696750();
+extern "C" void __fastcall CKingApp_Destruct(CKingApp* self, void*);
 // [$L_4e1e00] destroys the static object 696750 at exit (FUN_4e1e60)
-extern "C" void __cdecl Static696750_Destroy(void) { CallThis(q197_FUN_4e1e60, &g_q197_696750); }
+extern "C" void __cdecl Static696750_Destroy(void) { CKingApp_Destruct((CKingApp*)&g_q197_696750, 0); }
 // [$L_4e1df0] registers the teardown at exit
 extern "C" int __cdecl Static696750_AtExit(void) { return atexit((void(__cdecl*)(void))Static696750_Destroy); }
 // [$L_4e1dd0] the static initializer: FUN_4e1de0, then the teardown at exit
 extern "C" int __cdecl Static696750_Init(void)
 {
-    CallC(q197_FUN_4e1de0);
+    Startup_Ini696750();
     return Static696750_AtExit();
 }
 
@@ -999,7 +983,7 @@ extern "C" int __fastcall Thunk4e0b70(BYTE* s) { return q240_View_EndFrame(s); }
 // === finding the vehicle sounds (FUN_4e0280)
 
 
-static void* Vs_Find(const char* name) { return CallC<void*>(FUN_5ef3d0, name); }
+static void* Vs_Find(const char* name) { return (void*)Objects_Find(name); }
 
 extern "C" {
 
@@ -1071,10 +1055,10 @@ void __fastcall VehicleSounds_Find(BYTE* s)
 
 // === drawing the world view ($L_4e0950)
 
-extern "C" void FUN_4e298b(); KING_ALIAS("_FUN_4e298b", "_Vec3_LengthSq4e298b")
-extern "C" void FUN_5dffc0(); KING_ALIAS("_FUN_5dffc0", "@View_DrawObject@4")
-extern "C" void FUN_53d9d0(); KING_ALIAS("_FUN_53d9d0", "@Dash_DrawOverlays@8")    // the dashboard text overlay
-extern "C" void FUN_586830(); KING_ALIAS("_FUN_586830", "@Item_AfterEvents@4")    // a moving object's per-frame step
+extern "C" double __cdecl Vec3_LengthSq4e298b(const Vec3* v);
+extern "C" void __fastcall View_DrawObject(BYTE* s);
+extern "C" void __fastcall Dash_DrawOverlays(BYTE* s, void*);
+extern "C" void __fastcall Item_AfterEvents(BYTE* s);
 KING_VAR(float, g_wv6969f4, 6969f4)
 KING_VAR(float, g_wv6969f8, 6969f8)
 KING_VAR(float, g_wv6969fc, 6969fc)
@@ -1088,9 +1072,9 @@ KING_VAR(AsmLabel, s_wv67334c, 67334c)
 static double Wv_DistSq(BYTE* o, float x, float y, float z)
 {
     BYTE m[48];
-    const float* p = (const float*)(CallThis<BYTE*>(FUN_57de90, o, m) + 36);
+    const float* p = (const float*)((BYTE*)SceneObj_Matrix1(o, 0, (Matrix*)m) + 36);
     float d[3] = {x - p[0], y - p[1], z - p[2]};
-    return CallC<double>(FUN_4e298b, d);
+    return Vec3_LengthSq4e298b((const Vec3*)d);
 }
 
 extern "C" {
@@ -1100,14 +1084,14 @@ extern "C" {
 // and the scene's objects named 67334c are removed
 void __fastcall WorldView_Draw(BYTE* s)
 {
-    CallThis(FUN_5dffc0, s);
+    View_DrawObject(s);
     CallVirt(s, 216);
     BYTE* p = g_sceneCommandList;
     if (p)
         for (p -= 4; p;) {
             BYTE* o = p - 376;
             if (F(int, p, -4))
-                CallThis(FUN_586830, o);
+                Item_AfterEvents(o);
             if (F(int, o, 392) == 2 && F(int, o, 3568) == 3) {
                 if (Wv_DistSq(o, g_wv6969f4, g_wv6969f8, g_wv6969fc) > g_wv64d7b4 ||
                     Wv_DistSq(o, F(float, o, 9588), F(float, o, 9592), F(float, o, 9596)) > g_wv64d7b0) {
@@ -1120,7 +1104,7 @@ void __fastcall WorldView_Draw(BYTE* s)
                 break;
             p -= 4;
         }
-    CallThis(FUN_53d9d0, g_wv6d2078);
+    Dash_DrawOverlays(g_wv6d2078, 0);
     for (BYTE* e = CallVirt<BYTE*>(g_wv69622c, 64, 0); e;) {
         BYTE* next = F(BYTE*, e, 8);
         const char* name = F(const char*, e, 12);
@@ -1140,7 +1124,7 @@ void __fastcall WorldView_Draw(BYTE* s)
 
 // === a vector over a number, the force feedback effects (FUN_4e10d0, 4e1120, 4e1150)
 
-extern "C" void Fe_ClearEffects(); KING_ALIAS("_Fe_ClearEffects", "_Joy_ClearEffects")
+extern "C" void __cdecl Joy_ClearEffects();
 extern "C" void Fe_Periodic(); KING_ALIAS("_Fe_Periodic", "@FfPeriodic_Construct@4")
 extern "C" void Fe_Condition(); KING_ALIAS("_Fe_Condition", "@FfCondition_Construct@12")
 extern "C" void Fe_Damper(); KING_ALIAS("_Fe_Damper", "@FfDamper_Construct@4")
@@ -1171,7 +1155,7 @@ float* __cdecl Vec3_DivScalar(float* out, const float* v, float k)
 // (the entry 4e1120) clears the joystick's effects and forgets the six of the game (696cf0)
 void __cdecl Ff_Forget()
 {
-    CallC(Fe_ClearEffects);
+    Joy_ClearEffects();
     for (int i = 0; i < 6; i++)
         g_696cf0[i] = 0;
 }
@@ -1215,19 +1199,18 @@ BYTE* __cdecl Init_696a00()
 // === loading the helicopters ($L_5451c0 with its tail $L_545367) and the trash boxes ($L_52ebc0 with $L_52ee5e)
 //     from the world's object records: the hooks in front of the handlers saved in 6ef24c / 6cf3a0
 
-extern "C" void Ld_Find(); KING_ALIAS("_Ld_Find", "_Scene_FindObject")
-extern "C" void Ld_Length(); KING_ALIAS("_Ld_Length", "_Vec3_Length")
-extern "C" void Ld_Fatal(); KING_ALIAS("_Ld_Fatal", "_World_Fatal")
-extern "C" void Ld_Copter(); KING_ALIAS("_Ld_Copter", "@Copter_Construct@20")
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
+extern "C" double __cdecl Vec3_Length(const Vec3* v);
+extern "C" BYTE* __fastcall Copter_Construct(BYTE* self, void*, int a, int b, int c);
 extern "C" void Ld_Nop(); KING_ALIAS("_Ld_Nop", "_Fw_Nop")
-extern "C" void Ld_VehCopter(); KING_ALIAS("_Ld_VehCopter", "@Vehicle_ConstructCopter@28")
-extern "C" void Ld_NetVeh(); KING_ALIAS("_Ld_NetVeh", "@NetVehicle_Construct@40")
-extern "C" void Ld_Reset(); KING_ALIAS("_Ld_Reset", "@Copter5615f0_Reset@8")
-extern "C" void Ld_Vec100(); KING_ALIAS("_Ld_Vec100", "@Copter_SetVec100@12")
-extern "C" void Ld_Vec112(); KING_ALIAS("_Ld_Vec112", "@Copter_SetVec112@12")
-extern "C" void Ld_Clear(); KING_ALIAS("_Ld_Clear", "@Copter561390_Clear@8")
-extern "C" void Ld_Command(); KING_ALIAS("_Ld_Command", "@Copter_Command@16")
-extern "C" void Ld_CarType(); KING_ALIAS("_Ld_CarType", "_CarType_FromNumber")
+extern "C" BYTE* __fastcall Vehicle_ConstructCopter(BYTE* v, void*, int w, BYTE* h, BYTE* rec, int type, int a);
+extern "C" BYTE* __fastcall NetVehicle_Construct(BYTE* self, void*, BYTE* view, int type, int scene, int owner, const BYTE* place, int a6, int a7, BYTE* setup);
+extern "C" void __fastcall Copter5615f0_Reset(BYTE* self, void*);
+extern "C" void __fastcall Copter_SetVec100(BYTE* self, void*, const Vec3Bits* v);
+extern "C" void __fastcall Copter_SetVec112(BYTE* self, void*, const Vec3Bits* v);
+extern "C" void __fastcall Copter561390_Clear(BYTE* self, void*);
+extern "C" void __fastcall Copter_Command(void* self, int, int cmd, int b);
+extern "C" int __cdecl CarType_FromNumber(int n);
 extern "C" BYTE* __cdecl Trash_CreateGuest(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int number, int num, int extra, int local);
 extern "C" BYTE* __cdecl Trash_CreateHost(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int number, int num, int local);
 KING_VAR(int, g_ld67f878, 67f878)
@@ -1246,7 +1229,7 @@ KING_VAR(char, g_ldTrashFmt, 678588)
 // the record's speed (+20) and spin (+32) within their limits
 static bool Ld_Still(const BYTE* c)
 {
-    return !(CallC<double>(Ld_Length, c + 20) > g_ld64d7b8) && !(CallC<double>(Ld_Length, c + 32) > g_ld64c2f8);
+    return !(Vec3_Length((const Vec3*)(c + 20)) > g_ld64d7b8) && !(Vec3_Length((const Vec3*)(c + 32)) > g_ld64c2f8);
 }
 
 static void Ld_VwText(char* buf, const BYTE* c)
@@ -1274,14 +1257,14 @@ int __cdecl Copter_LoadHook(BYTE* rec, int flags)
         return 1;
     BYTE c[160];
     memcpy(c, F(BYTE*, rec, 24), 160);
-    BYTE* obj = CallC<BYTE*>(Ld_Find, 0, c + 96);
+    BYTE* obj = Scene_FindObject(0, (const char*)(c + 96));
     if (!obj || !Ld_Still(c))
     {
         char room[100], vw[200], msg[500];
         sprintf(room, &g_ldRoomFmt, c + 96, obj);
         Ld_VwText(vw, c);
         sprintf(msg, &g_ldCopterFmt, room, vw);
-        CallC(Ld_Fatal, msg);
+        World_Fatal(msg);
     }
     g_ld67f878 = F(int, rec, 4);
     BYTE* cp = 0;
@@ -1290,7 +1273,7 @@ int __cdecl Copter_LoadHook(BYTE* rec, int flags)
     {
         BYTE* o = (BYTE*)operator new(3552);
         if (o)
-            cp = CallThis<BYTE*>(Ld_Copter, o, obj, c + 44, F(int, c, 92));
+            cp = Copter_Construct(o, 0, (int)obj, (int)(c + 44), F(int, c, 92));
         if (F(int, cp, 3548))
         {
             if (cp)
@@ -1301,13 +1284,12 @@ int __cdecl Copter_LoadHook(BYTE* rec, int flags)
             return 1;
         }
         BYTE* m = (BYTE*)operator new(21880);
-        v = m ? CallThis<BYTE*>(Ld_VehCopter, m, g_ld6ef1fc, cp, g_ld6ef208, F(int, c, 0), 0) : 0;
+        v = m ? Vehicle_ConstructCopter(m, 0, (int)g_ld6ef1fc, cp, (BYTE*)g_ld6ef208, F(int, c, 0), 0) : 0;
     }
     else
     {
         BYTE* m = (BYTE*)operator new(21880);
-        v = m ? CallThis<BYTE*>(Ld_NetVeh, m, g_ld6ef1fc, F(int, c, 0), obj, c + 44, c + 44, F(int, c, 16), 0,
-                                g_ld6ef208)
+        v = m ? NetVehicle_Construct(m, 0, g_ld6ef1fc, F(int, c, 0), (int)obj, (int)(c + 44), c + 44, F(int, c, 16), 0, (BYTE*)g_ld6ef208)
               : 0;
     }
     if (!v)
@@ -1317,11 +1299,11 @@ int __cdecl Copter_LoadHook(BYTE* rec, int flags)
     CallVirt(v + 16, 24, 1);
     if (!F(int, c, 12))
     {
-        CallThis(Ld_Reset, cp);
-        CallThis(Ld_Vec100, cp, c + 20);
-        CallThis(Ld_Vec112, cp, c + 32);
-        CallThis(Ld_Clear, cp + 3372);
-        CallThis(Ld_Command, cp, F(int, c, 4), F(int, c, 8));
+        Copter5615f0_Reset(cp, 0);
+        Copter_SetVec100(cp, 0, (const Vec3Bits*)(c + 20));
+        Copter_SetVec112(cp, 0, (const Vec3Bits*)(c + 32));
+        Copter561390_Clear(cp + 3372, 0);
+        Copter_Command(cp, 0, F(int, c, 4), F(int, c, 8));
     }
     F(BYTE*, rec, 28) = v;
     return 1;
@@ -1342,9 +1324,9 @@ int __cdecl TrashBox_LoadHook(BYTE* rec, int flags)
     BYTE c[156];
     memcpy(c, F(BYTE*, rec, 24), 156);
     int num = id % 1000;
-    int type = CallC<int>(Ld_CarType, F(int, c, 0));
-    BYTE* o1 = CallC<BYTE*>(Ld_Find, 0, c + 92);
-    BYTE* o2 = CallC<BYTE*>(Ld_Find, 0, c + 124);
+    int type = CarType_FromNumber(F(int, c, 0));
+    BYTE* o1 = Scene_FindObject(0, (const char*)(c + 92));
+    BYTE* o2 = Scene_FindObject(0, (const char*)(c + 124));
     if (!o1 || !o2 || type < 0 || type >= g_ld6ce34c || !Ld_Still(c))
     {
         char obj[100], room[100], tp[100], vw[100], msg[500];
@@ -1353,7 +1335,7 @@ int __cdecl TrashBox_LoadHook(BYTE* rec, int flags)
         sprintf(tp, &g_ldTypeFmt, 2, type, num, g_ld6ce34c + 1);
         Ld_VwText(vw, c);
         sprintf(msg, &g_ldTrashFmt, obj, room, tp, vw);
-        CallC(Ld_Fatal, msg);
+        World_Fatal(msg);
     }
     if (!(flags & 1))
         return 1;
@@ -1381,14 +1363,14 @@ extern "C" void Tb_CarH(); KING_ALIAS("_Tb_CarH", "@Car52b5f0_Construct@28")
 extern "C" void Tb_CarHN(); KING_ALIAS("_Tb_CarHN", "@Car52b7c0_Construct@36")
 extern "C" void Tb_TruckH(); KING_ALIAS("_Tb_TruckH", "@Truck52d350_Construct@28")
 extern "C" void Tb_TruckHN(); KING_ALIAS("_Tb_TruckHN", "@Truck52d490_Construct@36")
-extern "C" void Tb_BusH(); KING_ALIAS("_Tb_BusH", "@Bus52e3c0_Construct@32")
-extern "C" void Tb_BusHN(); KING_ALIAS("_Tb_BusHN", "@Bus52e220_Construct@40")
+extern "C" BYTE* __fastcall Bus52e3c0_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6);
+extern "C" BYTE* __fastcall Bus52e220_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
 extern "C" void Tb_CarG(); KING_ALIAS("_Tb_CarG", "@Car52b6f0_Construct@32")
 extern "C" void Tb_CarGN(); KING_ALIAS("_Tb_CarGN", "@Car52b8a0_Construct@40")
 extern "C" void Tb_TruckG(); KING_ALIAS("_Tb_TruckG", "@Truck52d400_Construct@32")
 extern "C" void Tb_TruckGN(); KING_ALIAS("_Tb_TruckGN", "@Truck52d530_Construct@40")
-extern "C" void Tb_BusG(); KING_ALIAS("_Tb_BusG", "@Bus52e470_Construct@36")
-extern "C" void Tb_BusGN(); KING_ALIAS("_Tb_BusGN", "@Bus52e300_Construct@44")
+extern "C" BYTE* __fastcall Bus52e470_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7);
+extern "C" BYTE* __fastcall Bus52e300_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9);
 extern "C" void __cdecl Bus_OnFare(void* bus, double amount);
 KING_VAR(int, g_tb6ce350, 6ce350)
 KING_VAR(int, g_tb6ce35c, 6ce35c)
@@ -1402,12 +1384,12 @@ KING_VAR(char, g_tbGuest2, 6734f4)
 // the car type of number, a fatal error (fmt) when out of range
 static int Tb_Type(int number, const BYTE* o2, const char* fmt)
 {
-    int type = CallC<int>(Ld_CarType, number);
+    int type = CarType_FromNumber(number);
     if (type < 0 || type >= g_ld6ce34c)
     {
         char buf[200];
         sprintf(buf, fmt, number, type, F(const char*, o2, 12));
-        CallC(Ld_Fatal, buf);
+        World_Fatal(buf);
     }
     return type;
 }
@@ -1430,7 +1412,7 @@ static BYTE* Tb_Check(BYTE* v, int type, int num, const BYTE* o2, const char* fm
     {
         char buf[200];
         sprintf(buf, fmt, type, num, F(const char*, o2, 12));
-        CallC(Ld_Fatal, buf);
+        World_Fatal(buf);
     }
     return v;
 }
@@ -1451,12 +1433,12 @@ BYTE* __cdecl Trash_CreateHost(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int numbe
             if (local == 1)
             {
                 if (kind == 1)
-                    v = CallThis<BYTE*>(Tb_BusH, m, w, o2, type, num, 1, (void*)Bus_OnFare);
+                    v = Bus52e3c0_Construct(m, 0, (int)w, (int)o2, type, num, 1, (int)((void*)Bus_OnFare));
                 else
                     v = CallThis<BYTE*>(kind ? Tb_TruckH : Tb_CarH, m, w, o2, type, num, 1);
             }
             else if (kind == 1)
-                v = CallThis<BYTE*>(Tb_BusHN, m, w, o1, o2, pos, type, num, 0, (void*)Bus_OnFare);
+                v = Bus52e220_Construct(m, 0, (int)w, (int)o1, (int)o2, (int)pos, type, num, 0, (int)((void*)Bus_OnFare));
             else
                 v = CallThis<BYTE*>(kind ? Tb_TruckHN : Tb_CarHN, m, w, o1, o2, pos, type, num, 0);
         }
@@ -1478,12 +1460,12 @@ BYTE* __cdecl Trash_CreateGuest(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int numb
             if (local == 1)
             {
                 if (kind == 1)
-                    v = CallThis<BYTE*>(Tb_BusG, m, w, o2, type, num, extra, 1, (void*)Bus_OnFare);
+                    v = Bus52e470_Construct(m, 0, (int)w, (int)o2, type, num, extra, 1, (int)((void*)Bus_OnFare));
                 else
                     v = CallThis<BYTE*>(kind ? Tb_TruckG : Tb_CarG, m, w, o2, type, num, extra, 1);
             }
             else if (kind == 1)
-                v = CallThis<BYTE*>(Tb_BusGN, m, w, o1, o2, pos, type, num, extra, 0, (void*)Bus_OnFare);
+                v = Bus52e300_Construct(m, 0, (int)w, (int)o1, (int)o2, (int)pos, type, num, extra, 0, (int)((void*)Bus_OnFare));
             else
                 v = CallThis<BYTE*>(kind ? Tb_TruckGN : Tb_CarGN, m, w, o1, o2, pos, type, num, extra, 0);
         }
@@ -1495,33 +1477,30 @@ BYTE* __cdecl Trash_CreateGuest(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int numb
 
 // === the application's start ($L_4e19b0 with its tails up to $L_4e1d07, a vtable entry)
 
-extern "C" void Ai_FindCd(); KING_ALIAS("_Ai_FindCd", "_Startup_FindCd")
-extern "C" void Ai_MapSymbols(); KING_ALIAS("_Ai_MapSymbols", "_World_ReadMapSymbols")
-extern "C" void Ai_Controls(); KING_ALIAS("_Ai_Controls", "_Controls_ReadDefFile")
-extern "C" void Ai_Fatal(); KING_ALIAS("_Ai_Fatal", "_World_Fatal")
-extern "C" void Ai_Options(); KING_ALIAS("_Ai_Options", "_Startup_ReadOptions")
+extern "C" void __cdecl Startup_FindCd();
+extern "C" void __cdecl Controls_ReadDefFile();
+extern "C" void __cdecl Startup_ReadOptions();
 extern "C" void Ai_Joy(); KING_ALIAS("_Ai_Joy", "_Joy_Init")
-extern "C" void Ai_Presets(); KING_ALIAS("_Ai_Presets", "_Controls_ListPresets")
-extern "C" void Ai_Preset(); KING_ALIAS("_Ai_Preset", "_Controls_SelectPreset")
-extern "C" void Ai_FfHooks(); KING_ALIAS("_Ai_FfHooks", "_Mmt_Set6f4ba4")
+extern "C" void __cdecl Controls_ListPresets();
+extern "C" int __cdecl Controls_SelectPreset(int i);
+extern "C" void __cdecl Mmt_Set6f4ba4(int a, int b);
 extern "C" void Ai_FfForget(); KING_ALIAS("_Ai_FfForget", "_Ff_Forget")
 extern "C" void Ai_FfCreate(); KING_ALIAS("_Ai_FfCreate", "_Ff_Create")
 extern "C" void Ai_Dump(); KING_ALIAS("_Ai_Dump", "_Dump_Text")
-extern "C" void Ai_Wnd(); KING_ALIAS("_Ai_Wnd", "@Wnd4e01d0_Construct@12")
-extern "C" void Ai_AddActive(); KING_ALIAS("_Ai_AddActive", "@Windows_AddActive@12")
-extern "C" void Ai_Add(); KING_ALIAS("_Ai_Add", "@Windows_Add@12")
-extern "C" void Ai_Add2(); KING_ALIAS("_Ai_Add2", "@Windows_Add2@12")
-extern "C" void Ai_WasmCreate(); KING_ALIAS("_Ai_WasmCreate", "@Wasm597410_Create@8")
-extern "C" void Ai_Wasm598d80(); KING_ALIAS("_Ai_Wasm598d80", "@Wasm_598d80@8")
-extern "C" void Ai_NodeN(); KING_ALIAS("_Ai_NodeN", "@NodeN_Construct@20")
+extern "C" BYTE* __fastcall Wnd4e01d0_Construct(BYTE* self, void*, int a);
+extern "C" BYTE* __fastcall Windows_AddActive(BYTE* self, void*, BYTE* w);
+extern "C" BYTE* __fastcall Windows_Add(BYTE* self, void*, BYTE* w);
+extern "C" BYTE* __fastcall Windows_Add2(BYTE* self, void*, BYTE* w);
+extern "C" void __fastcall Wasm597410_Create(BYTE* self, void*);
+extern "C" void __fastcall Wasm_598d80(BYTE* self, void*);
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, int n);
 extern "C" void Ai_View3D(); KING_ALIAS("_Ai_View3D", "@View3D_Construct@24")
 extern "C" void Ai_Music(); KING_ALIAS("_Ai_Music", "_Obj6968ac_Clear")
-extern "C" void Ai_Cluster(); KING_ALIAS("_Ai_Cluster", "@Cluster_Construct@8")
-extern "C" void Ai_ObjFind(); KING_ALIAS("_Ai_ObjFind", "_Objects_Find")
-extern "C" void Ai_Surface(); KING_ALIAS("_Ai_Surface", "@Window_SetSurface@12")
-ASM_FUNC(Ai_World, _World_InitTables)
-extern "C" void Ai_ClusterLoad(); KING_ALIAS("_Ai_ClusterLoad", "@Image_ReadResources@24")
-extern "C" void Ai_Menu(); KING_ALIAS("_Ai_Menu", "@GameWindow_Construct@12")
+extern "C" BYTE* __fastcall Cluster_Construct(BYTE* self, void*);
+extern "C" int __fastcall Window_SetSurface(BYTE* self, void*, int s);
+extern "C" void __cdecl World_InitTables(int a, int b, int c);
+extern "C" const char* __fastcall Image_ReadResources(BYTE* s, void*, const char* dir, void* f, int kind, const char* path);
+extern "C" BYTE* __fastcall GameWindow_Construct(BYTE* s, void*, BYTE* app);
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 KING_VAR(char, g_aiNewLines, 673414)
 KING_VAR(char, g_aiDot, 671204)
@@ -1551,12 +1530,12 @@ extern "C" {
 void __fastcall App_Start(BYTE* a, void*, int argc, char** argv)
 {
     CreateMutexA(0, 1, "kotr_app_mutex");
-    CallC(Ai_FindCd);
-    CallC(Ai_MapSymbols);
-    CallC(Ai_Controls);
+    Startup_FindCd();
+    World_ReadMapSymbols();
+    Controls_ReadDefFile();
     if (argc >= 2 && !_stricmp(argv[1], "/VAS"))
-        CallC(Ai_Fatal, &g_aiNewLines);
-    CallC(Ai_Options);
+        World_Fatal(&g_aiNewLines);
+    Startup_ReadOptions();
     int h = F(int, a, 260), w = F(int, a, 256);
     int top = 90, bottom = 390;
     if (h < 480)
@@ -1571,24 +1550,24 @@ void __fastcall App_Start(BYTE* a, void*, int argc, char** argv)
     if (g_ai696c74)
         g_ai6f4bac = (void*)Ai_Dump;
     g_ai696ca4 = CallC<int>(Ai_Joy, F(int, a, 388), g_ai696c58 * 100, 0) == 0;
-    CallC(Ai_Presets);
-    CallC(Ai_Preset, 0);
-    CallC(Ai_FfHooks, (void*)Ai_FfForget, (void*)Ai_FfCreate);
+    Controls_ListPresets();
+    Controls_SelectPreset(0);
+    Mmt_Set6f4ba4((int)((void*)Ai_FfForget), (int)((void*)Ai_FfCreate));
     int rect[4] = {0, top, w, bottom};
     BYTE* p = (BYTE*)operator new(9408);
     if (p)
-        p = CallThis<BYTE*>(Ai_Wnd, p, rect);
+        p = Wnd4e01d0_Construct(p, 0, (int)rect);
     g_ai696ca0 = p;
-    CallThis(Ai_AddActive, a, p);
-    CallC(Ai_World, g_ai696ca0, &g_ai696750, F(int, a, 388));
+    Windows_AddActive(a, 0, p);
+    World_InitTables((int)g_ai696ca0, (int)&g_ai696750, F(int, a, 388));
     F(DWORD, a, 292) |= 8;
     CallVirt(g_ai696ca0, 32);
-    CallThis(Ai_WasmCreate, &g_ai6f68b0);
-    CallThis(Ai_Wasm598d80, &g_ai6f68b0);
+    Wasm597410_Create(&g_ai6f68b0, 0);
+    Wasm_598d80(&g_ai6f68b0, 0);
     BYTE* n = (BYTE*)operator new(112);
     if (n)
     {
-        CallThis(Ai_NodeN, n, &g_ai68d1c0, 6, 1);
+        NodeN_Construct(n, 0, (const char*)&g_ai68d1c0, 6, 1);
         memset(n + 64, 0, 48);
         memcpy(n + 64, &g_ai7025f0, 48);
         F(void*, n, 0) = &g_ai64d7d0;
@@ -1617,23 +1596,23 @@ void __fastcall App_Start(BYTE* a, void*, int argc, char** argv)
     if (v)
         v = CallThis<BYTE*>(Ai_View3D, v, g_ai720938);
     g_ai696cb0 = v;
-    CallThis(Ai_Add, a, v);
+    Windows_Add(a, 0, v);
     CallVirt(g_ai696cb0, 32);
     CallC(Ai_Music, "truck.mid");
     BYTE* c = (BYTE*)operator new(180);
     if (c)
-        c = CallThis<BYTE*>(Ai_Cluster, c);
+        c = Cluster_Construct(c, 0);
     F(BYTE*, g_ai696ca0, 9396) = c;
     FILE* f = fopen("load.res", "rb");
     if (!f)
-        CallC(Ai_Fatal, "LOAD.RES not found");
-    CallThis(Ai_ClusterLoad, F(BYTE*, g_ai696ca0, 9396), &g_aiDot, f, 2, 0);
-    g_ai696d1c = CallC<int>(Ai_ObjFind, "screen2.txr");
-    CallThis(Ai_Surface, F(BYTE*, F(BYTE*, a, 252), 12), F(int, F(BYTE*, F(BYTE*, g_ai696ca0, 9396), 100), 0));
+        World_Fatal("LOAD.RES not found");
+    Image_ReadResources(F(BYTE*, g_ai696ca0, 9396), 0, &g_aiDot, f, 2, 0);
+    g_ai696d1c = (int)Objects_Find("screen2.txr");
+    Window_SetSurface(F(BYTE*, F(BYTE*, a, 252), 12), 0, F(int, F(BYTE*, F(BYTE*, g_ai696ca0, 9396), 100), 0));
     BYTE* m = (BYTE*)operator new(424);
     if (m)
-        m = CallThis<BYTE*>(Ai_Menu, m, F(BYTE*, a, 252));
-    CallThis(Ai_Add2, a, m);
+        m = GameWindow_Construct(m, 0, F(BYTE*, a, 252));
+    Windows_Add2(a, 0, m);
     F(DWORD, a, 292) |= 3;
 }
 
@@ -1641,15 +1620,13 @@ void __fastcall App_Start(BYTE* a, void*, int argc, char** argv)
 
 // === a host's tree box made ($L_52ef80 with its tail $L_52efbd, a table entry)
 
-extern "C" void Tr_Fatal(); KING_ALIAS("_Tr_Fatal", "_World_Fatal")
 extern "C" void Tr_Car(); KING_ALIAS("_Tr_Car", "@Car52d650_Construct@48")
-extern "C" void Tr_Query(); KING_ALIAS("_Tr_Query", "_Query_4e6749")
-extern "C" void Tr_Length(); KING_ALIAS("_Tr_Length", "_Vec3_Length")
+extern "C" int __cdecl Query_4e6749(int a, const Vec3Bits* p, const Vec3Bits* d, Vec3Bits* point, Vec3Bits* normal);
+extern "C" Vec3* __cdecl Vec3_Normalized(Vec3* out, const Vec3* v);
 extern "C" void Tr_Norm(); KING_ALIAS("_Tr_Norm", "_Vec3_Normalized")
-extern "C" void Tr_Set(); KING_ALIAS("_Tr_Set", "@Vec3_SetThis@20")
-extern "C" void Tr_Scaled(); KING_ALIAS("_Tr_Scaled", "_Vec3_Scaled")
-extern "C" void Tr_M2(); KING_ALIAS("_Tr_M2", "@SceneObj_Matrix2@12")
-extern "C" void Tr_RotBy(); KING_ALIAS("_Tr_RotBy", "_Vec3_RotateBy")
+extern "C" Vec3* __cdecl Vec3_Scaled(Vec3* out, const Vec3* v, float s);
+extern "C" Matrix* __fastcall SceneObj_Matrix2(BYTE* self, void*, Matrix* out);
+extern "C" Vec3* __cdecl Vec3_RotateBy(Vec3* out, const Vec3* v, const Matrix* m);
 KING_VAR(Vec3, g_trUp, 702630)
 KING_VAR(int, g_tr6ce364, 6ce364)
 KING_VAR(float, g_tr64c968, 64c968)
@@ -1669,7 +1646,7 @@ static Vec3 Tr_Above(const float* p, float k)
 static Vec3 Tr_SetV(double x, double y, double z)
 {
     Vec3 r;
-    CallThis(Tr_Set, &r, (float)x, (float)y, (float)z);
+    Vec3_SetThis(&r, 0, (float)x, (float)y, (float)z);
     return r;
 }
 
@@ -1681,7 +1658,7 @@ extern "C" {
 BYTE* __cdecl TreeBox_CreateHost(BYTE* tb, const float* m, BYTE* room, int a4, BYTE* o1, BYTE* o2, int g)
 {
     if (!room || !tb)
-        CallC(Tr_Fatal, "createHostTreeBox(): treebox==NULL||room==NULL");
+        World_Fatal("createHostTreeBox(): treebox==NULL||room==NULL");
     if (g)
         return 0;
     BYTE* v = (BYTE*)operator new(9600);
@@ -1692,7 +1669,7 @@ BYTE* __cdecl TreeBox_CreateHost(BYTE* tb, const float* m, BYTE* room, int a4, B
     Vec3 P = {m[9], m[10], m[11]};
     Vec3 d = g_trUp;
     Vec3 from = Tr_Above(m + 9, g_tr64c450);
-    CallC(Tr_Query, tb, &from, &to, &P, &d);
+    Query_4e6749((int)tb, (const Vec3Bits*)&from, (const Vec3Bits*)&to, (Vec3Bits*)&P, (Vec3Bits*)&d);
     int i = 0;
     for (; i < 6; i++)
         if (F(int, v, 3508 + 4 * i) && F(float, v, 3532 + 4 * i) < g_tr64d7b8)
@@ -1700,7 +1677,7 @@ BYTE* __cdecl TreeBox_CreateHost(BYTE* tb, const float* m, BYTE* room, int a4, B
     if (i < 6)
     {
         Vec3 V = F(Vec3, F(BYTE*, v, 3508 + 4 * i), 452);
-        double lv = CallC<double>(Tr_Length, &V);
+        double lv = Vec3_Length(&V);
         float len = (float)lv;
         if (lv > g_tr64c264)
         {
@@ -1709,7 +1686,7 @@ BYTE* __cdecl TreeBox_CreateHost(BYTE* tb, const float* m, BYTE* room, int a4, B
             double c2 = (double)V.y * d.x - (double)d.y * V.x;
             Vec3 E = {(float)(c1 * d.z - c2 * d.y), (float)(c2 * d.x - d.z * c0), (float)(d.y * c0 - c1 * d.x)};
             Vec3 N;
-            CallC(Tr_Norm, &N, &E);
+            Vec3_Normalized(&N, &E);
             Vec3 G = Tr_SetV((double)g_trUp.x * g_tr64c260, (double)g_trUp.y * g_tr64c260, (double)g_trUp.z * g_tr64c260);
             Vec3 H = Tr_SetV((double)G.x + N.x, (double)G.y + N.y, (double)G.z + N.z);
             Vec3 Hn;
@@ -1719,12 +1696,12 @@ BYTE* __cdecl TreeBox_CreateHost(BYTE* tb, const float* m, BYTE* room, int a4, B
             Vec3 M = Tr_SetV((double)N.y * d.z - (double)N.z * d.y, (double)N.z * d.x - (double)d.z * N.x,
                              (double)d.y * N.x - (double)N.y * d.x);
             Vec3 s1, W;
-            const Vec3* r1 = CallC<const Vec3*>(Tr_Scaled, &s1, &M, len);
-            CallC(Tr_Scaled, &W, r1, 0.01f);
+            const Vec3* r1 = (const Vec3*)Vec3_Scaled(&s1, &M, len);
+            Vec3_Scaled(&W, r1, 0.01f);
             Matrix t;
-            const Matrix* M2 = CallThis<const Matrix*>(Tr_M2, v, &t);
+            const Matrix* M2 = (const Matrix*)SceneObj_Matrix2(v, 0, &t);
             Vec3 RW;
-            CallC(Tr_RotBy, &RW, &W, M2);
+            Vec3_RotateBy(&RW, &W, M2);
             CallVirt(v, 144, &L, 0);
             CallVirt(v, 148, &RW, 0);
         }
@@ -1746,13 +1723,12 @@ BYTE* __cdecl TreeBox_CreateHost(BYTE* tb, const float* m, BYTE* room, int a4, B
 
 // === a bus's fare earned ($L_576670, the buses' callback)
 
-extern "C" void Bf_Mode(); KING_ALIAS("_Bf_Mode", "@Shell_SetMode@12")
-extern "C" void Bf_MsgNew(); KING_ALIAS("_Bf_MsgNew", "@DpMessage_Construct@8")
-extern "C" void Bf_Write(); KING_ALIAS("_Bf_Write", "@Msg_Write120@20")
-extern "C" void Bf_Send(); KING_ALIAS("_Bf_Send", "_Dp_Send")
-extern "C" void Bf_MsgFree(); KING_ALIAS("_Bf_MsgFree", "@MsgBuf_Destroy@8")
-extern "C" void Bf_Text(); KING_ALIAS("_Bf_Text", "_Table71e858_Get")
-extern "C" void Bf_Message(); KING_ALIAS("_Bf_Message", "_Messages_Add")
+extern "C" void __fastcall Shell_SetMode(BYTE* s, void*, int m);
+extern "C" BYTE* __fastcall DpMessage_Construct(BYTE* self, void*);
+extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, int n);
+extern "C" int __cdecl Dp_Send(int a, int b);
+extern "C" void __fastcall MsgBuf_Destroy(BYTE* self, int);
+extern "C" void __cdecl Messages_Add(const char* text);
 KING_VAR(int, g_bf696900, 696900)
 KING_VAR(double, g_bfMoney, 6f3338)
 KING_VAR(double, g_bf64b730, 64b730)
@@ -1761,11 +1737,11 @@ KING_VAR(BYTE*, g_bf6ceca8, 6ceca8)
 static void Bf_SendMsg(int code, const BYTE* buf, int n)
 {
     __declspec(align(8)) BYTE msg[32];
-    CallThis(Bf_MsgNew, msg);
-    CallThis(Bf_Write, msg, code, buf, n);
+    DpMessage_Construct(msg, 0);
+    Msg_Write120(msg, 0, code, buf, n);
     BYTE* p = F(BYTE*, msg, 4);
-    CallC(Bf_Send, p, (int)(F(BYTE*, msg, 8) - p));
-    CallThis(Bf_MsgFree, msg);
+    Dp_Send((int)p, (int)(F(BYTE*, msg, 8) - p));
+    MsgBuf_Destroy(msg, 0);
 }
 
 extern "C" {
@@ -1780,7 +1756,7 @@ void __cdecl Bus_OnFare(void*, double amount)
     BYTE buf[8];
     if (!(*m < g_bf64b730))
     {
-        CallThis(Bf_Mode, g_bf6ceca8, 3);
+        Shell_SetMode(g_bf6ceca8, 0, 3);
         buf[0] = (BYTE)pl;
         int t = (int)*m;
         memcpy(buf + 1, &t, 4);
@@ -1790,8 +1766,8 @@ void __cdecl Bus_OnFare(void*, double amount)
         return;
     }
     char text[68];
-    sprintf(text, CallC<const char*>(Bf_Text, 86), (int)*m);
-    CallC(Bf_Message, text);
+    sprintf(text, (const char*)Table71e858_Get(86), (int)*m);
+    Messages_Add(text);
     buf[0] = (BYTE)pl;
     int t = (int)*m;
     memcpy(buf + 1, &t, 4);
@@ -2285,8 +2261,8 @@ BYTE* __cdecl Media_VehicleEvent(BYTE* s, STA94_PARAMS)
 
 // === the game window's first draw: the info screens and the intro movie ($L_528820 with its pieces up to $L_528bd6)
 
-ASM_FUNC($L_5dd8c0, @MainWnd_SetVideoMode@24)    // window: set the video mode (w, h, cres, flags)
-ASM_FUNC($L_5d7c20, _Dd_TestMode)    // tries a video mode (w, h, cres, flags, 3 outs)
+extern "C" BOOL __fastcall MainWnd_SetVideoMode(BYTE* self, void*, int w, int h, int bits, int flags);
+extern "C" BOOL __cdecl Dd_TestMode(int w, int h, int bytes, DWORD flags, int* result, DWORD* mem, DWORD* freeMem);
 extern "C" BYTE* __fastcall Is_InfoCtor(BYTE* s, void*, BYTE* parent, int mode); KING_ALIAS("@Is_InfoCtor@16", "@InfoScreen_Construct@16")
 extern "C" BYTE* __fastcall Is_ShellCtor(BYTE* s, void*, BYTE* parent); KING_ALIAS("@Is_ShellCtor@12", "@Shell528c20_Construct@12")
 extern "C" BYTE* __fastcall Is_WindowsAdd2(BYTE* self, void*, BYTE* w); KING_ALIAS("@Is_WindowsAdd2@12", "@Windows_Add2@12")
@@ -2354,7 +2330,7 @@ void __fastcall GameWindow_Draw(BYTE* s, void*)
         g_isShell6cec88 = p;
         Is_WindowsAdd(&g_isWindows696750, 0, p);
         g_is696878 = -1;
-        CallThis($L_5dd8c0, &g_isWindows696750, 640, 480, 2, 15872);
+        MainWnd_SetVideoMode(&g_isWindows696750, 0, 640, 480, 2, 15872);
         if (Is_MoviePlay(&g_isKotrAvi, 0))
         {
             CallVirt(s, 32);
@@ -2362,9 +2338,9 @@ void __fastcall GameWindow_Draw(BYTE* s, void*)
             return;
         }
         int o0, o1, o2;
-        if (!CallC<int>($L_5d7c20, 800, 600, 1, 3584, &o2, &o1, &o0))
-            CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, ~(Is_ScreenFlags() | 0x4000) & g_isFlags69685c);
-        CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, 3584);
+        if (!(int)Dd_TestMode(800, 600, 1, 3584, &o2, (DWORD*)&o1, (DWORD*)&o0))
+            MainWnd_SetVideoMode(&g_isWindows696750, 0, 800, 600, 1, ~(Is_ScreenFlags() | 0x4000) & g_isFlags69685c);
+        MainWnd_SetVideoMode(&g_isWindows696750, 0, 800, 600, 1, 3584);
         Is_PaletteApply(*F(BYTE**, F(BYTE*, F(BYTE*, g_isApp696ca0, 9396), 100), 0), 0);
         Is_Refresh(g_isParent69684c, 0);
         g_is696878 = 0;
@@ -2372,7 +2348,7 @@ void __fastcall GameWindow_Draw(BYTE* s, void*)
     else
     {
         CallVirt(g_isShell6cec88, 32);
-        CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, 3584);
+        MainWnd_SetVideoMode(&g_isWindows696750, 0, 800, 600, 1, 3584);
     }
     Is_CheckSave();
     g_isFirst675d44 = 0;
@@ -2441,9 +2417,9 @@ void __fastcall MovieScreen_Frame(BYTE* s, void*)
     if (F(int, s, 2308) < 2)
     {
         int o0, o1, o2;
-        if (!CallC<int>($L_5d7c20, 800, 600, 1, 3584, &o2, &o1, &o0))
-            CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, ~(Is_ScreenFlags() | 0x4000) & g_isFlags69685c);
-        CallThis($L_5dd8c0, &g_isWindows696750, 800, 600, 1, 3584);
+        if (!(int)Dd_TestMode(800, 600, 1, 3584, &o2, (DWORD*)&o1, (DWORD*)&o0))
+            MainWnd_SetVideoMode(&g_isWindows696750, 0, 800, 600, 1, ~(Is_ScreenFlags() | 0x4000) & g_isFlags69685c);
+        MainWnd_SetVideoMode(&g_isWindows696750, 0, 800, 600, 1, 3584);
         Is_PaletteApply(*F(BYTE**, F(BYTE*, F(BYTE*, g_isApp696ca0, 9396), 100), 0), 0);
     }
     else
@@ -2501,7 +2477,7 @@ extern "C" void __fastcall Su_ViewDraw(BYTE* s)
 // the debug keys go to the debug handler, the movie keys may stop a movie,
 // everything goes to the game's input
 extern "C" void Su_GameInput(); KING_ALIAS("_Su_GameInput", "@Game_Input@12")
-extern "C" void Su_DbgInput(); KING_ALIAS("_Su_DbgInput", "@Dbg_OnInput@12")
+extern "C" int __fastcall Dbg_OnInput(BYTE* s, void*, const short* ev);
 extern "C" int __cdecl Shell_StopMovieRequest();
 extern "C" void __cdecl Fw_Nop();
 KING_VAR(BYTE*, su_6d2078, 6d2078)          // the game
@@ -2513,7 +2489,7 @@ extern "C" int __fastcall Su_OnInput(BYTE* self, void*, short* ev)
         if (id == 19 || id == 27) {
             if (id == 27)
                 Fw_Nop();
-            return CallThis<int>(Su_DbgInput, self, ev);
+            return Dbg_OnInput(self, 0, ev);
         }
         if (id >= 112 && id <= 114) {
             int r = Shell_StopMovieRequest();
@@ -2522,7 +2498,7 @@ extern "C" int __fastcall Su_OnInput(BYTE* self, void*, short* ev)
             return CallThis<int>(Su_GameInput, su_6d2078, ev);
         }
         if (id >= 116 && id <= 118 && su_696c40)
-            CallThis<int>(Su_DbgInput, self, ev);
+            Dbg_OnInput(self, 0, ev);
     }
     return CallThis<int>(Su_GameInput, su_6d2078, ev);
 }

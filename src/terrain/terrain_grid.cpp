@@ -73,6 +73,7 @@ int __fastcall TGrid_Set(BYTE* self, void*, int a, int b, int c, BYTE* d)
 
 }
 
+extern "C" void __fastcall Shell_Nop(void*, int);
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")    // a 16-byte record's destructor
 KING_VAR(char, g_vtbl65338c, 65338c)
 KING_VAR(char, g_vtbl6533a8, 6533a8)
@@ -92,7 +93,7 @@ void __fastcall TGrid61b920_Destroy(BYTE* self, void*)
         BYTE* p = d[k];
         if (p) {
             for (int i = 66049 - 1; i >= 0; i--)
-                CallThis(FUN_50d190, p + i * 16);
+                Shell_Nop(p + i * 16, 0);
             operator delete(p);
             d[k] = 0;
         }
@@ -159,8 +160,8 @@ extern "C" double __fastcall TGridCamera_NodePriority(BYTE* s, void*, BYTE* node
 }
 
 struct Vec3G { float x, y, z; };
-extern "C" void FUN_608ea0(); KING_ALIAS("_FUN_608ea0", "@Tile_Normal@20")
-extern "C" void FUN_608e70(); KING_ALIAS("_FUN_608e70", "@Tile_Height@16")
+extern "C" void __fastcall Tile_Normal(BYTE* self, void*, DWORD x, DWORD y, DWORD* out);
+extern "C" float __fastcall Tile_Height(BYTE* self, void*, DWORD x, DWORD y);
 KING_VAR(Vec3G, g_tileNormal724378, 724378)
 
 // the height table of the tile a grid point lies in (as in TGrid_Height)
@@ -194,8 +195,8 @@ extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, const D
     float b = (float)(y1 * 0.125f);
     float c = (float)(x1 * 0.3333333432674408f);
     float d = (float)((double)y1f * 0.3333333432674408f);
-    CallThis(FUN_608ea0, TGrid_TableAt(self, X, Y), X, Y, &g_tileNormal724378);
-    double h = CallThis<double>(FUN_608e70, TGrid_TableAt(self, X, Y), X, Y);
+    Tile_Normal(TGrid_TableAt(self, X, Y), 0, X, Y, (DWORD*)&g_tileNormal724378);
+    double h = (double)Tile_Height(TGrid_TableAt(self, X, Y), 0, X, Y);
     p[0] = (float)((double)xf * F(float, self, 40152) + F(float, self, 40136));
     p[1] = (float)((double)yf * F(float, self, 40156) + F(float, self, 40148));
     p[2] = (float)h;
@@ -268,6 +269,7 @@ extern "C" void __fastcall TGrid_FollowCamera(BYTE* s, void*, const float* pos, 
 // Small virtual methods and static initializers.
 
 extern "C" void FUN_61b920(); KING_ALIAS("_FUN_61b920", "@TGrid61b920_Destroy@8")
+extern "C" int __fastcall TGrid_Get36(BYTE* self, void*);
 extern "C" void FUN_61c170(); KING_ALIAS("_FUN_61c170", "@TGrid_Get36@8")
 
 static BYTE* Tgr_DeleteAfter(BYTE* self, int flags, void (*dtor)())
@@ -321,7 +323,7 @@ KING_VAR(AsmLabel, g_tgr72c108, 72c108)
 KING_VAR(AsmLabel, g_tgr6533a8, 6533a8)
 
 // [$L_61bfd0]
-extern "C" int __cdecl Tgr_61bfd0() { return CallThis<int>(FUN_61c170, g_tgr72c108); }
+extern "C" int __cdecl Tgr_61bfd0() { return TGrid_Get36((BYTE*)g_tgr72c108, 0); }
 // [$L_61bfe0]
 extern "C" void __fastcall Tgr_Set92(BYTE* s, void*, int v) { F(int, s, 92) = v; }
 // [$L_61bbc0]
@@ -365,8 +367,8 @@ extern "C" void __fastcall Tgr_AddTriangle(BYTE* s, void*, unsigned a, unsigned 
 // ---------------------------------------------------------------------------
 // More virtual methods.
 
-extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
-extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
+extern "C" const char* __cdecl Dd_ErrorText(DWORD hr, const char* where);
 
 // a method of the Direct3D device d (vtable slot at byte offset off)
 template <class... A>
@@ -380,24 +382,24 @@ static int Tgr_Dev(void* d, unsigned off, A... args)
 extern "C" void __fastcall Tgr_Draw(BYTE* s, void*, void* dev, BYTE* b)
 {
     Tgr_Dev(dev, 80, 136, 1);
-    CallThis(FUN_5b1020, b, F(int, s, 40104), 1, 0, 0);
+    Material_Select(b, 0, (BYTE*)(F(int, s, 40104)), 1, 0, 0);
     if (F(int, s, 100)) {
         int r = Tgr_Dev(dev, 104, 4, 530, F(int, s, 92), F(int, s, 96), s + 108, F(int, s, 100), 0);
         if (r < 0)
-            CallC(FUN_5d4c10, r, 0);
+            Dd_ErrorText(r, 0);
     }
-    CallThis(FUN_5b1020, b, F(int, s, 40112), 1, 0, 0);
+    Material_Select(b, 0, (BYTE*)(F(int, s, 40112)), 1, 0, 0);
     if (F(int, s, 104)) {
         int r = Tgr_Dev(dev, 104, 4, 530, F(int, s, 92), F(int, s, 96), s + 20106, F(int, s, 104), 0);
         if (r < 0)
-            CallC(FUN_5d4c10, r, 0);
+            Dd_ErrorText(r, 0);
     }
 }
 
 // ---------------------------------------------------------------------------
 // Grid setup (exception frame dropped).
 
-extern "C" void FUN_613b50(); KING_ALIAS("_FUN_613b50", "@Terrain_ReadTiles@16")
+extern "C" int __fastcall Terrain_ReadTiles(BYTE* s, void*, FILE** f, int n);
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" void Tgr_VecCtor(); KING_ALIAS("_Tgr_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" BYTE* __fastcall Cell61bee0_Construct(BYTE* s);
@@ -427,7 +429,7 @@ extern "C" int __fastcall Tgr_Setup(BYTE* s, void*, int a, int b)
         t[2] = Tgr_NewCells();
     }
     F(BYTE**, s, 40192) = t;
-    if (t && CallThis<int>(FUN_613b50, t, F(int, s, 40196), F(int, s, 40200)))
+    if (t && Terrain_ReadTiles((BYTE*)t, 0, (FILE**)(F(int, s, 40196)), F(int, s, 40200)))
         return 1;
     CallC(FUN_60aad0, 2289444628u, (const char*)s_q27_6724b0, (const char*)s_q27_685dac, 175, (const char*)s_q27_6724f8);
     return 0;
@@ -504,8 +506,8 @@ extern "C" void __fastcall TGridBase_SetVtbl(BYTE* s) { F(void*, s, 0) = g_tgr65
 
 #include <stdlib.h>
 
-extern "C" void FUN_62b8e0(); KING_ALIAS("_FUN_62b8e0", "_Gz_FillInbuf")       // fill_inbuf(eof_ok)
-extern "C" void FUN_62b9e0(); KING_ALIAS("_FUN_62b9e0", "_Gz_FlushWindow")     // flush_window()
+extern "C" int __cdecl Gz_FillInbuf(int eof_ok);
+extern "C" void __cdecl Gz_FlushWindow();
 KING_VAR(unsigned, g_gzInptr, 736684)
 KING_VAR(unsigned, g_gzInsize, 736680)
 KING_VAR(BYTE, g_gzInbuf, 72e634)
@@ -539,7 +541,7 @@ struct GzHuft
 };
 
 #define GZ_WSIZE 0x8000
-#define GZ_NEXTBYTE() (g_gzInptr < g_gzInsize ? (unsigned)(&g_gzInbuf)[g_gzInptr++] : (unsigned)(BYTE)CallC<int>(FUN_62b8e0, 0))
+#define GZ_NEXTBYTE() (g_gzInptr < g_gzInsize ? (unsigned)(&g_gzInbuf)[g_gzInptr++] : (unsigned)(BYTE)Gz_FillInbuf(0))
 #define GZ_NEEDBITS(n)                       \
     while (k < (unsigned)(n))                \
     {                                        \
@@ -556,7 +558,7 @@ struct GzHuft
 static void Gz_FlushOutput(unsigned w)
 {
     g_gzOutcnt = w;
-    CallC(FUN_62b9e0);
+    Gz_FlushWindow();
 }
 
 extern "C" {
@@ -1012,7 +1014,7 @@ int __cdecl Gz_Inflate()
         g_gzBk -= 8;
         g_gzInptr--;
     }
-    CallC(FUN_62b9e0);
+    Gz_FlushWindow();
     return 0;
 }
 
@@ -1020,7 +1022,7 @@ int __cdecl Gz_Inflate()
 
 // === gzip's trees.c and bits.c, and longest_match / fill_window of deflate.c (gzip 1.2.4)
 
-extern "C" void FUN_62b9a0(); KING_ALIAS("_FUN_62b9a0", "_Gz_FlushOutbuf")     // flush_outbuf()
+extern "C" void __cdecl Gz_FlushOutbuf();
 extern "C" int __cdecl Gz_FileRead(char* buf, unsigned size);    // file_read (gzip.cpp)
 
 struct GzCt
@@ -1100,7 +1102,7 @@ static void Gz_PutByte(unsigned c)
 {
     (&g_gzOutbuf)[g_gzOutcnt++] = (BYTE)c;
     if (g_gzOutcnt == GZ_OUTBUFSIZ)
-        CallC(FUN_62b9a0);
+        Gz_FlushOutbuf();
 }
 
 static void Gz_PutShort(unsigned w)

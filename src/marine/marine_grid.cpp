@@ -29,14 +29,15 @@ KING_VAR(float, g_gridRandomRadius, 653220)
 struct GridNoiseStorage { DWORD v[2600]; };
 KING_VAR(GridNoiseStorage, g_gridNoise, 725fd0)
 #define GRID_NOISE(offset) (g_gridNoise.v+(offset))
+extern "C" void __cdecl Fw_Nop();
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
-extern "C" void FUN_60bb20(); KING_ALIAS("_FUN_60bb20", "_Tables_InitAll")
+extern "C" void __cdecl Tables_InitAll(void);
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
-extern "C" void FUN_605810(); KING_ALIAS("_FUN_605810", "@Stack_Top@8")
-extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
-extern "C" void FUN_605900(); KING_ALIAS("_FUN_605900", "_GridMesh_Refine")
-extern "C" void FUN_6064c0(); KING_ALIAS("_FUN_6064c0", "@GridMesh_CreateEdge@16")
+extern "C" int __fastcall Stack_Top(BYTE* self, void*);
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
+extern "C" void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh);
+extern "C" BYTE* __fastcall GridMesh_CreateEdge(BYTE* self,void*,BYTE* first,BYTE* second);
 extern "C" BYTE* __fastcall MarineParticlePool_Construct(BYTE*,void*,DWORD,DWORD,DWORD,DWORD);
 extern "C" void __fastcall MarineParticlePool_SetFloor(BYTE*,void*,DWORD);
 extern "C" void __fastcall MarineParticlePool_SetLifetime(BYTE*,void*,DWORD);
@@ -90,7 +91,7 @@ extern "C" DWORD __fastcall MarineGrid_Allocate(BYTE* self,void*,DWORD width,DWO
     if(!F(void*,self,124)||!F(void*,self,132)) {
         CallC(FUN_60aad0,0x88762714u,g_gridError,g_gridFile,278,g_gridDate);return 0;
     }
-    CallC(FUN_60bb20);
+    Tables_InitAll();
     F(DWORD,self,152)=F(DWORD,self,156)=1189765120u;
     BYTE* pool=(BYTE*)operator new(36);
     if(pool) pool=MarineParticlePool_Construct(pool,0,g_gridCapacity,g_gridVertices,16777215u,(DWORD)self);
@@ -101,8 +102,8 @@ extern "C" DWORD __fastcall MarineGrid_Allocate(BYTE* self,void*,DWORD width,DWO
 }
 static void MarineGrid_DrawBuffer(BYTE* self,BYTE* device,BYTE* event,unsigned countOffset,unsigned bufferOffset,unsigned line)
 {
-    DWORD material=CallThis<DWORD>(FUN_605810,F(BYTE*,self,200));
-    CallThis(FUN_5b1020,event,material,1,0,0);
+    DWORD material=(DWORD)Stack_Top(F(BYTE*,self,200), 0);
+    Material_Select(event, 0, (BYTE*)material, 1, 0, 0);
     LONG result=CallStd<LONG>((void(*)())F(void*,F(void*,device,0),104),device,4,786,
         F(void*,self,124),F(DWORD,self,120),F(void*,self,bufferOffset),F(DWORD,self,countOffset),0);
     if(result<0) CallC(FUN_60aad0,result,g_gridError,g_gridFile,line,g_gridDate);
@@ -158,7 +159,7 @@ extern "C" DWORD __fastcall MarineGrid_TrimBranch(BYTE* self,void*,BYTE* branch)
             CallC(FUN_60aa60,2,g_gridAssert,g_gridClassificationError,g_gridTrimFile,264,g_gridDate);return 0;
         }
         if(F(DWORD,F(void*,branch,12),36)>=10) { MarineGreed_RemoveNode(self,0,F(BYTE*,branch,12));return 1; }
-        CallC(FUN_605900,branch,self);
+        GridMesh_Refine(branch, self);
     }
     DWORD left=0,right=0;
     BYTE* child=F(BYTE*,branch,0);
@@ -178,7 +179,7 @@ extern "C" void __fastcall MarineGrid_Trim(BYTE* self,void*,DWORD argument)
         pair=F(BYTE*,F(void*,self,8),i*4);
         MarineGrid_TrimBranch(self,0,F(BYTE*,pair,4));MarineMesh_DrainEdges(self,0);
     }
-    CallC(FUN_5e48f0);g_gridTrimLimit=saved;
+    Fw_Nop();g_gridTrimLimit=saved;
     BYTE* queue=F(BYTE*,self,32);
     BYTE* node=F(BYTE*,queue,0);if(!node) node=F(BYTE*,queue,4);
     while(node) {
@@ -204,7 +205,7 @@ extern "C" void __fastcall MarineGrid_Trim(BYTE* self,void*,DWORD argument)
                 if(candidate) {
                     BYTE* extra=F(BYTE*,edge,8);
                     if(replacement||(extra&&(!F(DWORD,extra,0)||!F(DWORD,extra,4))))
-                        CallThis(FUN_6064c0,self,edge,replacement);
+                        GridMesh_CreateEdge(self, 0, edge, replacement);
                 }
             }
         }

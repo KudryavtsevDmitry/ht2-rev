@@ -11,19 +11,30 @@
 
 typedef char AsmLabel[1];
 
+extern "C" BYTE* __fastcall Copter_NearestVisible(BYTE* s, void*, int a, int b);
 extern "C" void FUN_566020(); KING_ALIAS("_FUN_566020", "@Copter_NearestVisible@16")    // copter: the vehicle to follow (mode, a)
+extern "C" void __fastcall MsgBuf_Destroy(BYTE* self, int);
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, int n);
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void __fastcall Media_RecordBlock(BYTE* self, void*, BYTE* rec);
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
-extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
+extern "C" void __fastcall Poly_Destroy(BYTE* self, void*);
+extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const char* name);
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" int __fastcall Queue_PostEvent2(BYTE* self, void*, int arg);
 extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
+extern "C" int __cdecl Game_568fd0();
 extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" BYTE* __cdecl Objects_Find(const char* name);
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);
 extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+extern "C" int __fastcall Resources_SetData(BYTE** s, void*, int id, int a, unsigned size, const void* data);
 extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")
-extern "C" void FUN_5a47f0(); KING_ALIAS("_FUN_5a47f0", "@Wea5a47f0_Destroy@4")
+extern "C" void __fastcall Wea5a47f0_Destroy(BYTE* s);
 KING_VAR(AsmLabel, g_vtbl64fdd4, 64fdd4)
 KING_VAR(AsmLabel, g_vtbl64ff70, 64ff70)
 KING_VAR(AsmLabel, g_vtbl64ff24, 64ff24)
@@ -39,18 +50,23 @@ KING_VAR(AsmLabel, s_67b948, 67b948)
 KING_VAR(BYTE*, g_6cec6c, 6cec6c)
 KING_VAR(BYTE*, g_696ca0, 696ca0)
 KING_VAR(AsmLabel, g_copterState, 6f2d98)
+extern "C" void __fastcall Copter_SetState(BYTE* s, void*, int n);
 extern "C" void FUN_5662f0(); KING_ALIAS("_FUN_5662f0", "@Copter_SetState@12")    // copter: a new state
+extern "C" int __fastcall Resources_Get(BYTE** self, void*, int id);
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    // objects of a screen: by id
+extern "C" void __cdecl Copter_Send963(int a, int b);
 extern "C" void FUN_569000(); KING_ALIAS("_FUN_569000", "_Copter_Send963")
+extern "C" void __cdecl Copter_Send961(int a, int b);
 extern "C" void FUN_569250(); KING_ALIAS("_FUN_569250", "_Copter_Send961")
 extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text);
-extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")    // destructor of the notice's base class
-extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
+extern "C" void __fastcall Object_Destroy(BYTE* s);
+extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, int a3);
 extern "C" void FUN_5b9660(); KING_ALIAS("_FUN_5b9660", "@Palette_Nearest@20")
-extern "C" void FUN_5b6210(); KING_ALIAS("_FUN_5b6210", "_Pixel_Pack")
+extern "C" DWORD __cdecl Pixel_Pack(int r, int g, int b);
+extern "C" int __cdecl Table71e858_Get(int i);
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")    // a text of the resources
-extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // draws a text
-extern "C" void FUN_440dd0(); KING_ALIAS("_FUN_440dd0", "@Rec440dd0_FreeVectors@8")
+extern "C" void __cdecl Text_Draw(int a, int b, int c, BYTE* font, const char* s, int d, int e);
+extern "C" void __fastcall Rec440dd0_FreeVectors(BYTE* self, int);
 extern "C" int __cdecl Enum_SharpCallback(BYTE* n);
 
 KING_VAR(int, g_noCar, 68b990)                // the id of no vehicle
@@ -284,17 +300,17 @@ extern "C" void __fastcall Copter_SetVec100(BYTE* self, void*, const Vec3Bits* v
 // [FUN_566020] with the copter in ECX, as the original passes it through
 extern "C" BYTE* __fastcall Copter_565fe0(BYTE* self, void*)
 {
-    return CallThis<BYTE*>(FUN_566020, self, 1, 0);
+    return Copter_NearestVisible(self, 0, 1, 0);
 }
 
 extern "C" BYTE* __fastcall Copter_565ff0(BYTE* self, void*, int a)
 {
-    return CallThis<BYTE*>(FUN_566020, self, 0, a);
+    return Copter_NearestVisible(self, 0, 0, a);
 }
 
 extern "C" BYTE* __fastcall Copter_566240(BYTE* self, void*)
 {
-    return CallThis<BYTE*>(FUN_566020, self, 0, 0);
+    return Copter_NearestVisible(self, 0, 0, 0);
 }
 
 // a vehicle's state at +20944; 0 for none and for the states 21..29
@@ -314,7 +330,7 @@ extern "C" void __fastcall Copter_Chase6(BYTE* self, void*, BYTE* target)
         return;
     F(BYTE*, self, 3248) = target;
     F(int, self, 3252) = 0;
-    CallThis(FUN_5662f0, self, 6);
+    Copter_SetState(self, 0, 6);
     F(float, self, 3280) = (float)Game_Time();
 }
 
@@ -324,7 +340,7 @@ extern "C" void __fastcall Copter_Chase10(BYTE* self, void*, BYTE* target)
         return;
     F(BYTE*, self, 3248) = target;
     F(int, self, 3252) = 0;
-    CallThis(FUN_5662f0, self, 10);
+    Copter_SetState(self, 0, 10);
 }
 
 extern "C" void __fastcall Copter_Chase7(BYTE* self, void*, BYTE* target)
@@ -333,7 +349,7 @@ extern "C" void __fastcall Copter_Chase7(BYTE* self, void*, BYTE* target)
         return;
     F(BYTE*, self, 3248) = target;
     F(int, self, 3252) = 0;
-    CallThis(FUN_5662f0, self, 7);
+    Copter_SetState(self, 0, 7);
 }
 
 extern "C" void __fastcall Copter_566550(BYTE* self, void*)
@@ -384,7 +400,7 @@ extern "C" int __cdecl Game_568fd0()
 // objects of the game screen by id: +24 and +28 of the entry
 static BYTE* ScreenObject(int id)
 {
-    return CallThis<BYTE*>(FUN_5e5370, (BYTE*)g_pMainView + 704, id);
+    return (BYTE*)Resources_Get((BYTE**)((BYTE*)g_pMainView + 704), 0, id);
 }
 
 extern "C" void __cdecl Screen_569150(int id)
@@ -397,9 +413,9 @@ extern "C" void __cdecl Screen_569150(int id)
     BYTE* o = F(BYTE*, e, 28);
     if (!o)
         return;
-    CallC(FUN_569000, F(int, o, 344), F(int, o, 416));
+    Copter_Send963(F(int, o, 344), F(int, o, 416));
     F(int, o, 416) = 0;
-    CallC(FUN_569000, F(int, o, 344), 0);
+    Copter_Send963(F(int, o, 344), 0);
 }
 
 extern "C" int __cdecl Screen_5692e0(int id)
@@ -421,8 +437,8 @@ extern "C" void __cdecl Screen_569310(int id, unsigned v)
     if (!o)
         return;
     F(unsigned, o, 408) = v;
-    CallC(FUN_569250, F(int, o, 344), v ^ 1);
-    CallC(FUN_569250, F(int, o, 344), v);
+    Copter_Send961(F(int, o, 344), v ^ 1);
+    Copter_Send961(F(int, o, 344), v);
 }
 
 extern "C" void __cdecl Screen_569410(int id, int v)
@@ -514,7 +530,7 @@ extern "C" void __fastcall Notice_Destruct(BYTE* self, void*)
     F(void*, self, 0) = g_vtbl64fe34;
     if (text)
         operator delete(text);
-    CallThis(FUN_5d3290, self);
+    Object_Destroy(self);
 }
 
 // ---------------------------------------------------------------------------
@@ -544,12 +560,12 @@ extern "C" void __cdecl Sound_56ef60(int a0, int a1, int a2, int a3, int a4, int
     double v = speed * 0.05 * 0.05 + g_6f34b8 * 0.95;
     g_6f34b8 = v;
     float x = (float)v;
-    CallThis(FUN_5fd430, g_6f33ec, x, x, 1);
+    Sound_Play(g_6f33ec, 0, x, x, 1);
 }
 
 extern "C" int __cdecl Screen_56f210(int id)
 {
-    BYTE* e = CallThis<BYTE*>(FUN_5e5370, (BYTE*)g_pWnd6cec6c->m_1356 + 704, id);
+    BYTE* e = (BYTE*)Resources_Get((BYTE**)((BYTE*)g_pWnd6cec6c->m_1356 + 704), 0, id);
     BYTE* o = F(BYTE*, e, 28);
     if (!o)
         return -1;
@@ -591,7 +607,7 @@ extern "C" int __cdecl Obj573fe0(BYTE* o, int a, int b, int c)
     if (kind == 1)
         return CallThis<int>(FUN_5b9660, o, a, b, c) & 255;
     if (kind == 2)
-        return CallC<int>(FUN_5b6210, a, b, c);
+        return (int)Pixel_Pack(a, b, c);
     return 0;
 }
 
@@ -601,8 +617,8 @@ extern "C" void __cdecl Menu_DrawEntry(int surface, int x, int y, int textId, co
     int yy = y + n % 18 * 20 + 10;
     int xx = x + n / 18 * 170;
     const char* s = CallC<const char*>(FUN_5d2e50, textId, 6, 0);
-    CallC(FUN_5ea170, surface, xx, yy, g_fontMenu, s, 6, 0);
-    CallC(FUN_5ea170, surface, xx + 111, yy, g_fontMenu, text, 6, 0);
+    Text_Draw(surface, xx, yy, (BYTE*)g_fontMenu, s, 6, 0);
+    Text_Draw(surface, xx + 111, yy, (BYTE*)g_fontMenu, text, 6, 0);
 }
 
 extern "C" void __cdecl Set6f3338(int i, int v)
@@ -612,7 +628,7 @@ extern "C" void __cdecl Set6f3338(int i, int v)
 
 extern "C" BYTE* __fastcall Obj576c00_DeletingDestructor(BYTE* self, void*, int flags)
 {
-    CallThis(FUN_440dd0, self);
+    Rec440dd0_FreeVectors(self, 0);
     if (flags & 1)
         operator delete(self);
     return self;
@@ -621,9 +637,10 @@ extern "C" BYTE* __fastcall Obj576c00_DeletingDestructor(BYTE* self, void*, int 
 // ---------------------------------------------------------------------------
 // medium-sized functions of the unit
 
+extern "C" void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m);
 extern "C" void FUN_561800(); KING_ALIAS("_FUN_561800", "@Copter_Init0@16")
-extern "C" void FUN_4e4750(); KING_ALIAS("_FUN_4e4750", "_Scene_FindOrFail")    // a child of the object by name (object, name, flags)
-extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")    // show or hide an object (object, show)
+extern "C" BYTE* __cdecl Scene_FindOrFail(BYTE* parent, const char* name, const char* prefix);
+extern "C" int __cdecl Switch_SelectChecked(BYTE* obj, int idx);
 KING_VAR(BYTE*, g_truck, 6f33ac)              // +88: the hour (double)
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 KING_VAR(double, g_64b840, 64b840)            // 0.2
@@ -658,18 +675,18 @@ extern "C" BYTE* __fastcall Copter_Construct(BYTE* self, void*, int a, int b, in
     Copter561310_Construct(self + 3372, 0);
     for (int i = 3504; i <= 3536; i += 4)
         F(int, self, i) = 0;
-    CallThis(FUN_561800, self, a, b);
+    Copter_Init0(self, 0, (BYTE*)a, (const Matrix*)b);
     F(int, self, 3268) = c;
     return self;
 }
 
 extern "C" int __fastcall Copter_FindLights(BYTE* self, void*, void* model)
 {
-    F(void*, self, 3160) = CallC<void*>(FUN_4e4750, model, "SearchLightKey", 0);
-    F(void*, self, 3164) = CallC<void*>(FUN_4e4750, model, "BlinkLightKey", 0);
-    F(void*, self, 3168) = CallC<void*>(FUN_4e4750, model, "StaticLightKey", 0);
-    F(void*, self, 3300) = CallC<void*>(FUN_4e4750, model, "GunLeftKey", 0);
-    F(void*, self, 3304) = CallC<void*>(FUN_4e4750, model, "GunRightKey", 0);
+    F(void*, self, 3160) = (void*)Scene_FindOrFail((BYTE*)model, "SearchLightKey", 0);
+    F(void*, self, 3164) = (void*)Scene_FindOrFail((BYTE*)model, "BlinkLightKey", 0);
+    F(void*, self, 3168) = (void*)Scene_FindOrFail((BYTE*)model, "StaticLightKey", 0);
+    F(void*, self, 3300) = (void*)Scene_FindOrFail((BYTE*)model, "GunLeftKey", 0);
+    F(void*, self, 3304) = (void*)Scene_FindOrFail((BYTE*)model, "GunRightKey", 0);
     F(int, self, 3544) = -1;
     F(Vec3, self, 3504) = g_zeroVec;
     F(Vec3, self, 3516) = g_axisZ;
@@ -682,8 +699,8 @@ extern "C" void __fastcall Copter_UpdateLights(BYTE* self, void*)
 {
     int hour = (int)F(double, g_truck, 88);
     int night = !(hour <= 21 && hour >= 6);
-    CallC(FUN_4e480c, F(void*, self, 3168), night);
-    CallC(FUN_4e480c, F(void*, self, 3164), F(int, self, 3156) ? 1 : 0);
+    Switch_SelectChecked((BYTE*)(F(void*, self, 3168)), night);
+    Switch_SelectChecked((BYTE*)(F(void*, self, 3164)), F(int, self, 3156) ? 1 : 0);
     double d = Game_Time() - F(float, self, 3152);
     if (d > g_64b840)
         F(int, self, 3156) = 0;
@@ -692,11 +709,13 @@ extern "C" void __fastcall Copter_UpdateLights(BYTE* self, void*)
             F(float, self, 3152) = (float)Game_Time();
         F(int, self, 3156) = 1;
     }
-    CallC(FUN_4e480c, F(void*, self, 3160), night);
+    Switch_SelectChecked((BYTE*)(F(void*, self, 3160)), night);
 }
 
 extern "C" void FUN_568830(); KING_ALIAS("_FUN_568830", "_Net_CreatePlacedObject")    // adds a helicopter's way point
+extern "C" BYTE* __cdecl Effect_New4dd2a0(int a, int b, int c, int d);
 extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
+extern "C" void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* text, DWORD color, int raw);
 extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // draws a text in a box
 extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);   // engine.cpp
 extern "C" void __fastcall Node_Matrix(BYTE* self, void*, Matrix* out);          // engine.cpp
@@ -757,7 +776,7 @@ extern "C" int __cdecl Way_Point(int i, DWORD* pos, int* id)
     if (i >= g_wayCount || i < 0)
         return -1;
     *id = i + 300000;
-    int* o = CallThis<int*>(FUN_5e5370, g_6ef1fc + 704, i + 300000);
+    int* o = (int*)Resources_Get((BYTE**)(g_6ef1fc + 704), 0, i + 300000);
     if (!o)
         return -2;
     if (o[0] == 1 && o[7]) {
@@ -799,7 +818,7 @@ extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text)
 // a gate of the race passed: the time bonus, and the gate lit
 extern "C" void __cdecl Gate_Passed(int id, int side, BYTE* car)
 {
-    BYTE* o = CallThis<BYTE*>(FUN_5e5370, (BYTE*)g_pWnd6cec6c->m_1356 + 704, id);
+    BYTE* o = (BYTE*)Resources_Get((BYTE**)((BYTE*)g_pWnd6cec6c->m_1356 + 704), 0, id);
     BYTE* b = F(BYTE*, o, 28);
     if (!b)
         return;
@@ -816,7 +835,7 @@ extern "C" void __cdecl Gate_Passed(int id, int side, BYTE* car)
         Vec3_ZeroThis((Vec3*)((BYTE*)&m + k * 12), 0);
     m = g_identity;
     Node_Matrix(b, 0, &m);
-    CallC(FUN_4ba0c0, &m, side, (void*)Copter_SetSideState, b);
+    Effect_New4dd2a0((int)&m, side, (int)((void*)Copter_SetSideState), (int)b);
 }
 
 extern "C" void __cdecl Colors_Init(BYTE* surface)
@@ -839,15 +858,15 @@ extern "C" void __cdecl Scores_Draw(BYTE* surface, int x, int y)
     for (int i = 0; i < g_scoreCount; i++) {
         sprintf(buf, "%d", i + 1);
         int yy = y + 15 + (i % 4) * 20;
-        CallC(FUN_5ea170, surface, xx - 33, yy, g_fontMenu, buf, 6, 0);
-        CallC(FUN_5ea1b0, surface, xx, yy, 70, g_fontMenu, g_scoreNames[i], 6, 0);
+        Text_Draw((int)surface, xx - 33, yy, (BYTE*)g_fontMenu, buf, 6, 0);
+        Font_DrawText(surface, xx, yy, 70, (BYTE*)g_fontMenu, (const BYTE*)g_scoreNames[i], 6, 0);
         double v = g_scoreValues[i];
         if (F(int, g_6cec98, 384) < 2) {
             int t = (int)v;
             sprintf(buf, "%d:%02d", t / 60, t % 60);
         } else
             sprintf(buf, "$%d", (int)v);
-        CallC(FUN_5ea170, surface, xx + 74, yy, g_fontMenu, buf, 6, 0);
+        Text_Draw((int)surface, xx + 74, yy, (BYTE*)g_fontMenu, buf, 6, 0);
         if (i == 3)
             xx += 181;
     }
@@ -865,9 +884,9 @@ static void Copter_SendPair(int code, int a, int b)
     BYTE msg[28];
     int rec[2] = {a, b};
     DpMessage_Construct(msg, 0);
-    CallThis(FUN_603110, msg, code, rec, 8);
-    CallThis(FUN_5c3630, g_696ca0, msg);
-    CallThis(FUN_602e80, msg);
+    Msg_Write120(msg, 0, code, (const BYTE*)rec, 8);
+    Media_RecordBlock(g_696ca0, 0, msg);
+    MsgBuf_Destroy(msg, 0);
 }
 
 // rec: the keys, the multiplayer flag, the object's name and the second name
@@ -875,7 +894,7 @@ static void Copter_Report(BYTE* self, int key, const int* extra, int nextra, con
 {
     BYTE rec[80];
     memset(rec, 0, sizeof rec);
-    BYTE* r = CallThis<BYTE*>(FUN_5ef640, self + 256);
+    BYTE* r = Node_Root(self + 256, 0);
     int o = 0;
     F(int, rec, o) = key;
     o += 4;
@@ -885,7 +904,7 @@ static void Copter_Report(BYTE* self, int key, const int* extra, int nextra, con
     o += 4;
     strncpy((char*)rec + o, F(const char*, r, 12), 31);
     strncpy((char*)rec + o + 32, name2, 31);
-    CallThis(FUN_5e52b0, F(BYTE*, self, 36) + 704, key, F(int, F(BYTE*, self, 292), 60), size, rec);
+    Resources_SetData((BYTE**)(F(BYTE*, self, 36) + 704), 0, key, F(int, F(BYTE*, self, 292), 60), size, rec);
 }
 
 extern "C" {
@@ -909,26 +928,26 @@ void __fastcall Copter569930_Destroy(BYTE* self, void*)
     for (int k = 1288; k <= 1292; k += 4) {
         BYTE* p = F(BYTE*, self, k);
         if (p) {
-            CallThis(FUN_5bc2f0, p);
+            Poly_Destroy(p, 0);
             operator delete(p);
         }
     }
-    CallThis(FUN_5d3290, self);
+    Object_Destroy(self);
 }
 
 // [FUN_56aef0] the copter task on the vehicle v
 BYTE* __fastcall CopterTask_Construct(BYTE* self, void*, BYTE* v)
 {
-    CallThis(FUN_5d31e0, self, 11, (const char*)s_67b970);
+    Object_ConstructKind(self, 0, 11, (const char*)s_67b970);
     F(void*, self, 0) = g_vtbl64fe34;
     F(int, self, 60) = 0;
     F(BYTE*, self, 40) = v;
-    CallThis(FUN_5d3570, v + 2992, self);
-    CallThis(FUN_5d33d0, self, 1);
+    Owner_Attach(v + 2992, 0, self);
+    Queue_PostEvent2(self, 0, 1);
     F(int, self, 56) = 0;
     F(int, self, 52) = 0;
     F(int, self, 48) = 0;
-    F(int, self, 44) = CallC<int>(FUN_5ef3d0, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_67b95c : (const char*)s_67b948);
+    F(int, self, 44) = (int)Objects_Find(Game_568fd0() == 2 ? (const char*)s_67b95c : (const char*)s_67b948);
     return self;
 }
 
@@ -952,7 +971,7 @@ void __fastcall CopterObj573700_Destroy(BYTE* self, void*)
     F(void*, self, 256) = g_vtbl64ff24;
     int extra[1] = {F(int, self, 416)};
     Copter_Report(self, F(int, self, 368), extra, 1, (const char*)self + 384, 76);
-    CallThis(FUN_5a47f0, self);
+    Wea5a47f0_Destroy(self);
 }
 
 // [FUN_573890]
@@ -961,7 +980,7 @@ void __fastcall CopterObj573890_Destroy(BYTE* self, void*)
     F(void*, self, 0) = g_vtbl64ffec;
     F(void*, self, 256) = g_vtbl64ffa0;
     Copter_Report(self, F(int, self, 356), 0, 0, (const char*)self + 376, 72);
-    CallThis(FUN_5a47f0, self);
+    Wea5a47f0_Destroy(self);
 }
 
 // [FUN_573a50]
@@ -971,7 +990,7 @@ void __fastcall CopterObj573a50_Destroy(BYTE* self, void*)
     F(void*, self, 256) = g_vtbl65001c;
     int extra[1] = {F(int, self, 408)};
     Copter_Report(self, F(int, self, 356), extra, 1, (const char*)self + 376, 76);
-    CallThis(FUN_5a47f0, self);
+    Wea5a47f0_Destroy(self);
 }
 
 // [FUN_573c10]
@@ -981,13 +1000,14 @@ void __fastcall CopterObj573c10_Destroy(BYTE* self, void*)
     F(void*, self, 256) = g_vtbl650098;
     int extra[1] = {F(int, self, 408)};
     Copter_Report(self, F(int, self, 356), extra, 1, (const char*)self + 376, 76);
-    CallThis(FUN_5a47f0, self);
+    Wea5a47f0_Destroy(self);
 }
 
 }
 
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
-extern "C" void FUN_5a6160(); KING_ALIAS("_FUN_5a6160", "@Gauge_Construct@48")
+extern "C" BYTE* __fastcall Gauge_Construct(BYTE* s, void*, int a1, int a2, BYTE* w, int name, int a5, int a6, int a7, int a8, int a9, int a10);
 KING_VAR(char, g_vtbl64fe60, 64fe60)
 KING_VAR(int, g_6968a8, 6968a8)
 
@@ -996,24 +1016,25 @@ extern "C" {
 // [FUN_56d560] constructor of the wipers (nodes Wiper*, GlassKey, rain_node)
 BYTE* __fastcall Wipers_Construct(BYTE* self, void*, int a)
 {
-    BYTE* w2s = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper2Space");
-    BYTE* w2 = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper2");
-    BYTE* w1s = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper1Space");
-    BYTE* w1 = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper1");
-    BYTE* ws = CallC<BYTE*>(FUN_5ef2b0, 0, "WiperSpace");
-    BYTE* w = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper");
-    BYTE* glass = CallC<BYTE*>(FUN_5ef2b0, 0, "GlassKey");
-    BYTE* rain = CallC<BYTE*>(FUN_5ef2b0, 0, "rain_node");
-    CallThis(FUN_5a6160, self, a, rain, glass, "glass", w, ws, w1, w1s, w2, w2s);
+    BYTE* w2s = Scene_FindObject(0, "Wiper2Space");
+    BYTE* w2 = Scene_FindObject(0, "Wiper2");
+    BYTE* w1s = Scene_FindObject(0, "Wiper1Space");
+    BYTE* w1 = Scene_FindObject(0, "Wiper1");
+    BYTE* ws = Scene_FindObject(0, "WiperSpace");
+    BYTE* w = Scene_FindObject(0, "Wiper");
+    BYTE* glass = Scene_FindObject(0, "GlassKey");
+    BYTE* rain = Scene_FindObject(0, "rain_node");
+    Gauge_Construct(self, 0, a, (int)rain, glass, (int)("glass"), (int)w, (int)ws, (int)w1, (int)w1s, (int)w2, (int)w2s);
     F(void*, self, 0) = &g_vtbl64fe60;
     F(int, self, 212) = 1;
     F(DWORD, self, 164) |= 14;
-    F(BYTE*, self, 208) = g_6968a8 ? CallC<BYTE*>(FUN_5ef3d0, "wipersSound") : 0;
+    F(BYTE*, self, 208) = g_6968a8 ? Objects_Find("wipersSound") : 0;
     return self;
 }
 
 }
 
+extern "C" BYTE* __fastcall DpMessage_Construct(BYTE* self, void*);
 extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")    // message: constructor
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")    // message: set (id, data, size)
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")    // sends a message
@@ -1040,7 +1061,7 @@ void __cdecl Net_SendObjectMessage(int a, int b, const char* name1, const char* 
     if (F(int, g_6cec6c, 1300) != 1)
         return;
     BYTE m[148];
-    CallThis(FUN_602be0, m);
+    DpMessage_Construct(m, 0);
     F(int, m, 28) = a;
     CopyText((char*)m + 32, name1);
     CopyText((char*)m + 64, name2);
@@ -1048,14 +1069,16 @@ void __cdecl Net_SendObjectMessage(int a, int b, const char* name1, const char* 
     for (int i = 0; i < 12; i++)
         F(DWORD, m, 96 + i * 4) = d[i];
     F(int, m, 144) = b;
-    CallThis(FUN_603110, m, 958, m + 28, 120);
-    CallThis(FUN_5c3630, g_696ca0, m);
-    CallThis(FUN_602e80, m);
+    Msg_Write120(m, 0, 958, m + 28, 120);
+    Media_RecordBlock(g_696ca0, 0, m);
+    MsgBuf_Destroy(m, 0);
 }
 
 }
 
+extern "C" bool __cdecl AI_True();
 extern "C" void FUN_4297b0(); KING_ALIAS("_FUN_4297b0", "_AI_True")
+extern "C" void __cdecl Copter_Send956(int a, int b);
 extern "C" void FUN_569380(); KING_ALIAS("_FUN_569380", "_Copter_Send956")
 extern "C" void FUN_5a40b0(); KING_ALIAS("_FUN_5a40b0", "@Node_Position@12")
 extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
@@ -1067,18 +1090,18 @@ extern "C" {
 // [FUN_56f240] blows up the mine with this id (sound, explosion effect)
 void __cdecl Mine_Explode(int id)
 {
-    if (g_6f33f0 || !CallC<bool>(FUN_4297b0))
+    if (g_6f33f0 || !AI_True())
         return;
-    BYTE* r = CallThis<BYTE*>(FUN_5e5370, F(BYTE*, g_6cec6c, 1356) + 704, id);
+    BYTE* r = (BYTE*)Resources_Get((BYTE**)(F(BYTE*, g_6cec6c, 1356) + 704), 0, id);
     if (!r)
         return;
     BYTE* s = F(BYTE*, r, 28);
     if (!s)
         return;
     if (F(int, s, 360) && F(int, s, 408) == 1) {
-        CallC(FUN_569380, F(int, s, 344), 1);
+        Copter_Send956(F(int, s, 344), 1);
         F(int, s, 408) = 2;
-        CallC(FUN_569380, F(int, s, 344), 2);
+        Copter_Send956(F(int, s, 344), 2);
         CallVirt(s, 24, 1);
     }
     DWORD v[3] = {0, 0, 0};
@@ -1086,7 +1109,7 @@ void __cdecl Mine_Explode(int id)
     BYTE* q = (BYTE*)operator new(192);
     BYTE* e = 0;
     if (q) {
-        BYTE* root = CallThis<BYTE*>(FUN_5ef640, s + 256);
+        BYTE* root = Node_Root(s + 256, 0);
         e = CallThis<BYTE*>(FUN_5a4f00, q, F(BYTE*, g_6cec6c, 1356), root, v[0], v[1], v[2], 0,
                             0x40000000, "mineExplose", "mineSound", 3, 0x9999999Au, 0x3fb99999);
     }
@@ -1097,13 +1120,14 @@ void __cdecl Mine_Explode(int id)
 
 extern "C" double __cdecl Game_Time();
 extern "C" void __cdecl Switch_Select(int sw, int state);
+extern "C" void __fastcall Turret_Fire(BYTE* s);
 extern "C" void FUN_567bb0(); KING_ALIAS("_FUN_567bb0", "@Turret_Fire@4")
 
 // [FUN_568680] the helicopter's blinking warning lights: the state by the time since the last change
 extern "C" void __fastcall Copter_UpdateWarning(BYTE* s, void*)
 {
     if (F(int, s, 3284))
-        CallThis(FUN_567bb0, s);
+        Turret_Fire(s);
     float d = (float)(Game_Time() - F(float, s, 3288));
     if (!(F(float, s, 3288) >= F(float, s, 3292)))
         d = (float)(Game_Time() - F(float, s, 3292));
@@ -1205,7 +1229,8 @@ extern "C" double __fastcall Copter_Tilt(BYTE* s, void*, float input, float turn
 
 extern "C" int __cdecl Query_4e7476(int a, int b, int c, BYTE* d, BYTE* e, BYTE* f);
 extern "C" BYTE* __cdecl Car_InListFrom16(BYTE* p);
-extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" BYTE* __fastcall Node_Init(BYTE* self, void*);
+extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 
 // [FUN_5663c0] the helicopter's state towards its target: 1 after 60 s, 2 when it took too long for the distance, 0 (restarted) when blocked or not yet due
@@ -1221,8 +1246,8 @@ extern "C" int __fastcall Copter_TargetState(BYTE* s, void*)
         return F(int, s, 3276);
     BYTE node[256];
     BYTE m[48];
-    CallThis(FUN_5ef5c0, node);
-    BYTE* mat = CallThis<BYTE*>(FUN_57de90, F(BYTE*, s, 3248) + 16, m);
+    Node_Init(node, 0);
+    BYTE* mat = (BYTE*)SceneObj_Matrix1(F(BYTE*, s, 3248) + 16, 0, (Matrix*)m);
     int r = Query_4e7476(F(int, s, 96), F(int, s, 3480), 0, s + 36, mat + 36, node);
     BYTE* hit = F(BYTE*, node, 116);
     if (!(r & 1) || !hit || (Car_InListFrom16(hit) != F(BYTE*, s, 3248) && Car_InListFrom16(hit) != F(BYTE*, s, 3252))) {
@@ -1256,7 +1281,7 @@ extern "C" BYTE* __fastcall Copter_NearestVisible(BYTE* s, void*, int a, int b)
     while (it) {
         BYTE* o = Obj541960_Self(it, 0);
         BYTE m[48];
-        BYTE* mat = CallThis<BYTE*>(FUN_57de90, o + 16, m);
+        BYTE* mat = (BYTE*)SceneObj_Matrix1(o + 16, 0, (Matrix*)m);
         float dx = (float)((double)F(float, mat, 36) - px);
         float dy = (float)((double)F(float, mat, 40) - py);
         double dz = (double)F(float, mat, 44) - pz;
@@ -1290,8 +1315,8 @@ extern "C" BYTE* __fastcall Copter_NearestVisible(BYTE* s, void*, int a, int b)
         return best;
     BYTE node[256];
     BYTE m[48];
-    CallThis(FUN_5ef5c0, node);
-    BYTE* mat = CallThis<BYTE*>(FUN_57de90, best + 16, m);
+    Node_Init(node, 0);
+    BYTE* mat = (BYTE*)SceneObj_Matrix1(best + 16, 0, (Matrix*)m);
     int r = Query_4e7476(F(int, s, 96), F(int, s, 3480), 0, s + 36, mat + 36, node);
     BYTE* other = 0;
     if (CallVirt<int>(best, 4) == 1)
@@ -1306,7 +1331,7 @@ extern "C" BYTE* __fastcall Copter_NearestVisible(BYTE* s, void*, int a, int b)
     return 0;
 }
 
-extern "C" void FUN_5cf180(); KING_ALIAS("_FUN_5cf180", "@MediaObj_Construct@20")    // a screen object's constructor (owner, name, -)
+extern "C" BYTE* __fastcall MediaObj_Construct(BYTE* s, void*, BYTE* w, const char* name, BYTE* owner);
 extern "C" void FUN_5cec90(); KING_ALIAS("_FUN_5cec90", "@Fountain_Construct@56")    // a gauge's constructor
 KING_VAR(char, g_strZero, 67c178)      // "zero"
 KING_VAR(char, g_vtbl64feec, 64feec)
@@ -1317,7 +1342,7 @@ extern "C" void __cdecl Gauge_Create(DWORD x0, DWORD y0, DWORD z0, DWORD x1, DWO
 {
     BYTE* o = (BYTE*)operator new(160);
     if (o) {
-        CallThis(FUN_5cf180, o, F(int, g_6cec6c, 1356), &g_strZero, 0);
+        MediaObj_Construct(o, 0, (BYTE*)(F(int, g_6cec6c, 1356)), &g_strZero, 0);
         DWORD colors[4] = { 0xFF1E1E1E, 0xFF646464, 0xFF1E1E1E, 0xFF323C1E };
         F(void*, o, 0) = &g_vtbl64feec;
         F(void*, o, 32) = &g_vtbl64fea0;
@@ -1331,8 +1356,10 @@ extern "C" void __cdecl Gauge_Create(DWORD x0, DWORD y0, DWORD z0, DWORD x1, DWO
     CallVirt(o, 24, 1);
 }
 
+extern "C" void __cdecl Ai_GetPlayerData(BYTE* p, BYTE* o);
 extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")    // a vehicle's info by id (id, out)
 extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // text in a box
+extern "C" int __cdecl Player_Flags(BYTE* id);
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a vehicle's flags by id
 KING_VAR(void*, g_font6ced24, 6ced24)
 KING_VAR(char, g_fmtPercent, 67c3e0)       // "%d%c"
@@ -1344,17 +1371,17 @@ KING_VAR(ImageTable, g_images6f2e38, 6f2e38)
 // [FUN_574190] one line of the vehicle list: name, damage %, count, distance and the type icon; whether it is the player's
 extern "C" int __cdecl CarList_DrawLine(void* surface, int x, int y, int id)
 {
-    DWORD flags = CallC<DWORD>(FUN_43f620, id);
+    DWORD flags = (DWORD)Player_Flags((BYTE*)id);
     BYTE info[256];
-    CallC(FUN_43fc40, id, info);
+    Ai_GetPlayerData((BYTE*)id, info);
     char text[100];
-    CallC(FUN_5ea1b0, surface, x + 45, y + 23, 70, g_font6ced24, F(DWORD, info, 48), 6, 0);
+    Font_DrawText((BYTE*)surface, x + 45, y + 23, 70, (BYTE*)g_font6ced24, (const BYTE*)(F(DWORD, info, 48)), 6, 0);
     sprintf(text, &g_fmtPercent, (int)(F(double, info, 104) * 100.0), 37);
-    CallC(FUN_5ea170, surface, x + 135, y + 23, g_font6ced24, text, 6, 0);
+    Text_Draw((int)surface, x + 135, y + 23, (BYTE*)g_font6ced24, text, 6, 0);
     sprintf(text, &g_fmtInt66c8cc, F(int, info, 80));
-    CallC(FUN_5ea170, surface, x + 220, y + 23, g_font6ced24, text, 6, 0);
+    Text_Draw((int)surface, x + 220, y + 23, (BYTE*)g_font6ced24, text, 6, 0);
     sprintf(text, &g_fmtTenths, F(double, info, 112));
-    CallC(FUN_5ea170, surface, x + 270, y + 23, g_font6ced24, text, 6, 0);
+    Text_Draw((int)surface, x + 270, y + 23, (BYTE*)g_font6ced24, text, 6, 0);
     if (flags & 0x1000)
         CallC(FUN_5b8980, surface, x, y, g_images6f2e38[F(int, info, 56)], 0);
     return F(int, info, 8) == 1;
@@ -1375,9 +1402,9 @@ extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines)
     Players_First(&cur);
     BYTE info[256];
     while (cur != g_noVehicle68b990h && n < 60) {
-        CallC(FUN_43fc40, cur, info);
+        Ai_GetPlayerData((BYTE*)cur, info);
         int type = F(int, info, 8);
-        if ((type == 1 || type == 2) && !(CallC<DWORD>(FUN_43f620, cur) & 0x800)) {
+        if ((type == 1 || type == 2) && !((DWORD)Player_Flags((BYTE*)cur) & 0x800)) {
             ids[n] = cur;
             vals[n] = F(double, info, 104);
             n++;
@@ -1389,7 +1416,7 @@ extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines)
     do {
         swapped = false;
         for (int k = 0; k < n - 1; k++) {
-            CallC(FUN_43fc40, ids[k + 1], info);
+            Ai_GetPlayerData((BYTE*)(ids[k + 1]), info);
             if (!(vals[k] >= vals[k + 1]) || (!(vals[k] < vals[k + 1] || vals[k] > vals[k + 1]) && F(int, info, 8) == 1)) {
                 double v = vals[k];
                 vals[k] = vals[k + 1];
@@ -1421,19 +1448,20 @@ extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines)
     CarList_DrawLine(surface, x, y + i * 33, me);
 }
 
-extern "C" void FUN_565fe0(); KING_ALIAS("_FUN_565fe0", "@Copter_565fe0@8")
-extern "C" void FUN_565ff0(); KING_ALIAS("_FUN_565ff0", "@Copter_565ff0@12")
+extern "C" BYTE* __fastcall Copter_565fe0(BYTE* self, void*);
+extern "C" BYTE* __fastcall Copter_565ff0(BYTE* self, void*, int a);
 extern "C" void FUN_5662f0(); KING_ALIAS("_FUN_5662f0", "@Copter_SetState@12")
 
 // [FUN_566380] handles a command: checks it (b == 0: default check), then runs it when allowed or when it is 11
 extern "C" void __fastcall Copter_Command(void* self, int, int cmd, int b)
 {
-    int r = b == 0 ? CallThis<int>(FUN_565fe0, self) : CallThis<int>(FUN_565ff0, self, b);
+    int r = b == 0 ? (int)Copter_565fe0((BYTE*)self, 0) : (int)Copter_565ff0((BYTE*)self, 0, b);
     if (r || cmd == 11)
-        CallThis(FUN_5662f0, self, cmd);
+        Copter_SetState((BYTE*)self, 0, cmd);
 }
 
-extern "C" void FUN_5a71d0(); KING_ALIAS("_FUN_5a71d0", "@Objects_Release@8")
+extern "C" void __fastcall Objects_Release(BYTE* self, void*);
+extern "C" void __fastcall Terrain_FreeObjects(BYTE* self, int);
 extern "C" void FUN_6148a0(); KING_ALIAS("_FUN_6148a0", "@Terrain_FreeObjects@8")
 KING_VAR(BYTE*, g_objs6ce378, 6ce378)
 KING_VAR(int, g_6f340c, 6f340c)
@@ -1453,7 +1481,7 @@ extern "C" void __cdecl World_FreeAll()
     BYTE* o = g_objs6ce378;
     g_6f340c = 0;
     if (o) {
-        CallThis(FUN_5a71d0, o);
+        Objects_Release(o, 0);
         operator delete(o);
         g_objs6ce378 = 0;
     }
@@ -1478,7 +1506,7 @@ extern "C" void __cdecl World_FreeAll()
     g_6f33ac = 0;
     g_6f33b0 = 0;
     if (t) {
-        CallThis(FUN_6148a0, t);
+        Terrain_FreeObjects(t, 0);
         operator delete(t);
     }
     g_terrain6f33b4 = 0;
@@ -1487,9 +1515,10 @@ extern "C" void __cdecl World_FreeAll()
 extern "C" void FUN_4363c0(); KING_ALIAS("_FUN_4363c0", "_Players_First")    // the first player
 extern "C" void FUN_4363f0(); KING_ALIAS("_FUN_4363f0", "_Players_Next")    // the next player
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a player's flags
+extern "C" void __cdecl Player_SetFlags(BYTE* id, int flags);
 extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")    // sets a player's flags
-extern "C" void FUN_4278b0(); KING_ALIAS("_FUN_4278b0", "_AI_EndWaiting")
-extern "C" void FUN_427520(); KING_ALIAS("_FUN_427520", "_Ai_StartRaces")
+extern "C" int __cdecl AI_EndWaiting();
+extern "C" int __cdecl Ai_StartRaces();
 KING_VAR(int, g_players68b990h, 68b990)
 KING_VAR(int, g_waiting696328, 696328)
 
@@ -1500,15 +1529,15 @@ extern "C" void __cdecl Copter_ResetPlayers()
         int it;
         CallC(FUN_4363c0, &it);
         while (it != g_players68b990h) {
-            if (CallC<int>(FUN_43f620, it) & 0x4000)
-                CallC(FUN_43f690, it, CallC<int>(FUN_43f620, it) & ~4);
+            if (Player_Flags((BYTE*)it) & 0x4000)
+                CallC(FUN_43f690, it, Player_Flags((BYTE*)it) & ~4);
             int next;
             it = *CallC<int*>(FUN_4363f0, &next, it);
         }
         if (g_waiting696328)
-            CallC(FUN_4278b0);
+            AI_EndWaiting();
         else
-            CallC(FUN_427520);
+            Ai_StartRaces();
     }
     if (F(int, g_shell6cec6cH, 1316)) {
         F(int, (BYTE*)g_6f3430, 60) = 0;
@@ -1519,8 +1548,8 @@ extern "C" void __cdecl Copter_ResetPlayers()
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")    // scene object base constructor (kind, name)
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
-extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
-extern "C" void FUN_5e8c60(); KING_ALIAS("_FUN_5e8c60", "_Font_LoadFile")    // loads a font
+extern "C" DWORD __fastcall Style_Assign(DWORD* self, void*, const DWORD* s);
+extern "C" BYTE* __cdecl Font_LoadFile(const char* name);
 extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // finds a scene object by name
 KING_VAR(char, vt_64fdd4, 64fdd4)
@@ -1540,7 +1569,7 @@ KING_VAR(char, s_67b814, 67b814)
 // [FUN_569760] constructor of the helicopter screen object: fonts, the mode's three scene objects, two more, the start time
 extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game)
 {
-    CallThis(FUN_5d31e0, self, 11, &s_67b8a8);
+    Object_ConstructKind(self, 0, 11, &s_67b8a8);
     BYTE* t = self + 1220;
     for (int off = 0; off <= 32; off += 4)
         F(DWORD, t, off) = 0;
@@ -1557,26 +1586,26 @@ extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game)
     F(int, self, 1208) = 0;
     F(int, self, 1200) = 0;
     F(BYTE*, self, 40) = game;
-    CallThis(FUN_5d3570, game + 2992, self);
-    CallThis(FUN_5d33d0, self, 1);
+    Owner_Attach(game + 2992, 0, self);
+    Queue_PostEvent2(self, 0, 1);
     F(int, self, 32) = 0;
     F(int, self, 36) = 0;
     F(int, self, 1196) = 0;
-    CallThis(FUN_5bd5a0, t, &g_6ce3e0);
+    Style_Assign((DWORD*)t, 0, (const DWORD*)&g_6ce3e0);
     F(int, t, 0) = 5;
-    F(void*, self, 1288) = CallC<void*>(FUN_5e8c60, &s_67b89c);
-    F(void*, self, 1292) = CallC<void*>(FUN_5e8c60, &s_67b890);
-    if (CallC<int>(FUN_568fd0) == 2) {
-        F(void*, self, 1260) = CallC<void*>(FUN_5ef3d0, &s_67b880);
-        F(void*, self, 1264) = CallC<void*>(FUN_5ef3d0, &s_67b870);
-        F(void*, self, 1256) = CallC<void*>(FUN_5ef3d0, &s_67b860);
+    F(void*, self, 1288) = (void*)Font_LoadFile(&s_67b89c);
+    F(void*, self, 1292) = (void*)Font_LoadFile(&s_67b890);
+    if (Game_568fd0() == 2) {
+        F(void*, self, 1260) = (void*)Objects_Find(&s_67b880);
+        F(void*, self, 1264) = (void*)Objects_Find(&s_67b870);
+        F(void*, self, 1256) = (void*)Objects_Find(&s_67b860);
     } else {
-        F(void*, self, 1260) = CallC<void*>(FUN_5ef3d0, &s_67b850);
-        F(void*, self, 1264) = CallC<void*>(FUN_5ef3d0, &s_67b840);
-        F(void*, self, 1256) = CallC<void*>(FUN_5ef3d0, &s_67b830);
+        F(void*, self, 1260) = (void*)Objects_Find(&s_67b850);
+        F(void*, self, 1264) = (void*)Objects_Find(&s_67b840);
+        F(void*, self, 1256) = (void*)Objects_Find(&s_67b830);
     }
-    F(void*, self, 1280) = CallC<void*>(FUN_5ef3d0, &s_67b824);
-    F(void*, self, 1284) = CallC<void*>(FUN_5ef3d0, &s_67b814);
+    F(void*, self, 1280) = (void*)Objects_Find(&s_67b824);
+    F(void*, self, 1284) = (void*)Objects_Find(&s_67b814);
     F(int, self, 1268) = 0;
     F(int, self, 1276) = 0;
     F(int, self, 1272) = (int)Timer_Now();
@@ -1584,15 +1613,21 @@ extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game)
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_53f750(); KING_ALIAS("_FUN_53f750", "_Car_InList")
+extern "C" BYTE* __cdecl Car_InList(void* car);
+extern "C" void __fastcall Copter_UpdateWarning(BYTE* s, void*);
 extern "C" void FUN_568680(); KING_ALIAS("_FUN_568680", "@Copter_UpdateWarning@8")
+extern "C" wchar_t* __cdecl Str_ToWide(const char* s);
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
+extern "C" void __fastcall Copter_Warnings(BYTE* s, void*);
 extern "C" void FUN_568090(); KING_ALIAS("_FUN_568090", "@Copter_Warnings@8")
+extern "C" void __fastcall Copter_Frame(BYTE* s, void*);
 extern "C" void FUN_566970(); KING_ALIAS("_FUN_566970", "@Copter_Frame@8")
+extern "C" void __fastcall Copter_FindLanding(BYTE* s, void*);
 extern "C" void FUN_567dc0(); KING_ALIAS("_FUN_567dc0", "@Copter_FindLanding@8")
-ASM_FUNC(FUN_563600, @Copter_Step@8)
+extern "C" DWORD __fastcall Copter_Step(DWORD ecx_in, DWORD edx_in);
+extern "C" void __fastcall Copter_FlightStep(BYTE* s, void*);
 extern "C" void FUN_561f30(); KING_ALIAS("_FUN_561f30", "@Copter_FlightStep@8")
-extern "C" void FUN_50c3a0(); KING_ALIAS("_FUN_50c3a0", "_Shell_WriteThumbnail")    // writes the state (stream, 72, 54, 0)
+extern "C" void __cdecl Shell_WriteThumbnail(void* st, int w, int h, int fromImage);
 KING_VAR(AsmLabel, s_67b2bc, 67b2bc)
 KING_VAR(AsmLabel, s_67b7ec, 67b7ec)
 KING_VAR(AsmLabel, s_fmt6772a8, 6772a8)
@@ -1628,7 +1663,7 @@ extern "C" void __fastcall Copter_UpdateAll(BYTE* self, void*)
 {
     if (F(int, self, 3548))
         return;
-    BYTE* car = CallC<BYTE*>(FUN_53f750, F(BYTE*, self, 3248));
+    BYTE* car = Car_InList(F(BYTE*, self, 3248));
     F(BYTE*, self, 3248) = car;
     if (car)
     {
@@ -1637,19 +1672,19 @@ extern "C" void __fastcall Copter_UpdateAll(BYTE* self, void*)
         else
             F(int, self, 3252) = 0;
     }
-    CallThis(FUN_568090, self);
-    CallThis(FUN_566970, self);
-    CallThis(FUN_567dc0, self);
-    CallThis(FUN_563600, self);
-    CallThis(FUN_561f30, self);
-    CallThis(FUN_568680, self);
+    Copter_Warnings(self, 0);
+    Copter_Frame(self, 0);
+    Copter_FindLanding(self, 0);
+    Copter_Step((DWORD)self, 0);
+    Copter_FlightStep(self, 0);
+    Copter_UpdateWarning(self, 0);
 }
 
 // [FUN_568ed0..$L_568f3c] advances *id to a free object id of the screen (keeping id%1000 below 500); fatal after 500 tries
 extern "C" void __cdecl Objects_FreeId(int* id)
 {
     int tries = 0;
-    while (CallThis<int>(FUN_5e5370, g_696ca0 + 704, *id))
+    while (Resources_Get((BYTE**)(g_696ca0 + 704), 0, *id))
     {
         int v = ++*id;
         if (v % 1000 >= 500)
@@ -1666,11 +1701,11 @@ extern "C" void __cdecl Copter_SaveState(int n)
     void* stg;
     void* stream;
     sprintf(name, s_fmt6772a8, n);
-    CallStd<long>((void (*)())g_impStgCreateDocfile, CallC<const WCHAR*>(FUN_50bc90, name), 4113, 0, &stg);
-    Copter_ComCall(stg, 12, CallC<const WCHAR*>(FUN_50bc90, (char*)s_stream6772a0), 4113, 0, 0, &stream);
+    CallStd<long>((void (*)())g_impStgCreateDocfile, (const WCHAR*)Str_ToWide(name), 4113, 0, &stg);
+    Copter_ComCall(stg, 12, (const WCHAR*)Str_ToWide((char*)s_stream6772a0), 4113, 0, 0, &stream);
     if (!stream)
         Sys_Fatal(s_677684, 0);
-    CallC(FUN_50c3a0, stream, 72, 54, 0);
+    Shell_WriteThumbnail(stream, 72, 54, 0);
     Copter_ComCall(stream, 8);
     Copter_ComCall(stg, 8);
 }
@@ -1678,13 +1713,15 @@ extern "C" void __cdecl Copter_SaveState(int n)
 
 // ---------------------------------------------------------------------------
 // Split procs (their code ran on past ENDP after the call to Sys_Fatal).
+extern "C" int __cdecl CarType_Number(int t);
 extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
 extern "C" void FUN_568ed0(); KING_ALIAS("_FUN_568ed0", "_Objects_FreeId")
+extern "C" int __fastcall Resources_Create(BYTE* self, void*, int id, const char* name);
 extern "C" void FUN_5e5130(); KING_ALIAS("_FUN_5e5130", "@Resources_Create@16")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
-extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
-extern "C" void FUN_5e4b30(); KING_ALIAS("_FUN_5e4b30", "@Resources_Read@12")
+extern "C" void __fastcall ResTable_Charge(BYTE* self, void*, BYTE* tab);
+extern "C" int __fastcall Resources_Read(BYTE** self, void*, BYTE* stream);
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
 extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")    // resources: send a message (id, kind, size, data)
 KING_VAR(AsmLabel, g_hcModels6c6b68, 6c6b68)     // 876 bytes per car model, the name at +0
@@ -1712,13 +1749,13 @@ struct Blob48 { DWORD d[12]; };
 // [FUN_571a80..$L_571b11] creates the network object of a car type (resource id (type*5+1000)*200 + free id) and sends its 156-byte creation message
 extern "C" int __cdecl Net_CreateCarObject(BYTE* res, int kind, const char* name, Blob48 state, int type)
 {
-    int num = CallC<int>(FUN_52ea90, type);
+    int num = CarType_Number(type);
     int id = (num * 5 + 1000) * 200;
     CallC(FUN_568ed0, &id, type);
     BYTE* table = res + 704;
-    CallThis(FUN_5e5130, table, id, kind);
+    Resources_Create(table, 0, id, (const char*)kind);
     const char* model = (char*)g_hcModels6c6b68 + type * 876;
-    BYTE* obj = CallC<BYTE*>(FUN_5ef2b0, 0, model);
+    BYTE* obj = Scene_FindObject(0, model);
     if (!obj)
         Sys_Fatal(model, s_hc6766b4);
     BYTE msg[156];
@@ -1730,12 +1767,12 @@ extern "C" int __cdecl Net_CreateCarObject(BYTE* res, int kind, const char* name
     F(Blob48, msg, 44) = state;
     strncpy((char*)msg + 92, name, 31);
     strncpy((char*)msg + 124, F(char*, obj, 12), 31);
-    CallThis(FUN_5e52b0, table, id, kind, 156, msg);
-    BYTE* r = CallThis<BYTE*>(FUN_5e5370, table, id);
+    Resources_SetData((BYTE**)table, 0, id, kind, 156, msg);
+    BYTE* r = (BYTE*)Resources_Get((BYTE**)table, 0, id);
     BYTE* part = ((BYTE**)(char*)g_hcParts6ced98)[type * 11];
     if (part)
         F(int, r, 16) = F(int, part, 16);
-    CallThis(FUN_5e4900, r, table);
+    ResTable_Charge(r, 0, table);
     return id;
 }
 
@@ -1744,7 +1781,7 @@ extern "C" void __cdecl Copter_LoadStreams(void* stg)
 {
     void* stream = 0;
     ULONG got;
-    Copter_ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, (char*)s_hc677738), (void*)0, 16, 0, &stream);
+    Copter_ComCall(stg, 16, (const WCHAR*)Str_ToWide((char*)s_hc677738), (void*)0, 16, 0, &stream);
     if (!stream)
         Sys_Fatal(s_hc67c200, 0);
     int six[6];
@@ -1756,7 +1793,7 @@ extern "C" void __cdecl Copter_LoadStreams(void* stg)
     g_6f32f8 = six[4];
     g_6f32fc = six[5];
     Copter_ComCall(stream, 8);
-    Copter_ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, (char*)s_hc677704), (void*)0, 16, 0, &stream);
+    Copter_ComCall(stg, 16, (const WCHAR*)Str_ToWide((char*)s_hc677704), (void*)0, 16, 0, &stream);
     if (stream)
     {
         int o[10] = {};
@@ -1771,10 +1808,10 @@ extern "C" void __cdecl Copter_LoadStreams(void* stg)
         F(int, g_6cec6c, 1304) = o[5] % 2;
         Copter_ComCall(stream, 8);
     }
-    Copter_ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, (char*)s_hc6776d4), (void*)0, 16, 0, &stream);
+    Copter_ComCall(stg, 16, (const WCHAR*)Str_ToWide((char*)s_hc6776d4), (void*)0, 16, 0, &stream);
     if (!stream)
         Sys_Fatal(s_hc67c1d8, 0);
-    CallThis(FUN_5e4b30, g_696ca0 + 704, stream);
+    Resources_Read((BYTE**)(g_696ca0 + 704), 0, (BYTE*)stream);
     Copter_ComCall(stream, 8);
 }
 
@@ -1783,7 +1820,8 @@ extern "C" void __cdecl Copter_LoadStreams(void* stg)
 extern "C" void FUN_437220(); KING_ALIAS("_FUN_437220", "_Ai_GetPositionIdV")
 extern "C" void FUN_437390(); KING_ALIAS("_FUN_437390", "_Ai_GetPositionIdRV")
 extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")
-extern "C" void FUN_4364f0(); KING_ALIAS("_FUN_4364f0", "_AI_Make449c40")
+extern "C" void* __cdecl AI_Make449c40(void* out, void* x);
+extern "C" Matrix* __cdecl Matrix_Translation(Matrix* out, Vec3 t);
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
 KING_VAR(int, g_hcTypeClass5, 6ce344)
 KING_VAR(int, g_hcCarTypeCount, 6ce32c)
@@ -1817,9 +1855,9 @@ extern "C" BYTE* __cdecl Net_CreatePlacedObject(BYTE* res, const char* name, int
         name = room;
     }
     BYTE* table = res + 704;
-    CallThis(FUN_5e5130, table, id, kind);
+    Resources_Create(table, 0, id, (const char*)kind);
     BYTE m[48];
-    CallC(FUN_5abc40, m, pos);
+    Matrix_Translation((Matrix*)m, pos);
     BYTE msg[160];
     memset(msg, 0, sizeof msg);
     F(int, msg, 0) = g_hcTypeClass5 < g_hcCarTypeCount ? g_hcTypeClass5 : 0;
@@ -1832,8 +1870,8 @@ extern "C" BYTE* __cdecl Net_CreatePlacedObject(BYTE* res, const char* name, int
     F(int, msg, 92) = a7;
     strncpy((char*)msg + 96, name, 31);
     strncpy((char*)msg + 128, s_hc672f78, 31);
-    CallThis(FUN_5e52b0, table, id, kind, 160, msg);
-    BYTE* r = CallThis<BYTE*>(FUN_5e5370, table, id);
+    Resources_SetData((BYTE**)table, 0, id, kind, 160, msg);
+    BYTE* r = (BYTE*)Resources_Get((BYTE**)table, 0, id);
     if (!g_hc6ef204)
     {
         World_Fatal(s_hc672f50);
@@ -1847,7 +1885,7 @@ extern "C" BYTE* __cdecl Net_CreatePlacedObject(BYTE* res, const char* name, int
 extern "C" int __fastcall Route_PushRoad(BYTE* self, void*, void* key, Vec3* p)
 {
     int room;
-    CallC(FUN_4364f0, &room, key);
+    AI_Make449c40(&room, key);
     if (room == -1)
         return -1;
     int node;
@@ -1942,10 +1980,13 @@ extern "C" void __cdecl HelInit_56f3b0() { g_hel6f3248 = 0x0; g_hel6f324c = 0x0;
 // [$L_568e50]
 extern "C" void __cdecl HelInit_568e50() { g_hel6f32e8 = 0x0; g_hel6f32ec = 0x0; g_hel6f3300 = 0x47ae147b; g_hel6f3304 = 0x3f847ae1; g_hel6f32f0 = 0x0; g_hel6f32f4 = 0x0; g_hel6f3308 = 0x47ae147b; g_hel6f330c = 0x3f847ae1; g_hel6f32f8 = 0x0; g_hel6f32fc = 0x0; }
 
-extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg);
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+extern "C" int __fastcall SceneNode5f98c0_Draw(BYTE* s, void*, int flags, BYTE* b);
 extern "C" void FUN_5f98c0(); KING_ALIAS("_FUN_5f98c0", "@SceneNode5f98c0_Draw@16")
+extern "C" int __fastcall SceneNode5f9d20_Draw(BYTE* s, void*, void* a1, BYTE* m, BYTE* a3, BYTE* b);
 extern "C" void FUN_5f9d20(); KING_ALIAS("_FUN_5f9d20", "@SceneNode5f9d20_Draw@24")
+extern "C" void __cdecl Copter_Send962(int a, int b);
 extern "C" void FUN_5691c0(); KING_ALIAS("_FUN_5691c0", "_Copter_Send962")
 extern "C" void FUN_4297b0(); KING_ALIAS("_FUN_4297b0", "_AI_True")
 KING_VAR(DWORD, g_hel68cf6c, 68cf6c)
@@ -1963,9 +2004,9 @@ KING_VAR(double, g_hel6f3520, 6f3520)
 KING_VAR(int, g_hel6f33f0, 6f33f0)
 
 // [$L_56cd80]
-extern "C" int __fastcall Hel_Release56cd80(BYTE* s) { return CallThis<int>(FUN_5d32f0, s, 1); }
+extern "C" int __fastcall Hel_Release56cd80(BYTE* s) { return Queue_PostEvent(s, 0, 1); }
 // [$L_5736d0]
-extern "C" int __fastcall Hel_Release5736d0(BYTE* s) { return CallThis<int>(FUN_5d32f0, s, 1); }
+extern "C" int __fastcall Hel_Release5736d0(BYTE* s) { return Queue_PostEvent(s, 0, 1); }
 
 // [$L_56ba90] static initializers
 extern "C" void __cdecl HelInit_56ba90() { g_hel6f2f08 = g_hel68cf6c; }
@@ -1982,14 +2023,14 @@ extern "C" void __cdecl HelInit_576d00() { g_hel6f3520 = g_hel64b670 / (double)g
 extern "C" int __fastcall Hel_5737e0(BYTE* s, void*, int a, int b)
 {
     CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
-    return CallThis<int>(FUN_5f98c0, s, a, b);
+    return SceneNode5f98c0_Draw(s, 0, a, (BYTE*)b);
 }
 
 // [$L_573b30] the same with FUN_5f9d20 (a, b, c, d)
 extern "C" int __fastcall Hel_573b30(BYTE* s, void*, int a, int b, int c, int d)
 {
     CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
-    return CallThis<int>(FUN_5f9d20, s, a, b, c, d);
+    return SceneNode5f9d20_Draw(s, 0, (void*)a, (BYTE*)b, (BYTE*)c, (BYTE*)d);
 }
 
 // [$L_573960] as 5737e0 unless 6f33f0 is set or FUN_4297b0 says no
@@ -2000,7 +2041,7 @@ extern "C" int __fastcall Hel_573960(BYTE* s, void*, int a, int b)
     if (!CallThis<char>(FUN_4297b0, s))
         return 0;
     CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
-    return CallThis<int>(FUN_5f98c0, s, a, b);
+    return SceneNode5f98c0_Draw(s, 0, a, (BYTE*)b);
 }
 
 // [$L_573810] once the time (+368) plus 64b788 has passed: FUN_5691c0 on +344 with 1, then with +408 (cleared)
@@ -2008,16 +2049,17 @@ extern "C" int __fastcall Hel_573810(BYTE* s)
 {
     if (!(F(double, s, 368) + g_hel64b788 >= F(double, g_hel696ca0, 2968))) {
         F(int, s, 408) = 0;
-        CallC(FUN_5691c0, F(int, s, 344), 1);
-        CallC(FUN_5691c0, F(int, s, 344), F(int, s, 408));
+        Copter_Send962(F(int, s, 344), 1);
+        Copter_Send962(F(int, s, 344), F(int, s, 408));
     }
-    return CallThis<int>(FUN_5d32f0, s, 1);
+    return Queue_PostEvent(s, 0, 1);
 }
 
 // ---------------------------------------------------------------------------
 // More helicopter tasks and its random generator.
 
 extern "C" void FUN_569380(); KING_ALIAS("_FUN_569380", "_Copter_Send956")
+extern "C" int __fastcall SceneNode5f9b00_Hit(BYTE* s, void*, int flags, BYTE* rec);
 extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
 KING_VAR(double, g_hel64b730, 64b730)
 KING_VAR(double, g_hel64fe58, 64fe58)
@@ -2035,11 +2077,11 @@ extern "C" void __fastcall Hel_573b70(BYTE* s)
         F(DWORD, s, 372) = F(DWORD, g_hel696ca0, 2972);
     }
     if (F(double, s, 368) + g_hel64b670 > F(double, g_hel696ca0, 2968))
-        CallThis(FUN_5d32f0, s, 1);
+        Queue_PostEvent(s, 0, 1);
     else
         F(int, s, 408) = 3;
-    CallC(FUN_569380, F(int, s, 344), 2);
-    CallC(FUN_569380, F(int, s, 344), F(int, s, 408));
+    Copter_Send956(F(int, s, 344), 2);
+    Copter_Send956(F(int, s, 344), F(int, s, 408));
 }
 
 // [$L_5739b0] as 5737e0 with FUN_5f9b00; when it succeeds b's record (+100) remembers +100
@@ -2050,7 +2092,7 @@ extern "C" int __fastcall Hel_5739b0(BYTE* s, void*, int a, BYTE* b)
     if (!CallThis<char>(FUN_4297b0, s))
         return 0;
     CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
-    int r = CallThis<int>(FUN_5f9b00, s, a, b);
+    int r = SceneNode5f9b00_Hit(s, 0, a, b);
     if (r) {
         BYTE* o = F(BYTE*, b, 100);
         if (o) {
@@ -2075,7 +2117,7 @@ extern "C" int __fastcall Hel_56b9f0(BYTE* s)
         if (F(double, g_hel696ca0, 2968) * g_hel64b730 > lim)
             F(int, s, 60) = 0;
     }
-    return CallThis<int>(FUN_5d32f0, s, 1);
+    return Queue_PostEvent(s, 0, 1);
 }
 
 // [$L_568da0] static initializer: the subtractive random generator (55 words at 6f3160)
@@ -2118,7 +2160,7 @@ static void Hel_RotorFrames(BYTE* s)
 extern "C" int __fastcall Hel_573590(BYTE* s, void*, int a, int b)
 {
     Hel_RotorFrames(s);
-    return CallThis<int>(FUN_5f98c0, s, a, b);
+    return SceneNode5f98c0_Draw(s, 0, a, (BYTE*)b);
 }
 // [$L_573630] the same, then fn (the object 256 bytes before, b)
 extern "C" int __fastcall Hel_573630(BYTE* s, void*, HelFn fn, int b)
@@ -2131,51 +2173,56 @@ extern "C" int __fastcall Hel_573630(BYTE* s, void*, HelFn fn, int b)
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
+extern "C" int __fastcall Thunk56f110(BYTE* s);
 extern "C" void FUN_56f110(); KING_ALIAS("_FUN_56f110", "@Thunk56f110@4")
 // [$L_56f0f0]
 extern "C" BYTE* __fastcall Dtor56f0f0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_56f110, s);
+    Thunk56f110(s);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" void __fastcall CopterObj573700_Destroy(BYTE* self, void*);
 extern "C" void FUN_573700(); KING_ALIAS("_FUN_573700", "@CopterObj573700_Destroy@8")
 // [$L_5736e0]
 extern "C" BYTE* __fastcall Dtor5736e0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_573700, s);
+    CopterObj573700_Destroy(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" void __fastcall CopterObj573890_Destroy(BYTE* self, void*);
 extern "C" void FUN_573890(); KING_ALIAS("_FUN_573890", "@CopterObj573890_Destroy@8")
 // [$L_573870]
 extern "C" BYTE* __fastcall Dtor573870_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_573890, s);
+    CopterObj573890_Destroy(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" void __fastcall CopterObj573a50_Destroy(BYTE* self, void*);
 extern "C" void FUN_573a50(); KING_ALIAS("_FUN_573a50", "@CopterObj573a50_Destroy@8")
 // [$L_573a30]
 extern "C" BYTE* __fastcall Dtor573a30_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_573a50, s);
+    CopterObj573a50_Destroy(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" void __fastcall CopterObj573c10_Destroy(BYTE* self, void*);
 extern "C" void FUN_573c10(); KING_ALIAS("_FUN_573c10", "@CopterObj573c10_Destroy@8")
 // [$L_573bf0]
 extern "C" BYTE* __fastcall Dtor573bf0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_573c10, s);
+    CopterObj573c10_Destroy(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -2184,11 +2231,12 @@ extern "C" BYTE* __fastcall Dtor573bf0_DeletingDestructor(BYTE* s, void*, int fl
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
+extern "C" void __fastcall Vehicle573d10_Destroy(BYTE* s, void*);
 extern "C" void FUN_573d10(); KING_ALIAS("_FUN_573d10", "@Vehicle573d10_Destroy@8")
 // [$L_573cf0]
 extern "C" BYTE* __fastcall Dtor573cf0_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_573d10, s);
+    Vehicle573d10_Destroy(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -2208,14 +2256,14 @@ extern "C" int __cdecl Heli_Run569750(void)
 // ---------------------------------------------------------------------------
 // Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
 
-extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 // returns the storage of a vector (+0 .. +8) of size-byte elements to the pool
 static void PoolVec_Free_H(BYTE* s, int size)
 {
     BYTE* p = F(BYTE*, s, 0);
     int n = (F(BYTE*, s, 8) - p) / size;
     if (n)
-        CallC(FUN_44b4a0, p, n * size);
+        Ai_PoolFree(p, n * size);
 }
 // [$L_576bd0] frees the storage of a vector of 192-byte records
 extern "C" void __fastcall Vec192_FreeStorage(BYTE* s, void*)
@@ -2234,13 +2282,13 @@ extern "C" int __cdecl Copter_SetSideState(int i, int state, BYTE* s)
 {
     int sh = i * 2;
     int had = (3 << sh) & F(int, s, 416);
-    CallC(FUN_569000, F(int, s, 344), F(int, s, 416));
+    Copter_Send963(F(int, s, 344), F(int, s, 416));
     if (state == 0)
         F(int, s, 416) |= 1 << sh;
     else if (state == 1)
         F(int, s, 416) |= 2 << sh;
-    CallC(FUN_569000, F(int, s, 344), F(int, s, 416));
-    BYTE* r = CallThis<BYTE*>(FUN_5e5370, g_696ca0 + 704, F(int, s, 344));
+    Copter_Send963(F(int, s, 344), F(int, s, 416));
+    BYTE* r = (BYTE*)Resources_Get((BYTE**)(g_696ca0 + 704), 0, F(int, s, 344));
     if (r && F(BYTE*, r, 24))
         F(int, F(BYTE*, r, 24), 4) = F(int, s, 416);
     return had != 0;
@@ -2249,7 +2297,7 @@ extern "C" int __cdecl Copter_SetSideState(int i, int state, BYTE* s)
 // ---------------------------------------------------------------------------
 // The message queue of the radio.
 
-extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+extern "C" double __cdecl Tsc_Now();
 // [$L_56aa00] shows the next of the 4 queued messages (+684, 128 bytes each, +1212 the current one) in +556 and
 // marks the time (+32)
 extern "C" void __fastcall Radio_NextMessage(BYTE* s)
@@ -2257,10 +2305,10 @@ extern "C" void __fastcall Radio_NextMessage(BYTE* s)
     strcpy((char*)s + 556, (const char*)s + 684 + F(int, s, 1212) * 128);
     F(int, s, 1212) = (F(int, s, 1212) + 1) % 4;
     F(int, s, 1216) = 1;
-    F(double, s, 32) = CallC<double>(FUN_6037e0);
+    F(double, s, 32) = Tsc_Now();
 }
 
-extern "C" void FUN_566240(); KING_ALIAS("_FUN_566240", "@Copter_566240@8")
+extern "C" BYTE* __fastcall Copter_566240(BYTE* self, void*);
 KING_VAR(double, g_q180_64b780, 64b780)
 KING_VAR(double, g_q180_64b678, 64b678)
 KING_VAR(double, g_q180_64b670, 64b670)
@@ -2275,7 +2323,7 @@ extern "C" void __fastcall Copter_ClimbState(BYTE* s)
     double r = -d / (x87_fabs(d) + g_q180_64b780);
     F(float, s, 3448) = (float)r;
     F(int, s, 3436) = (int)(!(r >= g_q180_64b678) ? g_q180_64ca48 : g_q180_64b670);
-    if (BYTE* p = CallThis<BYTE*>(FUN_566240, s)) {
+    if (BYTE* p = Copter_566240(s, 0)) {
         F(int, s, 3464) = 1;
         BYTE t[48];
         memcpy(s + 3468, CallThis<BYTE*>(FUN_57de90, p + 16, t) + 36, 12);
@@ -2292,9 +2340,9 @@ extern "C" int __fastcall Thunk576c20(BYTE* s, void* d, int a0) { return q198_Dt
 // [$L_56d0d0] whether object c has its +416 set
 extern "C" int __cdecl Obj56d0d0_Has416(int, int, BYTE* c) { return F(int, c, 416) != 0; }
 
-extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
+extern "C" void* __fastcall Camera_Get(BYTE* self, void*, void* out);
 extern "C" void FUN_614f00(); KING_ALIAS("_FUN_614f00", "_Terrain_Call614960@12")
-extern "C" void FUN_615670(); KING_ALIAS("_FUN_615670", "@Terrain615670_Update@12")
+extern "C" void __fastcall Terrain615670_Update(BYTE** self, void*, int frame);
 KING_VAR(AsmLabel, g_q214_7025f0, 7025f0)
 KING_VAR(float, g_q214_702620, 702620)
 KING_VAR(float, g_q214_702624, 702624)
@@ -2308,26 +2356,27 @@ extern "C" int __cdecl Terrain_FollowCamera(int, int b)
     float m[12], c[12];
     memset(m, 0, 48);
     memcpy(m, g_q214_7025f0, 48);
-    memcpy(m, CallThis<float*>(FUN_5dbcc0, F(BYTE*, g_6cec6c, 1356), c), 48);
+    memcpy(m, (float*)Camera_Get(F(BYTE*, g_6cec6c, 1356), 0, c), 48);
     double d0 = g_q214_702620, d1 = g_q214_702624, d2 = g_q214_702628;
     float v[3];
     v[0] = (float)(d2 * m[6] + d0 * m[0] + d1 * m[3]);
     v[1] = (float)(d2 * m[7] + d1 * m[4] + d0 * m[1]);
     v[2] = (float)(d2 * m[8] + d1 * m[5] + d0 * m[2]);
     CallStd(FUN_614f00, m + 9, v, (void*)g_q214_702630);
-    CallThis(FUN_615670, g_q214_6f33b4, b);
+    Terrain615670_Update((BYTE**)g_q214_6f33b4, 0, b);
     return 1;
 }
 
+extern "C" int* __cdecl Player_CarId(int* out);
 extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
-extern "C" void FUN_5699b0(); KING_ALIAS("_FUN_5699b0", "@Messages_AddText@12")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+extern "C" void __fastcall Sound_Restart(BYTE* s, void*, float vol, float pitch);
 extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
-extern "C" void FUN_430a80(); KING_ALIAS("_FUN_430a80", "_Ai_CleanBeforeLaw")
-extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
-extern "C" void FUN_5279e0(); KING_ALIAS("_FUN_5279e0", "_Movie_Play")
-extern "C" void FUN_445740(); KING_ALIAS("_FUN_445740", "_Ai_MafiaAttack")
+extern "C" int __cdecl Ai_CleanBeforeLaw(BYTE* p);
+extern "C" int __fastcall Words295_Reset(BYTE* self, void*);
+extern "C" int __cdecl Movie_Play(const char* name, int mode);
+extern "C" int __cdecl Ai_MafiaAttack(int player);
 KING_VAR(AsmLabel, s_q216_67b938, 67b938)
 KING_VAR(AsmLabel, s_q216_67b928, 67b928)
 KING_VAR(AsmLabel, s_q216_67b91c, 67b91c)
@@ -2338,32 +2387,32 @@ KING_VAR(double, g_q216_64b678, 64b678)
 // shows message m and plays the sound object named name
 static void Hel216_MessageSound(int m, const char* name)
 {
-    CallThis(FUN_5699b0, g_messages, CallC<int>(FUN_5d2e50, m));
-    BYTE* o = CallC<BYTE*>(FUN_5ef3d0, name);
+    Messages_AddText(g_messages, 0, (const char*)(Table71e858_Get(m)));
+    BYTE* o = Objects_Find(name);
     if (o)
-        CallThis(FUN_5fdaf0, o, 1.0f, 1.0f);
+        Sound_Restart(o, 0, 1.0f, 1.0f);
 }
 // [FUN_56ad20] the helicopter radio command c for the player's car: messages 54 and 55 with their sounds, the
 // clean-up before the law (and its movie), message 73, or the mafia attack (and its movies)
 extern "C" void __cdecl Copter_RadioCommand(int c)
 {
     BYTE* p;
-    CallC(FUN_568f60, &p);
+    Player_CarId((int*)&p);
     switch (c) {
     case 0: Hel216_MessageSound(54, (const char*)s_q216_67b938); break;
     case 1: Hel216_MessageSound(55, (const char*)s_q216_67b928); break;
     case 2:
-        CallC(FUN_430a80, p);
-        CallThis(FUN_530020, (void*)g_q216_6d1948);
-        CallC(FUN_5279e0, (const char*)s_q216_67b91c, 5);
+        Ai_CleanBeforeLaw(p);
+        Words295_Reset((BYTE*)((void*)g_q216_6d1948), 0);
+        Movie_Play((const char*)s_q216_67b91c, 5);
         break;
-    case 4: CallThis(FUN_5699b0, g_messages, CallC<int>(FUN_5d2e50, 73)); break;
+    case 4: Messages_AddText(g_messages, 0, (const char*)(Table71e858_Get(73))); break;
     case 3:
-        CallC(FUN_445740, p);
+        Ai_MafiaAttack((int)p);
         if (F(double, p, 224) > g_q216_64b678 || F(BYTE, p, 201))
-            CallC(FUN_5279e0, (const char*)s_q216_67b910, 5);
-        CallThis(FUN_530020, (void*)g_q216_6d1948);
-        CallC(FUN_5279e0, (const char*)s_q216_67b904, 5);
+            Movie_Play((const char*)s_q216_67b910, 5);
+        Words295_Reset((BYTE*)((void*)g_q216_6d1948), 0);
+        Movie_Play((const char*)s_q216_67b904, 5);
         break;
     }
 }
@@ -2373,16 +2422,16 @@ extern "C" void __cdecl Copter_RadioCommand(int c)
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 KING_VAR(char, g_q237_6f2d98, 6f2d98)
-extern "C" void q237_FUN_56bac0(); KING_ALIAS("_q237_FUN_56bac0", "_CopterState_Init")
-extern "C" void q237_L_56bb30(); KING_ALIAS("_q237_L_56bb30", "@Vec_FreeStorage56bb30@4")
+extern "C" void __cdecl CopterState_Init();
+extern "C" void __fastcall Vec_FreeStorage56bb30(BYTE** v);
 // [$L_56bb20] destroys the static object 6f2d98 at exit ($L_56bb30)
-extern "C" void __cdecl Static6f2d98_Destroy(void) { CallThis(q237_L_56bb30, &g_q237_6f2d98); }
+extern "C" void __cdecl Static6f2d98_Destroy(void) { Vec_FreeStorage56bb30((BYTE**)&g_q237_6f2d98); }
 // [$L_56bb10] registers the teardown at exit
 extern "C" int __cdecl Static6f2d98_AtExit(void) { return atexit((void(__cdecl*)(void))Static6f2d98_Destroy); }
 // [$L_56bab0] the static initializer: FUN_56bac0, then the teardown at exit
 extern "C" int __cdecl Static6f2d98_Init(void)
 {
-    CallC(q237_FUN_56bac0);
+    CopterState_Init();
     return Static6f2d98_AtExit();
 }
 
@@ -2400,15 +2449,13 @@ extern "C" int __fastcall Thunk56f110(BYTE* s) { return q238_Med5cf370_Destroy(s
 // The dashboard warning lights and the screen overlays (key list, car list or
 // scores, the player's status panel).
 
-extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")    // fills a rectangle (surface, rect, color, flags)
-extern "C" void FUN_4d2b30(); KING_ALIAS("_FUN_4d2b30", "_Ai_DebugOverlay")
-extern "C" void FUN_529890(); KING_ALIAS("_FUN_529890", "@Map_Draw@16")
+extern "C" void __cdecl Surface_FillRect(BYTE* s, const int* r, DWORD color, int raw);
+extern "C" void __cdecl Ai_DebugOverlay(WORD* surf);
+extern "C" void __fastcall Map_Draw(BYTE* m, void*, BYTE* surf, int mode);
+extern "C" void __fastcall CopterPanel_Draw(BYTE* self, void*);
 extern "C" void FUN_56bc80(); KING_ALIAS("_FUN_56bc80", "@CopterPanel_Draw@8")
-extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
-extern "C" void FUN_401aa0(); KING_ALIAS("_FUN_401aa0", "@Stl_Lock@8")
-extern "C" int* __cdecl Player_CarId(int* out);
+extern "C" void __cdecl Bitmap_Draw(BYTE* dst, int x, int y, BYTE* bmp);
 extern "C" int __cdecl Player_GetState(BYTE* player, void* dest);
-extern "C" void __cdecl Ai_GetPlayerData(BYTE* p, BYTE* o);
 extern "C" double __cdecl Player_Value136(BYTE* id);
 extern "C" double __cdecl Player_CargoValueOf(BYTE* p);
 extern "C" double __cdecl Player_ProfitOf(BYTE* p);
@@ -2417,11 +2464,8 @@ extern "C" int __cdecl Ai_GetMerchandiseProperties(int id, BYTE* mp);
 extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);
 extern "C" float __fastcall Ramp_Position(BYTE* self, void*);
 extern "C" BYTE* __fastcall Node_Next(BYTE* self, void*);
-extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, int a3);
-extern "C" double __cdecl Tsc_Now();
 extern "C" void __cdecl Carat_DrawMovie();
 extern "C" void __fastcall Wasm_595260(BYTE* self, void*);
-extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines);
 extern "C" void __cdecl Scores_Draw(BYTE* surface, int x, int y);
 extern "C" int __cdecl Messages_Get1288();
@@ -2479,7 +2523,7 @@ static void Hud_Image(BYTE* surface, int x, int y, int image)
 
 static void Hud_Fill(BYTE* surface, int* r, int color)
 {
-    CallC(FUN_5b6f90, surface, r, color, 0);
+    Surface_FillRect(surface, r, color, 0);
 }
 
 static BYTE* Hud_Vehicle()
@@ -2513,7 +2557,7 @@ void __cdecl Hud_DrawLights(BYTE* surface, int x, int y, int alt)
 #define RAMP(off) Ramp_Position(veh + (off), 0)
     int type = F(int, veh, 2252);
     if (type >= g_hd_class0 && type < g_hd_class1) {
-        CallC(FUN_5b86c0, surface, x + 17, y + 722, F(BYTE*, g_hd_images, alt ? 1028 : 1020));
+        Bitmap_Draw(surface, x + 17, y + 722, F(BYTE*, g_hd_images, alt ? 1028 : 1020));
         for (int i = 0; i < 20; i++) {
             switch (i) {
             case 0: if (ON(3)) Hud_Image(surface, x + 117, y + 809, 852); break;
@@ -2565,7 +2609,7 @@ void __cdecl Hud_DrawLights(BYTE* surface, int x, int y, int alt)
             Hud_Image(surface, x + 25, y + 776, 888);
         return;
     }
-    CallC(FUN_5b86c0, surface, x + 17, y + 722, F(BYTE*, g_hd_images, alt ? 1024 : 1016));
+    Bitmap_Draw(surface, x + 17, y + 722, F(BYTE*, g_hd_images, alt ? 1024 : 1016));
     for (int i = 0; i < 20; i++) {
         switch (i) {
         case 0: if (ON(3)) Hud_Image(surface, x + 117, y + 809, 684); break;
@@ -2630,23 +2674,23 @@ void __cdecl Hud_DrawOverlays()
     BYTE* dev = g_hd_device;
     (*(int(__stdcall**)(BYTE*, int, int))(*(BYTE**)dev + 80))(dev, 14, 1);
     BYTE* surf = F(BYTE*, g_hd_mainView, 12);
-    CallC(FUN_4d2b30, surf);
+    Ai_DebugOverlay((WORD*)surf);
     int n = 0;
     BYTE* w = g_hd_wnd;
     if (F(int, w, 1292) && F(BYTE*, w, 1356) == g_hd_mainView)
-        CallThis(FUN_529890, (BYTE*)g_hd_6ce4f8, surf, F(int, w, 1292) - 1);
+        Map_Draw((BYTE*)g_hd_6ce4f8, 0, surf, F(int, w, 1292) - 1);
 
     if (F(int, g_hd_wnd, 1296)) {
         Carat_DrawMovie();
-        CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpKeys);
+        Bitmap_Draw(surf, g_hd_x, g_hd_y, g_hd_bmpKeys);
         int xx = g_hd_x + 25, yy = g_hd_y + 462;
         int* keys = (int*)(g_hd_wnd + 528);
         for (BYTE* node = F(BYTE*, F(BYTE*, g_hd_wnd, 524), 288); node; node = Node_Next(node, 0)) {
             int key = F(int, node, 28) - 1000;
             int ly = yy + n % 18 * 20 + 10;
             int lx = xx + n / 18 * 170;
-            CallC(FUN_5ea170, surf, lx, ly, g_hd_font, F(const char*, node, 12), 6, 0);
-            CallC(FUN_5ea170, surf, lx + 111, ly, g_hd_font, ((const char**)g_hd_keyNames)[keys[key]], 6, 0);
+            Text_Draw((int)surf, lx, ly, g_hd_font, F(const char*, node, 12), 6, 0);
+            Text_Draw((int)surf, lx + 111, ly, g_hd_font, ((const char**)g_hd_keyNames)[keys[key]], 6, 0);
             n++;
         }
         Menu_DrawEntry((int)surf, xx, yy, 97, s_hd_67c430, n++);
@@ -2668,10 +2712,10 @@ void __cdecl Hud_DrawOverlays()
     if (F(int, g_hd_wnd, 1284)) {
         Carat_DrawMovie();
         if (F(int, g_hd_wnd, 1316) == 0) {
-            CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpCars);
+            Bitmap_Draw(surf, g_hd_x, g_hd_y, g_hd_bmpCars);
             CarList_Draw(surf, g_hd_x + 17, g_hd_y + 471, 10);
         } else {
-            CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpScores);
+            Bitmap_Draw(surf, g_hd_x, g_hd_y, g_hd_bmpScores);
             Scores_Draw(surf, g_hd_x + 17, g_hd_y + 545);
         }
     }
@@ -2680,14 +2724,14 @@ void __cdecl Hud_DrawOverlays()
         Carat_DrawMovie();
         int r[4] = {0, 0, 0, 0};        // left, top, right, bottom
         int load1 = 0, load2 = 0;
-        CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpStatus);
+        Bitmap_Draw(surf, g_hd_x, g_hd_y, g_hd_bmpStatus);
         int bx = g_hd_x + 17, by = g_hd_y + 492;
         BYTE pd[192];
         int id;
         Player_CarId(&id);
         Ai_GetPlayerData((BYTE*)id, pd);
-        CallC(FUN_5ea1b0, surf, bx + 2, by, 148, g_hd_font, g_hd_6cecd8 + 632, 5, 0);
-        CallC(FUN_5ea1b0, surf, bx + 30, by + 228, 145, g_hd_font, F(BYTE*, pd, 20), 5, 0);
+        Font_DrawText(surf, bx + 2, by, 148, g_hd_font, g_hd_6cecd8 + 632, 5, 0);
+        Font_DrawText(surf, bx + 30, by + 228, 145, g_hd_font, F(BYTE*, pd, 20), 5, 0);
 
         Player_CarId(&id);
         double value = Player_Value136((BYTE*)id);
@@ -2719,11 +2763,11 @@ void __cdecl Hud_DrawOverlays()
         char buf[160];
         Player_CarId(&id);
         sprintf(buf, s_hd_intFmt, (int)Player_Value136((BYTE*)id));
-        CallC(FUN_5ea170, surf, g_hd_x + 23, g_hd_y + 605, Messages_Get1288(), buf, 5, 0);
+        Text_Draw((int)surf, g_hd_x + 23, g_hd_y + 605, (BYTE*)(Messages_Get1288()), buf, 5, 0);
         Player_CarId(&id);
         sprintf(buf, s_hd_intFmt, (int)Player_CargoValueOf((BYTE*)id));
         int width = Font_TextWidth(g_hd_font, 0, buf);
-        CallC(FUN_5ea170, surf, r[2] - width - 5, g_hd_y + 605, Messages_Get1288(), buf, 5, 0);
+        Text_Draw((int)surf, r[2] - width - 5, g_hd_y + 605, (BYTE*)(Messages_Get1288()), buf, 5, 0);
 
         // the order info (+0 merchandise, +8 amount, +100/+104/+112 texts, +120/+128 doubles; vectors at
         // +52/+64/+76/+88 that it owns)
@@ -2749,7 +2793,7 @@ void __cdecl Hud_DrawOverlays()
         Player_CarId(&id);
         if (Ai_GetPlayerOrderInfo((BYTE*)id, 0, oi) == 0) {
             sprintf(buf, s_hd_intFmt, (int)F(double, oi, 120));
-            CallC(FUN_5ea170, surf, bx + 110, by + 60, g_hd_font, buf, 4, 0);
+            Text_Draw((int)surf, bx + 110, by + 60, g_hd_font, buf, 4, 0);
             r[0] = g_hd_x + 17;
             r[2] = (int)(F(double, oi, 128) * g_hd_orderScale / F(double, oi, 120) + r[0]);
             r[1] = g_hd_y + 557;
@@ -2774,12 +2818,12 @@ void __cdecl Hud_DrawOverlays()
                 if (F(int, st, 160) && F(int, oi, 104)) {
                     Sound_Play(F(BYTE*, g_hd_messages, 1284), 0, 1.0f, 1.0f, 1);
                     if ((int)(Tsc_Now() * g_hd_msec) % 2)
-                        CallC(FUN_5ea170, surf, bx + 3, by + 52, g_hd_font2, F(const char*, oi, 104), 4, 0);
+                        Text_Draw((int)surf, bx + 3, by + 52, g_hd_font2, F(const char*, oi, 104), 4, 0);
                     else
-                        CallC(FUN_5ea170, surf, bx + 3, by + 52, g_hd_font, F(const char*, oi, 100), 4, 0);
+                        Text_Draw((int)surf, bx + 3, by + 52, g_hd_font, F(const char*, oi, 100), 4, 0);
                 } else
-                    CallC(FUN_5ea170, surf, bx + 3, by + 52, g_hd_font, F(const char*, oi, 100), 4, 0);
-                CallC(FUN_5ea170, surf, bx + 3, by + 64, g_hd_font, F(const char*, oi, 112), 4, 0);
+                    Text_Draw((int)surf, bx + 3, by + 52, g_hd_font, F(const char*, oi, 100), 4, 0);
+                Text_Draw((int)surf, bx + 3, by + 64, g_hd_font, F(const char*, oi, 112), 4, 0);
             }
             listed = 1;
         }
@@ -2813,14 +2857,14 @@ void __cdecl Hud_DrawOverlays()
         Hud_Fill(surf, r, 5);
 
         Hud_DrawLights(surf, g_hd_x, g_hd_y, 0);
-        CallC(FUN_5b86c0, surf, g_hd_x + 17, g_hd_y + 422, F(BYTE*, g_hd_images, 672));
+        Bitmap_Draw(surf, g_hd_x + 17, g_hd_y + 422, F(BYTE*, g_hd_images, 672));
         for (int v = 88; v >= 52; v -= 12)
             if (unsigned size = F(BYTE*, oi, v + 8) - F(BYTE*, oi, v))
                 Ai_PoolFree(F(BYTE*, oi, v), size);
     }
 
     if (g_hd_6f3434)
-        CallThis(FUN_56bc80, g_hd_6f3434);
+        CopterPanel_Draw(g_hd_6f3434, 0);
     Wasm_595260((BYTE*)g_hd_6f68b0, 0);
     dev = g_hd_device;
     (*(int(__stdcall**)(BYTE*, int, int))(*(BYTE**)dev + 80))(dev, 14, 1);
@@ -2831,53 +2875,55 @@ void __cdecl Hud_DrawOverlays()
 // ---------------------------------------------------------------------------
 // Starting the game world and creating its objects (vehicles, effects).
 
+extern "C" int* __fastcall Int_Copy(int* s, void*, const int* src);
 extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
-extern "C" void FUN_41eb70(); KING_ALIAS("_FUN_41eb70", "@Iter_Players@8")
-extern "C" void FUN_42db90(); KING_ALIAS("_FUN_42db90", "_AI_FreeList68b99c")
-extern "C" void FUN_434780(); KING_ALIAS("_FUN_434780", "_Ai_StartGame")
-extern "C" void FUN_437520(); KING_ALIAS("_FUN_437520", "_Ai_GetPositionId")
+extern "C" void** __fastcall Iter_Players(void** s, void*);
+extern "C" void __cdecl AI_FreeList68b99c();
+extern "C" void __cdecl Ai_StartGame(const char* saved, DWORD flags, const BYTE* settings);
+extern "C" DWORD* __cdecl Ai_GetPositionId(DWORD* out, BYTE* player);
 extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")
 extern "C" void FUN_43a780(); KING_ALIAS("_FUN_43a780", "_Ai_GetOrientationF")
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
 extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")
 extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
-extern "C" void FUN_4cd670(); KING_ALIAS("_FUN_4cd670", "@Fx_ObjectInit@44")
-extern "C" void FUN_4d0b10(); KING_ALIAS("_FUN_4d0b10", "@Effect4d0b10_Construct@20")
+extern "C" BYTE* __fastcall Fx_ObjectInit(BYTE* s, void*, int a, int b, const char* name, const Matrix* m, int c, const void* data, int d, int e, int f);
+extern "C" BYTE* __fastcall Effect4d0b10_Construct(BYTE* self, void*, int a1, int a2, int a3);
 extern "C" void FUN_4d2790(); KING_ALIAS("_FUN_4d2790", "@Effect4d2790_Construct@64")
-extern "C" void FUN_4e0660(); KING_ALIAS("_FUN_4e0660", "_Obj_HookHandlers")
-extern "C" void FUN_4e5ba7(); KING_ALIAS("_FUN_4e5ba7", "_Query_HitObject")
+extern "C" void __cdecl Obj_HookHandlers(BYTE* o);
+extern "C" void* __cdecl Query_HitObject(void* obj, const Vec3Bits* p, const Vec3Bits* d);
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
-extern "C" void FUN_51a4a0(); KING_ALIAS("_FUN_51a4a0", "_Shell_ScreenTitle")
-extern "C" void FUN_51a4e0(); KING_ALIAS("_FUN_51a4e0", "_Shell_CarTypeIndex")
-extern "C" void FUN_51bfa0(); KING_ALIAS("_FUN_51bfa0", "_Save_OpenStorage@8")
+extern "C" char* __cdecl Shell_ScreenTitle();
+extern "C" int __cdecl Shell_CarTypeIndex();
+extern "C" void* __stdcall Save_OpenStorage(const char* name, int mode);
 extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
-extern "C" void FUN_53fcd0(); KING_ALIAS("_FUN_53fcd0", "@Car_53fcd0@12")
-extern "C" void FUN_543c00(); KING_ALIAS("_FUN_543c00", "@Car_SetView@12")
-extern "C" void FUN_546900(); KING_ALIAS("_FUN_546900", "@Car_ApplySetup@12")
+extern "C" int __fastcall Car_53fcd0(BYTE* self, void*, int v);
+extern "C" void __fastcall Car_SetView(BYTE* self, void*, int n);
+extern "C" int __fastcall Car_ApplySetup(BYTE* self, void*, DWORD* p);
+extern "C" void __cdecl Copter_LoadStreams(void* stg);
 extern "C" void FUN_571d20(); KING_ALIAS("_FUN_571d20", "_Copter_LoadStreams")
-extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
-extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+extern "C" int __cdecl File_ReadInt(FILE* f);
+extern "C" Matrix* __cdecl Matrix_Multiply(Matrix* out, const Matrix* a, const Matrix* b);
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
-extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
-extern "C" void FUN_5c4910(); KING_ALIAS("_FUN_5c4910", "@Media_Clear5c4910@8")
-extern "C" void FUN_5dc2d0(); KING_ALIAS("_FUN_5dc2d0", "@App_SubPath@16")
-extern "C" void FUN_5e50d0(); KING_ALIAS("_FUN_5e50d0", "@Resources_NewRow@12")
+extern "C" Matrix* __cdecl Matrix_RotationZ(Matrix* out, float angle);
+extern "C" void __fastcall Media_Clear5c4910(BYTE* self, void*);
+extern "C" char* __fastcall App_SubPath(BYTE* s, void*, const char* sub, const char* name);
+extern "C" int __fastcall Resources_NewRow(BYTE* self, void*, int idx);
 extern "C" void FUN_5e5130(); KING_ALIAS("_FUN_5e5130", "@Resources_Create@16")
 extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
-extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")
-extern "C" void FUN_60e0f0(); KING_ALIAS("_FUN_60e0f0", "@MarineTask_Construct@12")
-extern "C" void FUN_6142f0(); KING_ALIAS("_FUN_6142f0", "@TerrainView_Construct@40")
+extern "C" int __cdecl Ini_GetDouble(const char* section, const char* key, double def, double* out, const char* file);
+extern "C" BYTE* __fastcall MarineTask_Construct(BYTE* self, void*, BYTE* world);
+extern "C" BYTE* __fastcall TerrainView_Construct(BYTE* s, void*, int x, int y, int z, int a3, int a4, int a5, int a6, int a7);
 extern "C" void FUN_6148a0(); KING_ALIAS("_FUN_6148a0", "@Terrain_FreeObjects@8")
 extern "C" int __cdecl fseek(FILE* f, long off, int origin);
-extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+extern "C" BYTE* __cdecl Fx_MakePlayerVehicle(BYTE* w, BYTE* fx, BYTE* pl);
 extern "C" void FUN_4d08d0(); KING_ALIAS("_FUN_4d08d0", "_Fx_MakePlayerVehicle")    // the player's vehicle for an effect (world, effect, player id)
 extern "C" void FUN_4ebd00(); KING_ALIAS("_FUN_4ebd00", "@PhysBody_Construct@64")    // constructs a vehicle (scene object, matrix, type)
-extern "C" void FUN_5291a0(); KING_ALIAS("_FUN_5291a0", "@Map_BuildRoads@8")
-extern "C" void FUN_544920(); KING_ALIAS("_FUN_544920", "@NetVehicle_Construct@40")    // constructs a network vehicle
+extern "C" void __fastcall Map_BuildRoads(BYTE* s, void*);
+extern "C" BYTE* __fastcall NetVehicle_Construct(BYTE* self, void*, BYTE* view, int type, int scene, int owner, const BYTE* place, int a6, int a7, BYTE* setup);
 extern "C" void FUN_5a44c0(); KING_ALIAS("_FUN_5a44c0", "@WeatherItem_Construct@84")    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
-extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")    // registers a named callback (name, function)
+extern "C" void __fastcall NameHash_Add(BYTE* h, void*, const char* name, void* v);
 
 KING_VAR(BYTE*, g_ws_wnd, 6cec6c)
 KING_VAR(BYTE*, g_ws_mainView, 696ca0)
@@ -2992,7 +3038,7 @@ struct WsPos { DWORD d[8]; };       // a PositionId passed by value
 
 static inline BYTE* Ws_Find(BYTE* scene, const char* name)
 {
-    return CallC<BYTE*>(FUN_5ef2b0, scene, name);
+    return Scene_FindObject(scene, name);
 }
 
 static inline int Ws_Com(void* com, unsigned off)
@@ -3009,10 +3055,9 @@ static BYTE* Ws_NetVehicle(BYTE* desc, BYTE* scene)
     if (v) {
         int d8 = F(int, desc, 8);
         Matrix m;
-        WsMat placed = *(WsMat*)CallC<Matrix*>(FUN_5aba40, &m, (Matrix*)(g_ws_6d2258 + 344 + F(int, desc, 0) % 1000 * 1488),
-                                               (Matrix*)(desc + 248));
+        WsMat placed = *(WsMat*)Matrix_Multiply(&m, (Matrix*)(g_ws_6d2258 + 344 + F(int, desc, 0) % 1000 * 1488), (Matrix*)(desc + 248));
         WsMat own = F(WsMat, desc, 248);
-        CallThis(FUN_544920, v, g_ws_mainView, F(int, desc, 0) % 1000, scene, &own, &placed, d8, 0, 0);
+        NetVehicle_Construct(v, 0, g_ws_mainView, F(int, desc, 0) % 1000, (int)scene, (int)&own, (const BYTE*)&placed, d8, 0, 0);
         F(void*, v, 0) = g_ws_vt650250;
         F(void*, v, 16) = g_ws_vt650164;
         F(void*, v, 272) = g_ws_vt650118;
@@ -3024,8 +3069,8 @@ static BYTE* Ws_NetVehicle(BYTE* desc, BYTE* scene)
 static void Ws_NetVehicleSetup(BYTE* v, BYTE* obj, BYTE* desc)
 {
     F(int, v, 360) = F(int, obj, 4);
-    CallThis(FUN_53fcd0, v, F(int, obj, 4) % 1000);
-    CallThis(FUN_543c00, v, F(int, desc, 0) / 1000);
+    Car_53fcd0(v, 0, F(int, obj, 4) % 1000);
+    Car_SetView(v, 0, F(int, desc, 0) / 1000);
     CallVirt(v + 16, 24, 1);
 }
 
@@ -3061,25 +3106,25 @@ void __fastcall Game_StartWorld(BYTE* self, void*)
     case 4: F(int, self, 2704) = 0x5dc000; break;
     }
     for (int i = 0; i < g_ws_carTypes; i++)
-        CallThis(FUN_5e50d0, self + 704, CallC<int>(FUN_52ea90, i) + 200);
+        Resources_NewRow(self + 704, 0, CarType_Number(i) + 200);
     BYTE* res = self + 704;
-    CallThis(FUN_5e50d0, res, 300);
-    CallThis(FUN_5e50d0, res, 100);
-    CallThis(FUN_5e50d0, res, 101);
-    CallThis(FUN_5e50d0, res, 1);
-    CallThis(FUN_5e50d0, res, 2);
-    CallThis(FUN_5e50d0, res, 3);
-    CallThis(FUN_5e50d0, res, 4);
+    Resources_NewRow(res, 0, 300);
+    Resources_NewRow(res, 0, 100);
+    Resources_NewRow(res, 0, 101);
+    Resources_NewRow(res, 0, 1);
+    Resources_NewRow(res, 0, 2);
+    Resources_NewRow(res, 0, 3);
+    Resources_NewRow(res, 0, 4);
     g_ws_prevCreate = F(void*, self, 2708);
     F(void*, self, 2708) = (void*)Game_CreateObject;
     g_ws_prevHook2 = F(DWORD, self, 2712);
     F(void*, self, 2712) = (void*)MissionObj_Event;
     g_ws_696340 = 0;
     g_ws_6f340c = g_ws_696900 * 8;
-    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c310, 10.0, &g_ws_6f32e8, g_ws_iniPath);
-    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c304, 0.3, &g_ws_6f3300, g_ws_iniPath);
-    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c2fc, 0.7, &g_ws_6f32f0, g_ws_iniPath);
-    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c2f4, 0.1, &g_ws_6f3308, g_ws_iniPath);
+    Ini_GetDouble((char*)s_ws_iniFile, (char*)s_ws_67c310, 10.0, &g_ws_6f32e8, g_ws_iniPath);
+    Ini_GetDouble((char*)s_ws_iniFile, (char*)s_ws_67c304, 0.3, &g_ws_6f3300, g_ws_iniPath);
+    Ini_GetDouble((char*)s_ws_iniFile, (char*)s_ws_67c2fc, 0.7, &g_ws_6f32f0, g_ws_iniPath);
+    Ini_GetDouble((char*)s_ws_iniFile, (char*)s_ws_67c2f4, 0.1, &g_ws_6f3308, g_ws_iniPath);
     BYTE* w = g_ws_wnd;
     g_ws_6f32f8 = (F(int, w, 1316) == 0 ? F(short, g_ws_6cec9c, 404) : F(short, g_ws_6cec98, 392)) * g_ws_64b5a0;
     double farv = (F(int, w, 1316) == 0 ? F(short, g_ws_6cec9c, 402) : F(short, g_ws_6cec98, 390)) * g_ws_64b5a0;
@@ -3103,26 +3148,26 @@ void __fastcall Game_StartWorld(BYTE* self, void*)
             float pos[3] = {(float)(odd * 40 - 20), (float)(n * 10 - 40), 0};
             Matrix mt, mr, m;
             Matrix* t = CallC<Matrix*>(FUN_5abc40, &mt, *(Vec3Bits*)pos);
-            Matrix* r = CallC<Matrix*>(FUN_5ac0c0, &mr, (float)angle);
-            CallC(FUN_5aba40, &m, r, t);
+            Matrix* r = Matrix_RotationZ(&mr, (float)angle);
+            Matrix_Multiply(&m, r, t);
             strcpy(F(char*, self, 488) + 44, s_ws_roomName);
             strcpy(F(char*, self, 488) + 12, s_ws_tb);
             int id = g_ws_6f340c + 100000;
             g_ws_67b734 = id;
-            int type = CallC<int>(FUN_51a4e0);
+            int type = Shell_CarTypeIndex();
             int b = F(int, g_ws_6cec94, 812);
-            CallThis(FUN_5e5130, g_ws_mainView + 704, id, (char*)s_ws_tb);
-            BYTE* row = CallThis<BYTE*>(FUN_5e5370, g_ws_mainView + 704, id);
+            Resources_Create(g_ws_mainView + 704, 0, id, (char*)s_ws_tb);
+            BYTE* row = (BYTE*)Resources_Get((BYTE**)(g_ws_mainView + 704), 0, id);
             BYTE* info = ((BYTE**)(g_ws_6d24bc + 12))[b + type * 372];
             if (info)
                 F(int, row, 16) = F(int, info, 16);
             else
                 Sys_Fatal(s_ws_672bb4, 0);
             void* player;
-            CallThis(FUN_41eb70, &player);
+            Iter_Players(&player, 0);
             BYTE obj[300];
-            CallThis(FUN_4cd670, obj, type + b * 1000, g_ws_6f340c, (char*)s_ws_roomName, &m, player, 0, 0, 0, 0);
-            CallThis(FUN_5e52b0, res, id, (char*)s_ws_tb, 300, obj);
+            Fx_ObjectInit(obj, 0, type + b * 1000, g_ws_6f340c, (char*)s_ws_roomName, &m, (int)player, 0, 0, 0, 0);
+            Resources_SetData((BYTE**)res, 0, id, (int)((char*)s_ws_tb), 300, obj);
         } else {
             char buf[32];
             GetPrivateProfileStringA(s_ws_iniFile, s_ws_67c2d8, s_ws_6729a8, buf, 32, g_ws_iniPath);
@@ -3132,7 +3177,7 @@ void __fastcall Game_StartWorld(BYTE* self, void*)
             if (strcmp(buf, s_ws_672994) == 0)
                 g_ws_696334 = 1;
             F(int, g_ws_mainView, 7944) = 1;
-            CallC(FUN_42db90);
+            AI_FreeList68b99c();
             w = g_ws_wnd;
             int mode = 0;
             if (F(int, w, 1316) == 1)
@@ -3149,7 +3194,7 @@ void __fastcall Game_StartWorld(BYTE* self, void*)
             F(BYTE, set, 24) = 0;
             F(double, set, 0) = (F(int, w, 1316) == 0 ? F(short, g_ws_6cec9c, 400) : F(short, g_ws_6cec98, 388)) * g_ws_64b5a0;
             if (F(int, w, 1316) != 0) {
-                F(char*, set, 8) = CallC<char*>(FUN_51a4a0);
+                F(char*, set, 8) = Shell_ScreenTitle();
                 w = g_ws_wnd;
             }
             F(BYTE*, set, 12) = g_ws_6cecd8 + 632;
@@ -3158,56 +3203,56 @@ void __fastcall Game_StartWorld(BYTE* self, void*)
             void* sub = 0;
             F(BYTE, set, 24) = F(int, w, 1312) != 0;
             if (g_ws_saveName[0]) {
-                stg = CallStd<void*>(FUN_51bfa0, g_ws_6cecd8 + 632, 1);
+                stg = Save_OpenStorage((const char*)(g_ws_6cecd8 + 632), 1);
                 if (!stg)
                     Sys_Fatal(s_ws_676848, 0);
                 (*(int(__stdcall**)(void*, wchar_t*, void*, DWORD, void*, DWORD, void**))(*(BYTE**)stg + 24))(
-                    stg, CallC<wchar_t*>(FUN_50bc90, (char*)s_ws_67683c), 0, 16, 0, 0, &sub);
+                    stg, Str_ToWide((char*)s_ws_67683c), 0, 16, 0, 0, &sub);
                 if (!sub) {
                     Ws_Com(stg, 8);
                     Sys_Fatal(s_ws_67c2b0, 0);
                 }
                 (*(int(__stdcall**)(void*, wchar_t*, void*, DWORD, void*, DWORD, void**))(*(BYTE**)sub + 24))(
-                    sub, CallC<wchar_t*>(FUN_50bc90, (char*)g_ws_saveName), 0, 16, 0, 0, &saved);
+                    sub, Str_ToWide((char*)g_ws_saveName), 0, 16, 0, 0, &saved);
                 if (!saved)
                     Sys_Fatal(s_ws_67c298, 0);
-                CallC(FUN_571d20, saved);
+                Copter_LoadStreams(saved);
             }
-            CallC(FUN_434780, saved, mode, set);
+            Ai_StartGame((const char*)saved, mode, set);
             if (saved)
                 Ws_Com(saved, 8);
             if (stg)
                 Ws_Com(stg, 8);
-            CallThis(FUN_5291a0, g_ws_6ce4f8);
+            Map_BuildRoads((BYTE*)g_ws_6ce4f8, 0);
         }
     }
 
-    CallC(FUN_4e0660, self);
-    CallThis(FUN_5d2540, g_ws_71e820, (char*)s_ws_67c280, (void*)Terrain_FollowCamera);
-    CallThis(FUN_5d2540, g_ws_71e820, (char*)s_ws_67c268, (void*)g_ws_569550);
+    Obj_HookHandlers(self);
+    NameHash_Add((BYTE*)g_ws_71e820, 0, (char*)s_ws_67c280, (void*)Terrain_FollowCamera);
+    NameHash_Add((BYTE*)g_ws_71e820, 0, (char*)s_ws_67c268, (void*)g_ws_569550);
     BYTE* marine = (BYTE*)operator new(160);
-    g_ws_marine = marine ? CallThis<BYTE*>(FUN_60e0f0, marine, g_ws_mainView) : 0;
+    g_ws_marine = marine ? MarineTask_Construct(marine, 0, g_ws_mainView) : 0;
     const char* dir = F(int, g_ws_wnd, 1316) ? s_ws_676870 : s_ws_676880;
     FILE* files[3];
     const char* names[3] = {s_ws_67c258, s_ws_67c23c, s_ws_67c22c};
     for (int k = 0; k < 3; k++) {
-        char* path = CallThis<char*>(FUN_5dc2d0, F(BYTE*, g_ws_wnd, 1356), dir, names[k]);
+        char* path = App_SubPath(F(BYTE*, g_ws_wnd, 1356), 0, dir, names[k]);
         files[k] = fopen(path, s_ws_rb);
         if (!files[k])
             Sys_Fatal(path, s_ws_67c24c);
     }
     BYTE* old = g_ws_terrain;
     if (old) {
-        CallThis(FUN_6148a0, old);
+        Terrain_FreeObjects(old, 0);
         operator delete(old);
     }
     BYTE* t = (BYTE*)operator new(112);
     if (t) {
         DWORD v[3] = {1163780096, 3314327552u, 0};      // 3550, -4480, 0
-        t = CallThis<BYTE*>(FUN_6142f0, t, v[0], v[1], v[2], 1161527296, 1161527296, files, 3, g_ws_device);
+        t = TerrainView_Construct(t, 0, v[0], v[1], v[2], 1161527296, 1161527296, (int)files, 3, (int)g_ws_device);
     }
     g_ws_terrain = t;
-    CallThis(FUN_5c4910, self);
+    Media_Clear5c4910(self, 0);
     if (F(int, g_ws_wnd, 1300) > 1) {
         FILE* f = F(FILE*, self, 7928);
         F(int, self, 7960) = 0;
@@ -3215,7 +3260,7 @@ void __fastcall Game_StartWorld(BYTE* self, void*)
         F(int, self, 7964) = 1072693248;
         F(int, self, 7940) = 0;
         fseek(f, -8, 2);
-        g_ws_6f34d4 = CallC<int>(FUN_5ab140, F(FILE*, self, 7928));
+        g_ws_6f34d4 = File_ReadInt(F(FILE*, self, 7928));
         fseek(F(FILE*, self, 7928), 0, 0);
         CallVirt(self, 216);
     }
@@ -3234,8 +3279,8 @@ int __cdecl Game_CreateObject(BYTE* obj, int flags)
         if (!(flags & 1)) {
             if (F(int, desc, 296) != g_ws_noPlayer) {
                 int id = F(int, desc, 296);
-                int f = CallC<int>(FUN_43f620, id);
-                CallC(FUN_43f690, id, f | 16);
+                int f = Player_Flags((BYTE*)id);
+                Player_SetFlags((BYTE*)id, f | 16);
             }
             return 1;
         }
@@ -3252,10 +3297,10 @@ int __cdecl Game_CreateObject(BYTE* obj, int flags)
         BYTE* scene = Ws_Find(0, (char*)desc + 16);
         if (F(int, desc, 296) != g_ws_noPlayer) {
             BYTE pd[200];
-            CallC(FUN_43fc40, F(int, desc, 296), pd);
+            Ai_GetPlayerData((BYTE*)(F(int, desc, 296)), pd);
             if (F(int, pd, 8) != 1) {
                 WsPos pos;
-                CallC(FUN_437520, &pos, F(int, desc, 296));
+                Ai_GetPositionId((DWORD*)&pos, (BYTE*)(F(int, desc, 296)));
                 // the room info: +20 the room object's name
                 BYTE room[44];
                 F(int, room, 0) = 0;
@@ -3276,8 +3321,8 @@ int __cdecl Game_CreateObject(BYTE* obj, int flags)
                 d[1] = (float)((double)g_ws_702634 + F(float, o, 40));
                 d[0] = (float)((double)g_ws_702630 + F(float, o, 36));
                 o = CallC<BYTE*>(FUN_43a780, orient, pos);
-                void* hit = CallC<void*>(FUN_4e5ba7, roomObj, o + 36, d);
-                hit = CallC<void*>(FUN_4e5ba7, hit, d, desc + 284);
+                void* hit = Query_HitObject(roomObj, (const Vec3Bits*)(o + 36), (const Vec3Bits*)d);
+                hit = Query_HitObject(hit, (const Vec3Bits*)d, (const Vec3Bits*)(desc + 284));
                 if (hit)
                     scene = (BYTE*)hit;
             }
@@ -3297,13 +3342,13 @@ int __cdecl Game_CreateObject(BYTE* obj, int flags)
         }
         F(int, fx, 16492) = 1;
         g_ws_67f878 = F(int, obj, 4);
-        BYTE* v = CallC<BYTE*>(FUN_4d08d0, g_ws_mainView, fx, F(int, desc, 296));
+        BYTE* v = Fx_MakePlayerVehicle(g_ws_mainView, fx, (BYTE*)(F(int, desc, 296)));
         int pl = F(int, desc, 296);
         if (pl != g_ws_noPlayer && F(int, (BYTE*)pl, 84) != F(int, obj, 4))
             Sys_Fatal(s_ws_67c398, 0);
-        CallThis(FUN_543c00, v, F(int, desc, 0) / 1000);
-        CallThis(FUN_546900, v, desc + 48);
-        CallThis(FUN_53fcd0, v, F(int, obj, 4) % 1000);
+        Car_SetView(v, 0, F(int, desc, 0) / 1000);
+        Car_ApplySetup(v, 0, (DWORD*)(desc + 48));
+        Car_53fcd0(v, 0, F(int, obj, 4) % 1000);
         F(BYTE*, obj, 28) = v;
         g_ws_created++;
         return 1;
@@ -3327,10 +3372,10 @@ int __cdecl Game_CreateObject(BYTE* obj, int flags)
             g_ws_67f878 = F(int, obj, 4);
             v = (BYTE*)operator new(21952);
             if (v)
-                v = CallThis<BYTE*>(FUN_4d0b10, v, g_ws_mainView, car, g_ws_noPlayer);
-            CallThis(FUN_543c00, v, F(int, desc, 0) / 1000);
-            CallThis(FUN_546900, v, desc + 48);
-            CallThis(FUN_53fcd0, v, F(int, obj, 4) % 1000);
+                v = Effect4d0b10_Construct(v, 0, (int)g_ws_mainView, (int)car, g_ws_noPlayer);
+            Car_SetView(v, 0, F(int, desc, 0) / 1000);
+            Car_ApplySetup(v, 0, (DWORD*)(desc + 48));
+            Car_53fcd0(v, 0, F(int, obj, 4) % 1000);
         }
         F(BYTE*, obj, 28) = v;
         return 0;
@@ -3539,28 +3584,34 @@ static char* const k_csHud[8][2] = {
     {s_cs67bc68, s_cs67bc58}, {s_cs67bc48, s_cs67bc38}, {s_cs67bc20, s_cs67bc08}, {s_cs67bbf8, s_cs67bbe8},
 };
 extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
-extern "C" void FUN_4d8ae0(); KING_ALIAS("_FUN_4d8ae0", "_Vehicle_Release")
-extern "C" void FUN_4d8b20(); KING_ALIAS("_FUN_4d8b20", "_Vehicle_LoadResource")
+extern "C" void __cdecl Vehicle_Release(int id);
+extern "C" void __cdecl Vehicle_LoadResource(int id);
+extern "C" void __fastcall Viewer_AttachVehicle(BYTE* s, void*, BYTE* v);
 extern "C" void FUN_531cc0(); KING_ALIAS("_FUN_531cc0", "@Viewer_AttachVehicle@12")
+extern "C" int __cdecl Vehicle_FindTaker(BYTE* v, int arg);
 extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
+extern "C" void __cdecl Copter_ApplyCargo();
 extern "C" void FUN_56f6d0(); KING_ALIAS("_FUN_56f6d0", "_Copter_ApplyCargo")
+extern "C" void __fastcall Engine_SetKeys(BYTE* self, void*, int a, int b);
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
-extern "C" void FUN_598da0(); KING_ALIAS("_FUN_598da0", "@Wasm_Get108@8")
+extern "C" int __fastcall Wasm_Get108(BYTE* self, void*);
+extern "C" void __fastcall WorldObj_Attach(BYTE* self, int, BYTE* src);
 extern "C" void FUN_597570(); KING_ALIAS("_FUN_597570", "@WorldObj_Attach@12")
-extern "C" void FUN_5975e0(); KING_ALIAS("_FUN_5975e0", "@SceneObj_Place@20")
-extern "C" void FUN_597a20(); KING_ALIAS("_FUN_597a20", "@TvCamera_CreateMonitor@8")
-extern "C" void FUN_598bd0(); KING_ALIAS("_FUN_598bd0", "@WorldObj_SetTarget@12")
-extern "C" void FUN_56afe0(); KING_ALIAS("_FUN_56afe0", "@Notice_Set@16")
-extern "C" void FUN_4ce0d0(); KING_ALIAS("_FUN_4ce0d0", "@Effect4ce0d0_Construct@20")
+extern "C" void __fastcall SceneObj_Place(BYTE* s, void*, int id, const BYTE* m, int);
+extern "C" void __fastcall TvCamera_CreateMonitor(BYTE* self, void*);
+extern "C" void __fastcall WorldObj_SetTarget(BYTE* self, int, void* t);
+extern "C" int __fastcall Notice_Set(BYTE* self, void*, int level, const char* text);
+extern "C" BYTE* __fastcall Effect4ce0d0_Construct(BYTE* self, void*, BYTE* v, int b, int c);
+extern "C" void __cdecl CopterWorld_Setup(BYTE* v);
 extern "C" void FUN_56d810(); KING_ALIAS("_FUN_56d810", "_CopterWorld_Setup")
-extern "C" void FUN_56d7d0(); KING_ALIAS("_FUN_56d7d0", "_Flags_Set6ce37c")
-extern "C" void FUN_483990(); KING_ALIAS("_FUN_483990", "_AI_StartXCycleTask")
+extern "C" void __cdecl Flags_Set6ce37c(unsigned flags);
+extern "C" void __cdecl AI_StartXCycleTask();
 extern "C" BYTE* __fastcall CopterTask_Construct(BYTE* self, void*, BYTE* v);
 extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game);
 
 static BYTE* CopterStart_Find(const char* name)
 {
-    return CallC<BYTE*>(FUN_5ef3d0, name);
+    return Objects_Find(name);
 }
 
 extern "C" {
@@ -3583,28 +3634,28 @@ void __cdecl CopterScreen_Start(BYTE* v)
     if (g_cs696340 == 0) {
         BYTE* o = g_cs6ef1f8 ? g_cs6ef1f8 - 4 : 0;
         BYTE* r = CallThis<BYTE*>(FUN_541960, o);
-        CallC(FUN_4d8ae0, F(int, r, 360));
-        CallC(FUN_4d8b20, g_cs67b734);
+        Vehicle_Release(F(int, r, 360));
+        Vehicle_LoadResource(g_cs67b734);
     }
-    CallThis(FUN_531cc0, g_csGame, g_cs696340);
+    Viewer_AttachVehicle(g_csGame, 0, (BYTE*)g_cs696340);
     int id;
-    if (*CallC<int*>(FUN_568f60, &id) != g_csNoCar) {
+    if (*Player_CarId(&id) != g_csNoCar) {
         BYTE info[192];
         int car;
-        car = *CallC<int*>(FUN_568f60, &car);
-        CallC(FUN_43fc40, car, info);
+        car = *Player_CarId(&car);
+        Ai_GetPlayerData((BYTE*)car, info);
         if (F(int, info, 24) >= 0)
-            CallC(FUN_55f4e0, F(BYTE*, g_csGame, 616), 0);
+            Vehicle_FindTaker(F(BYTE*, g_csGame, 616), 0);
     }
-    CallC(FUN_56f6d0);
+    Copter_ApplyCargo();
     if (F(short, g_cs6cec74, 396))
         F(int, g_csGame, 1404) |= 0x100;
     else
         F(int, g_csGame, 1404) &= ~0x100;
     if (g_cs696328)
-        CallThis(FUN_4ebaa0, F(BYTE*, F(BYTE*, g_csGame, 616), 21600) + 9984, 1, 1);
+        Engine_SetKeys(F(BYTE*, F(BYTE*, g_csGame, 616), 21600) + 9984, 0, 1, 1);
 
-    int mode2 = CallC<int>(FUN_568fd0) == 2;
+    int mode2 = Game_568fd0() == 2;
     char* const* names = mode2 ? k_csNames2 : k_csNames;
     const int n = sizeof k_csSlots / sizeof k_csSlots[0];
     for (int i = 0; i < 2; i++)
@@ -3619,19 +3670,19 @@ void __cdecl CopterScreen_Start(BYTE* v)
     for (int i = 2; i < n; i++)
         *(BYTE**)k_csSlots[i] = CopterStart_Find(names[i]);
 
-    BYTE* tv = CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0);
+    BYTE* tv = (BYTE*)Wasm_Get108((BYTE*)g_csTv6f68b0, 0);
     F(double, F(BYTE*, tv, 472), 40) = 0.2;
     F(double, F(BYTE*, v, 472), 40) = 0.2;
     char value[60];
     GetPrivateProfileStringA(s_cs672998, s_cs675dd8, s_cs6729a8, value, 60, iniPath);
-    CallThis(FUN_597570, g_csTv6f68b0, g_cs696340);
+    WorldObj_Attach((BYTE*)g_csTv6f68b0, 0, (BYTE*)g_cs696340);
     BYTE* p488 = F(BYTE*, v, 488);
     int target = p488 ? F(int, p488, 76) : 0;
     BYTE cam[48];
-    BYTE* c = CallThis<BYTE*>(FUN_5dbcc0, v, cam);
-    CallThis(FUN_5975e0, g_csTv6f68b0, target, c, 0);
-    CallThis(FUN_597a20, g_csTv6f68b0);
-    CallThis(FUN_598bd0, g_csTv6f68b0, 1);
+    BYTE* c = (BYTE*)Camera_Get(v, 0, cam);
+    SceneObj_Place((BYTE*)g_csTv6f68b0, 0, target, c, 0);
+    TvCamera_CreateMonitor((BYTE*)g_csTv6f68b0, 0);
+    WorldObj_SetTarget((BYTE*)g_csTv6f68b0, 0, (void*)1);
     if (F(int, g_csShell, 1300) > 1 && F(int, g_csGame, 1400) != 0)
         *g_cs6d1f10 = 1;
 
@@ -3639,16 +3690,16 @@ void __cdecl CopterScreen_Start(BYTE* v)
     p = p ? CopterTask_Construct(p, 0, v) : 0;
     g_cs6f3430 = p;
     if (F(int, g_csShell, 1316) == 2)
-        CallThis(FUN_56afe0, p, 2, 0);
+        Notice_Set(p, 0, 2, 0);
 
     BYTE* o = (BYTE*)operator new(40);
     if (o) {
-        CallThis(FUN_5d31e0, o, 9, (char*)s_cs67bd40);
+        Object_ConstructKind(o, 0, 9, (char*)s_cs67bd40);
         F(void*, o, 0) = g_csVtbl64fe80;
         F(int, o, 32) = -1;
         F(int, o, 36) = -1;
-        CallThis(FUN_5d3570, v + 2992, o);
-        CallThis(FUN_5d33d0, o, 1);
+        Owner_Attach(v + 2992, 0, o);
+        Queue_PostEvent2(o, 0, 1);
     }
     g_cs6f3434 = o;
 
@@ -3656,17 +3707,17 @@ void __cdecl CopterScreen_Start(BYTE* v)
     g_cs6f3438 = p ? CopterScreen_Construct(p, 0, v) : 0;
 
     p = (BYTE*)operator new(48);
-    p = p ? CallThis<BYTE*>(FUN_4ce0d0, p, v, (char*)s_cs67bd18, (char*)s_cs67bd2c) : 0;
+    p = p ? Effect4ce0d0_Construct(p, 0, v, (int)((char*)s_cs67bd18), (int)((char*)s_cs67bd2c)) : 0;
     g_cs696338 = p;
     CallVirt(p, 24, 1);
-    CallC(FUN_56d810, v);
-    CallC(FUN_56d7d0, 882);
+    CopterWorld_Setup(v);
+    Flags_Set6ce37c(882);
     if (!(F(int, g_csShell, 1300) > 1)
         && (F(int, g_csShell, 1316) == 0 || F(int, g_cs6cec98, 384) != 2))
-        CallC(FUN_483990);
+        AI_StartXCycleTask();
 
     for (int i = 0; i < 8; i++)
-        ((BYTE**)(char*)g_cs6f33c4)[i] = CopterStart_Find(k_csHud[i][CallC<int>(FUN_568fd0) == 2 ? 0 : 1]);
+        ((BYTE**)(char*)g_cs6f33c4)[i] = CopterStart_Find(k_csHud[i][Game_568fd0() == 2 ? 0 : 1]);
     g_cs6f33ec = CopterStart_Find(s_cs67bbdc);
     memset(g_cs6f3338, 0, 64);
     if (F(int, g_csShell, 1316) == 1)
@@ -3713,15 +3764,14 @@ KING_VAR(AsmLabel, s_cp67ba08, 67ba08)
 KING_VAR(AsmLabel, s_cp67ba00, 67ba00)
 KING_VAR(AsmLabel, s_cp67b8f8, 67b8f8)
 KING_VAR(AsmLabel, s_cp677a74, 677a74)
-extern "C" void FUN_4d06a0(); KING_ALIAS("_FUN_4d06a0", "@Fx_InitState@8")
-extern "C" void FUN_41be60(); KING_ALIAS("_FUN_41be60", "_Ai_GetPresentData")
-extern "C" void FUN_4401d0(); KING_ALIAS("_FUN_4401d0", "_Ai_GetMerchandiseProperties")
-extern "C" void FUN_441950(); KING_ALIAS("_FUN_441950", "_Ai_GetOrderInfo")
-extern "C" void FUN_440f70(); KING_ALIAS("_FUN_440f70", "_Ai_GetTownInfo")
-extern "C" void FUN_43f8d0(); KING_ALIAS("_FUN_43f8d0", "_Player_PlaceField20")
-extern "C" void FUN_576c00(); KING_ALIAS("_FUN_576c00", "@Obj576c00_DeletingDestructor@12")
-extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
-extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" BYTE* __fastcall Fx_InitState(BYTE* s, void*);
+extern "C" void __cdecl Ai_GetPresentData(BYTE* player, BYTE* present, BYTE* pd);
+extern "C" int __cdecl Ai_GetOrderInfo(int player, int town, int order, BYTE* oi);
+extern "C" int __cdecl Ai_GetTownInfo(int player, int id, BYTE* ti);
+extern "C" int __cdecl Player_PlaceField20(BYTE* id);
+extern "C" BYTE* __fastcall Obj576c00_DeletingDestructor(BYTE* self, void*, int flags);
+extern "C" void __fastcall Vec1_Free(BYTE** v, int);
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
 
 static __declspec(noinline) int Cp_Int(double d)
 {
@@ -3735,24 +3785,24 @@ static int Cp_TimeOdd(double k)
 
 static void Cp_Text(int x, int y, BYTE* font, const char* text, int align = 5)
 {
-    CallC(FUN_5ea170, F(BYTE*, g_cp696ca0, 12), x, y, font, text, align, 0);
+    Text_Draw((int)(F(BYTE*, g_cp696ca0, 12)), x, y, font, text, align, 0);
 }
 
 static void Cp_Image(int x, int y, BYTE* image)
 {
-    CallC(FUN_5b86c0, F(BYTE*, g_cp696ca0, 12), x, y, image);
+    Bitmap_Draw(F(BYTE*, g_cp696ca0, 12), x, y, image);
 }
 
 static const char* Cp_Str(int id)
 {
-    return CallC<const char*>(FUN_5d2e50, id);
+    return (const char*)Table71e858_Get(id);
 }
 
 static void Cp_Notice(int text)
 {
     BYTE* n = g_cpNotice;
     if (n && F(int, n, 60) == 0)
-        CallThis(FUN_56afe0, n, 8, Cp_Str(text));
+        Notice_Set(n, 0, 8, Cp_Str(text));
 }
 
 // the lines of an order info below its name at (x, y): price, time, rates and damage
@@ -3813,7 +3863,7 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
             break;
         int tx = x + 103, ty = y + 565;
         BYTE info[192];
-        CallC(FUN_43fc40, g_cp6f2dc0, info);
+        Ai_GetPlayerData((BYTE*)g_cp6f2dc0, info);
         Cp_Text(tx, ty + 15, g_cpFont, F(char*, info, 48));
         sprintf(buf, s_cp67ba18, g_cp6f2dd0, g_cp6f2dd4);
         Cp_Text(tx, ty + 35, g_cpFont, buf);
@@ -3824,7 +3874,7 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
         Cp_Text(tx + 44, ty + 95, g_cpFont, buf);
         sprintf(buf, s_cp66c8cc, Cp_Int(g_cp6f2da8));
         Cp_Text(tx + 44, ty + 115, g_cpFont, buf);
-        int k = CallC<int>(FUN_43f8d0, g_cp6f2dc0);
+        int k = Player_PlaceField20((BYTE*)g_cp6f2dc0);
         Cp_Image(x + 98, g_cpY + 454, F(BYTE*, g_cpImages, k * 4 + 368));
         Cp_Notice(72);
         break;
@@ -3841,11 +3891,11 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
             F(int, pd, k) = 0;
         F(int, pd, 72) = -1;
         F(int, pd, 76) = -1;
-        CallThis(FUN_4d06a0, pd + 80);
+        Fx_InitState(pd + 80, 0);
         F(int, pd, 272) = -1;
         F(int, pd, 276) = -1;
         int id;
-        CallC(FUN_41be60, *Player_CarId(&id), g_cp6f2f08, pd);
+        Ai_GetPresentData((BYTE*)(*Player_CarId(&id)), (BYTE*)g_cp6f2f08, pd);
         BYTE* oi = pd + 80;
         int merch = F(int, oi, 0);
         if (merch != -1) {
@@ -3853,17 +3903,17 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
             Cp_Image(x, y, g_cpImg6f33c4);
             BYTE mp[40];
             F(int, mp, 0) = 0;
-            CallC(FUN_4401d0, merch, mp);
+            Ai_GetMerchandiseProperties(merch, mp);
             int tx = x + 125, ty = y + 557;
             Cp_Text(tx, ty + 15, g_cpFont, F(char*, oi, 100));
             if (Cp_TimeOdd(2.0))
                 Cp_Text(tx, ty + 35, g_cpFont, F(char*, oi, 112));
             Cp_OrderLines(tx, ty, oi, mp, buf, s_cp66c8cc, s_cp67ba10);
         }
-        CallThis(FUN_44b090, oi + 88);
-        CallThis(FUN_404420, oi + 76);
-        CallThis(FUN_404420, oi + 64);
-        CallThis(FUN_404420, oi + 52);
+        Vec1_Free((BYTE**)(oi + 88), 0);
+        VecB_FreeStorage((BYTE**)(oi + 76), 0);
+        VecB_FreeStorage((BYTE**)(oi + 64), 0);
+        VecB_FreeStorage((BYTE**)(oi + 52), 0);
         break;
     }
     case 17: {
@@ -3874,9 +3924,9 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
             break;
         }
         BYTE oi[192];
-        CallThis(FUN_4d06a0, oi);
+        Fx_InitState(oi, 0);
         int id;
-        CallC(FUN_441950, *Player_CarId(&id), v / 100, v % 100, oi);
+        Ai_GetOrderInfo(*Player_CarId(&id), v / 100, v % 100, oi);
         int merch = F(int, oi, 0);
         if (merch != -1) {
             int x = g_cpX, y = g_cpY;
@@ -3886,7 +3936,7 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
             Cp_Text(x + 100, ty + 175, g_cpFont, buf, 4);
             BYTE mp[40];
             F(int, mp, 0) = 0;
-            CallC(FUN_4401d0, merch, mp);
+            Ai_GetMerchandiseProperties(merch, mp);
             BYTE st[19 * 16];
             Hud_InitLights(st);
             Player_GetState((BYTE*)*Player_CarId(&id), st);
@@ -3899,9 +3949,9 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
         }
         if (unsigned size = F(BYTE*, oi, 96) - F(BYTE*, oi, 88))
             Ai_PoolFree(F(BYTE*, oi, 88), size);
-        CallThis(FUN_44b090, oi + 76);
-        CallThis(FUN_44b090, oi + 64);
-        CallThis(FUN_44b090, oi + 52);
+        Vec1_Free((BYTE**)(oi + 76), 0);
+        Vec1_Free((BYTE**)(oi + 64), 0);
+        Vec1_Free((BYTE**)(oi + 52), 0);
         break;
     }
     case 19: {
@@ -3911,7 +3961,7 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
         for (int k = 8; k <= 40; k += 4)
             F(int, ti, k) = 0;
         int id;
-        CallC(FUN_440f70, *Player_CarId(&id), F(int, self, 36), ti);
+        Ai_GetTownInfo(*Player_CarId(&id), F(int, self, 36), ti);
         int x = g_cpX2 + 49;
         int count = F(int, ti, 32);
         int y = g_cpY2 + 551;
@@ -3926,7 +3976,7 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
         }
         BYTE* b = F(BYTE*, ti, 20);
         for (BYTE* p = b; p != F(BYTE*, ti, 24); p += 192)
-            CallThis(FUN_576c00, p, 0);
+            Obj576c00_DeletingDestructor(p, 0, 0);
         if (int n = (int)(F(BYTE*, ti, 28) - b) / 192)
             Ai_PoolFree(b, n * 192);
         break;
@@ -3965,9 +4015,8 @@ KING_VAR(AsmLabel, s_nt67b9e0, 67b9e0)
 KING_VAR(AsmLabel, s_nt67b9f0, 67b9f0)
 KING_VAR(AsmLabel, s_nt6731dc, 6731dc)
 extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")    // an image with a transparent color (surface, x, y, image, key)
-extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
 extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
-extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+extern "C" int __cdecl Dp_Send(int a, int b);
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 
@@ -3978,17 +4027,17 @@ static __declspec(noinline) int Nt_Int(double d)
 
 static const char* Nt_Str(int id)
 {
-    return CallC<const char*>(FUN_5d2e50, id);
+    return (const char*)Table71e858_Get(id);
 }
 
 static int Nt_Width(const char* text)
 {
-    return CallThis<int>(FUN_5ea0e0, g_ntFont, text);
+    return Font_TextWidth(g_ntFont, 0, text);
 }
 
 static void Nt_Text(int x, int y, BYTE* font, const char* text)
 {
-    CallC(FUN_5ea170, F(BYTE*, g_ntView, 12), x, y, font, text, 6, 0);
+    Text_Draw((int)(F(BYTE*, g_ntView, 12)), x, y, font, text, 6, 0);
 }
 
 static int Nt_ViewW()
@@ -4023,13 +4072,13 @@ void __fastcall Notice_Draw(BYTE* self, void*)
         lines[0] = Nt_Str(8);
         n = 1;
         BYTE msg[32];
-        CallThis(FUN_602be0, msg);
+        DpMessage_Construct(msg, 0);
         BYTE data[4];
         data[0] = g_nt696904;
         data[1] = 0;
-        CallThis(FUN_603110, msg, 951, data, 3);
-        CallC(FUN_6021b0, F(BYTE*, msg, 4), F(BYTE*, msg, 8) - F(BYTE*, msg, 4));
-        CallThis(FUN_602e80, msg);
+        Msg_Write120(msg, 0, 951, data, 3);
+        Dp_Send((int)(F(BYTE*, msg, 4)), F(BYTE*, msg, 8) - F(BYTE*, msg, 4));
+        MsgBuf_Destroy(msg, 0);
         break;
     }
     case 3:
@@ -4054,14 +4103,14 @@ void __fastcall Notice_Draw(BYTE* self, void*)
         break;
     case 5: {
         int car;
-        int on = !(CallC<DWORD>(FUN_43f620, *CallC<int*>(FUN_568f60, &car)) & 0x1000);
+        int on = !((DWORD)Player_Flags((BYTE*)(*Player_CarId(&car))) & 0x1000);
         int a = F(int, self, 52);
         const char* name;
-        if (CallC<int>(FUN_568fd0) == 2)
+        if (Game_568fd0() == 2)
             name = a == 0 ? s_nt67b9d0 : a == 1 && on ? s_nt67b9e0 : s_nt67b9f0;
         else
             name = a == 0 ? s_nt67b9a0 : a == 1 && on ? s_nt67b9b0 : s_nt67b9c0;
-        BYTE* img = CallC<BYTE*>(FUN_5ef3d0, name);
+        BYTE* img = Objects_Find(name);
         Nt_ViewW();
         int y = (Nt_ViewH() - F(WORD, img, 6)) / 2 + 20;
         int x = Nt_ViewW() - F(WORD, img, 4);
@@ -4090,13 +4139,13 @@ void __fastcall Notice_Draw(BYTE* self, void*)
             Nt_Text(x + 172, y + 279, F(BYTE*, g_ntMessages, 1288), buf);
         }
         if (F(int, self, 16) == 2)
-            if (BYTE* o = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_nt6731dc))
-                CallThis(FUN_5fdaf0, o, 1.0f, 1.0f);
+            if (BYTE* o = Objects_Find((const char*)s_nt6731dc))
+                Sound_Restart(o, 0, 1.0f, 1.0f);
         return;
     }
     case 10: {
-        sprintf(buf2, CallC<int>(FUN_568fd0) == 2 ? s_nt67b988 : s_nt67b978, F(int, self, 52));
-        BYTE* img = CallC<BYTE*>(FUN_5ef3d0, buf2);
+        sprintf(buf2, Game_568fd0() == 2 ? s_nt67b988 : s_nt67b978, F(int, self, 52));
+        BYTE* img = Objects_Find(buf2);
         if (!img)
             break;
         Nt_ViewW();
@@ -4122,7 +4171,7 @@ void __fastcall Notice_Draw(BYTE* self, void*)
             Nt_Text(a == 10 ? x + 82 : x + 137, a == 10 ? 318 : 158, g_ntFont, buf2);
         } else if (a == 15) {
             Nt_Width(F(const char*, self, 48));
-            CallC(FUN_5ea1b0, F(BYTE*, g_ntView, 12), x + 45, 227, 190, g_ntFont, F(const char*, self, 48), 6, 0);
+            Font_DrawText(F(BYTE*, g_ntView, 12), x + 45, 227, 190, g_ntFont, (const BYTE*)(F(const char*, self, 48)), 6, 0);
         }
         return;
     }
@@ -4132,7 +4181,7 @@ void __fastcall Notice_Draw(BYTE* self, void*)
     BYTE* img = F(BYTE*, self, 44);
     int x = (w - F(WORD, img, 20)) / 2;
     int y = Nt_ViewH() - F(WORD, img, 22);
-    CallC(FUN_5b86c0, F(BYTE*, g_ntView, 12), x, y, img);
+    Bitmap_Draw(F(BYTE*, g_ntView, 12), x, y, img);
     y += 20;
     for (int i = 0; i < n; i++, y += 10)
         Nt_Text((w - Nt_Width(lines[i])) / 2, y, g_ntFont, lines[i]);
@@ -4181,18 +4230,20 @@ KING_VAR(AsmLabel, s_ws67bae0, 67bae0)
 KING_VAR(AsmLabel, s_ws6751b8, 6751b8)
 KING_VAR(AsmLabel, s_ws67bad4, 67bad4)
 KING_VAR(AsmLabel, s_ws67bacc, 67bacc)
-extern "C" void FUN_5ff890(); KING_ALIAS("_FUN_5ff890", "_Sce_SetRootDir")
+extern "C" int __cdecl Sce_SetRootDir(const char* dir);
 extern "C" void FUN_5ffc30(); KING_ALIAS("_FUN_5ffc30", "_Set683c58")
-extern "C" void FUN_5ffa30(); KING_ALIAS("_FUN_5ffa30", "_Music_Start")
-extern "C" void FUN_574030(); KING_ALIAS("_FUN_574030", "_Colors_Init")
+extern "C" int __cdecl Music_Start();
+extern "C" void __cdecl Colors_Init(BYTE* surface);
+extern "C" void __cdecl World_ClearHits();
 extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
-extern "C" void FUN_5972d0(); KING_ALIAS("_FUN_5972d0", "_Pyramid_SetSize")
-extern "C" void FUN_5a7430(); KING_ALIAS("_FUN_5a7430", "@WeatherObj_Construct@32")
+extern "C" void __cdecl Pyramid_SetSize(BYTE* o);
+extern "C" BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char* a, const char* b, const char* c, int unused, const char* d);
 extern "C" void FUN_5a8960(); KING_ALIAS("_FUN_5a8960", "@Obj5a8960_Set@40")
-extern "C" void FUN_5a5720(); KING_ALIAS("_FUN_5a5720", "_Set7025b0")
+extern "C" void __cdecl Set7025b0(int v);
+extern "C" BYTE* __fastcall Wipers_Construct(BYTE* self, void*, int a);
 extern "C" void FUN_56d560(); KING_ALIAS("_FUN_56d560", "@Wipers_Construct@12")
 extern "C" void FUN_5a8e70(); KING_ALIAS("_FUN_5a8e70", "_Set6fb3e8")
-extern "C" void FUN_5a3e00(); KING_ALIAS("_FUN_5a3e00", "@Worobj5a3e00_Construct@28")
+extern "C" BYTE* __fastcall Worobj5a3e00_Construct(BYTE* s, void*, BYTE* w, int b, int c, int d, int e);
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 
@@ -4205,24 +4256,23 @@ void __cdecl CopterWorld_Setup(BYTE* v)
     if (F(int, g_wsShell, 1344)) {
         char dir[80];
         GetPrivateProfileStringA(s_ws6733c4, s_ws673384, s_ws6733ac, dir, 79, g_csIniPath);
-        CallC(FUN_5ff890, dir);
+        Sce_SetRootDir(dir);
         int n = F(short, g_ws6cec78, 384) * F(short, g_ws6cec78, 382);
         CallC(FUN_5ffc30, n * g_ws64b930);
         if (F(short, g_ws6cec78, 384) > 5)
-            CallC(FUN_5ffa30);
+            Music_Start();
     }
     g_ws6f3408 = 0;
-    CallC(FUN_574030, *F(BYTE**, F(BYTE*, v, 468), 100));
-    CallC(FUN_4e5ea8);
-    CallC(FUN_5972d0, v);
+    Colors_Init(*F(BYTE**, F(BYTE*, v, 468), 100));
+    World_ClearHits();
+    Pyramid_SetSize(v);
     F(int, F(BYTE*, v, 472), 84) = 0;
     F(int, F(BYTE*, v, 472), 88) = 0;
-    F(int, F(BYTE*, CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0), 472), 84) = 0;
-    F(int, F(BYTE*, CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0), 472), 88) = 0;
+    F(int, F(BYTE*, (BYTE*)Wasm_Get108((BYTE*)g_csTv6f68b0, 0), 472), 84) = 0;
+    F(int, F(BYTE*, (BYTE*)Wasm_Get108((BYTE*)g_csTv6f68b0, 0), 472), 88) = 0;
     BYTE* w = (BYTE*)operator new(584);
     if (w)
-        w = CallThis<BYTE*>(FUN_5a7430, w, v, (const char*)s_ws67bb08, (const char*)s_ws67bb10,
-                            (const char*)s_ws67bb18, (const char*)s_ws67bb20, (const char*)s_ws67bb28);
+        w = WeatherObj_Construct(w, 0, v, (const char*)s_ws67bb08, (const char*)s_ws67bb10, (const char*)s_ws67bb18, (int)((const char*)s_ws67bb20), (const char*)s_ws67bb28);
     g_wsWeather6f33ac = w;
     const DWORD* l1 = (const DWORD*)(char*)g_wsLight6f32e8;
     const DWORD* l2 = (const DWORD*)(char*)g_wsLight6f3300;
@@ -4236,9 +4286,9 @@ void __cdecl CopterWorld_Setup(BYTE* v)
     if (g_ws6cec68) {
         if (g_ws7208d4 && (g_ws6ced70 == 4 || g_ws6ced70 == 3) && F(short, g_ws6cec70, 420) > 90
             && F(short, g_ws6cec70, 422) > 90)
-            CallC(FUN_5a5720, 1);
+            Set7025b0(1);
         BYTE* wp = (BYTE*)operator new(216);
-        wp = wp ? CallThis<BYTE*>(FUN_56d560, wp, v) : 0;
+        wp = wp ? Wipers_Construct(wp, 0, (int)v) : 0;
         g_wsWipers6f3498 = wp;
         F(BYTE*, g_wsWeather6f33ac, 496) = wp;
         F(int, g_wsWipers6f3498, 212) = g_ws6f3318;
@@ -4247,8 +4297,8 @@ void __cdecl CopterWorld_Setup(BYTE* v)
         CallVirt(g_wsWipers6f3498, 24, 1);
         F(int, g_wsWipers6f3498, 164) = 0;
     }
-    g_ws6f34a4 = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_ws67baf4);
-    g_ws6f34a8 = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_ws67bae4);
+    g_ws6f34a4 = Objects_Find((const char*)s_ws67baf4);
+    g_ws6f34a8 = Objects_Find((const char*)s_ws67bae4);
     BYTE* p = F(BYTE*, v, 488);
     const char* model = F(const char*, F(BYTE*, p ? F(BYTE*, p, 76) : 0, 36), 60);
     if (strcmp(model, s_ws676834) && strcmp(model, s_ws676838) && strcmp(model, s_ws67b69c)) {
@@ -4265,14 +4315,14 @@ void __cdecl CopterWorld_Setup(BYTE* v)
     }
     BYTE* o = (BYTE*)operator new(56);
     if (o)
-        o = CallThis<BYTE*>(FUN_5a3e00, o, v, (const char*)s_ws67bad4, 8, 0, 1072693248);
+        o = Worobj5a3e00_Construct(o, 0, v, (int)((const char*)s_ws67bad4), 8, 0, 1072693248);
     CallVirt(o, 24, 1);
-    BYTE* t = F(BYTE*, CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0), 472);
+    BYTE* t = F(BYTE*, (BYTE*)Wasm_Get108((BYTE*)g_csTv6f68b0, 0), 472);
     F(int, t, 32) = 0;
     F(DWORD, t, 36) = 1080623104;          // +32: 200.0
     F(int, F(BYTE*, v, 472), 32) = 0;
     F(DWORD, F(BYTE*, v, 472), 36) = 1083129856;   // +32: 1000.0
-    CallC(FUN_5e1a10, CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_ws67bacc), g_ws696890 == 0 ? 1 : 0);
+    CallC(FUN_5e1a10, Scene_FindObject(0, (const char*)s_ws67bacc), g_ws696890 == 0 ? 1 : 0);
     g_ws696874 &= ~0x40u;
 }
 
@@ -4286,21 +4336,21 @@ KING_VAR(int, g_nm672984, 672984)
 KING_VAR(int, g_nm67b730, 67b730)
 KING_VAR(AsmLabel, s_nm67ba60, 67ba60)
 KING_VAR(AsmLabel, s_nm68d1c0, 68d1c0)
-extern "C" void FUN_50c7f0(); KING_ALIAS("_FUN_50c7f0", "_Carat_SetFlag")
-extern "C" void FUN_51f380(); KING_ALIAS("_FUN_51f380", "@Shell_SetMode@12")
-extern "C" void FUN_576660(); KING_ALIAS("_FUN_576660", "_Set6f3338")
+extern "C" void __cdecl Carat_SetFlag(int i);
+extern "C" void __fastcall Shell_SetMode(BYTE* s, void*, int m);
+extern "C" void __cdecl Set6f3338(int i, int v);
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
 extern "C" void FUN_5a40b0(); KING_ALIAS("_FUN_5a40b0", "@Node_Position@12")
 extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
 extern "C" void FUN_5a4f00(); KING_ALIAS("_FUN_5a4f00", "@Explosion_Construct@56")
-extern "C" void FUN_5a3fd0(); KING_ALIAS("_FUN_5a3fd0", "@Node_Matrix@12")
+extern "C" void __fastcall Node_Matrix(BYTE* self, void*, Matrix* out);
 extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
 extern "C" void FUN_56f910(); KING_ALIAS("_FUN_56f910", "_Game_GoToRoom")
 
 // the world resource of id
 static BYTE* Nm_Resource(int id)
 {
-    return CallThis<BYTE*>(FUN_5e5370, CallVirt<BYTE*>(g_nm696ca0, 112), id);
+    return (BYTE*)Resources_Get((BYTE**)(CallVirt<BYTE*>(g_nm696ca0, 112)), 0, id);
 }
 
 struct Nm48 { DWORD d[12]; };
@@ -4319,16 +4369,16 @@ int __cdecl CopterNet_Handle(int id, BYTE* data, int size)
 {
     switch (id) {
     case 951:
-        CallC(FUN_50c7f0, (int)data[0]);
+        Carat_SetFlag((int)data[0]);
         break;
     case 952:
         if (data[0] == 6)
             F(int, g_nm696ca0, 3036) = 1;
         else
-            CallThis(FUN_51f380, g_nm6ceca8, (int)data[0]);
+            Shell_SetMode(g_nm6ceca8, 0, (int)data[0]);
         break;
     case 953:
-        CallC(FUN_576660, (int)data[0], F(int, data, 1));
+        Set6f3338((int)data[0], F(int, data, 1));
         break;
     case 955:
         if (g_wsWeather6f33ac && (F(int, g_wsShell, 1300) > 1 || F(int, g_wsShell, 1316) == 2)) {
@@ -4353,7 +4403,7 @@ int __cdecl CopterNet_Handle(int id, BYTE* data, int size)
         CallThis(FUN_5a40b0, s, pos);
         BYTE* e = (BYTE*)operator new(192);
         if (e) {
-            BYTE* root = CallThis<BYTE*>(FUN_5ef640, s + 256);
+            BYTE* root = Node_Root(s + 256, 0);
             e = CallThis<BYTE*>(FUN_5a4f00, e, F(int, g_wsShell, 1356), root, pos[0], pos[1], pos[2], 0, 1073741824,
                                 (const char*)s_nm67ba60, (const char*)s_nm68d1c0, 3, 2576980378u, 1069128089);
         }
@@ -4386,8 +4436,8 @@ int __cdecl CopterNet_Handle(int id, BYTE* data, int size)
                 bits++;
             BYTE m[48];
             Cp_Identity48(m);
-            CallThis(FUN_5a3fd0, s, m);
-            CallC(FUN_4ba0c0, m, bits / 2, (void*)Obj56d0d0_Has416, s);
+            Node_Matrix(s, 0, (Matrix*)m);
+            Effect_New4dd2a0((int)m, bits / 2, (int)((void*)Obj56d0d0_Has416), (int)s);
         }
         F(int, s, 416) = v;
         break;
@@ -4426,30 +4476,30 @@ KING_VAR(AsmLabel, g_bc7025f0, 7025f0)
 extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
 extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
-extern "C" void FUN_441d70(); KING_ALIAS("_FUN_441d70", "_Ai_GetParkingInfo")
-extern "C" void FUN_4738c0(); KING_ALIAS("_FUN_4738c0", "_Player_SwapVehicles")
-extern "C" void FUN_476bc0(); KING_ALIAS("_FUN_476bc0", "_Player_Hire")
-extern "C" void FUN_4d90c0(); KING_ALIAS("_FUN_4d90c0", "_Fx_PlaceObjects")
+extern "C" int __cdecl Ai_GetParkingInfo(BYTE* p, BYTE* pi);
+extern "C" int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags);
+extern "C" int __cdecl Player_Hire(BYTE* a, BYTE* b);
+extern "C" void __cdecl Fx_PlaceObjects();
 extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
 extern "C" void FUN_531cc0(); KING_ALIAS("_FUN_531cc0", "@Viewer_AttachVehicle@12")
 extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
-extern "C" void FUN_541970(); KING_ALIAS("_FUN_541970", "@Obj541970_First@8")
+extern "C" BYTE* __fastcall Obj541970_First(BYTE* self, void*);
 extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
 extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
 extern "C" void FUN_56fae0(); KING_ALIAS("_FUN_56fae0", "_Net_SendObjectMessage")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 extern "C" void FUN_597570(); KING_ALIAS("_FUN_597570", "@WorldObj_Attach@12")
-extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" double __cdecl Vec3_Length(const Vec3* v);
 
 static int Bc_Copy(const int* id)
 {
     int t;
-    CallThis(FUN_41d300, &t, id);
+    Int_Copy(&t, 0, id);
     return t;
 }
 
-static int Bc_Flags(int id) { return CallC<int>(FUN_43f620, id); }
+static int Bc_Flags(int id) { return Player_Flags((BYTE*)id); }
 
 struct Bc_M48 { DWORD d[12]; };
 
@@ -4466,20 +4516,20 @@ void __cdecl Copter_BoardNearby()
     BYTE* o = 0;
     BYTE* res = 0;
     int id = g_bc68b990;
-    for (BYTE* it = CallThis<BYTE*>(FUN_541970, me); it;) {
+    for (BYTE* it = Obj541970_First(me, 0); it;) {
         BYTE* c = CallThis<BYTE*>(FUN_541960, it);
         if (c != F(BYTE*, g_bc6d2078, 616) && F(int, c, 20636) != g_bc68b990) {
             id = F(int, c, 20636);
             if (!(Bc_Flags(id) & 0x100)) {
-                res = CallThis<BYTE*>(FUN_5e5370, F(BYTE*, g_wsShell, 1356) + 704, F(int, (BYTE*)id, 84));
+                res = (BYTE*)Resources_Get((BYTE**)(F(BYTE*, g_wsShell, 1356) + 704), 0, F(int, (BYTE*)id, 84));
                 if ((Bc_Flags(id) & 64) || (Bc_Flags(id) & 0x400)) {
                     BYTE m1[48], m2[48];
                     float cp[3];
                     memcpy(cp, CallThis<BYTE*>(FUN_57de90, c + 16, m1) + 36, 12);
                     const float* mp =
-                        (const float*)(CallThis<BYTE*>(FUN_57de90, F(BYTE*, g_bc6d2078, 616) + 16, m2) + 36);
+                        (const float*)((BYTE*)SceneObj_Matrix1(F(BYTE*, g_bc6d2078, 616) + 16, 0, (Matrix*)m2) + 36);
                     float d[3] = {mp[0] - cp[0], mp[1] - cp[1], mp[2] - cp[2]};
-                    if (CallC<double>(FUN_5ab4d0, d) < g_bc64c32c) {
+                    if (Vec3_Length((const Vec3*)d) < g_bc64c32c) {
                         o = c;
                         break;
                     }
@@ -4494,7 +4544,7 @@ void __cdecl Copter_BoardNearby()
     if (!o)
         return;
     F(int, g_bc6f3434, 36) = -1;
-    if (CallC<int>(FUN_441d70, Bc_Copy(&id), (BYTE*)g_bc6f2d98))
+    if (Ai_GetParkingInfo((BYTE*)(Bc_Copy(&id)), (BYTE*)g_bc6f2d98))
         return;
     F(int, g_bc6f3434, 32) = (Bc_Flags(id) & 1024) ? 24 : 18;
     F(int, g_bc6f3434, 36) = 0;
@@ -4502,36 +4552,36 @@ void __cdecl Copter_BoardNearby()
         return;
     g_bc6f33f4 = 0;
     int car;
-    CallC(FUN_568f60, &car);
+    Player_CarId(&car);
     BYTE data[176];
-    CallC(FUN_43fc40, Bc_Copy(&id), data);
+    Ai_GetPlayerData((BYTE*)(Bc_Copy(&id)), data);
     if (id == g_bc68b990)
         return;
     if (Bc_Flags(id) & 64) {
-        CallC(FUN_4d90c0);
-        CallC(FUN_4e5ea8);
+        Fx_PlaceObjects();
+        World_ClearHits();
         int a = Bc_Copy(&id);
         int b = Bc_Copy(&car);
-        if (CallC<int>(FUN_4738c0, b, a, 0))
+        if (Player_SwapVehicles((BYTE*)b, (BYTE*)a, 0))
             return;
         BYTE* p = F(BYTE*, g_bc6d2078, 616);
         if (F(int, p, 21880))
-            CallC(FUN_55f4e0, p, 0);
+            Vehicle_FindTaker(p, 0);
         Bc_M48 m = *(Bc_M48*)(BYTE*)g_bc7025f0;
         CallC(FUN_56fae0, F(int, data, 36), F(int, res, 4), 0, 0, m);
-        CallThis(FUN_531cc0, g_bc6d2078, o);
+        Viewer_AttachVehicle(g_bc6d2078, 0, o);
         F(WORD, F(BYTE*, o, 21600), 10048) = 1;
         F(int, F(BYTE*, o, 21600), 10080) = 1;
         F(int, o, 20636) = car;
-        CallThis(FUN_597570, (BYTE*)g_bc6f68b0, o);
-        CallThis(FUN_4ebaa0, F(BYTE*, me, 21600) + 9984, 1, 1);
+        WorldObj_Attach((BYTE*)g_bc6f68b0, 0, o);
+        Engine_SetKeys(F(BYTE*, me, 21600) + 9984, 0, 1, 1);
         F(WORD, F(BYTE*, me, 21600), 10054) = 100;
         F(WORD, F(BYTE*, me, 21600), 10048) = 0;
         F(int, F(BYTE*, me, 21600), 10080) = 0;
         F(int, me, 20636) = g_bc6f2dc0;
     } else if (Bc_Flags(id) & 0x400) {
         int a = Bc_Copy(&id);
-        CallC(FUN_476bc0, a, id);
+        Player_Hire((BYTE*)a, (BYTE*)id);
     }
 }
 
@@ -4549,9 +4599,9 @@ KING_VAR(double, g_wu64b7a8, 64b7a8)
 KING_VAR(float, g_wu64fdd0, 64fdd0)
 KING_VAR(AsmLabel, g_wu6d1db8, 6d1db8)
 KING_VAR(AsmLabel, g_wu7025f0, 7025f0)
-extern "C" void FUN_530070(); KING_ALIAS("_FUN_530070", "@Controls_ActionState@12")
-extern "C" void FUN_5a58c0(); KING_ALIAS("_FUN_5a58c0", "@Obj5a58c0_Start@8")
-extern "C" void FUN_5a6420(); KING_ALIAS("_FUN_5a6420", "@Dial_Update@4")
+extern "C" int __fastcall Controls_ActionState(BYTE* self, void*, int i);
+extern "C" void __fastcall Obj5a58c0_Start(BYTE* self, void*);
+extern "C" void __fastcall Dial_Update(BYTE* s);
 extern "C" void FUN_5a9d40(); KING_ALIAS("_FUN_5a9d40", "@Wave_Value@16")
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
 extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
@@ -4565,10 +4615,10 @@ static double Wu_Level() { return CallThis<double>(FUN_5a9d40, g_wsWeather6f33ac
 static void Wu_Send(BYTE* w)
 {
     BYTE msg[40], b[2] = {F(BYTE, w, 212), 0};
-    CallThis(FUN_602be0, msg);
-    CallThis(FUN_603110, msg, 960, b, 2);
-    CallThis(FUN_5c3630, g_wu696ca0, msg);
-    CallThis(FUN_602e80, msg);
+    DpMessage_Construct(msg, 0);
+    Msg_Write120(msg, 0, 960, b, 2);
+    Media_RecordBlock(g_wu696ca0, 0, msg);
+    MsgBuf_Destroy(msg, 0);
 }
 
 extern "C" {
@@ -4600,7 +4650,7 @@ void __fastcall Weather_Update(BYTE* w)
             f &= ~16u;
         f &= ~64u;
     } else {
-        CallThis(FUN_5a58c0, w);
+        Obj5a58c0_Start(w, 0);
         f &= ~2u;
     }
     for (int off = 124; off <= 132; off += 8)
@@ -4610,7 +4660,7 @@ void __fastcall Weather_Update(BYTE* w)
             else
                 F(BYTE, o, 40) |= 1;
         }
-    if (CallThis<int>(FUN_530070, (BYTE*)g_wu6d1db8, 38)) {
+    if (Controls_ActionState((BYTE*)g_wu6d1db8, 0, 38)) {
         if (F(int, g_wsShell, 1300) == 1)
             Wu_Send(w);
         F(int, w, 212) ^= 1;
@@ -4625,14 +4675,14 @@ void __fastcall Weather_Update(BYTE* w)
         else {
             f |= 4;
             if (F(BYTE*, w, 208) && outside)
-                CallThis(FUN_5fdaf0, F(BYTE*, w, 208), 0.6f, 0.6f);
+                Sound_Restart(F(BYTE*, w, 208), 0, 0.6f, 0.6f);
         }
         F(int, w, 168) = 0;
     }
     g_wu6f6938 = f;
     if (BYTE* car = F(BYTE*, g_wu6d2078, 616))
-        F(double, w, 184) = CallC<double>(FUN_5ab4d0, car + 432);
-    CallThis(FUN_5a6420, w);
+        F(double, w, 184) = Vec3_Length((const Vec3*)(car + 432));
+    Dial_Update(w);
     BYTE m[48];
     memcpy(m, (BYTE*)g_wu7025f0, 48);
     if (BYTE* car = F(BYTE*, g_wu6d2078, 616)) {
@@ -4671,10 +4721,10 @@ void __cdecl Score_Build()
         Players_First(&cur);
         BYTE info[256];
         while (cur != g_noVehicle68b990h && n < 60) {
-            CallC(FUN_43fc40, cur, info);
+            Ai_GetPlayerData((BYTE*)cur, info);
             int type = F(int, info, 8);
             if ((type == 1 || type == 2) && F(double, info, 128) > g_sc64b780 &&
-                !(CallC<DWORD>(FUN_43f620, cur) & 0x4000)) {
+                !((DWORD)Player_Flags((BYTE*)cur) & 0x4000)) {
                 names[n] = F(char*, info, 48);
                 values[n] = F(double, info, 128);
                 n++;
@@ -4720,7 +4770,7 @@ void __cdecl Score_Build()
     BYTE info[256];
     if (F(int, g_6cec98, 384) < 2) {
         int id;
-        CallC(FUN_43fc40, *Player_CarId(&id), info);
+        Ai_GetPlayerData((BYTE*)(*Player_CarId(&id)), info);
         me = F(char*, info, 48);
     } else
         me = (const char*)(g_hd_6cecd8 + 632);
@@ -4731,13 +4781,13 @@ void __cdecl Score_Build()
 
 // === the radio messages of the helicopter screen (the update $L_56aa70)
 
-extern "C" void FUN_41fa00(); KING_ALIAS("_FUN_41fa00", "_Ai_LooseSemitrailer")
+extern "C" void __cdecl Ai_LooseSemitrailer(int player);
 KING_VAR(double, g_rm6f3470, 6f3470)
 KING_VAR(double, g_rm6f3478, 6f3478)
 KING_VAR(double, g_rm64b938, 64b938)
 KING_VAR(double, g_rm64b958, 64b958)
 
-static double Rm_Now() { return CallC<double>(FUN_6037e0); }
+static double Rm_Now() { return Tsc_Now(); }
 
 extern "C" {
 
@@ -4752,7 +4802,7 @@ void __fastcall Radio_Update(BYTE* s)
             F(int, s, 1268) = 1;
         else if (F(int, s, 1268) == 1) {
             int id;
-            CallC(FUN_41fa00, *Player_CarId(&id));
+            Ai_LooseSemitrailer(*Player_CarId(&id));
             F(int, s, 1268) = 2;
             g_rm6f3470 = Rm_Now();
         } else if (F(int, s, 1268) == 2) {
@@ -4788,7 +4838,7 @@ void __fastcall Radio_Update(BYTE* s)
             F(double, s, 32) = Rm_Now();
             F(int, s, 1216) = 0;
             if (F(BYTE*, s, 1280))
-                CallThis(FUN_5fdaf0, F(BYTE*, s, 1280), 0.2f, 0.2f);
+                Sound_Restart(F(BYTE*, s, 1280), 0, 0.2f, 0.2f);
         } else if (F(int, s, 1216)) {
             double lim = F(double, s, 32) + g_64b5f0;
             if (Rm_Now() > lim)
@@ -4803,19 +4853,19 @@ void __fastcall Radio_Update(BYTE* s)
         F(int, s, 1208) %= 4;
         F(char, s, 556) = 0;
     }
-    CallThis(FUN_5d32f0, s, 1);
+    Queue_PostEvent(s, 0, 1);
 }
 
 } // extern "C"
 
 // === loading a room module for the helicopter screen ($L_56dde0)
 
-extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
-extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
+extern "C" void __fastcall Room_Each(BYTE* self, void*, void* a, void* b);
+extern "C" BYTE* __fastcall Room_FindObject(BYTE* self, void*, const char* name);
 extern "C" void FUN_5a9d40(); KING_ALIAS("_FUN_5a9d40", "@Wave_Value@16")
-extern "C" void FUN_616770(); KING_ALIAS("_FUN_616770", "@Terrain616770_SetCorners@16")
+extern "C" void __fastcall Terrain616770_SetCorners(BYTE** self, void*, BYTE** c, int n);
 extern "C" void FUN_615230(); KING_ALIAS("_FUN_615230", "_Terrain_Call614f70@12")
-extern "C" void FUN_42aba0(); KING_ALIAS("_FUN_42aba0", "_Ai_OnModuleLoadX")
+extern "C" int __cdecl Ai_OnModuleLoadX(const char* name);
 KING_VAR(BYTE*, g_ml6f3420, 6f3420)
 KING_VAR(char*, g_ml6f3424, 6f3424)
 KING_VAR(int, g_ml7025bc, 7025bc)
@@ -4837,8 +4887,8 @@ void __fastcall Copter_OnModuleLoad(BYTE* s, void*, BYTE* r)
 {
     g_ml6f3420 = s;
     g_ml6f3424 = F(char*, r, 60);
-    CallThis(FUN_5ead00, r, (void*)AnmObj_OnLoad, 0);
-    BYTE* o = CallThis<BYTE*>(FUN_5ef390, r, (const char*)s_ml67bb58);
+    Room_Each(r, 0, (void*)AnmObj_OnLoad, 0);
+    BYTE* o = Room_FindObject(r, 0, (const char*)s_ml67bb58);
     g_ml7025bc = 0;
     if (o && F(int, o, 16) == 18 && g_6f33ac) {
         double n = CallVirt<int>(o, 60);
@@ -4846,13 +4896,13 @@ void __fastcall Copter_OnModuleLoad(BYTE* s, void*, BYTE* r)
     }
     const char* name = F(const char*, r, 60);
     if (!strcmp(name, s_ml676838) || !strcmp(name, s_ml676834)) {
-        BYTE* t[3] = {CallC<BYTE*>(FUN_5ef3d0, "ter000"), CallC<BYTE*>(FUN_5ef3d0, "ter050"),
-                      CallC<BYTE*>(FUN_5ef3d0, "ter100")};
-        CallThis(FUN_616770, g_terrain6f33b4, t, 3);
+        BYTE* t[3] = {Objects_Find("ter000"), Objects_Find("ter050"),
+                      Objects_Find("ter100")};
+        Terrain616770_SetCorners((BYTE**)g_terrain6f33b4, 0, t, 3);
         float m[12], c[12];
         memset(m, 0, 48);
         memcpy(m, g_q214_7025f0, 48);
-        memcpy(m, CallThis<float*>(FUN_5dbcc0, F(BYTE*, g_6cec6c, 1356), c), 48);
+        memcpy(m, (float*)Camera_Get(F(BYTE*, g_6cec6c, 1356), 0, c), 48);
         double d0 = g_q214_702620, d1 = g_q214_702624, d2 = g_q214_702628;
         float v[3];
         v[0] = (float)(d2 * m[6] + d0 * m[0] + d1 * m[3]);
@@ -4860,7 +4910,7 @@ void __fastcall Copter_OnModuleLoad(BYTE* s, void*, BYTE* r)
         v[2] = (float)(m[8] * d2 + m[5] * d1 + m[2] * d0);
         CallStd(FUN_615230, m + 9, v, (void*)g_q214_702630);
     }
-    CallC(FUN_42aba0, F(char*, r, 60));
+    Ai_OnModuleLoadX(F(char*, r, 60));
     if (g_ml7208cc)
         for (int i = 0; i < F(int, r, 72); i++) {
             BYTE* e = F(BYTE*, r, 76) + i * 124;
@@ -4875,7 +4925,7 @@ void __fastcall Copter_OnModuleLoad(BYTE* s, void*, BYTE* r)
 
 // === the load of the player's orders (FUN_56f6d0)
 
-extern "C" void FUN_520000(); KING_ALIAS("_FUN_520000", "_Car_ApplyPlayerSettings")
+extern "C" void __cdecl Car_ApplyPlayerSettings(BYTE* car);
 
 extern "C" {
 
@@ -4885,21 +4935,21 @@ void __cdecl Copter_ApplyCargo()
 {
     float a = 0, b = 0;
     BYTE oi[192];
-    CallThis(FUN_4d06a0, oi);
+    Fx_InitState(oi, 0);
     int id;
     Player_CarId(&id);
     if (id != g_noVehicle68b990h) {
         BYTE mp[40];
         F(int, mp, 0) = 0;
         for (unsigned i = 0; !Ai_GetPlayerOrderInfo((BYTE*)id, i, oi); i++) {
-            CallC(FUN_4401d0, F(int, oi, 0), mp);
+            Ai_GetMerchandiseProperties(F(int, oi, 0), mp);
             a = (float)(F(double, mp, 16) * F(double, oi, 8) + a);
             b = (float)(F(double, mp, 24) * F(double, oi, 8) + b);
         }
         BYTE* car = F(BYTE*, g_hd_game, 616);
         ((void(__fastcall*)(BYTE*, void*, float*, float*))(*(void***)car)[42])(car, 0, &b, &a);
     }
-    CallC(FUN_520000, F(BYTE*, g_hd_game, 616));
+    Car_ApplyPlayerSettings(F(BYTE*, g_hd_game, 616));
     static const int k_vecs[] = {88, 76, 64, 52};
     for (int off : k_vecs)
         if (int n = (int)(F(BYTE*, oi, off + 8) - F(BYTE*, oi, off)))
@@ -4911,10 +4961,9 @@ void __cdecl Copter_ApplyCargo()
 // === going to a room (FUN_56f910)
 
 extern "C" void FUN_531cc0(); KING_ALIAS("_FUN_531cc0", "@Viewer_AttachVehicle@12")    // the game takes object x as the player's
-extern "C" void Gr_Attach(); KING_ALIAS("_Gr_Attach", "@WorldObj_Attach@12")
-extern "C" void Gr_ScenesFind(); KING_ALIAS("_Gr_ScenesFind", "@Scenes_Find@12")
-extern "C" void Gr_LoadRoom(); KING_ALIAS("_Gr_LoadRoom", "@Fw_LoadRoom@16")
-extern "C" void Gr_ResRelease(); KING_ALIAS("_Gr_ResRelease", "@ResRef_Release@8")
+extern "C" BYTE* __fastcall Scenes_Find(BYTE* self, void*, const char* name);
+extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, const char* module);
+extern "C" void __fastcall ResRef_Release(BYTE* self, void*);
 KING_VAR(BYTE*, g_gr6d2078, 6d2078)
 KING_VAR(int, g_gr6f34b0, 6f34b0)
 KING_VAR(AsmLabel, g_gr6f68b0, 6f68b0)
@@ -4934,7 +4983,7 @@ void __cdecl Game_GoToRoom(int id, int, const char* scene, const char* area, Gr_
         scene = 0;
     if (area && !*area)
         area = 0;
-    BYTE* res = CallThis<BYTE*>(FUN_5e5370, g_696ca0 + 704, id);
+    BYTE* res = (BYTE*)Resources_Get((BYTE**)(g_696ca0 + 704), 0, id);
     if (res && F(int, res, 28)) {
         BYTE* pl = F(BYTE*, g_gr6d2078, 616);
         if (!pl)
@@ -4942,18 +4991,18 @@ void __cdecl Game_GoToRoom(int id, int, const char* scene, const char* area, Gr_
         if (scene) {
             BYTE* o = F(BYTE*, pl, 308);
             if (strcmp(scene, F(const char*, o, 60)))
-                g_gr6f34b0 = CallThis<int>(Gr_ScenesFind, g_696ca0, F(const char*, o, 60));
+                g_gr6f34b0 = (int)Scenes_Find(g_696ca0, 0, F(const char*, o, 60));
         }
         int x = F(int, res, 28);
-        CallThis(FUN_531cc0, g_gr6d2078, x);
-        CallThis(Gr_Attach, (BYTE*)g_gr6f68b0, x);
+        Viewer_AttachVehicle(g_gr6d2078, 0, (BYTE*)x);
+        WorldObj_Attach((BYTE*)g_gr6f68b0, 0, (BYTE*)x);
         return;
     }
     BYTE* w = g_696ca0;
     if (F(int, F(BYTE*, w, 484), 20)) {
         while (!F(int, F(BYTE*, g_696ca0, 484), 16))
             Sleep(10);
-        CallThis(Gr_ResRelease, F(BYTE*, g_696ca0, 484));
+        ResRef_Release(F(BYTE*, g_696ca0, 484), 0);
         w = g_696ca0;
     }
     g_gr675d3c = id;
@@ -4961,15 +5010,15 @@ void __cdecl Game_GoToRoom(int id, int, const char* scene, const char* area, Gr_
     memcpy(w + 652, &f, 48);
     strcpy(F(char*, g_696ca0, 488) + 44, area);
     strcpy(F(char*, g_696ca0, 488) + 12, scene);
-    CallThis(Gr_Attach, (BYTE*)g_gr6f68b0, 0);
-    CallThis(Gr_LoadRoom, g_696ca0, scene, area);
+    WorldObj_Attach((BYTE*)g_gr6f68b0, 0, 0);
+    Fw_LoadRoom(g_696ca0, 0, scene, area);
 }
 
 } // extern "C"
 
 // === collecting the sharp corners near a point (56f450)
 
-extern "C" void Ec_GetWorld(); KING_ALIAS("_Ec_GetWorld", "@Node_GetWorld@12")
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);
 KING_VAR(BYTE*, g_ec6f34c4, 6f34c4)
 KING_VAR(AsmLabel, s_ecSharp, 67c18c)       // "sharp"
 KING_VAR(AsmLabel, g_ec7025f0, 7025f0)
@@ -4991,10 +5040,10 @@ int __cdecl Enum_SharpCallback(BYTE* n)
         BYTE* p = F(BYTE*, n, 44);
         if (F(int, p, 16) == 4) {
             if ((fr = F(BYTE*, p, 60)) != 0)
-                CallThis(Ec_GetWorld, fr, m);
+                Node_GetWorld(fr, 0, m);
         } else if (g_ec6f34c4) {
             fr = g_ec6f34c4;
-            CallThis(Ec_GetWorld, fr, m);
+            Node_GetWorld(fr, 0, m);
         }
         double r = *F(float*, n, 60);
         const float* c = F(const float*, n, 72);
@@ -5003,7 +5052,7 @@ int __cdecl Enum_SharpCallback(BYTE* n)
         float wz = (float)((double)m[2] * c[0] + (double)m[8] * c[2] + (double)m[5] * c[1] + m[11]);
         float d[3] = {(float)(wx - *(float*)&g_6f3248), (float)((double)wy - *(float*)&g_6f324c),
                       (float)((double)wz - *(float*)&g_6f3250)};
-        double l = CallC<double>(FUN_5ab4d0, d);
+        double l = Vec3_Length((const Vec3*)d);
         if (!(l > *(float*)&g_6f3254 + r)) {
             g_6f2e58[g_6f34c0] = n;
             g_6f326c[g_6f34c0] = (int)fr;
@@ -5034,18 +5083,17 @@ int __cdecl Enum_SharpCallback(BYTE* n)
 extern "C" void __fastcall Vec_FreeStorage56bb30(BYTE** v)
 {
     if (int n = (int)(v[2] - v[0]))
-        CallC(FUN_44b4a0, v[0], n);
+        Ai_PoolFree(v[0], n);
 }
 
-extern "C" void Rr_FreeVectors(); KING_ALIAS("_Rr_FreeVectors", "@Rec440dd0_FreeVectors@8")
 // [$L_56cbc0] frees the vector of 192-byte route records at +20 (each with its vectors)
 extern "C" void __fastcall Routes_Free(BYTE* s)
 {
     BYTE** v = (BYTE**)(s + 20);
     for (BYTE* e = v[0]; e != v[1]; e += 192)
-        CallThis(Rr_FreeVectors, e);
+        Rec440dd0_FreeVectors(e, 0);
     if (int n = (int)(v[2] - v[0]) / 192)
-        CallC(FUN_44b4a0, v[0], n * 192);
+        Ai_PoolFree(v[0], n * 192);
 }
 
 // === a mission object's events (a handler at $L_573e40)
@@ -5057,7 +5105,7 @@ KING_VAR(int, g_mo6f34ac, 6f34ac)
 // clears the bits of player id's flags
 static void Mo_Clear(int id, DWORD bits)
 {
-    CallC(Mo_SetFlags, id, CallC<DWORD>(FUN_43f620, id) & ~bits);
+    CallC(Mo_SetFlags, id, (DWORD)Player_Flags((BYTE*)id) & ~bits);
 }
 
 extern "C" {
@@ -5112,14 +5160,12 @@ int __cdecl MissionObj_Event(int* e, int a)
 
 extern "C" int __cdecl rand(void);
 extern "C" void FUN_567440(); KING_ALIAS("_FUN_567440", "_Bullet_Fly")
-extern "C" void Tf_GameTime(); KING_ALIAS("_Tf_GameTime", "_Game_Time")
-extern "C" void Tf_Matrix1(); KING_ALIAS("_Tf_Matrix1", "@SceneObj_Matrix1@12")
-extern "C" void Tf_Normalized(); KING_ALIAS("_Tf_Normalized", "_Vec3_Normalized")
+extern "C" Vec3* __cdecl Vec3_Normalized(Vec3* out, const Vec3* v);
 KING_VAR(double, g_tf64fd40, 64fd40)
 KING_VAR(double, g_tf64fd38, 64fd38)
 KING_VAR(double, g_tf64b670, 64b670)
 
-static double Tf_Now() { return CallC<double>(Tf_GameTime); }
+static double Tf_Now() { return Game_Time(); }
 
 extern "C" {
 
@@ -5140,7 +5186,7 @@ void __fastcall Turret_Fire(BYTE* s)
         return;
     }
     BYTE m[48];
-    const float* P = (const float*)(CallThis<BYTE*>(Tf_Matrix1, t + 16, m) + 36);
+    const float* P = (const float*)((BYTE*)SceneObj_Matrix1(t + 16, 0, (Matrix*)m) + 36);
     double lx = (double)F(float, s, 52) * P[0] + (double)F(float, s, 76) * P[2] + (double)F(float, s, 64) * P[1]
         + F(float, s, 88);
     float L[3];
@@ -5151,7 +5197,7 @@ void __fastcall Turret_Fire(BYTE* s)
     L[1] = (float)lx;
     L[0] = (float)((rand() * g_tf64fd38 + g_tf64b670) * L[0] * g_64b840);
     float nb[3];
-    const float* n = CallC<const float*>(Tf_Normalized, nb, L);
+    const float* n = (const float*)Vec3_Normalized((Vec3*)nb, (const Vec3*)L);
     double ay = x87_fabs(L[1]);
     float ax = (float)(n[0] * ay), am = (float)(n[1] * ay);
     double az = n[2] * ay;
@@ -5174,13 +5220,10 @@ void __fastcall Turret_Fire(BYTE* s)
 
 // === the helicopter's flight step (FUN_561f30)
 
-extern "C" void Hf_FrameTime(); KING_ALIAS("_Hf_FrameTime", "_Game_FrameTime")
-extern "C" void Hf_Time(); KING_ALIAS("_Hf_Time", "_Game_Time")
-extern "C" void Hf_NormalizeThis(); KING_ALIAS("_Hf_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void __fastcall Vec3_NormalizeThis(Vec3* self, void*);
 extern "C" void Hf_ToAngles(); KING_ALIAS("_Hf_ToAngles", "_Matrix_ToAngles")
-extern "C" void Hf_MulAssign(); KING_ALIAS("_Hf_MulAssign", "@Vec3_MulAssign@16")
-extern "C" void Hf_FromPose(); KING_ALIAS("_Hf_FromPose", "_Matrix_FromPose")
-extern "C" void Hf_HitObject(); KING_ALIAS("_Hf_HitObject", "_Query_HitObject")
+extern "C" Vec3* __fastcall Vec3_MulAssign(Vec3* self, void*, Vec3* ret, float s);
+extern "C" BYTE* __cdecl Matrix_FromPose(BYTE* out, double x, double y, double z, double a, double b, double c);
 KING_VAR(float, g_hf6f2c3c, 6f2c3c)
 KING_VAR(float, g_hf67b288, 67b288)
 KING_VAR(float, g_hf67b298, 67b298)
@@ -5217,8 +5260,8 @@ extern "C" {
 // its new pose and frame (+0 / +48) and object (+96)
 void __fastcall Copter_FlightStep(BYTE* s, void*)
 {
-    float dt = (float)CallC<double>(Hf_FrameTime);
-    CallC<double>(Hf_Time);
+    float dt = (float)Game_FrameTime();
+    Game_Time();
     const float* M = (const float*)s;
     const float* Y = &g_axisY.x;
     const float* Z = &g_axisZ.x;
@@ -5229,7 +5272,7 @@ void __fastcall Copter_FlightStep(BYTE* s, void*)
     up.x = (float)((double)Z[0] * M[0] + (double)Z[2] * M[6] + (double)Z[1] * M[3]);
     up.y = (float)((double)Z[0] * M[1] + (double)Z[2] * M[7] + (double)Z[1] * M[4]);
     up.z = (float)((double)Z[2] * M[8] + (double)Z[1] * M[5] + (double)Z[0] * M[2]);
-    CallThis(Hf_NormalizeThis, &fwd);
+    Vec3_NormalizeThis(&fwd, 0);
     side = Hf_Set((double)fwd.y * Z[2] - (double)Z[1] * fwd.z, (double)Z[0] * fwd.z - (double)fwd.x * Z[2],
                   (double)fwd.x * Z[1] - (double)fwd.y * Z[0]);
     F(float, s, 128) = (float)((double)g_hf6f2c3c * F(float, s, 3448));
@@ -5315,8 +5358,8 @@ void __fastcall Copter_FlightStep(BYTE* s, void*)
     float e = (float)(L3 > g_hf64d0c0 ? g_hf64b670 : L3 * g_hf64fcc8);
     Vec3_Scaled(&sd, &side, (float)Vec3_Dot(&vel, &side));
     zv = Hf_Set(0, 0, vel.z);
-    CallThis(Hf_MulAssign, &sd, &t2, F(float, s, 3212));
-    CallThis(Hf_MulAssign, &fw2, &t2, F(float, s, 3216));
+    Vec3_MulAssign(&sd, 0, &t2, F(float, s, 3212));
+    Vec3_MulAssign(&fw2, 0, &t2, F(float, s, 3216));
     sd.z = (float)((double)sd.z * F(float, s, 3220));
     const Vec3* nv = Vec3_Add(&t3, Vec3_Add(&t2, &sd, &fw2), &zv);
     F(Vec3, s, 100) = *nv;
@@ -5343,13 +5386,13 @@ void __fastcall Copter_FlightStep(BYTE* s, void*)
     float rollAng = (float)Vec3_Length(Vec3_Scaled(&st, &spin, dt));
     Matrix look, pose, m52, m196, rz2;
     Matrix_LookAt(&look, g_zeroVec, spin, rollAng);
-    CallC(Hf_FromPose, &pose, 0.0, 0.0, 0.0, head, pitch, roll);
+    Matrix_FromPose((BYTE*)&pose, 0.0, 0.0, 0.0, head, pitch, roll);
     Matrix_RotationZ(&rz2, (float)((double)dt * F(float, s, 120)));
     Matrix_Multiply(&m196, Matrix_Multiply(&m52, &look, &pose), &rz2);
     m196.m[9] = npos[0];
     m196.m[10] = npos[1];
     m196.m[11] = npos[2];
-    BYTE* o = CallC<BYTE*>(Hf_HitObject, F(BYTE*, s, 96), pos, npos);
+    BYTE* o = (BYTE*)Query_HitObject(F(BYTE*, s, 96), (const Vec3Bits*)pos, (const Vec3Bits*)npos);
     if (!o)
         o = F(BYTE*, s, 96);
     F(BYTE*, s, 96) = o;
@@ -5363,9 +5406,8 @@ void __fastcall Copter_FlightStep(BYTE* s, void*)
 
 // === the helicopter heading for its target (FUN_5665c0)
 
-extern "C" void Ht_ClearAhead(); KING_ALIAS("_Ht_ClearAhead", "@Copter_SideDrift@12")
+extern "C" float __fastcall Copter_SideDrift(BYTE* s, void*, const float* p);
 extern "C" void Ht_NodePos(); KING_ALIAS("_Ht_NodePos", "_Node_Position")
-extern "C" void Ht_MulAssign(); KING_ALIAS("_Ht_MulAssign", "@Vec3_MulAssign@16")
 KING_VAR(double, g_ht64b678, 64b678)
 KING_VAR(double, g_ht64b670, 64b670)
 KING_VAR(double, g_ht64b660, 64b660)
@@ -5397,7 +5439,7 @@ int __fastcall Copter_HeadForTarget(BYTE* s, void*)
     d.z = 0;
     float L = (float)Vec3_Length(&d);
     if (L > g_ht64b678)
-        CallThis(Ht_MulAssign, &d, &tmp, (float)(g_ht64b670 / L));
+        Vec3_MulAssign(&d, 0, &tmp, (float)(g_ht64b670 / L));
     const float* M = (const float*)s;
     const float* Y = &g_axisY.x;
     const float* Z = &g_axisZ.x;
@@ -5409,7 +5451,7 @@ int __fastcall Copter_HeadForTarget(BYTE* s, void*)
     double cz = fy * Z[0] - fx * Z[1];
     Vec3 e = Ht_Set((double)cy * Z[2] - cz * Z[1], cz * Z[0] - (double)cx * Z[2], (double)cx * Z[1] - (double)cy * Z[0]), n;
     Vec3_Normalized(&n, &e);
-    if (CallThis<double>(Ht_ClearAhead, s, &n) + g_ht64c320 > L)
+    if ((double)Copter_SideDrift(s, 0, (const float*)&n) + g_ht64c320 > L)
         return 1;
     F(int, s, 3392) = 1;
     F(int, s, 3440) = 0;
@@ -5439,9 +5481,8 @@ int __fastcall Copter_HeadForTarget(BYTE* s, void*)
 
 // === a ray against the terrain (a callback at $L_569550)
 
-extern "C" void Rt_SegmentHits(); KING_ALIAS("_Rt_SegmentHits", "@Terrain_SegmentHits@28")
-extern "C" void Rt_ValueFree(); KING_ALIAS("_Rt_ValueFree", "@Value_Free@4")
-extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" int __fastcall Terrain_SegmentHits(BYTE* s, void*, const float* a, const float* b, int c, int d, int e);
+extern "C" void __fastcall Value_Free(int* s);
 KING_VAR(BYTE, g_rt6f2d10, 6f2d10)
 KING_VAR(DWORD, g_rtHitA, 6f2cf8)                // the hit's description {1, 10, 0, buffer}
 KING_VAR(DWORD, g_rtHitB, 6f3150)                // the hit's value {8, ?, terrain}
@@ -5452,7 +5493,7 @@ static void __cdecl Rt_FreeA()
         operator delete((void*)(&g_rtHitA)[3]);
 }
 
-static void __cdecl Rt_FreeB() { CallThis(Rt_ValueFree, &g_rtHitB); }
+static void __cdecl Rt_FreeB() { Value_Free((int*)&g_rtHitB); }
 
 extern "C" {
 
@@ -5460,7 +5501,7 @@ extern "C" {
 // +64 are set and it takes the terrain's hit records (+100, +108); 1 then
 int __cdecl Terrain_RayCallback(int, BYTE* r)
 {
-    if (!CallThis<int>(Rt_SegmentHits, g_terrain6f33b4, r + 76, r + 88, F(int, r, 0), r + 52, r + 64))
+    if (!Terrain_SegmentHits(g_terrain6f33b4, 0, (const float*)(r + 76), (const float*)(r + 88), F(int, r, 0), (int)(r + 52), (int)(r + 64)))
         return 0;
     DWORD* A = &g_rtHitA;
     if (!(g_rt6f2d10 & 1))
@@ -5491,9 +5532,7 @@ int __cdecl Terrain_RayCallback(int, BYTE* r)
 
 // === the helicopter's frame by its state (FUN_566970)
 
-extern "C" void Cs_HeadFor(); KING_ALIAS("_Cs_HeadFor", "@Copter_HeadForTarget@8")
-extern "C" void Cs_InList(); KING_ALIAS("_Cs_InList", "_Car_InList")
-extern "C" void Cs_MulAssign(); KING_ALIAS("_Cs_MulAssign", "@Vec3_MulAssign@16")
+extern "C" int __fastcall Copter_HeadForTarget(BYTE* s, void*);
 KING_VAR(double, g_cs2_64b6e0, 64b6e0)
 KING_VAR(double, g_cs2_64b918, 64b918)
 KING_VAR(float, g_cs2_64d2f8, 64d2f8)
@@ -5555,7 +5594,7 @@ void __fastcall Copter_Frame(BYTE* s, void*)
     BYTE* t = F(BYTE*, s, 3248);
     if (t)
     {
-        t = CallC<BYTE*>(Cs_InList, t);
+        t = Car_InList(t);
         F(BYTE*, s, 3248) = t;
         if (t && CallThis<int>((void (*)())F(void**, t, 0)[1], t) == 1)
             F(int, s, 3252) = F(int, F(BYTE*, s, 3248), 21880);
@@ -5566,7 +5605,7 @@ void __fastcall Copter_Frame(BYTE* s, void*)
     {
         int st = F(int, s, 3236);
         if (st == 6 || st == 5 || st == 7)
-            CallThis(FUN_5662f0, s, 3);
+            Copter_SetState(s, 0, 3);
     }
     F(int, s, 3392) = 1;
     F(int, s, 3388) = 1;
@@ -5575,12 +5614,12 @@ void __fastcall Copter_Frame(BYTE* s, void*)
     switch (F(int, s, 3236))
     {
     case 4:
-        if (CallThis<int>(Cs_HeadFor, s))
-            CallThis(FUN_5662f0, s, 3);
+        if (Copter_HeadForTarget(s, 0))
+            Copter_SetState(s, 0, 3);
         Copter_566550(s, 0);
         break;
     case 11:
-        if (CallThis<int>(Cs_HeadFor, s))
+        if (Copter_HeadForTarget(s, 0))
             Copter_ClimbState(s);
         Copter_566550(s, 0);
         break;
@@ -5609,7 +5648,7 @@ void __fastcall Copter_Frame(BYTE* s, void*)
         {
             F(int, s, 3248) = 0;
             F(int, s, 3252) = 0;
-            CallThis(FUN_5662f0, s, 11);
+            Copter_SetState(s, 0, 11);
             break;
         }
         float q = (float)((double)F(float, s, 108) * F(float, s, 76) + (double)F(float, s, 104) * F(float, s, 64)
@@ -5654,7 +5693,7 @@ void __fastcall Copter_Frame(BYTE* s, void*)
         if (dist > g_cs2_64b678)
         {
             Vec3 tmp;
-            CallThis(Cs_MulAssign, &e, &tmp, (float)(g_cs2_64b670 / dist));
+            Vec3_MulAssign(&e, 0, &tmp, (float)(g_cs2_64b670 / dist));
         }
         int ts = Copter_TargetState(s, 0);
         if (ts)
@@ -5663,12 +5702,12 @@ void __fastcall Copter_Frame(BYTE* s, void*)
             if (ts == -1)
             {
                 F(int, s, 3240) = 0;
-                CallThis(FUN_5662f0, s, 4);
+                Copter_SetState(s, 0, 4);
             }
             else if (ts == 1)
-                CallThis(FUN_5662f0, s, 4);
+                Copter_SetState(s, 0, 4);
             else if (ts == 2)
-                CallThis(FUN_5662f0, s, 3);
+                Copter_SetState(s, 0, 3);
             break;
         }
         int st = F(int, s, 3236);
@@ -5759,7 +5798,7 @@ void __fastcall Copter_Frame(BYTE* s, void*)
         if (st == 4 || st == 3)
         {
             if (!Copter_TargetState(s, 0))
-                CallThis(FUN_5662f0, s, F(int, s, 3240));
+                Copter_SetState(s, 0, F(int, s, 3240));
         }
         else
             F(int, s, 3240) = 0;
@@ -5770,13 +5809,13 @@ void __fastcall Copter_Frame(BYTE* s, void*)
 
 // === the helicopter's warnings to its target (FUN_568090)
 
-extern "C" void Cw_State20944(); KING_ALIAS("_Cw_State20944", "_Car_State20944")
-extern "C" void Cw_Chase6(); KING_ALIAS("_Cw_Chase6", "@Copter_Chase6@12")
-extern "C" void Cw_Chase10(); KING_ALIAS("_Cw_Chase10", "@Copter_Chase10@12")
-extern "C" void Cw_Chase7(); KING_ALIAS("_Cw_Chase7", "@Copter_Chase7@12")
-extern "C" void Cw_Radio(); KING_ALIAS("_Cw_Radio", "_Copter_RadioCommand")
+extern "C" int __cdecl Car_State20944(const BYTE* car);
+extern "C" void __fastcall Copter_Chase6(BYTE* self, void*, BYTE* target);
+extern "C" void __fastcall Copter_Chase10(BYTE* self, void*, BYTE* target);
+extern "C" void __fastcall Copter_Chase7(BYTE* self, void*, BYTE* target);
+extern "C" void __cdecl Copter_RadioCommand(int c);
 extern "C" void Cw_Matrix2(); KING_ALIAS("_Cw_Matrix2", "@SceneObj_Matrix2@12")
-extern "C" void Cw_Car555500(); KING_ALIAS("_Cw_Car555500", "@Car_555500@8")
+extern "C" double __fastcall Car_555500(BYTE* self, void*);
 KING_VAR(BYTE*, g_cw6d2078, 6d2078)               // the player
 KING_VAR(BYTE*, g_cw6ef1fc, 6ef1fc)               // the game (its clock +2968)
 KING_VAR(float, g_cw64c448, 64c448)
@@ -5792,7 +5831,7 @@ KING_VAR(double, g_cw64da58, 64da58)
 static void Cw_Warn(BYTE* s, int radio, int w)
 {
     if (radio && F(BYTE*, s, 3248) == F(BYTE*, g_cw6d2078, 616))
-        CallC(Cw_Radio, w);
+        Copter_RadioCommand(w);
     F(int, F(BYTE*, s, 3248), 20944)++;
 }
 
@@ -5800,7 +5839,7 @@ static void Cw_GiveUp(BYTE* s)
 {
     int st = F(int, s, 3236);
     if (st == 6 || st == 10 || st == 7)
-        CallThis(FUN_5662f0, s, 11);
+        Copter_SetState(s, 0, 11);
 }
 
 extern "C" {
@@ -5811,7 +5850,7 @@ extern "C" {
 void __fastcall Copter_Warnings(BYTE* s, void*)
 {
     BYTE* car = F(BYTE*, s, 3248);
-    if (!car || !CallC<int>(Cw_State20944, car))
+    if (!car || !Car_State20944(car))
     {
         F(int, s, 3344) = 0;
         Cw_GiveUp(s);
@@ -5930,7 +5969,7 @@ void __fastcall Copter_Warnings(BYTE* s, void*)
             {
                 F(int, s, 3344) = 0;
                 if (F(BYTE*, s, 3248) == F(BYTE*, g_cw6d2078, 616))
-                    CallC(Cw_Radio, 2);
+                    Copter_RadioCommand(2);
                 F(int, F(BYTE*, s, 3248), 20944) = 0;
                 F(int, s, 3248) = 0;
                 F(int, s, 3252) = 0;
@@ -5951,7 +5990,7 @@ void __fastcall Copter_Warnings(BYTE* s, void*)
         }
     }
     c = F(BYTE*, s, 3248);
-    if (c && F(int, c, 20944) > 30 && F(int, c, 20944) < 40 && CallThis<double>(Cw_Car555500, c) > g_cw64da58)
+    if (c && F(int, c, 20944) > 30 && F(int, c, 20944) < 40 && Car_555500(c, 0) > g_cw64da58)
     {
         F(int, F(BYTE*, s, 3248), 20944) = 0;
         F(int, s, 3248) = 0;
@@ -5962,19 +6001,19 @@ void __fastcall Copter_Warnings(BYTE* s, void*)
     if (mode == 3)
     {
         if (F(int, s, 3236) != 7)
-            CallThis(Cw_Chase7, s, F(BYTE*, s, 3248));
+            Copter_Chase7(s, 0, F(BYTE*, s, 3248));
         return;
     }
     if (mode == 2)
     {
         if (F(int, s, 3236) != 10)
-            CallThis(Cw_Chase10, s, F(BYTE*, s, 3248));
+            Copter_Chase10(s, 0, F(BYTE*, s, 3248));
         return;
     }
     if (mode == 1)
     {
         if (F(int, s, 3236) != 6)
-            CallThis(Cw_Chase6, s, F(BYTE*, s, 3248));
+            Copter_Chase6(s, 0, F(BYTE*, s, 3248));
         return;
     }
     if (mode == -1)
@@ -5995,17 +6034,14 @@ struct CpRoom
     double m_24;
     int m_32, m_36, m_40, m_44;
 };
-extern "C" void Cp_PushRoad(); KING_ALIAS("_Cp_PushRoad", "@Route_PushRoad@16")
-extern "C" void Cp_Make(); KING_ALIAS("_Cp_Make", "_AI_Make449c40")
+extern "C" int __fastcall Route_PushRoad(BYTE* self, void*, void* key, Vec3* p);
 extern "C" CpPos* __cdecl Cp_PosIdRV(CpPos* out, int room, float x, float y, float z); KING_ALIAS("_Cp_PosIdRV", "_Ai_GetPositionIdRV")
 extern "C" void __cdecl Cp_Room(CpPos pos, CpRoom* out); KING_ALIAS("_Cp_Room", "_Road_GetRoadParameters")
 extern "C" float* __cdecl Cp_Coords(float* out, CpPos pos); KING_ALIAS("_Cp_Coords", "_Ai_GetCoordinatesPos")
-extern "C" void Cp_Name(); KING_ALIAS("_Cp_Name", "_Name68d0d8")
-extern "C" void Cp_Find(); KING_ALIAS("_Cp_Find", "_Scene_FindObject")
-extern "C" void Cp_SetMatrix(); KING_ALIAS("_Cp_SetMatrix", "@Copter_SetMatrix@16")
-extern "C" void Cp_Set100(); KING_ALIAS("_Cp_Set100", "@Copter_SetVec100@12")
-extern "C" void Cp_Set112(); KING_ALIAS("_Cp_Set112", "@Copter_SetVec112@12")
-extern "C" void Cp_5662f0(); KING_ALIAS("_Cp_5662f0", "@Copter_SetState@12")
+extern "C" const char* __cdecl Name68d0d8(int i);
+extern "C" void __fastcall Copter_SetMatrix(BYTE* self, void*, int a, const Matrix* m);
+extern "C" void __fastcall Copter_SetVec100(BYTE* self, void*, const Vec3Bits* v);
+extern "C" void __fastcall Copter_SetVec112(BYTE* self, void*, const Vec3Bits* v);
 KING_VAR(Vec3, g_cpUp, 702630)
 KING_VAR(Vec3, g_cpEye, 702650)
 KING_VAR(char, g_cp66d638, 66d638)
@@ -6016,9 +6052,9 @@ KING_VAR(float, g_cp64c450, 64c450)
 
 static void Cp_Place(BYTE* s, BYTE* obj, const Matrix* m)
 {
-    CallThis(Cp_SetMatrix, s, obj, m);
-    CallThis(Cp_Set100, s, &g_cpEye);
-    CallThis(Cp_Set112, s, &g_cpEye);
+    Copter_SetMatrix(s, 0, (int)obj, m);
+    Copter_SetVec100(s, 0, (const Vec3Bits*)&g_cpEye);
+    Copter_SetVec112(s, 0, (const Vec3Bits*)&g_cpEye);
 }
 
 static double Cp_Dist2(const Vec3& a, const float* b)
@@ -6036,13 +6072,13 @@ extern "C" {
 void __fastcall Copter_FindLanding(BYTE* s, void*)
 {
     if (!F(int, s, 3148))
-        CallThis(Cp_PushRoad, s + 144, F(int, F(BYTE*, s, 96), 12), s + 36);
+        Route_PushRoad(s + 144, 0, (void*)(F(int, F(BYTE*, s, 96), 12)), (Vec3*)(s + 36));
     int room;
-    CallC(Cp_Make, &room, F(int, F(BYTE*, s, 96), 12));
+    AI_Make449c40(&room, (void*)(F(int, F(BYTE*, s, 96), 12)));
     if (room == -1)
     {
         if (F(int, s, 3236) != 4)
-            CallThis(Cp_5662f0, s, 4);
+            Copter_SetState(s, 0, 4);
         return;
     }
     const float* p = (const float*)(s + 36);
@@ -6050,7 +6086,7 @@ void __fastcall Copter_FindLanding(BYTE* s, void*)
     Cp_PosIdRV(&pid, room, p[0], p[1], p[2]);
     if (pid.d[0] == (DWORD)-1)
     {
-        CallThis(Cp_5662f0, s, 4);
+        Copter_SetState(s, 0, 4);
         return;
     }
     CpRoom info;
@@ -6077,7 +6113,7 @@ void __fastcall Copter_FindLanding(BYTE* s, void*)
     }
     if (Cp_Dist2(F(Vec3, s, 3256), p) < g_cp64fd48)
         return;
-    BYTE* obj = CallC<BYTE*>(Cp_Find, 0, CallC<const char*>(Cp_Name, F(int, s, 3272)));
+    BYTE* obj = Scene_FindObject(0, Name68d0d8(F(int, s, 3272)));
     if (!obj)
         return;
     Matrix T;
@@ -6089,20 +6125,15 @@ void __fastcall Copter_FindLanding(BYTE* s, void*)
 // === a bullet's flight (FUN_567440)
 
 extern "C" void Sh_Query(); KING_ALIAS("_Sh_Query", "_Query_4e7476")
-extern "C" void Sh_InList(); KING_ALIAS("_Sh_InList", "_Car_InList")
-extern "C" void Sh_InList16(); KING_ALIAS("_Sh_InList16", "_Car_InListFrom16")
-extern "C" void Sh_54efb0(); KING_ALIAS("_Sh_54efb0", "_Veh_54efb0")
-extern "C" void Sh_Ramp(); KING_ALIAS("_Sh_Ramp", "@Ramp_Value@8")
-extern "C" void Sh_555500(); KING_ALIAS("_Sh_555500", "@Car_555500@8")
-extern "C" void Sh_Flasher(); KING_ALIAS("_Sh_Flasher", "@CarEffect_StartFlasher@4")
-extern "C" void Sh_Camera(); KING_ALIAS("_Sh_Camera", "@View_CameraMatrix@12")
-extern "C" void Sh_Play(); KING_ALIAS("_Sh_Play", "_Sound_PlayRange")
-extern "C" void Sh_NodeInit(); KING_ALIAS("_Sh_NodeInit", "@Node_Init@8")
+extern "C" int __cdecl Veh_54efb0(int a, int b);
+extern "C" double __fastcall Ramp_Value(BYTE* self, void*);
+extern "C" void __fastcall CarEffect_StartFlasher(BYTE* f);
+extern "C" BYTE* __fastcall View_CameraMatrix(BYTE* s, void*, BYTE* out);
+extern "C" void __cdecl Sound_PlayRange(BYTE* obj, int a, int b, int c);
 extern "C" void Sh_M1(); KING_ALIAS("_Sh_M1", "@SceneObj_Matrix1@12")
 extern "C" void Sh_M2(); KING_ALIAS("_Sh_M2", "@SceneObj_Matrix2@12")
-extern "C" void Sh_MulAssign(); KING_ALIAS("_Sh_MulAssign", "@Vec3_MulAssign@16")
-extern "C" void Sh_Set(); KING_ALIAS("_Sh_Set", "@Vec3_SetThis@20")
-extern "C" void Sh_AddAssign(); KING_ALIAS("_Sh_AddAssign", "@Vec3_AddAssign@16")
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
+extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
 KING_VAR(float, g_sh67b2b0, 67b2b0)
 KING_VAR(double, g_sh64fd30, 64fd30)
 KING_VAR(Vec3, g_shUp, 702630)
@@ -6127,13 +6158,13 @@ extern "C" {
 void __cdecl Bullet_Fly(int o, BYTE* from, BYTE* to, int mask, float power)
 {
     __declspec(align(8)) BYTE node[208];
-    CallThis(Sh_NodeInit, node);
+    Node_Init(node, 0);
     int r = CallC<int>(Sh_Query, o, mask, 0, from, to, node);
     int hit = r & 1;
     BYTE* c = 0;
     const Vec3& P = F(Vec3, node, 52);
-    if (hit && F(BYTE*, node, 116) && (c = CallC<BYTE*>(Sh_InList16, F(BYTE*, node, 116))) != 0 &&
-        CallC<BYTE*>(Sh_InList, c))
+    if (hit && F(BYTE*, node, 116) && (c = Car_InListFrom16(F(BYTE*, node, 116))) != 0 &&
+        Car_InList(c))
     {
         const Vec3* A = (const Vec3*)from;
         const Vec3* B = (const Vec3*)to;
@@ -6173,43 +6204,39 @@ void __cdecl Bullet_Fly(int o, BYTE* from, BYTE* to, int mask, float power)
         T.z = (float)(tz * ts);
         CallVirt(body, 144, &nv, 0);
         Vec3 w0 = F(Vec3, c, 456);
-        CallThis(Sh_AddAssign, &T, &tmp, &w0);
+        Vec3_AddAssign(&T, 0, &tmp, &w0);
         CallVirt(body, 152, &T, 0);
         Vec3 vp = F(Vec3, c, 432);
         const float* m2 = CallThis<const Matrix*>(Sh_M2, body, &t1)->m;
         Vec3 L;
-        CallThis(Sh_Set, &L,
-                     (float)((double)P.y * m2[3] + (double)P.z * m2[6] + (double)P.x * m2[0] + m2[9]),
-                     (float)((double)P.y * m2[4] + (double)P.z * m2[7] + (double)P.x * m2[1] + m2[10]),
-                     (float)((double)P.y * m2[5] + (double)P.z * m2[8] + (double)P.x * m2[2] + m2[11]));
+        Vec3_SetThis(&L, 0, (float)((double)P.y * m2[3] + (double)P.z * m2[6] + (double)P.x * m2[0] + m2[9]), (float)((double)P.y * m2[4] + (double)P.z * m2[7] + (double)P.x * m2[1] + m2[10]), (float)((double)P.y * m2[5] + (double)P.z * m2[8] + (double)P.x * m2[2] + m2[11]));
         Vec3 W = F(Vec3, c, 444), wl, rot;
-        CallThis(Sh_Set, &wl, (float)((double)L.z * W.y - (double)W.z * L.y),
-                     (float)((double)W.z * L.x - (double)L.z * W.x), (float)((double)W.x * L.y - (double)W.y * L.x));
+        Vec3_SetThis(&wl, 0, (float)((double)L.z * W.y - (double)W.z * L.y), (float)((double)W.z * L.x - (double)L.z * W.x), (float)((double)W.x * L.y - (double)W.y * L.x));
         Vec3 wl2 = wl;
-        const Matrix* M1 = CallThis<const Matrix*>(Sh_M1, body, &t1);
-        CallThis(Sh_AddAssign, &vp, &tmp, Vec3_RotateBy(&rot, &wl2, M1));
-        CallC(Sh_54efb0, &P, &vp);
+        const Matrix* M1 = (const Matrix*)SceneObj_Matrix1(body, 0, &t1);
+        Vec3_AddAssign(&vp, 0, &tmp, Vec3_RotateBy(&rot, &wl2, M1));
+        Veh_54efb0((int)&P, (int)&vp);
         BYTE* ramp = c + 21256;
-        float kr = (float)(CallThis<double>(Sh_Ramp, ramp) * g_sh64fd28);
-        CallThis(Sh_MulAssign, &J, &tmp, kr);
+        float kr = (float)(Ramp_Value(ramp, 0) * g_sh64fd28);
+        Vec3_MulAssign(&J, 0, &tmp, kr);
         CallVirt(body, 164, &P, &J);
         float rr = (float)(rand() * (double)g_sh64c254);
-        CallThis<double>(Sh_555500, c);
-        double lim = g_sh64b670 - CallThis<double>(Sh_Ramp, ramp) * power * g_sh64d668 / (power + g_sh64d0f0);
+        Car_555500(c, 0);
+        double lim = g_sh64b670 - Ramp_Value(ramp, 0) * power * g_sh64d668 / (power + g_sh64d0f0);
         if (lim < rr)
-            CallThis(Sh_Flasher, c + 21568);
+            CarEffect_StartFlasher(c + 21568);
         F(int, c, 21648) = 1;
         F(Vec3, c, 21772) = P;
         F(float, c, 21824) = 1.0f;
     }
     Matrix cam;
-    CallThis(Sh_Camera, g_6ef1fc, &cam);
+    View_CameraMatrix(g_6ef1fc, 0, (BYTE*)&cam);
     float vol = g_ws6cec78 ? (float)(F(short, g_ws6cec78, 386) * g_sh64b5a0) : (float)g_sh64b670;
     if (hit)
     {
         Vec3 h;
         Vec3_MulMatrix(&h, &P, &cam);
-        CallC(Sh_Play, g_hitgrndSound, 0x40000000, *(int*)&vol, &h);
+        Sound_PlayRange((BYTE*)g_hitgrndSound, 0x40000000, *(int*)&vol, (int)&h);
         if (!c)
         {
             int src = r & 2 ? F(int, node, 104) : o;
@@ -6223,63 +6250,43 @@ void __cdecl Bullet_Fly(int o, BYTE* from, BYTE* to, int mask, float power)
     }
     Vec3 f;
     Vec3_MulMatrix(&f, (const Vec3*)from, &cam);
-    CallC(Sh_Play, g_shootSound, 0x40400000, *(int*)&vol, &f);
+    Sound_PlayRange((BYTE*)g_shootSound, 0x40400000, *(int*)&vol, (int)&f);
 }
 
 } // extern "C"
 
 // === the game's messages to the player's side (FUN_56ffd0)
 
-extern "C" void Gm_CarId(); KING_ALIAS("_Gm_CarId", "_Player_CarId")
-extern "C" void Gm_Flags(); KING_ALIAS("_Gm_Flags", "_Player_Flags")
-extern "C" void Gm_MarkHuman(); KING_ALIAS("_Gm_MarkHuman", "_AI_MarkHuman")
-extern "C" void Gm_FinishPlayer(); KING_ALIAS("_Gm_FinishPlayer", "_Ai_FinishPlayer")
-extern "C" void Gm_HumanFinished(); KING_ALIAS("_Gm_HumanFinished", "_Ai_HumanFinished")
-extern "C" void Gm_NoticeShow(); KING_ALIAS("_Gm_NoticeShow", "_Notice_Show")
-extern "C" void Gm_NoticeSet(); KING_ALIAS("_Gm_NoticeSet", "@Notice_Set@16")
-extern "C" void Gm_Text(); KING_ALIAS("_Gm_Text", "_Table71e858_Get")
-extern "C" void Gm_RampHigh(); KING_ALIAS("_Gm_RampHigh", "@Ramp_High@8")
-extern "C" void Gm_RampPos(); KING_ALIAS("_Gm_RampPos", "@Ramp_Position@8")
-extern "C" void Gm_RampSet(); KING_ALIAS("_Gm_RampSet", "@Ramp_SetValue@12")
-extern "C" void Gm_Value136(); KING_ALIAS("_Gm_Value136", "_Player_Value136")
+extern "C" void __cdecl AI_MarkHuman(int id);
+extern "C" int __cdecl Ai_FinishPlayer(int player);
+extern "C" int __cdecl Ai_HumanFinished();
+extern "C" void __cdecl Notice_Show(int level, const char* text, int a, int b);
+extern "C" float __fastcall Ramp_High(BYTE* self, void*);
+extern "C" void __fastcall Ramp_SetValue(BYTE* self, void*, float v);
 extern "C" void Gm_Set136(); KING_ALIAS("_Gm_Set136", "_Player_Set136")
-extern "C" void Gm_Message(); KING_ALIAS("_Gm_Message", "_Messages_Add569720")
-extern "C" void Gm_MessageAdd(); KING_ALIAS("_Gm_MessageAdd", "_Messages_Add")
-extern "C" void Gm_FindObj(); KING_ALIAS("_Gm_FindObj", "_Objects_Find")
-extern "C" void Gm_SoundRestart(); KING_ALIAS("_Gm_SoundRestart", "@Sound_Restart@16")
-extern "C" void Gm_Cargo(); KING_ALIAS("_Gm_Cargo", "_Driver_CargoFactor")
-extern "C" void Gm_ClearFlags(); KING_ALIAS("_Gm_ClearFlags", "_Player_ClearFlags")
+extern "C" int __cdecl Messages_Add569720(const char* text);
+extern "C" void __cdecl Messages_Add(const char* text);
+extern "C" double __cdecl Driver_CargoFactor(BYTE* x);
+extern "C" void __cdecl Player_ClearFlags(BYTE* p);
 extern "C" void Gm_53b3c0(); KING_ALIAS("_Gm_53b3c0", "@King_53b3c0@12")
 extern "C" void Gm_M1(); KING_ALIAS("_Gm_M1", "@SceneObj_Matrix1@12")
-extern "C" void Gm_First(); KING_ALIAS("_Gm_First", "_List68cf6c_First")
-extern "C" void Gm_Next(); KING_ALIAS("_Gm_Next", "_List68cf6c_Next")
-extern "C" void Gm_Field8(); KING_ALIAS("_Gm_Field8", "_Rec_Field8")
-extern "C" void Gm_ResGet(); KING_ALIAS("_Gm_ResGet", "@Resources_Get@12")
-extern "C" void Gm_ResAdd(); KING_ALIAS("_Gm_ResAdd", "@Resources_AddRecord@20")
-extern "C" void Gm_ResDelete(); KING_ALIAS("_Gm_ResDelete", "@Resources_Delete@12")
-extern "C" void Gm_Length(); KING_ALIAS("_Gm_Length", "_Vec3_Length")
-extern "C" void Gm_FindTaker(); KING_ALIAS("_Gm_FindTaker", "_Vehicle_FindTaker")
-extern "C" void Gm_LoadPresent(); KING_ALIAS("_Gm_LoadPresent", "_Ai_LoadPresent")
-extern "C" void Gm_ApplyCargo(); KING_ALIAS("_Gm_ApplyCargo", "_Copter_ApplyCargo")
-extern "C" void Gm_568f90(); KING_ALIAS("_Gm_568f90", "_Game_568f90")
-extern "C" void Gm_PickLater(); KING_ALIAS("_Gm_PickLater", "_Ai_PickPresentLater")
-extern "C" void Gm_Log(); KING_ALIAS("_Gm_Log", "_Sys_Log")
-extern "C" void Gm_Fatal(); KING_ALIAS("_Gm_Fatal", "_Sys_Fatal")
-extern "C" void Gm_ForEach(); KING_ALIAS("_Gm_ForEach", "_Array_ForEach@16")
+extern "C" void** __cdecl List68cf6c_First(void** out);
+extern "C" void** __cdecl List68cf6c_Next(void** out, void** it);
+extern "C" int __cdecl Rec_Field8(BYTE* id);
+extern "C" int __fastcall Resources_AddRecord(BYTE* self, void*, int a, BYTE* rec, int c);
+extern "C" int __fastcall Resources_Delete(BYTE* self, void*, int id);
+extern "C" int __cdecl Ai_LoadPresent(BYTE* player, BYTE* present, int* playerorderid);
+extern "C" void __cdecl Game_568f90();
+extern "C" void __cdecl Ai_PickPresentLater(int player, int present);
+extern "C" void __cdecl Sys_Log(const char* text, int value);
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());
 extern "C" void Gm_ZeroThis(); KING_ALIAS("_Gm_ZeroThis", "@Vec3_ZeroThis@8")
-extern "C" void Gm_InitState(); KING_ALIAS("_Gm_InitState", "@Fx_InitState@8")
-extern "C" void Gm_Present(); KING_ALIAS("_Gm_Present", "_Ai_GetPresentData")
-extern "C" void Gm_Vec1Free(); KING_ALIAS("_Gm_Vec1Free", "@Vec1_Free@8")
-extern "C" void Gm_VecBFree(); KING_ALIAS("_Gm_VecBFree", "@VecB_FreeStorage@8")
 extern "C" void Gm_HasOrder(); KING_ALIAS("_Gm_HasOrder", "_Ai_HasOrderForTown")
-extern "C" void Gm_LoadOrder(); KING_ALIAS("_Gm_LoadOrder", "_Ai_LoadOrder")
-extern "C" void Gm_OrderInfo(); KING_ALIAS("_Gm_OrderInfo", "_Ai_GetOrderInfo")
-extern "C" void Gm_Set6fb3e8(); KING_ALIAS("_Gm_Set6fb3e8", "_Set6fb3e8")
-extern "C" void Gm_Restart(); KING_ALIAS("_Gm_Restart", "@Obj53e490_Restart@8")
-extern "C" void Gm_Near(); KING_ALIAS("_Gm_Near", "_Fx_VehicleNear")
-extern "C" void Gm_GetState(); KING_ALIAS("_Gm_GetState", "_Player_GetState")
-extern "C" void Gm_Send962(); KING_ALIAS("_Gm_Send962", "_Copter_Send962")
-extern "C" void Gm_Fine(); KING_ALIAS("_Gm_Fine", "_Ai_FineForSpeeding")
+extern "C" int __cdecl Ai_LoadOrder(BYTE* player, int townId, unsigned orderid, double* quantity, int* playerorderid);
+extern "C" void __cdecl Set6fb3e8(int a, float f);
+extern "C" void __fastcall Obj53e490_Restart(BYTE* self, void*);
+extern "C" int __cdecl Fx_VehicleNear(float x, float y, float z);
+extern "C" int __cdecl Ai_FineForSpeeding(int player, double fine);
 KING_VAR(BYTE*, gm_6f3498, 6f3498)
 KING_VAR(BYTE*, gm_6f33ac, 6f33ac)
 KING_VAR(BYTE*, gm_6f34a4, 6f34a4)
@@ -6335,23 +6342,23 @@ KING_VAR(double, gm_64b868, 64b868)
 static int Gm_Me()
 {
     int id;
-    CallC(Gm_CarId, &id);
+    Player_CarId(&id);
     return id;
 }
 
 static const char* Gm_T(int n)
 {
-    return CallC<const char*>(Gm_Text, n);
+    return (const char*)Table71e858_Get(n);
 }
 
 static void Gm_Sound(const char* name)
 {
-    CallThis(Gm_SoundRestart, CallC<BYTE*>(Gm_FindObj, name), 0.5f, 0.5f);
+    Sound_Restart(Objects_Find(name), 0, 0.5f, 0.5f);
 }
 
 static void Gm_Notice(int text)
 {
-    CallThis(Gm_NoticeSet, gm_6f3430, 8, Gm_T(text));
+    Notice_Set(gm_6f3430, 0, 8, Gm_T(text));
 }
 
 static BYTE* Gm_Car()
@@ -6362,7 +6369,7 @@ static BYTE* Gm_Car()
 static Vec3 Gm_Pos(BYTE* o)
 {
     Matrix t;
-    return F(Vec3, CallThis<BYTE*>(Gm_M1, o, &t), 36);
+    return F(Vec3, (BYTE*)SceneObj_Matrix1(o, 0, &t), 36);
 }
 
 static float Gm_Dist(BYTE* o, BYTE* c)
@@ -6371,7 +6378,7 @@ static float Gm_Dist(BYTE* o, BYTE* c)
     d.x = (float)((double)a.x - b.x);
     d.y = (float)((double)a.y - b.y);
     d.z = (float)((double)a.z - b.z);
-    return (float)CallC<double>(Gm_Length, &d);
+    return (float)Vec3_Length(&d);
 }
 
 // the car's facing (702620 turned by its frame)
@@ -6401,14 +6408,14 @@ static bool Gm_HasRoom(BYTE* car)
 static void Gm_PresentInit(BYTE* P)
 {
     F(int, P, 0) = 0;
-    CallStd(Gm_ForEach, P + 4, 12, 4, Gm_ZeroThis);
+    Array_ForEach(P + 4, 12, 4, Gm_ZeroThis);
     memcpy(P + 4, &gm_7025f0, 48);
     memset(P + 52, 0, 12);
     F(int, P, 64) = 0;
     F(int, P, 68) = 0;
     F(int, P, 72) = -1;
     F(int, P, 76) = -1;
-    CallThis(Gm_InitState, P + 80);
+    Fx_InitState(P + 80, 0);
     F(int, P, 272) = -1;
     F(int, P, 276) = -1;
 }
@@ -6476,16 +6483,16 @@ int __cdecl Game_PlayerMessage(int* m)
     {
         if (F(int, gm_6cec6c, 1300) > 1)
             return 0;
-        if (gm_66c6e0 != 1 || !(CallC<int>(Gm_Flags, Gm_Me()) & 0x4000))
+        if (gm_66c6e0 != 1 || !(Player_Flags((BYTE*)(Gm_Me())) & 0x4000))
             return 1;
         int lap = m[1];
         if (lap != gm_6f33b8 + 1)
         {
             if (lap == 2 && !gm_6f33b8)
-                CallC(Gm_NoticeShow, 6, 0, 0, 0);
+                Notice_Show(6, 0, 0, 0);
             return 1;
         }
-        CallC(Gm_MarkHuman, lap);
+        AI_MarkHuman(lap);
         gm_6f33b8 = m[1];
         int last = 4, laps = 3;
         if (F(int, gm_6cec6c, 1316) && F(int, gm_6cec98, 384) == 1)
@@ -6496,16 +6503,16 @@ int __cdecl Game_PlayerMessage(int* m)
         if (gm_6f33b8 != last)
         {
             if (gm_6f33b8 > 0)
-                CallC(Gm_NoticeShow, 7, 0, 0, 0);
+                Notice_Show(7, 0, 0, 0);
             return 1;
         }
         if (++gm_6f33bc == laps)
         {
             gm_6f33bc = 0;
-            CallC(Gm_FinishPlayer, Gm_Me());
+            Ai_FinishPlayer(Gm_Me());
         }
         else
-            CallC(Gm_NoticeShow, 3, 0, gm_6f33bc, laps);
+            Notice_Show(3, 0, gm_6f33bc, laps);
         gm_6f33b8 = -1;
         return 1;
     }
@@ -6522,12 +6529,12 @@ int __cdecl Game_PlayerMessage(int* m)
         }
         // refuelling
         BYTE* ramp = cab + 16112;
-        double hi = CallThis<double>(Gm_RampHigh, ramp);
-        double x = (gm_64c250 - CallThis<double>(Gm_RampPos, ramp)) * hi;
+        double hi = (double)Ramp_High(ramp, 0);
+        double x = (gm_64c250 - (double)Ramp_Position(ramp, 0)) * hi;
         if (!(x > gm_64b6d0))
             return 1;
         int n = (int)(x + x);
-        double money = CallC<double>(Gm_Value136, Gm_Me());
+        double money = Player_Value136((BYTE*)(Gm_Me()));
         if (!(money > gm_64b670))
             return 1;
         double sub = gm_64b678;
@@ -6536,11 +6543,11 @@ int __cdecl Game_PlayerMessage(int* m)
             sub = x - money * gm_64b6e0;
             n = (int)money;
         }
-        CallThis(Gm_RampSet, F(BYTE*, Gm_Car(), 21600) + 16112, (float)(hi - sub));
+        Ramp_SetValue(F(BYTE*, Gm_Car(), 21600) + 16112, 0, (float)(hi - sub));
         CallC(Gm_Set136, Gm_Me(), money - n);
         char buf[400];
         sprintf(buf, Gm_T(11), n);
-        CallC(Gm_Message, buf);
+        Messages_Add569720(buf);
         Gm_Sound("refuelSound");
         return 1;
     }
@@ -6558,13 +6565,13 @@ int __cdecl Game_PlayerMessage(int* m)
         double dmg = CallVirt<double>(car, 84);
         if (!(dmg > gm_64b5a0))
             return 1;
-        double money = CallC<double>(Gm_Value136, Gm_Me());
+        double money = Player_Value136((BYTE*)(Gm_Me()));
         int n = (int)(dmg * gm_64b848);
         CallVirt(car, 116);
         CallVirt(Gm_Car(), 120);
         double cargo = 0;
-        if (CallC<int>(Gm_Flags, Gm_Me()) & 0x2000000)
-            cargo = CallC<double>(Gm_Cargo, Gm_Me());
+        if (Player_Flags((BYTE*)(Gm_Me())) & 0x2000000)
+            cargo = Driver_CargoFactor((BYTE*)(Gm_Me()));
         double cost = cargo + n;
         double left;
         if (money < cost)
@@ -6576,10 +6583,10 @@ int __cdecl Game_PlayerMessage(int* m)
         {
             dmg += gm_64b5b8;
             n = (int)cost;
-            if (CallC<int>(Gm_Flags, Gm_Me()) & 0x2000000)
+            if (Player_Flags((BYTE*)(Gm_Me())) & 0x2000000)
             {
-                CallC(Gm_MessageAdd, Gm_T(119));
-                CallC(Gm_ClearFlags, Gm_Me());
+                Messages_Add(Gm_T(119));
+                Player_ClearFlags((BYTE*)(Gm_Me()));
             }
             left = dmg;
         }
@@ -6589,7 +6596,7 @@ int __cdecl Game_PlayerMessage(int* m)
             CallC(Gm_Set136, Gm_Me(), money - n);
             char buf[400];
             sprintf(buf, Gm_T(10), n);
-            CallC(Gm_Message, buf);
+            Messages_Add569720(buf);
         }
         Gm_Sound("repairSound");
         return 1;
@@ -6614,12 +6621,12 @@ int __cdecl Game_PlayerMessage(int* m)
         void* best = gm_68cf6c;
         double bestd = 1000.0;
         void* it;
-        CallC(Gm_First, &it);
+        List68cf6c_First(&it);
         while (it != gm_68cf6c)
         {
-            if (CallC<int>(Gm_Field8, it) & 32)
+            if (Rec_Field8((BYTE*)it) & 32)
             {
-                BYTE* rec = CallThis<BYTE*>(Gm_ResGet, F(BYTE*, gm_6cec6c, 1356) + 704, *F(int*, it, 8));
+                BYTE* rec = (BYTE*)Resources_Get((BYTE**)(F(BYTE*, gm_6cec6c, 1356) + 704), 0, *F(int*, it, 8));
                 BYTE* o = F(BYTE*, rec, 28);
                 if (o)
                 {
@@ -6632,11 +6639,11 @@ int __cdecl Game_PlayerMessage(int* m)
                 }
             }
             void* nx;
-            it = *CallC<void**>(Gm_Next, &nx, it);
+            it = *List68cf6c_Next(&nx, (void**)it);
         }
         if (best == gm_68cf6c)
             return 1;
-        int f = CallC<int>(Gm_Field8, best) & 64;
+        int f = Rec_Field8((BYTE*)best) & 64;
         if (f)
         {
             F(int, gm_6f3434, 32) = m[0];
@@ -6645,16 +6652,16 @@ int __cdecl Game_PlayerMessage(int* m)
         if (!gm_6f3400)
             return 1;
         gm_6f3400 = 0;
-        if (CallC<int>(Gm_FindTaker, Gm_Car(), 0))
+        if (Vehicle_FindTaker(Gm_Car(), 0))
             return 1;
         if (f)
         {
             double out;
-            CallC(Gm_LoadPresent, Gm_Me(), best, &out);
-            CallC(Gm_ApplyCargo);
-            CallC(Gm_568f90);
+            Ai_LoadPresent((BYTE*)(Gm_Me()), (BYTE*)best, (int*)&out);
+            Copter_ApplyCargo();
+            Game_568f90();
         }
-        CallC(Gm_PickLater, Gm_Me(), best);
+        Ai_PickPresentLater(Gm_Me(), (int)best);
         gm_6f2f08 = gm_68cf6c;
         return 1;
     }
@@ -6663,45 +6670,45 @@ int __cdecl Game_PlayerMessage(int* m)
         if (F(int, gm_6cec6c, 1300) > 1)
             return 0;
         void* it;
-        CallC(Gm_First, &it);
+        List68cf6c_First(&it);
         for (;;)
         {
             if (it == gm_68cf6c)
                 return 1;
-            int f = CallC<int>(Gm_Field8, it);
+            int f = Rec_Field8((BYTE*)it);
             if ((f & 64) && !(f & 32))
             {
-                BYTE* rec = CallThis<BYTE*>(Gm_ResGet, F(BYTE*, gm_6cec6c, 1356) + 704, *F(int*, it, 8));
+                BYTE* rec = (BYTE*)Resources_Get((BYTE**)(F(BYTE*, gm_6cec6c, 1356) + 704), 0, *F(int*, it, 8));
                 if (!rec)
-                    CallC(Gm_Log, "present absent, in my opinion", *F(int*, it, 8));
+                    Sys_Log("present absent, in my opinion", *F(int*, it, 8));
                 else if (F(BYTE*, rec, 28) && Gm_Dist(F(BYTE*, rec, 28), Gm_Car() + 16) < gm_64c32c)
                     break;
             }
             void* nx;
-            it = *CallC<void**>(Gm_Next, &nx, it);
+            it = *List68cf6c_Next(&nx, (void**)it);
         }
         __declspec(align(8)) BYTE P[288];
         Gm_PresentInit(P);
-        CallC(Gm_Present, Gm_Me(), it, P);
+        Ai_GetPresentData((BYTE*)(Gm_Me()), (BYTE*)it, P);
         car = Gm_Car();
         void* next = it;
         if (gm_6f33f4 && Gm_HasRoom(car))
         {
             double out;
-            CallC(Gm_LoadPresent, Gm_Me(), it, &out);
-            CallC(Gm_ApplyCargo);
+            Ai_LoadPresent((BYTE*)(Gm_Me()), (BYTE*)it, (int*)&out);
+            Copter_ApplyCargo();
             Gm_Sound("orderSound");
-            CallC(Gm_568f90);
+            Game_568f90();
             gm_6f33f4 = 0;
-            BYTE* rec = CallThis<BYTE*>(Gm_ResGet, gm_696ca0 + 704, *F(int*, it, 8));
-            CallC(Gm_PickLater, Gm_Me(), it);
+            BYTE* rec = (BYTE*)Resources_Get((BYTE**)(gm_696ca0 + 704), 0, *F(int*, it, 8));
+            Ai_PickPresentLater(Gm_Me(), (int)it);
             if (!rec)
-                CallC(Gm_Fatal, "Incorrect vrPresentId", 0);
+                Sys_Fatal("Incorrect vrPresentId", 0);
             if (BYTE* o = F(BYTE*, rec, 28))
             {
                 CallVirt(o, 28, 0);
-                CallThis(Gm_ResAdd, gm_696ca0 + 704, 0, rec, 0);
-                CallThis(Gm_ResDelete, gm_696ca0 + 704, F(int, rec, 4));
+                Resources_AddRecord(gm_696ca0 + 704, 0, 0, rec, 0);
+                Resources_Delete(gm_696ca0 + 704, 0, F(int, rec, 4));
             }
             next = gm_68cf6c;
         }
@@ -6712,10 +6719,10 @@ int __cdecl Game_PlayerMessage(int* m)
             F(int, gm_6f3434, 32) = m[0];
         }
         gm_6f2f08 = next;
-        CallThis(Gm_Vec1Free, P + 168);
-        CallThis(Gm_Vec1Free, P + 156);
-        CallThis(Gm_Vec1Free, P + 144);
-        CallThis(Gm_VecBFree, P + 132);
+        Vec1_Free((BYTE**)(P + 168), 0);
+        Vec1_Free((BYTE**)(P + 156), 0);
+        Vec1_Free((BYTE**)(P + 144), 0);
+        VecB_FreeStorage((BYTE**)(P + 132), 0);
         return 1;
     }
     case 17:
@@ -6728,27 +6735,27 @@ int __cdecl Game_PlayerMessage(int* m)
             if (CallVirt<double>(Gm_Car(), 164) > gm_64c264)
             {
                 double k = -10.0, out;
-                CallC(Gm_LoadOrder, Gm_Me(), m[1] / 100, m[1] % 100, &k, &out);
-                CallC(Gm_ApplyCargo);
-                CallC(Gm_568f90);
+                Ai_LoadOrder((BYTE*)(Gm_Me()), m[1] / 100, m[1] % 100, &k, (int*)&out);
+                Copter_ApplyCargo();
+                Game_568f90();
             }
             F(int, gm_6f3434, 32) = m[0];
             F(int, gm_6f3434, 36) = m[1];
             return 1;
         }
         __declspec(align(8)) BYTE Q[200];
-        CallThis(Gm_InitState, Q);
-        CallC(Gm_OrderInfo, Gm_Me(), m[1] / 100, m[1] % 100, Q);
+        Fx_InitState(Q, 0);
+        Ai_GetOrderInfo(Gm_Me(), m[1] / 100, m[1] % 100, Q);
         if (F(int, Q, 0) != -1)
         {
             car = Gm_Car();
             if (gm_6f33f4 && Gm_HasRoom(car))
             {
                 double k = 10.0, out;
-                CallC(Gm_LoadOrder, Gm_Me(), m[1] / 100, m[1] % 100, &k, &out);
-                CallC(Gm_ApplyCargo);
+                Ai_LoadOrder((BYTE*)(Gm_Me()), m[1] / 100, m[1] % 100, &k, (int*)&out);
+                Copter_ApplyCargo();
                 Gm_Sound("orderSound");
-                CallC(Gm_568f90);
+                Game_568f90();
                 gm_6f33f4 = 0;
             }
             if (gm_6f3430 && !F(int, gm_6f3430, 60))
@@ -6756,10 +6763,10 @@ int __cdecl Game_PlayerMessage(int* m)
             F(int, gm_6f3434, 32) = m[0];
             F(int, gm_6f3434, 36) = m[1];
         }
-        CallThis(Gm_Vec1Free, Q + 88);
-        CallThis(Gm_Vec1Free, Q + 76);
-        CallThis(Gm_Vec1Free, Q + 64);
-        CallThis(Gm_VecBFree, Q + 52);
+        Vec1_Free((BYTE**)(Q + 88), 0);
+        Vec1_Free((BYTE**)(Q + 76), 0);
+        Vec1_Free((BYTE**)(Q + 64), 0);
+        VecB_FreeStorage((BYTE**)(Q + 52), 0);
         return 1;
     }
     case 19:
@@ -6793,7 +6800,7 @@ int __cdecl Game_PlayerMessage(int* m)
             d = gm_64c264;
         else if (d > gm_64c250)
             d = gm_64c250;
-        CallC(Gm_Set6fb3e8, m[1] - 1, (float)(gm_64c250 - d));
+        Set6fb3e8(m[1] - 1, (float)(gm_64c250 - d));
         return 1;
     }
     case 26:
@@ -6802,11 +6809,11 @@ int __cdecl Game_PlayerMessage(int* m)
         if (!m[1])
         {
             if (gm_68d168)
-                CallThis(Gm_Restart, F(BYTE*, gm_6d2078, 1632));
+                Obj53e490_Restart(F(BYTE*, gm_6d2078, 1632), 0);
             return 1;
         }
-        if (CallC<int>(Gm_Flags, Gm_Me()) & 0x4000)
-            CallC(Gm_HumanFinished);
+        if (Player_Flags((BYTE*)(Gm_Me())) & 0x4000)
+            Ai_HumanFinished();
         return 1;
     case 28:
         gm_6f34c8 = 0.4;
@@ -6821,7 +6828,7 @@ int __cdecl Game_PlayerMessage(int* m)
             if (!gm_6f34d0)
             {
                 Vec3 c = Gm_Pos(Gm_Car() + 16);
-                if (CallC<int>(Gm_Near, c.x, c.y, c.z))
+                if (Fx_VehicleNear(c.x, c.y, c.z))
                 {
                     BYTE* pr = (BYTE*)Gm_Me();
                     F(double, pr, 248) = F(double, pr, 248) + gm_64ff18;
@@ -6862,13 +6869,13 @@ int __cdecl Game_PlayerMessage(int* m)
             F(int, st, i * 16) = 0;
             F(double, st, i * 16 + 8) = 1.0;
         }
-        CallC(Gm_GetState, Gm_Me(), st);
+        Player_GetState((BYTE*)(Gm_Me()), st);
         if (F(int, st, 256))
             return 1;
         if (!(p[1] * (double)fw.x + p[3] * (double)fw.z + (double)fw.y * p[2] > gm_64b678))
             return 1;
         F(float, Gm_Car(), 20952) = 0.5f;
-        BYTE* rec = CallThis<BYTE*>(Gm_ResGet, gm_696ca0 + 704, m[1]);
+        BYTE* rec = (BYTE*)Resources_Get((BYTE**)(gm_696ca0 + 704), 0, m[1]);
         double lim = speed * gm_64d0e0;
         if (!(p[0] < lim) || !rec)
             return 1;
@@ -6878,8 +6885,8 @@ int __cdecl Game_PlayerMessage(int* m)
         F(int, o, 408) = 1;
         F(int, o, 368) = F(int, gm_696ca0, 2968);
         F(int, o, 372) = F(int, gm_696ca0, 2972);
-        CallC(Gm_Send962, F(int, o, 344), 0);
-        CallC(Gm_Send962, F(int, o, 344), F(int, o, 408));
+        Copter_Send962(F(int, o, 344), 0);
+        Copter_Send962(F(int, o, 344), F(int, o, 408));
         gm_6f3488 = (int)p[0] - 5;
         gm_6f348c = (int)lim;
         int k = 1;
@@ -6888,7 +6895,7 @@ int __cdecl Game_PlayerMessage(int* m)
             k = 3;
         else if ((over + gm_64c32c) * gm_64d0e8 < speed)
             k = 2;
-        CallC(Gm_Fine, Gm_Me(), k * gm_64b868);
+        Ai_FineForSpeeding(Gm_Me(), k * gm_64b868);
         return 1;
     }
     default:
@@ -6900,17 +6907,7 @@ int __cdecl Game_PlayerMessage(int* m)
 
 // === the dashboard (FUN_569ab0)
 
-extern "C" void Hd_Text(); KING_ALIAS("_Hd_Text", "_Text_Draw")
-extern "C" void Hd_Str(); KING_ALIAS("_Hd_Str", "_Table71e858_Get")
-extern "C" void Hd_Width(); KING_ALIAS("_Hd_Width", "@Font_TextWidth@12")
-extern "C" void Hd_Bitmap(); KING_ALIAS("_Hd_Bitmap", "_Bitmap_Draw")
 extern "C" void Hd_Image(); KING_ALIAS("_Hd_Image", "_Gfx_DrawImage")
-extern "C" void Hd_DrawText(); KING_ALIAS("_Hd_DrawText", "_Font_DrawText")
-extern "C" void Hd_PlayerData(); KING_ALIAS("_Hd_PlayerData", "_Ai_GetPlayerData")
-extern "C" void Hd_Flags(); KING_ALIAS("_Hd_Flags", "_Player_Flags")
-extern "C" void Hd_M1(); KING_ALIAS("_Hd_M1", "@SceneObj_Matrix1@12")
-extern "C" void Hd_Normalize(); KING_ALIAS("_Hd_Normalize", "@Vec3_NormalizeThis@8")
-extern "C" void Hd_Sound(); KING_ALIAS("_Hd_Sound", "@Sound_Play@20")
 KING_VAR(BYTE*, g_hd69684c, 69684c)
 KING_VAR(BYTE*, g_hd696ca0, 696ca0)
 KING_VAR(BYTE*, g_hd696848, 696848)
@@ -6969,12 +6966,12 @@ static BYTE* g_hdSurf;
 
 static void Hd_Draw(int x, int y, BYTE* font, const char* s)
 {
-    CallC(Hd_Text, g_hdSurf, x, y, font, s, 0, 0);
+    Text_Draw((int)g_hdSurf, x, y, font, s, 0, 0);
 }
 
 static const char* Hd_T(int n)
 {
-    return CallC<const char*>(Hd_Str, n);
+    return (const char*)Table71e858_Get(n);
 }
 
 // digits moved up to the dashboard font's lit digits
@@ -6986,7 +6983,7 @@ static void Hd_Lit(char* s)
 
 static int Hd_W(BYTE* font, const char* s)
 {
-    return CallThis<int>(Hd_Width, font, s);
+    return Font_TextWidth(font, 0, s);
 }
 
 extern "C" {
@@ -7042,7 +7039,7 @@ void __fastcall Dash_Draw(BYTE* d, void*)
     if (!skip)
     {
         g_hdBeep = 0;
-        CallC(Hd_Bitmap, g_hdSurf, bgx, 0, F(BYTE*, d, 1256));
+        Bitmap_Draw(g_hdSurf, bgx, 0, F(BYTE*, d, 1256));
         BYTE* car = F(BYTE*, g_hd6d2078, 616);
         if (!car)
             return;
@@ -7055,7 +7052,7 @@ void __fastcall Dash_Draw(BYTE* d, void*)
             if (*plp != g_hd68b990)
             {
                 BYTE pd[256];
-                CallC(Hd_PlayerData, *plp, pd);
+                Ai_GetPlayerData((BYTE*)*plp, pd);
                 if (pd[136])
                 {
                     g_hdPos = F(int, (BYTE*)*plp, 528) + 1;
@@ -7160,7 +7157,7 @@ void __fastcall Dash_Draw(BYTE* d, void*)
             Hd_Draw(x0 + 553, 40, f2, buf);
         int ax = x0 + 608;
         int pl = F(int, car, 20636);
-        if (pl != g_hd68b990 && (CallC<DWORD>(Hd_Flags, pl) & 0x2000))
+        if (pl != g_hd68b990 && ((DWORD)Player_Flags((BYTE*)pl) & 0x2000))
         {
             if (!(F(int, g_hd6cec98, 384) == 2 && F(int, g_hd6cec6c, 1316)))
             {
@@ -7181,7 +7178,7 @@ void __fastcall Dash_Draw(BYTE* d, void*)
         else if (F(int, g_hd6cec6c, 1316) && F(int, g_hd6cec98, 384) == 1)
         {
             Matrix M;
-            CallThis(Hd_M1, F(BYTE*, g_hd6d2078, 616) + 16, &M);
+            SceneObj_Matrix1(F(BYTE*, g_hd6d2078, 616) + 16, 0, &M);
             Vec3 dv;
             if (g_hdLap == 0 || g_hdLap == 1)
             {
@@ -7194,7 +7191,7 @@ void __fastcall Dash_Draw(BYTE* d, void*)
                 dv = g_hdZero;
             if (Vec3_Length(&dv) > g_hd64c450)
             {
-                CallThis(Hd_Normalize, &dv);
+                Vec3_NormalizeThis(&dv, 0);
                 Matrix inv;
                 const float* q = Matrix_Inverse(&inv, &M)->m;
                 float lx = (float)((double)dv.z * q[6] + (double)dv.y * q[3] + (double)dv.x * q[0]);
@@ -7210,7 +7207,7 @@ void __fastcall Dash_Draw(BYTE* d, void*)
     }
     f1 = F(BYTE*, d, 1288);
     if (g_hdBeep)
-        CallThis(Hd_Sound, F(BYTE*, d, 1284), 0.6f, 0.6f, 0);
+        Sound_Play(F(BYTE*, d, 1284), 0, 0.6f, 0.6f, 0);
     Hd_Draw(20, 20, f1, " ");
     int sc = F(int, d, 1196);
     if (sc == 1)
@@ -7218,7 +7215,7 @@ void __fastcall Dash_Draw(BYTE* d, void*)
         if (!F(int, d, 1216))
             return;
         CallC(Hd_Image, g_hdSurf, bx, by, F(BYTE*, d, 1264), -1);
-        CallC(Hd_DrawText, g_hdSurf, bx + 34, by + 23, 247, f1, d + 556, 0, 0);
+        Font_DrawText(g_hdSurf, bx + 34, by + 23, 247, f1, d + 556, 0, 0);
         return;
     }
     CallC(Hd_Image, g_hdSurf, bx, by, F(BYTE*, d, 1264), -1);
@@ -7253,13 +7250,9 @@ void __fastcall Dash_Draw(BYTE* d, void*)
 
 // === the helicopter's first initialization (FUN_561800 with its tails up to $L_561a7c)
 
-extern "C" void Hi_Base(); KING_ALIAS("_Hi_Base", "@Copter561530_Init@8")
-extern "C" void Hi_Room(); KING_ALIAS("_Hi_Room", "_AI_Make449c40")
+extern "C" void __fastcall Copter561530_Init(BYTE* self, void*);
 extern "C" void Hi_RotX(); KING_ALIAS("_Hi_RotX", "_Matrix_RotationX")
-extern "C" void Hi_Fatal(); KING_ALIAS("_Hi_Fatal", "_World_Fatal")
-extern "C" void Hi_Log(); KING_ALIAS("_Hi_Log", "_Sys_Log")
-extern "C" void Hi_Find(); KING_ALIAS("_Hi_Find", "_Scene_FindObject")
-extern "C" void Hi_Stack(); KING_ALIAS("_Hi_Stack", "@Stack_Init@16")
+extern "C" void __fastcall Stack_Init(BYTE* self, void*, int a, int b);
 struct HiPos { int d[8]; };
 extern "C" int __cdecl Hi_PosRV(HiPos* out, int room, Vec3 p); KING_ALIAS("_Hi_PosRV", "_Ai_GetPositionIdRV")
 extern "C" int __cdecl Hi_PosV(HiPos* out, Vec3 p); KING_ALIAS("_Hi_PosV", "_Ai_GetPositionIdV")
@@ -7274,7 +7267,7 @@ KING_VAR(BYTE**, g_hiRoads, 68cf38)
 static int Hi_RoomOf(BYTE* a)
 {
     int r[8];
-    CallC(Hi_Room, r, F(void*, a, 12));
+    AI_Make449c40(r, F(void*, a, 12));
     return r[0];
 }
 
@@ -7286,7 +7279,7 @@ extern "C" {
 // the stack (+144) of the road's ends
 void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m)
 {
-    CallThis(Hi_Base, s);
+    Copter561530_Init(s, 0);
     F(BYTE*, s, 96) = a;
     F(Vec3, s, 3256) = F(Vec3, m, 36);
     F(int, s, 3272) = Hi_RoomOf(a);
@@ -7310,7 +7303,7 @@ void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m)
     F(Vec3, s, 3360) = F(Vec3, s, 3256);
     int room = Hi_RoomOf(F(BYTE*, s, 96));
     if (room == -1)
-        CallC(Hi_Fatal, &g_hiNoRoom);
+        World_Fatal(&g_hiNoRoom);
     HiPos pos;
     Hi_PosRV(&pos, room, F(Vec3, s, 36));
     if (pos.d[0] == -1)
@@ -7320,8 +7313,8 @@ void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m)
                 (double)F(float, s, 40), (double)F(float, s, 44));
         Hi_PosV(&pos, F(Vec3, s, 36));
         if (pos.d[0] == -1)
-            CallC(Hi_Fatal, buf);
-        CallC(Hi_Log, buf, 0);
+            World_Fatal(buf);
+        Sys_Log(buf, 0);
         BYTE info[48];
         memset(info, 0, sizeof info);
         F(const char*, info, 16) = "UNDEFINED_MODULE";
@@ -7329,14 +7322,14 @@ void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m)
         F(int, info, 36) = -1;
         F(int, info, 40) = -1;
         Hi_RoadParams(pos, info);
-        if (!CallC<BYTE*>(Hi_Find, 0, F(const char*, info, 20)))
+        if (!Scene_FindObject(0, F(const char*, info, 20)))
         {
             F(int, s, 3548) = 1;
             return;
         }
     }
     BYTE* e = g_hiRoads[pos.d[0]];
-    CallThis(Hi_Stack, s + 144, (int)F(short, F(BYTE*, e, 112), 16), (int)F(short, F(BYTE*, e, 116), 16));
+    Stack_Init(s + 144, 0, (int)F(short, F(BYTE*, e, 112), 16), (int)F(short, F(BYTE*, e, 116), 16));
 }
 
 } // extern "C"
@@ -7344,14 +7337,7 @@ void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m)
 // === a module's animated objects ("anmobj" and 7 digits) registered as world resources ($L_56e060 with its
 //     tails up to $L_56e54f, a node walk's callback)
 
-extern "C" void Ao_Fatal(); KING_ALIAS("_Ao_Fatal", "_Sys_Fatal")
-extern "C" void Ao_Create(); KING_ALIAS("_Ao_Create", "@Resources_Create@16")
-extern "C" void Ao_Get(); KING_ALIAS("_Ao_Get", "@Resources_Get@12")
-extern "C" void Ao_SetData(); KING_ALIAS("_Ao_SetData", "@Resources_SetData@24")
-extern "C" void Ao_Charge(); KING_ALIAS("_Ao_Charge", "@ResTable_Charge@12")
-extern "C" void Ao_Root(); KING_ALIAS("_Ao_Root", "@Node_Root@8")
-extern "C" void Ao_World(); KING_ALIAS("_Ao_World", "@Node_GetWorld@12")
-extern "C" void Ao_CarType(); KING_ALIAS("_Ao_CarType", "_CarType_FromNumber")
+extern "C" int __cdecl CarType_FromNumber(int n);
 extern "C" long __cdecl atol(const char* s);
 KING_VAR(BYTE*, g_ao6cec6c, 6cec6c)
 KING_VAR(int, g_ao6968f0, 6968f0)
@@ -7376,14 +7362,14 @@ int __cdecl AnmObj_OnLoad(BYTE* node, void*)
         return -1;
     for (int k = 6; k < 13; k++)
         if (name[k] < '0' || name[k] > '9')
-            CallC(Ao_Fatal, "incorrect anmobject name", 0);
+            Sys_Fatal("incorrect anmobject name", 0);
     int id = atol(name + 6);
     int sub = id / 1000 % 100;
     int kind = id / 100000;
     if (kind != 0 && kind != 2)
         return -1;
     if (F(int, node, 16) != 17)
-        CallC(Ao_Fatal, "incorrect anmobject type", 0);
+        Sys_Fatal("incorrect anmobject type", 0);
     BYTE* res = g_ml6f3420 + 704;
     if (kind == 2)
     {
@@ -7392,9 +7378,9 @@ int __cdecl AnmObj_OnLoad(BYTE* node, void*)
             F(BYTE, node, 40) |= 1;
             return -1;
         }
-        int r = CallThis<int>(Ao_Create, res, id, g_ml6f3424);
-        BYTE* rec = CallThis<BYTE*>(Ao_Get, g_ml6f3420 + 704, id);
-        int t = CallC<int>(Ao_CarType, sub);
+        int r = Resources_Create(res, 0, id, g_ml6f3424);
+        BYTE* rec = (BYTE*)Resources_Get((BYTE**)(g_ml6f3420 + 704), 0, id);
+        int t = CarType_FromNumber(sub);
         if (BYTE* e = ((BYTE**)&g_ao6ced98)[t * 11])
             F(int, rec, 16) = F(int, e, 16);
         if (r)
@@ -7405,9 +7391,9 @@ int __cdecl AnmObj_OnLoad(BYTE* node, void*)
         }
         float M[12];
         memcpy(M, g_ao7025f0, 48);
-        CallThis(Ao_World, F(BYTE*, node, 68), M);
+        Node_GetWorld(F(BYTE*, node, 68), 0, M);
         const char* room = F(const char*, F(BYTE*, node, 64), 12);
-        const char* mod = F(const char*, CallThis<BYTE*>(Ao_Root, node), 12);
+        const char* mod = F(const char*, Node_Root(node, 0), 12);
         BYTE data[156];
         memset(data, 0, sizeof data);
         F(int, data, 0) = sub;
@@ -7418,27 +7404,27 @@ int __cdecl AnmObj_OnLoad(BYTE* node, void*)
         strncpy((char*)data + 92, mod, 31);
         strncpy((char*)data + 124, room, 31);
         F(BYTE, node, 40) |= 1;
-        CallThis(Ao_SetData, g_ao696ca0 + 704, id, F(int, F(BYTE*, node, 36), 60), 156, data);
-        CallThis(Ao_Charge, rec, g_ao696ca0 + 704);
+        Resources_SetData((BYTE**)(g_ao696ca0 + 704), 0, id, F(int, F(BYTE*, node, 36), 60), 156, data);
+        ResTable_Charge(rec, 0, g_ao696ca0 + 704);
         return -1;
     }
-    int r = CallThis<int>(Ao_Create, res, id, g_ml6f3424);
+    int r = Resources_Create(res, 0, id, g_ml6f3424);
     if (r)
     {
         if (r == -2)
             F(BYTE, node, 40) |= 1;
         return -1;
     }
-    BYTE* rec = CallThis<BYTE*>(Ao_Get, g_ml6f3420 + 704, id);
+    BYTE* rec = (BYTE*)Resources_Get((BYTE**)(g_ml6f3420 + 704), 0, id);
     if (sub < 1 || sub > 4)
     {
         char buf[100];
         sprintf(buf, &g_aoBadSub, sub, name, 1);
-        CallC(Ao_Fatal, buf, 0);
+        Sys_Fatal(buf, 0);
     }
     BYTE data[76];
     memset(data, 0, sizeof data);
-    const char* mod = F(const char*, CallThis<BYTE*>(Ao_Root, node), 12);
+    const char* mod = F(const char*, Node_Root(node, 0), 12);
     int net = F(int, g_ao6cec6c, 1300) <= 1;
     strncpy((char*)data + 12, mod, 31);
     F(int, data, 0) = id;
@@ -7455,9 +7441,9 @@ int __cdecl AnmObj_OnLoad(BYTE* node, void*)
         strncpy((char*)data + 44, name, 31);
         F(int, data, 8) = net;
     }
-    CallThis(Ao_SetData, g_ml6f3420 + 704, id, F(int, F(BYTE*, node, 36), 60), size, data);
+    Resources_SetData((BYTE**)(g_ml6f3420 + 704), 0, id, F(int, F(BYTE*, node, 36), 60), size, data);
     F(BYTE, node, 40) |= 1;
-    CallThis(Ao_Charge, rec, g_ao696ca0 + 704);
+    ResTable_Charge(rec, 0, g_ao696ca0 + 704);
     return -1;
 }
 
@@ -7465,16 +7451,9 @@ int __cdecl AnmObj_OnLoad(BYTE* node, void*)
 
 // === the vehicle made for an effect's description (FUN_4d08d0 with its tail $L_4d0ab3)
 
-extern "C" void Pv_Data(); KING_ALIAS("_Pv_Data", "_Ai_GetPlayerData")
-extern "C" void Pv_MsgNew(); KING_ALIAS("_Pv_MsgNew", "@DpMessage_Construct@8")
-extern "C" void Pv_MsgWrite(); KING_ALIAS("_Pv_MsgWrite", "@Msg_Write120@20")
-extern "C" void Pv_Record(); KING_ALIAS("_Pv_Record", "@Media_RecordBlock@12")
-extern "C" void Pv_MsgFree(); KING_ALIAS("_Pv_MsgFree", "@MsgBuf_Destroy@8")
-extern "C" void Pv_Effect(); KING_ALIAS("_Pv_Effect", "@Effect4d25f0_Construct@20")
-extern "C" void Pv_Cop(); KING_ALIAS("_Pv_Cop", "@CopCar_Construct@20")
-extern "C" void Pv_Car(); KING_ALIAS("_Pv_Car", "@Effect4d0e30_Construct@20")
-extern "C" void Pv_Fatal(); KING_ALIAS("_Pv_Fatal", "_Sys_Fatal")
-extern "C" void Pv_Settings(); KING_ALIAS("_Pv_Settings", "_Car_ApplyPlayerSettings")
+extern "C" BYTE* __fastcall Effect4d25f0_Construct(BYTE* self, void*, int a1, int a2, int a3);
+extern "C" BYTE* __fastcall CopCar_Construct(BYTE* self, void*, int a1, int a2, int a3);
+extern "C" BYTE* __fastcall Effect4d0e30_Construct(BYTE* self, void*, int a1, int a2, int a3);
 KING_VAR(BYTE*, g_pv68b990, 68b990)
 KING_VAR(int, g_pv6f3310, 6f3310)
 KING_VAR(int, g_pv6f3314, 6f3314)
@@ -7496,7 +7475,7 @@ BYTE* __cdecl Fx_MakePlayerVehicle(BYTE* w, BYTE* fx, BYTE* pl)
     if (pl != g_pv68b990)
     {
         BYTE pd[192];
-        CallC(Pv_Data, pl, pd);
+        Ai_GetPlayerData(pl, pd);
         if (F(int, pd, 8) == 1)
         {
             local = 1;
@@ -7504,11 +7483,11 @@ BYTE* __cdecl Fx_MakePlayerVehicle(BYTE* w, BYTE* fx, BYTE* pl)
             if (F(int, g_pv6cec6c, 1300) == 1)
             {
                 __declspec(align(8)) BYTE msg[32];
-                CallThis(Pv_MsgNew, msg);
+                DpMessage_Construct(msg, 0);
                 int v = F(int, pl, 84);
-                CallThis(Pv_MsgWrite, msg, 959, &v, 4);
-                CallThis(Pv_Record, w, msg);
-                CallThis(Pv_MsgFree, msg);
+                Msg_Write120(msg, 0, 959, (const BYTE*)&v, 4);
+                Media_RecordBlock(w, 0, msg);
+                MsgBuf_Destroy(msg, 0);
             }
         }
     }
@@ -7517,23 +7496,23 @@ BYTE* __cdecl Fx_MakePlayerVehicle(BYTE* w, BYTE* fx, BYTE* pl)
     if (type >= g_pv6ce338 && type < g_pv6ce33c)
     {
         BYTE* m = (BYTE*)operator new(21960);
-        v = m ? CallThis<BYTE*>(Pv_Effect, m, w, fx, pl) : 0;
+        v = m ? Effect4d25f0_Construct(m, 0, (int)w, (int)fx, (int)pl) : 0;
     }
     else if (type >= g_pv6ce330 && type < g_pv6ce334)
     {
         BYTE* m = (BYTE*)operator new(21952);
-        v = m ? CallThis<BYTE*>(Pv_Cop, m, w, fx, pl) : 0;
+        v = m ? CopCar_Construct(m, 0, (int)w, (int)fx, (int)pl) : 0;
     }
     else
     {
         BYTE* m = (BYTE*)operator new(21880);
-        v = m ? CallThis<BYTE*>(Pv_Car, m, w, fx, pl) : 0;
+        v = m ? Effect4d0e30_Construct(m, 0, (int)w, (int)fx, (int)pl) : 0;
     }
     if (!v)
-        CallC(Pv_Fatal, &g_pvNoCar, 0);
+        Sys_Fatal(&g_pvNoCar, 0);
     if (local)
         F(int, v, 20920) = g_pv6f3314;
-    CallC(Pv_Settings, v);
+    Car_ApplyPlayerSettings(v);
     CallVirt(v + 16, 24, 1);
     F(BYTE, v, 312) |= 8;
     return v;
@@ -7566,16 +7545,12 @@ void __fastcall Rec4d0760_FreeVectors(BYTE* s, void*)
 
 // === a vehicle's destructor saving a fresh record of it (FUN_573d10)
 
-extern "C" void Vd_Value(); KING_ALIAS("_Vd_Value", "@Car_555500@8")
-extern "C" void Vd_M1(); KING_ALIAS("_Vd_M1", "@SceneObj_Matrix1@12")
-extern "C" void Vd_Get800(); KING_ALIAS("_Vd_Get800", "@SceneObj_Get800@8")
-extern "C" void Vd_Name(); KING_ALIAS("_Vd_Name", "@Fx_Get12@8")
-extern "C" void Vd_9544(); KING_ALIAS("_Vd_9544", "@Fx_Get9544@8")
-extern "C" void Vd_20396(); KING_ALIAS("_Vd_20396", "@Fx_Get20396@8")
-extern "C" void Vd_Type(); KING_ALIAS("_Vd_Type", "@Fx_Get10420@8")
-extern "C" void Vd_Init(); KING_ALIAS("_Vd_Init", "@Fx_ObjectInit@44")
-extern "C" void Vd_SetData(); KING_ALIAS("_Vd_SetData", "@Resources_SetData@24")
-extern "C" void Vd_Destruct(); KING_ALIAS("_Vd_Destruct", "@Vehicle_Destruct@4")
+extern "C" int __fastcall SceneObj_Get800(BYTE* self, void*);
+extern "C" int __fastcall Fx_Get12(BYTE* s, void*);
+extern "C" int __fastcall Fx_Get9544(BYTE* s, void*);
+extern "C" int __fastcall Fx_Get20396(BYTE* s, void*);
+extern "C" int __fastcall Fx_Get10420(BYTE* s, void*);
+extern "C" void __fastcall Vehicle_Destruct(BYTE* s);
 KING_VAR(AsmLabel, g_vd650250, 650250)
 KING_VAR(AsmLabel, g_vd650118, 650118)
 KING_VAR(AsmLabel, g_vd650114, 650114)
@@ -7594,26 +7569,25 @@ void __fastcall Vehicle573d10_Destroy(BYTE* s, void*)
     F(void*, it, 0) = &g_vd650164;
     __declspec(align(8)) BYTE state[196];
     memset(state, 0, sizeof state);
-    float f = (float)CallThis<double>(Vd_Value, s);
+    float f = (float)Car_555500(s, 0);
     int pl = F(int, s, 20636);
     Matrix W;
-    const Matrix* w = CallThis<const Matrix*>(Vd_M1, it, &W);
-    const char* name = CallThis<const char*>(Vd_Name, CallThis<BYTE*>(Vd_Get800, it));
-    int b = CallThis<int>(Vd_9544, s);
-    int r = CallThis<int>(Vd_20396, s);
-    int k = CallThis<int>(Vd_Type, s) + r * 1000;
+    const Matrix* w = (const Matrix*)SceneObj_Matrix1(it, 0, &W);
+    const char* name = (const char*)Fx_Get12((BYTE*)SceneObj_Get800(it, 0), 0);
+    int b = Fx_Get9544(s, 0);
+    int r = Fx_Get20396(s, 0);
+    int k = Fx_Get10420(s, 0) + r * 1000;
     __declspec(align(8)) BYTE data[300];
-    CallThis(Vd_Init, data, k, b, name, w, pl, state, *(int*)&f, 0, 0);
-    CallThis(Vd_SetData, F(BYTE*, s, 52) + 704, F(int, s, 360), F(int, F(BYTE*, s, 308), 60), 300, data);
-    CallThis(Vd_Destruct, s);
+    Fx_ObjectInit(data, 0, k, b, name, w, pl, state, *(int*)&f, 0, 0);
+    Resources_SetData((BYTE**)(F(BYTE*, s, 52) + 704), 0, F(int, s, 360), F(int, F(BYTE*, s, 308), 60), 300, data);
+    Vehicle_Destruct(s);
 }
 
 } // extern "C"
 
 // === how far the copter drifts sideways before it stops (FUN_562c20 with its tail $L_562e94)
 
-extern "C" void Cd_FrameTime(); KING_ALIAS("_Cd_FrameTime", "_Game_FrameTime")
-extern "C" void Cd_Tilt(); KING_ALIAS("_Cd_Tilt", "@Copter_Tilt@24")
+extern "C" double __fastcall Copter_Tilt(BYTE* s, void*, float input, float turn, const float* dir, float* bank);
 KING_VAR(float, g_cd6f2c3c, 6f2c3c)
 KING_VAR(double, g_cd64b670, 64b670)
 KING_VAR(double, g_cd64ca48, 64ca48)
@@ -7643,11 +7617,11 @@ float __fastcall Copter_SideDrift(BYTE* s, void*, const float* p)
     float dist = 1.0f;
     float acc = 123456.0f;
     int saved = F(int, s, 128);
-    float dt = (float)(CallC<double>(Cd_FrameTime) * g_cd64d2f8);
+    float dt = (float)(Game_FrameTime() * g_cd64d2f8);
     F(float, s, 128) = (float)-(g_cd6f2c3c * sg);
     for (int i = 0; v > g_cd64b5b8;)
     {
-        tilt = (float)CallThis<double>(Cd_Tilt, s, dt, tilt, p, &acc);
+        tilt = (float)Copter_Tilt(s, 0, dt, tilt, p, &acc);
         dist = (float)((double)dt * dt * acc * g_cd64b6e0 + ((double)dt * v + dist));
         v = (float)(((double)dt * acc * sg + v) * F(float, s, 3216));
         t = (float)((double)dt + t);
@@ -7674,9 +7648,7 @@ float __fastcall Copter_SideDrift(BYTE* s, void*, const float* p)
 
 // === where a circle about a center touches a line in a plane (FUN_562eb0 with its tails $L_563376, $L_56337b)
 
-ASM_FUNC(FUN_4e7889, _Quadratic_Roots)
-extern "C" void Ct_Set(); KING_ALIAS("_Ct_Set", "@Vec3_SetThis@20")
-extern "C" void Ct_MulAssign(); KING_ALIAS("_Ct_MulAssign", "@Vec3_MulAssign@16")
+extern "C" int __cdecl Quadratic_Roots(float a, float b, float c, float* r1, float* r2);
 KING_VAR(double, g_ct64b670, 64b670)
 KING_VAR(double, g_ct64d960, 64d960)
 KING_VAR(double, g_ct64b678, 64b678)
@@ -7711,7 +7683,7 @@ int __cdecl Copter_CircleTouch(const float* a, const float* n, const float* p, c
         float qa = (float)((double)n[1] * n[1] / ((double)n[0] * n[0]) + g_ct64b670);
         float qb = (float)(((double)h * n[1] / n[0] + f[1]) * g_ct64d960);
         float qc = (float)(((double)f[1] * f[1] + (double)h * h) - (double)r * r);
-        cnt = CallC<int>(FUN_4e7889, qa, qb, qc, &y1, &y2);
+        cnt = Quadratic_Roots(qa, qb, qc, &y1, &y2);
         if (!cnt)
             return 0;
         double t = (double)f[0] + h;
@@ -7724,7 +7696,7 @@ int __cdecl Copter_CircleTouch(const float* a, const float* n, const float* p, c
         float qa = (float)((double)n[0] * n[0] / ((double)n[1] * n[1]) + g_ct64b670);
         float qb = (float)(((double)h * n[0] / n[1] + f[0]) * g_ct64d960);
         float qc = (float)(((double)f[0] * f[0] + (double)h * h) - (double)r * r);
-        cnt = CallC<int>(FUN_4e7889, qa, qb, qc, &x1, &x2);
+        cnt = Quadratic_Roots(qa, qb, qc, &x1, &x2);
         if (!cnt)
             return 0;
         double t = (double)f[1] + h;
@@ -7761,15 +7733,14 @@ int __cdecl Copter_CircleTouch(const float* a, const float* n, const float* p, c
         World_Fatal(buf);
     }
     float tmp[3];
-    CallThis(Ct_MulAssign, M, tmp, (float)((double)inv * inv));
+    Vec3_MulAssign((Vec3*)M, 0, (Vec3*)tmp, (float)((double)inv * inv));
     double dm = (double)u[0] * M[0] + ((double)M[2] * u[2] + (double)M[1] * u[1]);
     *angle = (float)(x87_fabs(x87_asin(dm)) * r);
     float kn[3];
-    CallThis(Ct_Set, kn, (float)((double)kk[0] * inv), (float)((double)kk[1] * inv), (float)((double)kk[2] * inv));
+    Vec3_SetThis((Vec3*)kn, 0, (float)((double)kk[0] * inv), (float)((double)kk[1] * inv), (float)((double)kk[2] * inv));
     Vec3 d;
     memcpy(dir, Vec3_Cross(&d, (const Vec3*)u, (const Vec3*)kn), 12);
-    CallThis(Ct_Set, tmp, (float)((double)c[0] + at[0]), (float)((double)c[1] + at[1]),
-             (float)((double)c[2] + at[2]));
+    Vec3_SetThis((Vec3*)tmp, 0, (float)((double)c[0] + at[0]), (float)((double)c[1] + at[1]), (float)((double)c[2] + at[2]));
     memcpy(at, tmp, 12);
     return cnt;
 }

@@ -18,17 +18,24 @@ extern "C" long __cdecl strtol(const char* s, char** end, int base);
 extern "C" long __cdecl atol(const char* s);
 extern "C" double __cdecl atof(const char* s);
 
+extern "C" void __cdecl Providers_Rebuild();
 extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")    // rewinds the service provider list
+extern "C" int __cdecl Gate_600b50(int a);
 extern "C" void FUN_600b50(); KING_ALIAS("_FUN_600b50", "_Gate_600b50")    // DirectPlay error text (hr)
-extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")    // fatal error report
+extern "C" void __cdecl Ai_Report(int a1, int level, int a3, int a4, int a5, int a6, int a7, int a8);
+extern "C" int __cdecl Gate_Send(DWORD to, const BYTE* buf, int size);
 extern "C" void FUN_601ff0(); KING_ALIAS("_FUN_601ff0", "_Gate_Send")
+extern "C" int __cdecl Gate_Players(DWORD* out, BYTE** list);
 ASM_FUNC(FUN_602320, _Gate_Players)
-extern "C" void FUN_603f30(); KING_ALIAS("_FUN_603f30", "_Tsc_Calibrate")
+extern "C" int __cdecl Tsc_Calibrate(int);
 typedef void (*VFn)();
+extern "C" void __fastcall Gate_FreeBuffers(BYTE* self, int);
 extern "C" void FUN_601470(); KING_ALIAS("_FUN_601470", "@Gate_FreeBuffers@8")
 extern "C" void FUN_601c70(); KING_ALIAS("_FUN_601c70", "_Dp_Connect")
-extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+extern "C" void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")
 KING_VAR(DWORD*, g_providerIds, 723de8)
@@ -174,7 +181,7 @@ int __cdecl Dp_NextProvider(BYTE* out)
 // [FUN_6015b0]
 int __cdecl Dp_FirstProvider(BYTE* out)
 {
-    CallC(FUN_6016f0);
+    Providers_Rebuild();
     g_providerNext = 0;
     return Dp_NextProvider(out);
 }
@@ -187,9 +194,8 @@ void __cdecl Dp_Create()
     int hr = CoCreateInstance(*(const CLSID*)g_clsidDirectPlay, 0, 1, *(const IID*)g_iidDirectPlay4,
                               (void**)&g_directPlay);
     if (hr < 0) {
-        int text = CallC<int>(FUN_600b50, hr);
-        CallC(FUN_401010, 2, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 647,
-              (const char*)s_noDirectPlay, text, (void*)g_68d1c0);
+        int text = Gate_600b50(hr);
+        Ai_Report(2, 100, (int)((const char*)s_d1gateFile), (int)((const char*)s_d1gateId), 647, (int)((const char*)s_noDirectPlay), text, (int)((void*)g_68d1c0));
     }
 }
 
@@ -210,13 +216,13 @@ int __cdecl Dp_Release()
 // [FUN_6021b0]
 int __cdecl Dp_Send(int a, int b)
 {
-    return CallC<int>(FUN_601ff0, 0, a, b);
+    return Gate_Send(0, (const BYTE*)a, b);
 }
 
 // [FUN_6021d0]
 int __cdecl Dp_SendTo(int to, int a, int b)
 {
-    return CallC<int>(FUN_601ff0, to, a, b);
+    return Gate_Send(to, (const BYTE*)a, b);
 }
 
 // [FUN_6022a0]
@@ -246,7 +252,7 @@ int __cdecl MsgList_Take(DWORD* out, BYTE* list)
 // [FUN_6024d0]
 int __cdecl Dp_Receive(int a)
 {
-    return CallC<int>(FUN_602320, a, (void*)g_dpMessages);
+    return Gate_Players((DWORD*)a, (BYTE**)((void*)g_dpMessages));
 }
 
 // [FUN_6024f0]
@@ -342,7 +348,7 @@ BYTE* __cdecl Bytes_Copy(const BYTE* first, const BYTE* last, BYTE* dest)
 // [FUN_6037f0]
 int __cdecl Timer_Calibrate(int a)
 {
-    return CallC<int>(FUN_603f30, a);
+    return Tsc_Calibrate(a);
 }
 
 // The music player: +0 state (1 stopped, 2 paused, 3 running), +4 error,
@@ -503,7 +509,7 @@ BOOL __cdecl Ini_WriteInt(const char* section, const char* key, long v, const ch
 
 static void Buf_Write(BYTE* v, const void* p, int n)
 {
-    CallThis(FUN_46e460, v, F(BYTE*, v, 4), (const BYTE*)p, (const BYTE*)p + n);
+    CharVec_InsertRange((BYTE**)v, 0, F(BYTE*, v, 4), (BYTE*)((const BYTE*)p), (BYTE*)((const BYTE*)p + n));
 }
 
 extern "C" {
@@ -515,7 +521,7 @@ void __cdecl Providers_Rebuild()
         operator delete(g_providerIds);
     g_providerIds = 0;
     for (BYTE* e = g_providersBegin; e != g_providersEnd; e += 32)
-        CallThis(FUN_601470, e);
+        Gate_FreeBuffers(e, 0);
     g_providersEnd = g_providersBegin;
     Dp_Create();
     BYTE* dp = g_directPlay;
@@ -542,7 +548,7 @@ int __cdecl Providers_Call601c70(unsigned i, int a, int b, int c)
 // [FUN_6026f0] a 16-byte list node holding *x
 BYTE* __stdcall DpList_MakeNode(const DWORD* x)
 {
-    BYTE* n = CallC<BYTE*>(FUN_44b740, 16);
+    BYTE* n = (BYTE*)Stl_Allocate(16);
     if (n + 8)
         F(DWORD, n, 8) = *x;
     return n;
@@ -629,13 +635,13 @@ static void Bytes_InsertAt(BYTE** self, BYTE* pos, const BYTE* x)
     }
     unsigned n = last - self[0];
     unsigned cap = n ? n * 2 : 1;
-    BYTE* p = CallC<BYTE*>(FUN_44b740, cap);
+    BYTE* p = (BYTE*)Stl_Allocate(cap);
     BYTE* q = CallC<BYTE*>(FUN_46ecd0, self[0], pos, p, 0);
     if (q)
         *q = *x;
     BYTE* e = CallC<BYTE*>(FUN_46ecd0, pos, self[1], q + 1, 0);
     if (self[2] != self[0])
-        CallC(FUN_44b4a0, self[0], self[2] - self[0]);
+        Ai_PoolFree(self[0], self[2] - self[0]);
     self[0] = p;
     self[1] = e;
     self[2] = p + cap;
@@ -693,7 +699,9 @@ int __fastcall Music_Open(BYTE* self, void*, const char* path)
 
 }
 
+extern "C" void** __fastcall Vec_Construct(void** self, void*, int);
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")    // vector<char> constructor
+extern "C" void __cdecl Net_FillSendBuffer(BYTE** v, const BYTE* data, int size);
 extern "C" void FUN_600e60(); KING_ALIAS("_FUN_600e60", "_Net_FillSendBuffer")    // appends bytes to a vector<char> (vector, data, size)
 extern "C" void Gate_SendBufferDtor(); KING_ALIAS("_Gate_SendBufferDtor", "_Static723d98_Destroy")
 extern "C" int __cdecl atexit(void (__cdecl* fn)());
@@ -715,35 +723,34 @@ extern "C" {
 int __cdecl Gate_Send(DWORD to, const BYTE* buf, int size)
 {
     if (!buf)
-        CallC(FUN_401010, 2341, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1075,
-              "Invalid buffer", (void*)g_68d1c0, (void*)g_68d1c0);
+        Ai_Report(2341, 100, (int)((const char*)s_d1gateFile), (int)((const char*)s_d1gateId), 1075, (int)("Invalid buffer"), (int)((void*)g_68d1c0), (int)((void*)g_68d1c0));
     if (!size)
-        CallC(FUN_401010, 2351, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1079,
-              "Invalid buffer size", (void*)g_68d1c0, (void*)g_68d1c0);
+        Ai_Report(2351, 100, (int)((const char*)s_d1gateFile), (int)((const char*)s_d1gateId), 1079, (int)("Invalid buffer size"), (int)((void*)g_68d1c0), (int)((void*)g_68d1c0));
     if (!(g_sendBufInit & 1)) {
         g_sendBufInit |= 1;
         char dummy;
-        CallThis(FUN_487730, g_sendBuf, &dummy);
+        Vec_Construct((void**)g_sendBuf, 0, (int)&dummy);
         atexit((void (__cdecl*)())Gate_SendBufferDtor);
     }
     g_sendBuf[1] = g_sendBuf[0];
-    CallC(FUN_600e60, g_sendBuf, buf, size);
+    Net_FillSendBuffer(g_sendBuf, buf, size);
     int hr = Dp_SendEx(to, g_sendBuf[0], g_sendBuf[1] - g_sendBuf[0]);
     for (int i = 0; hr == (int)0x8877000e && i < g_sendRetries; i++)
         hr = Dp_SendEx(to, g_sendBuf[0], g_sendBuf[1] - g_sendBuf[0]);
     if (hr != (int)0x8000000a && hr < 0) {
-        int text = CallC<int>(FUN_600b50, hr);
-        CallC(FUN_401010, 5, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1102,
-              "Cannot send message", text, (void*)g_68d1c0);
+        int text = Gate_600b50(hr);
+        Ai_Report(5, 100, (int)((const char*)s_d1gateFile), (int)((const char*)s_d1gateId), 1102, (int)("Cannot send message"), text, (int)((void*)g_68d1c0));
     }
     return 0;
 }
 
 }
 
+extern "C" const char* __cdecl DxError_Name(DWORD c);
 extern "C" void FUN_600660(); KING_ALIAS("_FUN_600660", "_DxError_Name")
 extern "C" void FUN_602b60(); KING_ALIAS("_FUN_602b60", "@Blob_Set@16")
 extern "C" void FUN_603b30(); KING_ALIAS("_FUN_603b30", "@Music_Close@8")
+extern "C" BYTE** __fastcall Sg_ListConstruct(BYTE** self);
 ASM_FUNC($L_602410, @Sg_ListConstruct@4)
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 KING_VAR(char, g_723d90, 723d90)
@@ -752,7 +759,7 @@ KING_VAR(char, g_723d60, 723d60)
 // [FUN_600b50] forwards to FUN_600660
 extern "C" int __cdecl Gate_600b50(int a)
 {
-    return CallC<int>(FUN_600660, a);
+    return (int)DxError_Name(a);
 }
 
 // [FUN_602bd0] empties blob s: Blob_Set(s, 0, 0)
@@ -771,14 +778,14 @@ extern "C" int __fastcall Gate_Set24(BYTE* self, int)
 // [FUN_6023e0] destroys the global at 723d90
 extern "C" void __cdecl Gate_Destroy723d90()
 {
-    CallThis($L_602410, &g_723d90);
+    Sg_ListConstruct((BYTE**)&g_723d90);
 }
 
 // [FUN_601530] constructs the global container at 723d60
 extern "C" void __cdecl Gate_Init723d60()
 {
     char alloc;
-    CallThis(FUN_487730, &g_723d60, &alloc);
+    Vec_Construct((void**)&g_723d60, 0, (int)&alloc);
 }
 
 // [FUN_601470] frees the buffers at +16 and +24
@@ -831,7 +838,7 @@ extern "C" void __fastcall Msg_Write7(BYTE* self, int, int id, const float* f, B
     Buf_WriteByte(0, v, b);
     for (int i = 0; i < 6; i++) {
         float x = f[i];
-        CallThis(FUN_46e460, v, v[1], (BYTE*)&x, (BYTE*)&x + 4);
+        CharVec_InsertRange(v, 0, v[1], (BYTE*)&x, (BYTE*)&x + 4);
     }
     Msg_Finish(self);
 }
@@ -843,7 +850,7 @@ extern "C" void __fastcall Msg_Write42(BYTE* self, int, int id, double d)
     Buf_WriteByte(0, v, 42);
     Buf_WriteDword(0, (BYTE*)v, id);
     float x = (float)d;
-    CallThis(FUN_46e460, v, v[1], (BYTE*)&x, (BYTE*)&x + 4);
+    CharVec_InsertRange(v, 0, v[1], (BYTE*)&x, (BYTE*)&x + 4);
     Msg_Finish(self);
 }
 
@@ -853,7 +860,7 @@ extern "C" void __fastcall Msg_Write45(BYTE* self, int, int id, DWORD x)
     BYTE** v = (BYTE**)(self + 4);
     Buf_WriteByte(0, v, 45);
     Buf_WriteDword(0, (BYTE*)v, id);
-    CallThis(FUN_46e460, v, v[1], (BYTE*)&x, (BYTE*)&x + 4);
+    CharVec_InsertRange(v, 0, v[1], (BYTE*)&x, (BYTE*)&x + 4);
     Msg_Finish(self);
 }
 
@@ -864,7 +871,7 @@ extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, 
     Buf_WriteByte(0, v, 120);
     Buf_WriteDword(0, (BYTE*)v, id);
     Buf_WriteDword(0, (BYTE*)v, n);
-    CallThis(FUN_46e460, v, v[1], p, p + n);
+    CharVec_InsertRange(v, 0, v[1], (BYTE*)p, (BYTE*)(p + n));
     Msg_Finish(self);
 }
 
@@ -877,7 +884,7 @@ extern "C" void __fastcall MsgBuf_FreeStorage(BYTE* self, int)
     BYTE* b = F(BYTE*, self, 4);
     int n = F(BYTE*, self, 12) - b;
     if (n)
-        CallC(FUN_44b4a0, b, n);
+        Ai_PoolFree(b, n);
 }
 
 // [FUN_602e80] destructor (vtable 652de0): frees the byte buffer at +4
@@ -905,8 +912,7 @@ extern "C" int __cdecl Gate_Start(const char* name)
     HRESULT hr = CoInitialize(0);
     if (hr < 0)
     {
-        CallC(FUN_401010, 6, 100, (char*)s_sg68422c, (char*)s_sg683c78, 1134, (char*)s_sg684320,
-              CallC<const char*>(FUN_600b50, hr), (char*)s_sg68d1c0);
+        Ai_Report(6, 100, (int)((char*)s_sg68422c), (int)((char*)s_sg683c78), 1134, (int)((char*)s_sg684320), (int)((const char*)Gate_600b50(hr)), (int)((char*)s_sg68d1c0));
         return -1;
     }
     if (name && strlen(name))
@@ -914,7 +920,7 @@ extern "C" int __cdecl Gate_Start(const char* name)
         unsigned n = strlen(name);
         strncpy(g_sg683ca0, name, n < 16 ? n : 16);
     }
-    CallC(FUN_6016f0);
+    Providers_Rebuild();
     g_sg723df0 = 1;
     return 0;
 }
@@ -940,7 +946,7 @@ extern "C" int __fastcall Stream_End(BYTE* s) { return F(int*, s, 4)[1]; }
 extern "C" int __fastcall Stream_Write(BYTE* s, void*, BYTE* p, int n)
 {
     BYTE* v = F(BYTE*, s, 4);
-    CallThis(FUN_46e460, v, F(BYTE*, v, 0) + F(int, s, 8), p, p + n);
+    CharVec_InsertRange((BYTE**)v, 0, F(BYTE*, v, 0) + F(int, s, 8), p, p + n);
     F(int, s, 8) += n;
     return n;
 }
@@ -1002,10 +1008,11 @@ extern "C" unsigned __fastcall MemStream_Read(BYTE* s, void*, void* dst, unsigne
     return F(unsigned, s, 8) += n;
 }
 
+extern "C" void __fastcall Providers_Destroy(BYTE** v, void*);
 extern "C" void $L_602550(); KING_ALIAS("_$L_602550", "@Providers_Destroy@8")
-extern "C" void $L_4af6b0(); KING_ALIAS("_$L_4af6b0", "@List16_Destroy@4")
+extern "C" void __fastcall List16_Destroy(BYTE** s);
 // [$L_601560] destroys the global container 723d60
-extern "C" void __cdecl Gate_Destroy723d60(void) { CallThis($L_602550, &g_723d60); }
+extern "C" void __cdecl Gate_Destroy723d60(void) { Providers_Destroy((BYTE**)&g_723d60, 0); }
 // [$L_601550] destroys it at exit
 extern "C" int __cdecl Gate_723d60AtExit(void) { return atexit(Gate_Destroy723d60); }
 // [$L_601520] the static initializer of 723d60
@@ -1015,7 +1022,7 @@ extern "C" int __cdecl Gate_723d60Init(void)
     return Gate_723d60AtExit();
 }
 // [$L_602400] the final destructor of 723d90
-extern "C" void __cdecl Gate_Free723d90(void) { CallThis($L_4af6b0, &g_723d90); }
+extern "C" void __cdecl Gate_Free723d90(void) { List16_Destroy((BYTE**)&g_723d90); }
 // [$L_6023f0] runs it at exit
 extern "C" int __cdecl Gate_723d90AtExit(void) { return atexit(Gate_Free723d90); }
 // [$L_6023d0] the static initializer of 723d90
@@ -1035,7 +1042,7 @@ extern "C" void __cdecl free(void*);
 extern "C" void __fastcall Providers_Destroy(BYTE** v, void*)
 {
     for (BYTE* e = v[0]; e != v[1]; e += 32)
-        CallThis(FUN_601470, e);
+        Gate_FreeBuffers(e, 0);
     BYTE* p = v[0];
     int n = (int)(v[2] - p) >> 5;
     if (!n)
@@ -1062,11 +1069,10 @@ extern "C" void __cdecl Static723d98_Destroy(void) { q238_VecB_FreeStorage((BYTE
 
 // === a received network block (FUN_600c60)
 
-extern "C" void FUN_4836f0(); KING_ALIAS("_FUN_4836f0", "_Bytes_Clone@12")
-extern "C" void FUN_62aaa0(); KING_ALIAS("_FUN_62aaa0", "_Gz_MemStreamNew")    // a memory stream over (p, n)
-extern "C" void FUN_62abc0(); KING_ALIAS("_FUN_62abc0", "_Gz_Decompress")      // gunzips stream v into stream h
-extern "C" void FUN_62a950(); KING_ALIAS("_FUN_62a950", "_Gz_StreamClose")     // deletes a stream (&v)
-extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+extern "C" BYTE* __stdcall Bytes_Clone(unsigned n, const BYTE* first, const BYTE* last);
+extern "C" BYTE* __cdecl Gz_MemStreamNew(BYTE* data, unsigned size);
+extern "C" int __cdecl Gz_Decompress(void* in, void* out);
+extern "C" int __cdecl Gz_StreamClose(BYTE** p);
 
 // empties byte vector v, keeping room for at least 2048 bytes
 static void Rb_Reset(BYTE** v)
@@ -1074,9 +1080,9 @@ static void Rb_Reset(BYTE** v)
     v[1] = v[0];
     if ((unsigned)(v[2] - v[0]) < 2048) {
         int size = (int)(v[1] - v[0]);
-        BYTE* p = CallStd<BYTE*>(FUN_4836f0, 2048, v[0], v[1]);
+        BYTE* p = Bytes_Clone(2048, v[0], v[1]);
         if (int bytes = (int)(v[2] - v[0]))
-            CallC(FUN_44b4a0, v[0], bytes);
+            Ai_PoolFree(v[0], bytes);
         v[0] = p;
         v[1] = p + size;
         v[2] = p + 2048;
@@ -1092,21 +1098,21 @@ void __cdecl Net_OnBlock(BYTE** v, const BYTE* b, int n)
     bool call = !strncmp((const char*)b, "CPSD", 4);
     Rb_Reset(v);
     if (call) {
-        void* r = CallC<void*>(FUN_62aaa0, b + 4, n - 4);
+        void* r = (void*)Gz_MemStreamNew((BYTE*)(b + 4), n - 4);
         BYTE* h = (BYTE*)operator new(12);
         void* hv = h ? DpHandler_Construct(h, 0, (int)v) : 0;
-        CallC(FUN_62abc0, r, hv);
-        CallC(FUN_62a950, &r);
-        CallC(FUN_62a950, &hv);
+        Gz_Decompress(r, hv);
+        Gz_StreamClose((BYTE**)&r);
+        Gz_StreamClose((BYTE**)&hv);
     } else
-        CallThis(FUN_46e460, v, v[1], b, b + n);
+        CharVec_InsertRange(v, 0, v[1], (BYTE*)b, (BYTE*)(b + n));
 }
 
 } // extern "C"
 
 // === receiving the next network message (FUN_601060)
 
-extern "C" void FUN_600b60(); KING_ALIAS("_FUN_600b60", "_Tsc_Now")
+extern "C" double __cdecl Tsc_Now();
 KING_VAR(BYTE, g_rm723d48, 723d48)
 KING_VAR(AsmLabel, g_rm723d70, 723d70)    // the receive buffer (a byte vector)
 ASM_VAR(AsmLabel, g_rm601250, _Sg_Exit601250)    // its destructor
@@ -1117,7 +1123,7 @@ extern "C" int __cdecl atexit(void (__cdecl*)(void));
 static void Rm_Set(BYTE* m, int kind, DWORD from, const void* p, DWORD n)
 {
     F(DWORD, m, 12) = from;
-    F(double, m, 16) = CallC<double>(FUN_600b60);
+    F(double, m, 16) = Tsc_Now();
     F(int, m, 0) = kind;
     Blob_Set(m, 0, p, n);
 }
@@ -1145,8 +1151,7 @@ int __cdecl Net_Receive(BYTE* m)
             continue;
         }
         if (hr < 0) {
-            CallC(FUN_401010, 1, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 513, (const char*)s_rm684250,
-                  CallC<int>(FUN_600b50, hr), (void*)g_68d1c0);
+            Ai_Report(1, 100, (int)((const char*)s_d1gateFile), (int)((const char*)s_d1gateId), 513, (int)((const char*)s_rm684250), Gate_600b50(hr), (int)((void*)g_68d1c0));
             break;
         }
         if (!from) {
@@ -1161,7 +1166,7 @@ int __cdecl Net_Receive(BYTE* m)
         if (!(g_rm723d48 & 1)) {
             g_rm723d48 |= 1;
             char alloc;
-            CallThis(FUN_487730, v, &alloc);
+            Vec_Construct((void**)v, 0, (int)&alloc);
             atexit((void (__cdecl*)(void))(void*)g_rm601250);
         }
         v[1] = v[0];
@@ -1289,7 +1294,7 @@ int __cdecl Dp_Connect(DWORD sp0, DWORD sp1, DWORD sp2, DWORD sp3, int host, int
 {
     char h = host != 0;
     g_dpHosting = h;
-    CallC(FUN_6016f0);
+    Providers_Rebuild();
     DWORD sp[4] = {sp0, sp1, sp2, sp3};
     BYTE* e = g_providersBegin;
     while (e != g_providersEnd && memcmp(e, sp, 16))
@@ -1350,8 +1355,7 @@ int __cdecl Dp_Connect(DWORD sp0, DWORD sp1, DWORD sp2, DWORD sp3, int host, int
     if (hr < 0) {
         Dp_Drop();
         int text = CallC<int>(FUN_600b50, hr, (void*)g_68d1c0);
-        CallC(FUN_401010, 1, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1038, (const char*)s_dpNoPlayer,
-              text, (void*)g_68d1c0);
+        Ai_Report(1, 100, (int)((const char*)s_d1gateFile), (int)((const char*)s_d1gateId), 1038, (int)((const char*)s_dpNoPlayer), text, (int)((void*)g_68d1c0));
         return -1;
     }
     g_723d88 = g_dpPlayer;
@@ -1362,6 +1366,7 @@ int __cdecl Dp_Connect(DWORD sp0, DWORD sp1, DWORD sp2, DWORD sp3, int host, int
 
 // === inserting a DirectPlay record (FUN_6027b0)
 
+extern "C" BYTE* __cdecl DpRecords_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
 ASM_FUNC(FUN_602ad0, _DpRecords_UninitCopy)    // uninitialized copy of records (first, last, dest, -)
 
 extern "C" {
@@ -1384,20 +1389,20 @@ void __fastcall DpRecords_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
             DpRecord_Assign(dst, 0, src);
         }
         DpRecord_Assign(pos, 0, tmp);
-        CallThis(FUN_601470, tmp);
+        Gate_FreeBuffers(tmp, 0);
         return;
     }
     unsigned n = (unsigned)(s[1] - s[0]) >> 5;
     unsigned cap = n ? n * 2 : 1;
-    BYTE* buf = cap ? CallC<BYTE*>(FUN_44b740, cap * 32) : 0;
-    BYTE* p = CallC<BYTE*>(FUN_602ad0, s[0], pos, buf, pos);
+    BYTE* buf = cap ? (BYTE*)Stl_Allocate(cap * 32) : 0;
+    BYTE* p = DpRecords_UninitCopy(s[0], pos, buf, pos);
     if (p)
         DpRecord_Copy(p, 0, x);
-    BYTE* q = CallC<BYTE*>(FUN_602ad0, pos, s[1], p + 32, p);
+    BYTE* q = DpRecords_UninitCopy(pos, s[1], p + 32, p);
     for (BYTE* e = s[0]; e != s[1]; e += 32)
-        CallThis(FUN_601470, e);
+        Gate_FreeBuffers(e, 0);
     if (unsigned bytes = (unsigned)(s[2] - s[0]) >> 5 << 5)
-        CallC(FUN_44b4a0, s[0], bytes);
+        Ai_PoolFree(s[0], bytes);
     s[0] = buf;
     s[1] = q;
     s[2] = buf + cap * 32;
@@ -1598,10 +1603,7 @@ int __fastcall Msg_SkipRecord(BYTE* s, void*)
 // Batch 32: the network send buffer
 
 extern "C" void Ng32_CopyBytes(); KING_ALIAS("_Ng32_CopyBytes", "_CopyBytes")
-extern "C" void Ng32_Clone(); KING_ALIAS("_Ng32_Clone", "_Bytes_Clone@12")
-extern "C" void Ng32_PoolFree(); KING_ALIAS("_Ng32_PoolFree", "_Ai_PoolFree")
-extern "C" void Ng32_Insert(); KING_ALIAS("_Ng32_Insert", "@CharVec_InsertRange@20")
-extern "C" void FUN_62ab60(); KING_ALIAS("_FUN_62ab60", "_Gz_Compress")        // gzips stream v into stream h
+extern "C" int __cdecl Gz_Compress(void* in, void* out);
 KING_VAR(BYTE, ng32_pack723de4, 723de4)
 KING_VAR(char, ng32_tag683cb0, 683cb0)
 KING_VAR(char, ng32_tagEnd683cb4, 683cb4)
@@ -1615,9 +1617,9 @@ static void Ng32_Reset(BYTE** v)
     if ((unsigned)(v[2] - v[0]) < 2048) {
         BYTE* b = v[0];
         int n = (int)(v[1] - b);
-        BYTE* nb = CallStd<BYTE*>(Ng32_Clone, 2048u, b, v[1]);
+        BYTE* nb = Bytes_Clone(2048u, b, v[1]);
         if (v[2] - v[0])
-            CallC(Ng32_PoolFree, v[0], (unsigned)(v[2] - v[0]));
+            Ai_PoolFree(v[0], (unsigned)(v[2] - v[0]));
         v[0] = nb;
         v[1] = nb + n;
         v[2] = nb + 2048;
@@ -1633,27 +1635,27 @@ void __cdecl Net_FillSendBuffer(BYTE** v, const BYTE* data, int size)
     if (ng32_pack723de4) {
         CallC(Ng32_CopyBytes, v[1], v[1], v[0], size, 0);
         Ng32_Reset(v);
-        void* r = CallC<void*>(FUN_62aaa0, data, size);
+        void* r = (void*)Gz_MemStreamNew((BYTE*)data, size);
         BYTE* h = (BYTE*)operator new(12);
         void* hv = h ? DpHandler_Construct(h, 0, (int)v) : 0;
-        CallC(FUN_62ab60, r, hv);
-        CallC(FUN_62a950, &r);
-        CallC(FUN_62a950, &hv);
-        CallThis(Ng32_Insert, v, v[0], (const char*)&ng32_tag683cb0, (const char*)&ng32_tagEnd683cb4);
+        Gz_Compress(r, hv);
+        Gz_StreamClose((BYTE**)&r);
+        Gz_StreamClose((BYTE**)&hv);
+        CharVec_InsertRange(v, 0, v[0], (BYTE*)((const char*)&ng32_tag683cb0), (BYTE*)((const char*)&ng32_tagEnd683cb4));
         unsigned len = (unsigned)(v[1] - v[0]);
         if ((double)(__int64)len / size < 1.0)
             return;
     }
     Ng32_Reset(v);
-    CallThis(Ng32_Insert, v, v[1], data, data + size);
+    CharVec_InsertRange(v, 0, v[1], (BYTE*)data, (BYTE*)(data + size));
 }
 
 }
 
 // [$L_601250] at exit: frees the record vector at 723d70
-extern "C" void Sg_VecFree(); KING_ALIAS("_Sg_VecFree", "@VecB_FreeStorage@8")
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
 KING_VAR(BYTE, sg_723d70, 723d70)
-extern "C" void __cdecl Sg_Exit601250() { CallThis(Sg_VecFree, &sg_723d70); }
+extern "C" void __cdecl Sg_Exit601250() { VecB_FreeStorage((BYTE**)&sg_723d70, 0); }
 
 // [$L_601260] clears +16 and +24
 extern "C" BYTE* __fastcall Sg_Clear601260(BYTE* s)
@@ -1685,7 +1687,7 @@ extern "C" BOOL __stdcall Sg_EnumProvider(const DWORD* guid, const void* conn, D
         } else {
             DpRecords_InsertAux((BYTE**)&sg_723d60, 0, end, rec);
         }
-        CallThis(FUN_601470, rec);
+        Gate_FreeBuffers(rec, 0);
     }
     return TRUE;
 }
@@ -1737,7 +1739,7 @@ extern "C" int __cdecl Gate_Players(DWORD* out, BYTE** list)
         msg = sg_s684340;
     }
     int text = Gate_600b50(hr);
-    CallC(FUN_401010, 8, 100, (const char*)sg_s68422c, (const char*)sg_s683c78, line, msg, text, &sg_68d1c0);
+    Ai_Report(8, 100, (int)((const char*)sg_s68422c), (int)((const char*)sg_s683c78), line, (int)msg, text, (int)&sg_68d1c0);
     return -1;
 }
 

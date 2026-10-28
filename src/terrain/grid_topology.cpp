@@ -211,8 +211,9 @@ extern "C" int __fastcall MarineQueue_Empty(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineQueue_TopWorkItem(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineQueue_TopDeferredNode(BYTE*,void*);
 extern "C" int __fastcall TGrid_Get36(BYTE* self,void*);
+extern "C" void __cdecl Grid_ForceSplit(BYTE* t, BYTE* G);
 extern "C" void FUN_607410(); KING_ALIAS("_FUN_607410", "_Grid_ForceSplit")
-extern "C" void FUN_609de0(); KING_ALIAS("_FUN_609de0", "_GridTree_RemoveEdge")
+extern "C" void __cdecl GridTree_RemoveEdge(BYTE* e, BYTE* g);
 
 // [FUN_60c160] up to 50 refinement steps while the deferred queue's top beats the work queue's; whether it still does
 extern "C" int __fastcall GridMesh_Refine50(BYTE* self,void*)
@@ -224,9 +225,9 @@ extern "C" int __fastcall GridMesh_Refine50(BYTE* self,void*)
         MarineQueue_TopWorkItem(F(BYTE*,self,32),0);
         if(F(float,MarineQueue_TopDeferredNode(F(BYTE*,self,36),0),28)>=0.0002
            && (unsigned)F(WORD,self,42)<=(unsigned)TGrid_Get36((BYTE*)g_tgrid72c108,0))
-            CallC(FUN_607410,F(DWORD,MarineQueue_TopDeferredNode(F(BYTE*,self,36),0),40),self);
+            Grid_ForceSplit((BYTE*)(F(DWORD,MarineQueue_TopDeferredNode(F(BYTE*,self,36),0),40)), self);
         else
-            CallC(FUN_609de0,MarineQueue_TopWorkItem(F(BYTE*,self,32),0),self);
+            GridTree_RemoveEdge(MarineQueue_TopWorkItem(F(BYTE*,self,32),0), self);
     }
     if(MarineQueue_Empty(F(BYTE*,self,32),0)) return 0;
     float lim=F(float,MarineQueue_TopWorkItem(F(BYTE*,self,32),0),104);
@@ -270,7 +271,7 @@ extern "C" double __fastcall GridCamera_NodePriority(BYTE* s,void*,BYTE* node)
 }
 
 #include <mmsystem.h>
-extern "C" void FUN_60be40(); KING_ALIAS("_FUN_60be40", "@Grid_RefreshPriorities@4")
+extern "C" void __fastcall Grid_RefreshPriorities(BYTE* s);
 extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD now);
 extern "C" void __fastcall MarineTask_ClearRegistration(BYTE* self, void*);
 extern "C" void __fastcall MarineTask_SetFirstBounds(BYTE* self, void*, float a, float b);
@@ -283,7 +284,7 @@ KING_VAR(DoneList, g_done725558, 725558)
 extern "C" int __fastcall GridMesh_Frame(BYTE* s,void*)
 {
     F(DWORD,s,48)=timeGetTime();
-    if(F(int,s,28)) CallThis(FUN_60be40,s);
+    if(F(int,s,28)) Grid_RefreshPriorities(s);
     if(F(int,s,24)) F(int,s,24)=GridMesh_Refine50(s,0);
     BYTE* out=F(BYTE*,s,4);
     CallVirt(out,12);
@@ -404,7 +405,7 @@ extern "C" void __fastcall GridMesh_Reprioritise(BYTE* s,void*)
         F(BYTE*,s,52)=next;
     } while(timeGetTime()-t0<1000&&F(BYTE*,s,52));
     while((unsigned)F(WORD,s,42)<CallVirt<unsigned>(F(BYTE*,s,4),4))
-        CallC(FUN_607410,F(DWORD,MarineQueue_TopDeferredNode(F(BYTE*,s,36),0),40),s);
+        Grid_ForceSplit((BYTE*)(F(DWORD,MarineQueue_TopDeferredNode(F(BYTE*,s,36),0),40)), s);
 }
 
 extern "C" void* __cdecl malloc(size_t n);
@@ -455,22 +456,22 @@ double __fastcall GridCamera_PairPriority(BYTE* s, void*, BYTE* a, BYTE* b)
 // === forcing a cell's split, with the base neighbours it needs (FUN_607410)
 
 extern "C" void Fs_Deepest(); KING_ALIAS("_Fs_Deepest", "_Grid_DeepestLevel")
-extern "C" void Fs_RemoveEdge(); KING_ALIAS("_Fs_RemoveEdge", "@Grid_RemoveEdge@12")
-extern "C" void Fs_Delete(); KING_ALIAS("_Fs_Delete", "@Grid_Delete@12")
-extern "C" void Fs_RemoveNode(); KING_ALIAS("_Fs_RemoveNode", "@Grid_RemoveNodeA@12")
-extern "C" void Fs_Snapshot(); KING_ALIAS("_Fs_Snapshot", "@MarineGeometry_Snapshot@16")
-extern "C" void Fs_Midpoint(); KING_ALIAS("_Fs_Midpoint", "_GridNode_Midpoint")
-extern "C" void Fs_AddPoint(); KING_ALIAS("_Fs_AddPoint", "@Grid_AddPoint@20")
-extern "C" void Fs_Nop(); KING_ALIAS("_Fs_Nop", "@Shell_Nop@8")
-extern "C" void Fs_NewCell(); KING_ALIAS("_Fs_NewCell", "@Grid_NewCell@24")
-extern "C" void Fs_Last(); KING_ALIAS("_Fs_Last", "@Stack_Last@8")
-extern "C" void Fs_SplitEdge(); KING_ALIAS("_Fs_SplitEdge", "@Grid_SplitEdge@20")
-extern "C" void Fs_QuadZero(); KING_ALIAS("_Fs_QuadZero", "@Quad_Zero@8")
-extern "C" void Fs_NewSplit(); KING_ALIAS("_Fs_NewSplit", "@Grid_NewSplit@16")
-extern "C" void Fs_Lists(); KING_ALIAS("_Fs_Lists", "@Grid_ConstructLists@8")
-extern "C" void Fs_SetPairs(); KING_ALIAS("_Fs_SetPairs", "@TGridEdge_SetPairs@16")
-extern "C" void Fs_Priority(); KING_ALIAS("_Fs_Priority", "@GridCamera_PairPriority@16")
-extern "C" void Fs_Insert(); KING_ALIAS("_Fs_Insert", "@MarineQueue_InsertWorkItem@12")
+extern "C" void __fastcall Grid_RemoveEdge(BYTE* self, void*, BYTE* e);
+extern "C" BYTE* __fastcall Grid_Delete(BYTE* self, void*, int flags);
+extern "C" void __fastcall Grid_RemoveNodeA(BYTE* self, void*, BYTE* node);
+extern "C" DWORD* __fastcall MarineGeometry_Snapshot(BYTE* self, void*, DWORD* out, BYTE* registration);
+extern "C" DWORD* __cdecl GridNode_Midpoint(DWORD* out, const float* a, const float* b);
+extern "C" WORD* __fastcall Grid_AddPoint(BYTE* s, void*, const DWORD* xy, int a, int b);
+extern "C" void __fastcall Shell_Nop(void*, int);
+extern "C" BYTE* __fastcall Grid_NewCell(BYTE* s, void*, WORD* a, WORD* b, WORD* c, unsigned level);
+extern "C" int __fastcall Stack_Last(int* self, void*);
+extern "C" int __fastcall Grid_SplitEdge(BYTE* s, void*, BYTE* e, BYTE** a, BYTE** b);
+extern "C" DWORD* __fastcall Quad_Zero(DWORD* self, void*);
+extern "C" BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2);
+extern "C" BYTE* __fastcall Grid_ConstructLists(BYTE* self, void*);
+extern "C" int __fastcall TGridEdge_SetPairs(BYTE* self,void*,BYTE* first,BYTE* second);
+extern "C" double __fastcall GridCamera_PairPriority(BYTE* s, void*, BYTE* a, BYTE* b);
+extern "C" DWORD __fastcall MarineQueue_InsertWorkItem(BYTE* self, void*, BYTE* edge);
 extern "C" void Fs_Set(); KING_ALIAS("_Fs_Set", "@Vec3_SetThis@20")
 KING_VAR(int, g_fsCount, 7242a0)
 KING_VAR(BYTE*, g_fsStack, 7242a4)
@@ -501,8 +502,8 @@ static void Fs_DropEdge(BYTE* G, BYTE* q)
         F(int, F(BYTE*, r[0], 12), 72) = 0;
         F(int, F(BYTE*, r[1], 12), 72) = 0;
     }
-    CallThis(Fs_RemoveEdge, G, q);
-    CallThis(Fs_Delete, q, 1);
+    Grid_RemoveEdge(G, 0, q);
+    Grid_Delete(q, 0, 1);
 }
 
 // cell x's base neighbour nb now points at y instead of old (as its base, else on side side)
@@ -593,13 +594,13 @@ void __cdecl Grid_ForceSplit(BYTE* t, BYTE* G)
         {
             BYTE* c = t1 ? t1 : t2;
             BYTE *n1, *n2;
-            CallThis(Fs_SplitEdge, G, c, &n1, &n2);
+            Grid_SplitEdge(G, 0, c, &n1, &n2);
             BYTE* e1 = (BYTE*)operator new(20);
             if (e1)
-                e1 = CallThis<BYTE*>(Fs_QuadZero, e1);
+                e1 = (BYTE*)Quad_Zero((DWORD*)e1, 0);
             BYTE* e2 = (BYTE*)operator new(20);
             if (e2)
-                e2 = CallThis<BYTE*>(Fs_QuadZero, e2);
+                e2 = (BYTE*)Quad_Zero((DWORD*)e2, 0);
             F(BYTE*, e1, 12) = n1;
             F(BYTE*, e2, 12) = n2;
             F(int, e1, 16) = F(int, c, 36) + 1;
@@ -614,12 +615,12 @@ void __cdecl Grid_ForceSplit(BYTE* t, BYTE* G)
             F(BYTE*, n1, 40) = e1;
             if (!g_fsCount)
             {
-                CallThis(Fs_NewSplit, G, F(BYTE*, c, 40), 0);
+                Grid_NewSplit(G, 0, F(BYTE*, c, 40), 0);
                 if (c)
                     CallVirt(c, 0, 1);
                 return;
             }
-            Fs_Push(F(BYTE*, c, 64) == CallThis<BYTE*>(Fs_Last, &g_fsCount) ? n1 : n2);
+            Fs_Push(F(BYTE*, c, 64) == (BYTE*)Stack_Last(&g_fsCount, 0) ? n1 : n2);
             if (c)
                 CallVirt(c, 0, 1);
             continue;
@@ -633,21 +634,21 @@ void __cdecl Grid_ForceSplit(BYTE* t, BYTE* G)
         pt[1] = (int)((__int64)(unsigned)(F(int, pc, 12) + F(int, pa, 12)) * (double)g_fs64c258);
         int lv1 = F(int, t1, 36) + 1;
         Fs_DropEdge(G, F(BYTE*, t1, 72));
-        CallThis(Fs_RemoveNode, G, t1);
+        Grid_RemoveNodeA(G, 0, t1);
         BYTE s1b[40], s2b[40], mb[40];
-        BYTE* s1 = CallThis<BYTE*>(Fs_Snapshot, G, s1b, F(int, pc, 0));
-        BYTE* s2 = CallThis<BYTE*>(Fs_Snapshot, G, s2b, F(int, pa, 0));
-        BYTE* mid = CallC<BYTE*>(Fs_Midpoint, mb, s2, s1);
-        WORD* v = CallThis<WORD*>(Fs_AddPoint, G, pt, mid, lv1);
-        CallThis(Fs_Nop, mb);
-        CallThis(Fs_Nop, s2b);
-        CallThis(Fs_Nop, s1b);
-        BYTE* n1 = CallThis<BYTE*>(Fs_NewCell, G, F(WORD*, t1, 20), v, F(WORD*, t1, 16), F(int, t1, 36) + 1);
-        BYTE* n2 = CallThis<BYTE*>(Fs_NewCell, G, F(WORD*, t1, 24), v, F(WORD*, t1, 20), F(int, t1, 36) + 1);
+        BYTE* s1 = (BYTE*)MarineGeometry_Snapshot(G, 0, (DWORD*)s1b, (BYTE*)(F(int, pc, 0)));
+        BYTE* s2 = (BYTE*)MarineGeometry_Snapshot(G, 0, (DWORD*)s2b, (BYTE*)(F(int, pa, 0)));
+        BYTE* mid = (BYTE*)GridNode_Midpoint((DWORD*)mb, (const float*)s2, (const float*)s1);
+        WORD* v = Grid_AddPoint(G, 0, (const DWORD*)pt, (int)mid, lv1);
+        Shell_Nop(mb, 0);
+        Shell_Nop(s2b, 0);
+        Shell_Nop(s1b, 0);
+        BYTE* n1 = Grid_NewCell(G, 0, F(WORD*, t1, 20), v, F(WORD*, t1, 16), F(int, t1, 36) + 1);
+        BYTE* n2 = Grid_NewCell(G, 0, F(WORD*, t1, 24), v, F(WORD*, t1, 20), F(int, t1, 36) + 1);
         Fs_DropEdge(G, F(BYTE*, t2, 72));
-        CallThis(Fs_RemoveNode, G, t2);
-        BYTE* n3 = CallThis<BYTE*>(Fs_NewCell, G, F(WORD*, t2, 20), v, F(WORD*, t2, 16), F(int, t2, 36) + 1);
-        BYTE* n4 = CallThis<BYTE*>(Fs_NewCell, G, F(WORD*, t2, 24), v, F(WORD*, t2, 20), F(int, t2, 36) + 1);
+        Grid_RemoveNodeA(G, 0, t2);
+        BYTE* n3 = Grid_NewCell(G, 0, F(WORD*, t2, 20), v, F(WORD*, t2, 16), F(int, t2, 36) + 1);
+        BYTE* n4 = Grid_NewCell(G, 0, F(WORD*, t2, 24), v, F(WORD*, t2, 20), F(int, t2, 36) + 1);
         F(BYTE*, n1, 68) = n4;
         F(BYTE*, n4, 64) = n1;
         F(BYTE*, n2, 64) = n3;
@@ -680,7 +681,7 @@ void __cdecl Grid_ForceSplit(BYTE* t, BYTE* G)
         F(BYTE**, t2, 40)[3] = 0;
         if (g_fsCount)
         {
-            Fs_Push(F(BYTE*, t2, 64) == CallThis<BYTE*>(Fs_Last, &g_fsCount) ? n3 : n4);
+            Fs_Push(F(BYTE*, t2, 64) == (BYTE*)Stack_Last(&g_fsCount, 0) ? n3 : n4);
             CallVirt(t1, 0, 1);
             CallVirt(t2, 0, 1);
             continue;
@@ -690,11 +691,11 @@ void __cdecl Grid_ForceSplit(BYTE* t, BYTE* G)
         BYTE* P1 = F(BYTE*, t1, 40);
         BYTE* g = (BYTE*)operator new(156);
         if (g)
-            g = CallThis<BYTE*>(Fs_Lists, g);
-        if (!CallThis<int>(Fs_SetPairs, g, P1, P2))
+            g = Grid_ConstructLists(g, 0);
+        if (!TGridEdge_SetPairs(g, 0, P1, P2))
         {
             if (g)
-                CallThis(Fs_Delete, g, 1);
+                Grid_Delete(g, 0, 1);
         }
         else
         {
@@ -713,12 +714,12 @@ void __cdecl Grid_ForceSplit(BYTE* t, BYTE* G)
             if (F(int, g, 12))
             {
                 Fs_Circle(G, F(WORD*, g, 64), F(WORD*, g, 68), F(WORD*, g, 72), &F(float, g, 92));
-                pri = (float)CallThis<double>(Fs_Priority, F(BYTE*, G, 4), g + 16, g + 60);
+                pri = (float)GridCamera_PairPriority(F(BYTE*, G, 4), 0, g + 16, g + 60);
             }
             else
-                pri = (float)CallThis<double>(Fs_Priority, F(BYTE*, G, 4), g + 16, 0);
+                pri = (float)GridCamera_PairPriority(F(BYTE*, G, 4), 0, g + 16, 0);
             F(float, g, 104) = pri;
-            CallThis(Fs_Insert, F(BYTE*, G, 32), g);
+            MarineQueue_InsertWorkItem(F(BYTE*, G, 32), 0, g);
             F(WORD, G, 64)++;
         }
         CallVirt(t1, 0, 1);

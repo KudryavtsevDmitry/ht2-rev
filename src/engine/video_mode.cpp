@@ -125,7 +125,7 @@ int __cdecl Video_SetMode(int w, int h, int bits, int unused, int a, int b)
 
 // ---------------------------------------------------------------------------
 typedef char VmLabel[1];
-extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
+extern "C" const char* __cdecl Dd_ErrorText(DWORD hr, const char* where);
 KING_VAR(int, g_vmWindowed, 7208f0)
 KING_VAR(BYTE*, g_vmFront, 7208f8)
 KING_VAR(int, g_vm7208b8, 7208b8)
@@ -148,7 +148,7 @@ static void Vm_RestoreLost(BYTE* s, const char* what)
     {
         char text[256];
         strcpy(text, what);
-        strcat(text, CallC<const char*>(FUN_5d4c10, hr, 0));
+        strcat(text, Dd_ErrorText(hr, 0));
         Sys_Fatal(text, 0);
     }
 }
@@ -178,13 +178,13 @@ extern "C" BYTE* __cdecl Dd_LockPrimary()
         g_7208a4 = desc[4];
         return (BYTE*)desc[9];
     }
-    Sys_Fatal(CallC<const char*>(FUN_5d4c10, 0, (char*)s_vm67fdb8), 0);
+    Sys_Fatal(Dd_ErrorText(0, (char*)s_vm67fdb8), 0);
     return (BYTE*)g_waitVsync;
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5d4450(); KING_ALIAS("_FUN_5d4450", "_Dd_WaitFlip")    // waits for the flip
-extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
+extern "C" void __cdecl Dd_WaitFlip();
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 KING_VAR(int, g_vm7208b4, 7208b4)
 KING_VAR(int, g_vmFlipPending, 720928)
 KING_VAR(HWND, g_vmHwnd, 720920)
@@ -211,13 +211,13 @@ extern "C" void __cdecl Dd_Present()
     }
     if (Vm_ComCall(g_vmFront, 96) == (long)0x887601C2)
     {
-        CallC(FUN_5d2ba0, (char*)s_vm67fe60, 0);
+        Sys_Log((char*)s_vm67fe60, 0);
         Vm_RestoreLost(g_vmFront, s_vm67fe4c);
     }
     if (Vm_ComCall(g_directDraw, 96) == (long)0x887601C2)
     {
         g_waitVsync = 0;
-        CallC(FUN_5d2ba0, (char*)s_vm67fe3c, 0);
+        Sys_Log((char*)s_vm67fe3c, 0);
         Vm_RestoreLost(g_directDraw, s_vm67fe28);
     }
     DWORD fx[25] = {};
@@ -230,22 +230,22 @@ extern "C" void __cdecl Dd_Present()
             RECT src = {0, 0, g_width, g_height};
             RECT dst = {0, 0, g_width, g_height};
             if (Vm_ComCall(g_vmFront, 96) == (long)0x887601C2)
-                CallC(FUN_5d2ba0, (char*)s_vm67fe1c, 33);
+                Sys_Log((char*)s_vm67fe1c, 33);
             if (Vm_ComCall(g_directDraw, 96) == (long)0x887601C2)
-                CallC(FUN_5d2ba0, (char*)s_vm67fe10, 33);
+                Sys_Log((char*)s_vm67fe10, 33);
             long hr = Vm_ComCall(g_vmFront, 20, &dst, g_directDraw, &src, 16908288, fx);
             if (hr)
-                CallC(FUN_5d4c10, hr, 0);     // its text was never shown
+                Dd_ErrorText(hr, 0);     // its text was never shown
         }
         else
         {
             for (;;)
             {
-                CallC(FUN_5d4450);
+                Dd_WaitFlip();
                 long hr = Vm_ComCall(g_vmFront, 44, 0, 1);
                 if (!hr)
                     break;
-                CallC(FUN_5d4c10, hr, 0);
+                Dd_ErrorText(hr, 0);
             }
             g_vmFlipPending = 1;
         }

@@ -11,9 +11,9 @@
 
 extern "C" double __cdecl AI_Now();
 KING_ALIAS("_AI_Now", "_Ai_Clock")
-extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
+extern "C" void __fastcall CharVec_InsertRange44c220(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
-extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 
 KING_VAR(BYTE*, g_68ccb8, 68ccb8)             // 104-byte records
@@ -102,7 +102,7 @@ extern "C" void __fastcall CharVec_Assign(char** self, void*, const char* s)
 {
     self[1] = self[0];
     if (s)
-        CallThis(FUN_44c220, self, self[1], s, s + strlen(s) + 1);
+        CharVec_InsertRange44c220((BYTE**)self, 0, (BYTE*)self[1], (BYTE*)s, (BYTE*)(s + strlen(s) + 1));
 }
 
 extern "C" BYTE* __fastcall Order_Construct(BYTE* self, void*)
@@ -316,7 +316,7 @@ int* __fastcall TempBuf12_Construct(int* self, void*, BYTE* first, BYTE* last)
 }
 
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")    // uninitialized copy of bytes (first, last, to), returns the end
-extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // the AI's allocator: allocate (size)
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 
@@ -350,13 +350,13 @@ void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, 
     }
     unsigned size = self[1] - self[0];
     unsigned len = (size < n ? n : size) + size;
-    BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len) : 0;
+    BYTE* p = len ? (BYTE*)Stl_Allocate(len) : 0;
     BYTE* q = CallC<BYTE*>(FUN_46ecd0, self[0], pos, p, first, 0);
     memmove(q, first, n);
     q += last - first;
     BYTE* r = CallC<BYTE*>(FUN_46ecd0, pos, self[1], q, first, 0);
     if (self[2] - self[0])
-        CallC(FUN_44b4a0, self[0], self[2] - self[0]);
+        Ai_PoolFree(self[0], self[2] - self[0]);
     self[0] = p;
     self[1] = r;
     self[2] = p + len;
@@ -381,7 +381,6 @@ extern "C" void __fastcall Vec12_Insert46e6b0(BYTE** v, void*, BYTE* pos, const 
 
 // ---------------------------------------------------------------------------
 extern "C" double __cdecl Order_FullValue(const int* o);
-extern "C" double __cdecl Order_Value(const int* o);
 extern "C" double __cdecl Order_Pay(const BYTE* o, double late, int bonus);
 
 // [FUN_4715a0] the pay for (late, bonus) plus the value lost so far
@@ -440,7 +439,9 @@ extern "C" void __cdecl CarordInit_470cd0() { Carord_RngInit((DWORD*)g_carordRng
 // === stable sort of 12-byte records with a buffer (FUN_46f0a0)
 
 extern "C" void FUN_46f470(); KING_ALIAS("_FUN_46f470", "_Rec12_Insertion")
+extern "C" void __cdecl Rec12_MergeAdaptive(E12* first, E12* middle, E12* last, int len1, int len2, E12* buf, int n, int comp);
 extern "C" void FUN_46f840(); KING_ALIAS("_FUN_46f840", "_Rec12_MergeAdaptive")
+extern "C" void __cdecl Rec12_MergeLoop(E12* first, E12* last, E12* out, int step, int comp);
 extern "C" void FUN_470110(); KING_ALIAS("_FUN_470110", "_Rec12_MergeLoop")
 extern "C" void FUN_4703a0(); KING_ALIAS("_FUN_4703a0", "_Rec12_Merge")
 
@@ -474,7 +475,7 @@ static void Ss12_SortWithBuffer(BYTE* first, BYTE* last, BYTE* buf, int comp)
     for (int step = 7; step < len;) {
         Ss12_MergePass(first, last, buf, step, comp);
         step *= 2;
-        CallC(FUN_470110, buf, bufLast, first, step, comp);
+        Rec12_MergeLoop((E12*)buf, (E12*)bufLast, (E12*)first, step, comp);
         step *= 2;
     }
 }
@@ -494,7 +495,7 @@ void __cdecl Rec12_StableSortAdaptive(BYTE* first, BYTE* last, BYTE* buf, int n,
         Ss12_SortWithBuffer(first, mid, buf, comp);
         Ss12_SortWithBuffer(mid, last, buf, comp);
     }
-    CallC(FUN_46f840, first, mid, last, Ss12_Count(first, mid), Ss12_Count(mid, last), buf, n, comp);
+    Rec12_MergeAdaptive((E12*)first, (E12*)mid, (E12*)last, Ss12_Count(first, mid), Ss12_Count(mid, last), (E12*)buf, n, comp);
 }
 
 } // extern "C"
@@ -628,6 +629,7 @@ void __cdecl Rec12_ChunkInsertion(BYTE* first, BYTE* last, int chunk)
 
 // === stable_sort of 12-byte records (FUN_46ea10, FUN_46ede0)
 
+extern "C" void __cdecl Rec12_MergeNoBuffer(E12* first, E12* middle, E12* last, int len1, int len2, int comp);
 extern "C" void FUN_46f580(); KING_ALIAS("_FUN_46f580", "_Rec12_MergeNoBuffer")    // merge without a buffer (first, middle, last, len1, len2, comp)
 extern "C" void __cdecl Rec12_Insertion(BYTE* first, BYTE* last);   // ai_containers.cpp
 extern "C" void __cdecl free(void* p);
@@ -646,7 +648,7 @@ void __cdecl Rec12_InplaceStableSort(BYTE* first, BYTE* last, int comp)
     BYTE* mid = first + n / 2 * 12;
     Rec12_InplaceStableSort(first, mid, comp);
     Rec12_InplaceStableSort(mid, last, comp);
-    CallC(FUN_46f580, first, mid, last, (int)(mid - first) / 12, (int)(last - mid) / 12, comp);
+    Rec12_MergeNoBuffer((E12*)first, (E12*)mid, (E12*)last, (int)(mid - first) / 12, (int)(last - mid) / 12, comp);
 }
 
 // [FUN_46ea10] stable_sort of [first, last) (12-byte records by key +8) through a temporary buffer, in place
@@ -727,7 +729,7 @@ void __cdecl Rec12_MergeLoop(E12* first, E12* last, E12* out, int step, int comp
 
 // === saving an order (FUN_470e10)
 
-extern "C" void FUN_471d70(); KING_ALIAS("_FUN_471d70", "@PlayerRefs_Save@12")
+extern "C" void __fastcall PlayerRefs_Save(BYTE** self, void*, BYTE* stream);
 
 // appends n bytes of p to the byte vector v
 static void Os_Put(BYTE** v, const void* p, int n)
@@ -747,7 +749,7 @@ void __fastcall Order_Save(BYTE* o, void*, BYTE** v)
         {40, 4}, {44, 4}, {52, 4}, {56, 8}, {64, 8}, {96, 8}, {72, 8}, {80, 8}, {88, 8}, {104, 4}, {112, 8}};
     for (const auto& f : k_fields)
         Os_Put(v, o + f[0], f[1]);
-    CallThis(FUN_471d70, o + 120, v);
+    PlayerRefs_Save((BYTE**)(o + 120), 0, (BYTE*)v);
     Os_Put(v, o + 4, 4);
     Os_Put(v, o + 8, 4);
 }
@@ -767,12 +769,12 @@ void __fastcall Rec470ae0_Destroy(BYTE* s)
 {
     if (BYTE* o = F(BYTE*, s, 192)) {
         if (int n = (int)(F(BYTE*, o, 48) - F(BYTE*, o, 40)))
-            CallC(FUN_44b4a0, F(BYTE*, o, 40), n);
+            Ai_PoolFree(F(BYTE*, o, 40), n);
         operator delete(o);
     }
     CallStd(Co_VecDtor, s + 20, 12, 2, (void*)FUN_447970);
     if (int n = (int)(F(BYTE*, s, 8) - F(BYTE*, s, 0)))
-        CallC(FUN_44b4a0, F(BYTE*, s, 0), n);
+        Ai_PoolFree(F(BYTE*, s, 0), n);
 }
 
 } // extern "C"

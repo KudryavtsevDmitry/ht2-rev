@@ -18,23 +18,9 @@ extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, 
                                            float* f);                    // world.cpp
 
 extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<12 bytes>::insert_aux
-extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
-extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
-extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
-extern "C" void FUN_5dbbb0(); KING_ALIAS("_FUN_5dbbb0", "@Fw_ResetRenderer@24")
-extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
-extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
-extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
-extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
-extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
-extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
-ASM_FUNC(FUN_4e4d82, _Sound_PlayPannedCos)
+extern "C" void __fastcall IntDeque_Construct(int* self, void*, unsigned n);
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
-extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
-extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
-extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 
 KING_VAR(int, g_6cec68, 6cec68)
 KING_VAR(int, g_6968ac, 6968ac)
@@ -147,7 +133,7 @@ extern "C" BYTE* __fastcall SchEmbd4a1900_Construct(BYTE* self, void*, int unuse
 {
     for (int i = 0; i < 40; i += 4)
         F(int, self, i) = 0;
-    CallThis(FUN_4a1f10, self, a);
+    IntDeque_Construct((int*)self, 0, a);
     return self;
 }
 
@@ -167,17 +153,7 @@ static float VolumeMul(int off, float v)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
-extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-extern "C" void FUN_55f000(); KING_ALIAS("_FUN_55f000", "_Trailer_HitchCheck")    // whether a vehicle can take another (vehicle, other)
-extern "C" void FUN_4f1180(); KING_ALIAS("_FUN_4f1180", "@Body_SetUpright@4")
-extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
-extern "C" void FUN_55f5f0(); KING_ALIAS("_FUN_55f5f0", "_Truck_HitchTrailer")
-extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
-extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
-extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
-extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 KING_VAR(DWORD, g_702650, 702650)
 KING_VAR(DWORD, g_702654, 702654)
 KING_VAR(DWORD, g_702658, 702658)
@@ -192,15 +168,12 @@ KING_VAR(CarParts, g_carPartUses, 6cedac)
 // the crowd (the ovation sound) of a scene object: its matrix is the object's
 // moved by ten times the vector at 702630; fn is called when it plays
 
-extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // an empty function: the default callback
 KING_VAR(float, g_eng702630, 702630)
 KING_VAR(float, g_eng702634, 702634)
 KING_VAR(float, g_eng702638, 702638)
 KING_VAR(float, g_ten64c450, 64c450)          // 10.0
 KING_VAR(AsmLabel, g_strOvation, 678540)
 
-extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
-extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 KING_VAR(BYTE*, g_effectManager, 6f6910)
 
@@ -209,7 +182,6 @@ KING_VAR(float, g_positionResetThreshold, 650624)
 KING_VAR(AsmLabel, g_setPosition1, 67d4cc)
 KING_VAR(AsmLabel, g_setPosition2, 67d4c0)
 KING_VAR(AsmLabel, g_setPlace, 67d4b4)
-extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 
 KING_VAR(short, g_sceneCommandCode, 67d10a)
 KING_VAR(BYTE*, g_sceneCommandList, 6f653c)
@@ -232,8 +204,8 @@ static BYTE* SceneObj_FindCommandTarget(int key)
 
 extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
 
-extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")
-extern "C" void FUN_4a5420(); KING_ALIAS("_FUN_4a5420", "_Sch_TypeError")    // script type error (code, level, type name)
+extern "C" int __cdecl Sch_ErrorCode(int code, int severity);
+extern "C" void __cdecl Sch_TypeError(int code, int severity, const char* name);
 
 // a typed handle copied from a script value; errors unless the value is
 // borrowed (0x10000) and of the kind
@@ -243,9 +215,9 @@ static DWORD* TypedHandle_From(DWORD* self, const DWORD* v, BYTE kind, const cha
     self[1] = v[1];
     self[2] = v[2];
     if (!(v[2] & 0x10000))
-        CallC(FUN_4a52e0, 6, 1);
+        Sch_ErrorCode(6, 1);
     if ((BYTE)v[2] != kind)
-        CallC(FUN_4a5420, 2, 1, name);
+        Sch_TypeError(2, 1, name);
     return self;
 }
 

@@ -19,9 +19,9 @@ extern "C" void FUN_45b570(); KING_ALIAS("_FUN_45b570", "@Vec1592_InsertAux@16")
 extern "C" void FUN_45cb00(); KING_ALIAS("_FUN_45cb00", "@Vec4b_InsertC@16")    // vector<4 bytes>::insert_aux
 extern "C" void FUN_45d8f0(); KING_ALIAS("_FUN_45d8f0", "@Vec4b_Insert45d8f0@16")
 extern "C" void FUN_4604b0(); KING_ALIAS("_FUN_4604b0", "@Vec4b_InsertG@16")
-extern "C" void FUN_405870(); KING_ALIAS("_FUN_405870", "@Rec405870_Destroy@8")    // a list value's destructor
-extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")    // a 16-byte record's destructor
-extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")
+extern "C" void __fastcall Rec405870_Destroy(BYTE* self, int);
+extern "C" void __fastcall MsgBuf_FreeStorage(BYTE* self, int);
+extern "C" void __fastcall Rec41ce50_DestroyVector(BYTE* self, int);
 
 struct Vec {
     BYTE* begin;
@@ -48,7 +48,7 @@ extern "C" BYTE** __stdcall List64_Erase(BYTE** out, BYTE** node)
     BYTE** next = (BYTE**)node[0];
     prev[0] = (BYTE*)next;
     next[1] = (BYTE*)prev;
-    CallThis(FUN_405870, node + 2);
+    Rec405870_Destroy((BYTE*)(node + 2), 0);
     List_FreeNode(node, 64);
     *out = (BYTE*)next;
     return out;
@@ -177,7 +177,7 @@ extern "C" const int* __cdecl MinPtr(const int* a, const int* b) { return *b < *
 extern "C" void __cdecl Destroy16s(BYTE* first, BYTE* last)
 {
     for (; first != last; first += 16)
-        CallThis(FUN_602ca0, first);
+        MsgBuf_FreeStorage(first, 0);
 }
 
 // placement copies
@@ -392,14 +392,14 @@ BYTE* __fastcall Rec1588_Copy(BYTE* s, void*, const BYTE* src)                  
 }
 BYTE* __fastcall Rec16_DeletingDestructor(BYTE* s, void*, int flags)                                   // [FUN_461ae0]
 {
-    CallThis(FUN_602ca0, s);
+    MsgBuf_FreeStorage(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 BYTE* __fastcall Rec41ce50_DeletingDestructor(BYTE* s, void*, int flags)                               // [FUN_461b00]
 {
-    CallThis(FUN_41ce50, s);
+    Rec41ce50_DestroyVector(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -422,6 +422,7 @@ DWORD* __fastcall Rec60_Copy(DWORD* s, void*, const DWORD* src)                 
 
 extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE** list);   // aimain.cpp
 extern "C" void __cdecl Rope_AddLeafToForest(BYTE* r, BYTE** forest);  // ai_containers.cpp, below
+extern "C" void __fastcall Rec40cc50_Destroy(BYTE* self, int);
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
 
@@ -576,7 +577,7 @@ extern "C" int __cdecl LexCompare(const signed char* a, const signed char* aEnd,
 extern "C" void __cdecl Destroy24s(BYTE* first, BYTE* last)
 {
     for (; first != last; first += 24)
-        CallThis(FUN_40cc50, first);
+        Rec40cc50_Destroy(first, 0);
 }
 
 extern "C" DWORD* __cdecl UninitCopyStrRefs(const DWORD* first, const DWORD* last, DWORD* dest)
@@ -784,11 +785,12 @@ int __fastcall Nearest_Farther(const BYTE** s, void*, void* const* a, void* cons
 
 extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // vector<16-byte record>: allocate and copy (n, first, last)
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
-ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // copy-construct 16-byte records (first, last, dest, -)
+extern "C" BYTE* __cdecl Rec16_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector<24-byte record>: allocate and copy (n, first, last)
+extern "C" BYTE* __cdecl Rec24_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*);
 ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
-extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<double>::operator=
+extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src);
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
 extern "C" void FUN_462010(); KING_ALIAS("_FUN_462010", "_Vec4b_AllocCopyB@12")    // vector<4 bytes>: allocate and copy (n, first, last)
 extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")    // uninitialized copy of 4-byte values (first, last, dest, -)
@@ -818,13 +820,13 @@ extern "C" BYTE** __fastcall Vec16_Assign(BYTE** d, void*, BYTE* const* s)
         } else if ((unsigned)((d[1] - d[0]) >> 4) >= n) {
             BYTE* e = CallC<BYTE*>(FUN_469430, s[0], s[1], d[0], s, 0);
             for (; e != d[1]; e += 16)
-                CallThis(FUN_602ca0, e);
+                MsgBuf_FreeStorage(e, 0);
         } else {
             BYTE* from = s[0];
             BYTE* to = d[0];
             for (int k = (d[1] - d[0]) >> 4; k > 0; k--, from += 16, to += 16)
                 Rec42bfe0_Assign((int*)to, 0, (const int*)from);
-            CallC(FUN_466300, s[0] + ((d[1] - d[0]) >> 4) * 16, s[1], d[1], s);
+            Rec16_UninitCopy(s[0] + ((d[1] - d[0]) >> 4) * 16, s[1], d[1], (BYTE*)s);
         }
         d[1] = d[0] + n * 16;
     }
@@ -870,7 +872,7 @@ extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s)
     if (n > (unsigned)((d[2] - d[0]) / 24)) {
         BYTE* p = CallThis<BYTE*>(FUN_461b60, d, n, s[0], s[1]);
         for (BYTE* e = d[0]; e != d[1]; e += 24)
-            CallThis(FUN_40cc50, e);
+            Rec40cc50_Destroy(e, 0);
         if ((d[2] - d[0]) / 24)
             List_FreeNode(d[0], ((d[2] - d[0]) / 24) * 24);
         d[0] = p;
@@ -881,16 +883,16 @@ extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s)
         for (int k = (s[1] - s[0]) / 24; k > 0; k--, from += 24, to += 24)
             Rec24b_Assign((int*)to, 0, (const int*)from);
         for (; to != d[1]; to += 24)
-            CallThis(FUN_40cc50, to);
+            Rec40cc50_Destroy(to, 0);
     } else {
         BYTE* to = d[0];
         BYTE* from = s[0];
         for (int k = (((d[1] - d[0]) / 24) * 24) / 24; k > 0; k--, from += 24, to += 24) {
             F(DWORD, to, 0) = F(DWORD, from, 0);
             F(DWORD, to, 4) = F(DWORD, from, 4);
-            CallThis(FUN_44c160, to + 8, from + 8);
+            PodVec_Assign((BYTE**)(to + 8), 0, (BYTE* const*)(from + 8));
         }
-        CallC(FUN_466200, s[0] + ((d[1] - d[0]) / 24) * 24, s[1], d[1], s);
+        Rec24_UninitCopy(s[0] + ((d[1] - d[0]) / 24) * 24, s[1], d[1], (BYTE*)s);
     }
     d[1] = d[0] + n * 24;
     return d;
@@ -1086,7 +1088,7 @@ extern "C" void __cdecl Sort_FinalInsertion24(BYTE** first, BYTE** last)
 // ---------------------------------------------------------------------------
 // copy and copy_backward of the AI's records
 
-extern "C" void FUN_46c900(); KING_ALIAS("_FUN_46c900", "@Mult46c900_DeletingDestructor@12")    // a 24-byte record's deleting destructor (flags)
+extern "C" BYTE* __fastcall Mult46c900_DeletingDestructor(BYTE* self, void*, int flags);
 extern "C" void FUN_466c50(); KING_ALIAS("_FUN_466c50", "_Rec24b_Copy")    // copy 24-byte records (first, last, dest, -, 0)
 extern "C" void FUN_46b300(); KING_ALIAS("_FUN_46b300", "_Copy32")    // copy 4-byte values (first, last, dest, -, 0)
 extern "C" BYTE* __cdecl Copy1(const BYTE* first, const BYTE* last, BYTE* dest);   // aimain.cpp
@@ -1149,7 +1151,7 @@ static void Rec24c_Assign(BYTE* dest, const BYTE* first)
     if (n > (unsigned)((d[2] - d[0]) / 24)) {
         BYTE* p = CallThis<BYTE*>(FUN_461b60, d, n, s[0], s[1]);
         for (BYTE* e = d[0]; e != d[1]; e += 24)
-            CallThis(FUN_46c900, e, 0);
+            Mult46c900_DeletingDestructor(e, 0, 0);
         if ((d[2] - d[0]) / 24)
             List_FreeNode(d[0], ((d[2] - d[0]) / 24) * 24);
         d[0] = p;
@@ -1157,10 +1159,10 @@ static void Rec24c_Assign(BYTE* dest, const BYTE* first)
     } else if ((unsigned)((d[1] - d[0]) / 24) >= n) {
         BYTE* e = CallC<BYTE*>(FUN_466c50, s[0], s[1], d[0], first, 0);
         for (; e != d[1]; e += 24)
-            CallThis(FUN_46c900, e, 0);
+            Mult46c900_DeletingDestructor(e, 0, 0);
     } else {
         CallC(FUN_466c50, s[0], s[0] + ((d[1] - d[0]) / 24) * 24, d[0], first, 0);
-        CallC(FUN_466200, s[0] + ((d[1] - d[0]) / 24) * 24, s[1], d[1], first);
+        Rec24_UninitCopy(s[0] + ((d[1] - d[0]) / 24) * 24, s[1], d[1], (BYTE*)first);
     }
     d[1] = d[0] + n * 24;
 }
@@ -1210,9 +1212,9 @@ static void Rec192b_Assign(BYTE* d, const BYTE* s)
     memcpy(d + 16, s + 16, 32);
     F(DWORD, d, 48) = F(DWORD, s, 48);
     CharVec_Copy((char**)(d + 52), (char* const*)(s + 52), true);
-    CallThis(FUN_44c160, d + 64, s + 64);
-    CallThis(FUN_44c160, d + 76, s + 76);
-    CallThis(FUN_44c160, d + 88, s + 88);
+    PodVec_Assign((BYTE**)(d + 64), 0, (BYTE* const*)(s + 64));
+    PodVec_Assign((BYTE**)(d + 76), 0, (BYTE* const*)(s + 76));
+    PodVec_Assign((BYTE**)(d + 88), 0, (BYTE* const*)(s + 88));
     Copy4(d, s, 100, 112);
     Copy4(d, s, 120, 180);
     F(BYTE, d, 184) = F(BYTE, s, 184);
@@ -1264,7 +1266,7 @@ extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s)
     if (n > (unsigned)((d[2] - d[0]) >> 4)) {
         BYTE* p = CallThis<BYTE*>(FUN_461dc0, d, n, s[0], s[1]);
         for (BYTE* e = d[0]; e != d[1]; e += 16)
-            CallThis(FUN_602ca0, e);
+            MsgBuf_FreeStorage(e, 0);
         if ((d[2] - d[0]) >> 4)
             List_FreeNode(d[0], ((d[2] - d[0]) >> 4) << 4);
         d[1] = p + n * 16;
@@ -1278,13 +1280,13 @@ extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s)
         for (int k = (s[1] - s[0]) >> 4; k > 0; k--, from += 16, to += 16)
             Rec42bfe0_Assign((int*)to, 0, (const int*)from);
         for (; to != d[1]; to += 16)
-            CallThis(FUN_602ca0, to);
+            MsgBuf_FreeStorage(to, 0);
     } else {
         for (int k = ((d[1] - d[0]) >> 4 << 4) >> 4; k > 0; k--, from += 16, to += 16) {
             F(DWORD, to, 0) = F(DWORD, from, 0);
-            CallThis(FUN_44c160, to + 4, from + 4);
+            PodVec_Assign((BYTE**)(to + 4), 0, (BYTE* const*)(from + 4));
         }
-        CallC(FUN_466300, s[0] + ((d[1] - d[0]) >> 4) * 16, s[1], d[1], s);
+        Rec16_UninitCopy(s[0] + ((d[1] - d[0]) >> 4) * 16, s[1], d[1], (BYTE*)s);
     }
     d[1] = d[0] + n * 16;
     return d;
@@ -1609,7 +1611,7 @@ extern "C" BYTE* __fastcall Vec16c_Erase(BYTE** self, void*, BYTE* first, BYTE* 
     for (int n = (self[1] - last) >> 4; n > 0; n--, d += 16, s += 16)
         Rec16c_Assign(d, s);
     for (BYTE* e = self[1]; d != e; d += 16)
-        CallThis(FUN_602ca0, d);
+        MsgBuf_FreeStorage(d, 0);
     self[1] -= ((last - first) >> 4) << 4;
     return first;
 }
@@ -2283,6 +2285,7 @@ extern "C" void __cdecl Doubles_StableSort(double* first, double* last, int pred
 }
 
 // ---------------------------------------------------------------------------
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // pool free (p, bytes)
 
 // [FUN_459df0] frees the buffer (+16, size +0 + 1) and, when owned (+24), deletes the object at +20
@@ -2290,7 +2293,7 @@ extern "C" void __fastcall Buf459df0_Destruct(BYTE* self, void*)
 {
     BYTE* p = F(BYTE*, self, 16);
     if (p && F(int, self, 0) + 1)
-        CallC(FUN_44b4a0, p, F(int, self, 0) + 1);
+        Ai_PoolFree(p, F(int, self, 0) + 1);
     if (F(BYTE, self, 24) && F(BYTE*, self, 20))
         CallVirt(F(BYTE*, self, 20), 0, 1);
 }
@@ -2387,7 +2390,7 @@ static void PoolVec_Free_C(BYTE* s, int size)
     BYTE* p = F(BYTE*, s, 0);
     int n = (F(BYTE*, s, 8) - p) / size;
     if (n)
-        CallC(FUN_44b4a0, p, n * size);
+        Ai_PoolFree(p, n * size);
 }
 // [$L_45a0a0] frees the storage of a vector of 1592-byte records
 extern "C" void __fastcall Vec1592_FreeStorage(BYTE* s, void*)
@@ -2395,7 +2398,7 @@ extern "C" void __fastcall Vec1592_FreeStorage(BYTE* s, void*)
     PoolVec_Free_C(s, 1592);
 }
 
-extern "C" void FUN_460d10(); KING_ALIAS("_FUN_460d10", "_MsgBuf_FreeThunk")
+extern "C" int __cdecl MsgBuf_FreeThunk(BYTE* p);
 extern "C" void FUN_457b40(); KING_ALIAS("_FUN_457b40", "_AI_Free")
 struct Order144 { BYTE b[144]; };
 // [FUN_460840] the order in [first, last) with the id (+0) and kind (+12) of order (by value; its parts vector +120
@@ -2408,23 +2411,23 @@ extern "C" BYTE* __cdecl Orders_Find(BYTE* first, BYTE* last, Order144 order, in
             break;
     BYTE* b = F(BYTE*, &order, 120);
     for (BYTE* e = b; e != F(BYTE*, &order, 124); e += 16)
-        CallC(FUN_460d10, e);
+        MsgBuf_FreeThunk(e);
     int n = (F(BYTE*, &order, 128) - b) >> 4;
     if (n) {
         unsigned bytes = n << 4;
         if (bytes > 128)
             CallC(FUN_457b40, b, bytes);
         else
-            CallC(FUN_44b4a0, b, bytes);
+            Ai_PoolFree(b, bytes);
     }
     return p;
 }
 
 extern "C" void FUN_464050(); KING_ALIAS("_FUN_464050", "_Sort_MedianByName")
-extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
+extern "C" BYTE** __fastcall VecChar_Copy(BYTE** self, int, BYTE* const* src);
 extern "C" void FUN_4640d0(); KING_ALIAS("_FUN_4640d0", "_Names_Partition")
 extern "C" void FUN_46b3f0(); KING_ALIAS("_FUN_46b3f0", "_MakeHeap12")
-extern "C" void FUN_46b6b0(); KING_ALIAS("_FUN_46b6b0", "_Mult_46b6b0")
+extern "C" void __cdecl Mult_46b6b0(int a, int b, int c);
 struct Name12 { DWORD d[3]; };
 // [FUN_45b3d0] the introsort loop over the 12-byte names [first, last) with cmp: while more than 16 are left,
 // partition around the median of three (copied by value into the partition) and sort the right part; past the depth
@@ -2435,14 +2438,14 @@ extern "C" void __cdecl Names_IntroSort(BYTE* first, BYTE* last, int, int depth,
         if (!depth) {
             CallC(FUN_46b3f0, first, last, cmp, 0, 0);
             for (; (last - first) / 12 > 1; last -= 12)
-                CallC(FUN_46b6b0, first, last, cmp);
+                Mult_46b6b0((int)first, (int)last, cmp);
             return;
         }
         depth--;
         BYTE* mid = first + (int)((last - first) / 12 / 2) * 12;
         BYTE* m = CallC<BYTE*>(FUN_464050, first, mid, last - 12, cmp);
         Name12 pivot;
-        CallThis(FUN_44dd90, &pivot, m);
+        VecChar_Copy((BYTE**)&pivot, 0, (BYTE* const*)m);
         BYTE* cut = CallC<BYTE*>(FUN_4640d0, first, last, pivot, cmp);
         Names_IntroSort(cut, last, 0, depth, cmp);
         last = cut;
@@ -2453,13 +2456,13 @@ extern "C" void __cdecl Names_IntroSort(BYTE* first, BYTE* last, int, int depth,
 // Comparing a character range with a rope range; the rope iterators are passed by value (60 bytes: +0 position,
 // +4 root, +16 the current character in the cached leaf, +20 the leaf's end).
 
-extern "C" void FUN_46b140(); KING_ALIAS("_FUN_46b140", "_Rope_SetCache")    // caches the leaf of a rope iterator
-extern "C" void FUN_46c4a0(); KING_ALIAS("_FUN_46c4a0", "_Rope_SetCacheForIncr")    // moves a rope iterator into the next leaf
+extern "C" void __cdecl Rope_SetCache(BYTE* it);
+extern "C" void __cdecl Rope_SetCacheForIncr(BYTE* x);
 struct RopeIt60 { int pos, root, d2, d3; char* cur; char* end; int d6[9]; };
 static char Aicon232_Char(RopeIt60* a)
 {
     if (!a->cur)
-        CallC(FUN_46b140, a);
+        Rope_SetCache((BYTE*)a);
     return *a->cur;
 }
 static void Aicon232_Next(RopeIt60* a)
@@ -2477,7 +2480,7 @@ static void Aicon232_Next(RopeIt60* a)
         a->cur++;
     else if (left == 1) {
         a->cur++;
-        CallC(FUN_46c4a0, a);
+        Rope_SetCacheForIncr((BYTE*)a);
     } else
         a->cur = 0;
 }
@@ -2577,7 +2580,7 @@ extern "C" void __cdecl Names_InsertionSortRest(BYTE* first, BYTE* last, int, in
 {
     for (BYTE* e = first; e != last; e += 12) {
         Name12 v;
-        CallThis(FUN_44dd90, &v, e);
+        VecChar_Copy((BYTE**)&v, 0, (BYTE* const*)e);
         CallC(FUN_469850, e, v, cmp);
     }
 }
@@ -2585,8 +2588,8 @@ extern "C" void __cdecl Names_InsertionSortRest(BYTE* first, BYTE* last, int, in
 // === adding a leaf to the rope balancing forest (FUN_469520)
 
 KING_VAR(AsmLabel, g_rf64b984, 64b984)
-extern "C" void FUN_44f1b0(); KING_ALIAS("_FUN_44f1b0", "@Rope_FreeTree@8")
-ASM_FUNC(FUN_462f30, _Rope_Concat)
+extern "C" void __fastcall Rope_FreeTree(BYTE* n, void*);
+extern "C" BYTE* __cdecl Rope_Concat(BYTE* l, BYTE* r);
 
 static const unsigned* Rf_MinLen() { return (const unsigned*)(BYTE*)g_rf64b984; }
 
@@ -2594,13 +2597,13 @@ static const unsigned* Rf_MinLen() { return (const unsigned*)(BYTE*)g_rf64b984; 
 static void Rf_Unref(BYTE* n)
 {
     if (n && InterlockedDecrement((LONG*)(n + 4)) == 0)
-        CallThis(FUN_44f1b0, n);
+        Rope_FreeTree(n, 0);
 }
 
 // l + r, flagged balanced (+12) when long enough for its depth (+13)
 static BYTE* Rf_Concat(BYTE* l, BYTE* r)
 {
-    BYTE* c = CallC<BYTE*>(FUN_462f30, l, r);
+    BYTE* c = Rope_Concat(l, r);
     if (F(unsigned, c, 0) >= Rf_MinLen()[F(BYTE, c, 13)])
         F(BYTE, c, 12) = 1;
     return c;
@@ -2670,7 +2673,7 @@ void __fastcall Vec1592_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
         memcpy(p, x, 1592);
     BYTE* end = UninitCopy1592(pos, s[1], p + 1592);
     if (int bytes = (int)(s[2] - s[0]) / 1592 * 1592)
-        CallC(FUN_44b4a0, s[0], bytes);
+        Ai_PoolFree(s[0], bytes);
     s[1] = end;
     s[0] = buf;
     s[2] = buf + cap * 1592;
@@ -2680,9 +2683,9 @@ void __fastcall Vec1592_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
 
 // === a random neighbour node (FUN_45b8b0)
 
-extern "C" void FUN_464230(); KING_ALIAS("_FUN_464230", "@Vec4b_InsertH@16")
+extern "C" void __fastcall Vec4b_InsertH(DWORD* s, void*, DWORD* pos, const DWORD* x);
 KING_VAR(BYTE**, g_rn68cf00, 68cf00)
-extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
+extern "C" void __cdecl Construct4(DWORD* d, const DWORD* s);
 
 extern "C" {
 
@@ -2710,16 +2713,16 @@ BYTE** __cdecl Nodes_RandomOther(BYTE** first, BYTE** last, int idx, BYTE* playe
         if (!add)
             continue;
         if (v[1] != v[2]) {
-            CallC(FUN_4611c0, v[1], &it);
+            Construct4((DWORD*)v[1], (const DWORD*)&it);
             v[1] += 4;
         } else
-            CallThis(FUN_464230, v, v[1], &it);
+            Vec4b_InsertH(v, 0, (DWORD*)v[1], (const DWORD*)&it);
     }
     BYTE** b = (BYTE**)v[0];
     unsigned n = (BYTE**)v[1] - b;
     if (!n) {
         if (v[2] != v[0])
-            CallC(FUN_44b4a0, b, ((v[2] - v[0]) >> 2) << 2);
+            Ai_PoolFree(b, ((v[2] - v[0]) >> 2) << 2);
         return last;
     }
     unsigned i = (rng[55] + 1) % 55;
@@ -2729,7 +2732,7 @@ BYTE** __cdecl Nodes_RandomOther(BYTE** first, BYTE** last, int idx, BYTE* playe
     rng[i] -= rng[j];
     BYTE** r = (BYTE**)b[rng[rng[55]] % n];
     if (v[2] != v[0])
-        CallC(FUN_44b4a0, b, ((v[2] - v[0]) >> 2) << 2);
+        Ai_PoolFree(b, ((v[2] - v[0]) >> 2) << 2);
     return r;
 }
 
@@ -2737,7 +2740,7 @@ BYTE** __cdecl Nodes_RandomOther(BYTE** first, BYTE** last, int idx, BYTE* playe
 
 // === the final insertion sort by road distance (FUN_45bbc0)
 
-extern "C" void FUN_469c70(); KING_ALIAS("_FUN_469c70", "_Ai_InsertByDistance")    // unguarded linear insert by road distance (last, value, point)
+extern "C" void __cdecl Ai_InsertByDistance(BYTE** last, BYTE* v, DVec3 pt);
 
 // the distance of obj's road position from pt
 static double RdDist(BYTE* obj, const DVec3* pt)
@@ -2761,10 +2764,10 @@ void __cdecl Near_FinalInsertion(BYTE** first, BYTE** last, DVec3 pt)
                 CopyBackwardDwords((const DWORD*)first, (const DWORD*)i, (DWORD*)(i + 1));
                 *first = v;
             } else
-                CallC(FUN_469c70, i, v, pt);
+                Ai_InsertByDistance(i, v, pt);
         }
         for (BYTE** i = mid; i != last; i++)
-            CallC(FUN_469c70, i, *i, pt);
+            Ai_InsertByDistance(i, *i, pt);
         return;
     }
     if (first == last)
@@ -2777,13 +2780,12 @@ void __cdecl Near_FinalInsertion(BYTE** first, BYTE** last, DVec3 pt)
                 *p = p[-1];
             *first = v;
         } else
-            CallC(FUN_469c70, i, v, pt);
+            Ai_InsertByDistance(i, v, pt);
     }
 }
 
 } // extern "C"
 
-extern "C" void Ni_Alloc(); KING_ALIAS("_Ni_Alloc", "_Stl_Allocate")
 // [FUN_467820] the linear insertion of name *last (a 12-byte char vector, compared ignoring case) into the sorted
 // [first, last): before the first one it shifts the range up and becomes the first, else the unguarded insert
 extern "C" void __cdecl Names_LinearInsert(BYTE* first, BYTE* last, int, int cmp)
@@ -2792,19 +2794,19 @@ extern "C" void __cdecl Names_LinearInsert(BYTE* first, BYTE* last, int, int cmp
     unsigned n = l[1] - l[0];
     char* v[3] = {0, 0, 0};
     if (n)
-        v[0] = CallC<char*>(Ni_Alloc, n);
+        v[0] = (char*)Stl_Allocate(n);
     v[2] = v[0] + n;
     memmove(v[0], l[0], l[1] - l[0]);
     v[1] = v[0] + (l[1] - l[0]);
     char** f = (char**)first;
     if (_stricmp(v[0], f[0]) < 0) {
         for (BYTE* d = last; d != first; d -= 12)
-            CallThis(FUN_44c160, d, d - 12);
+            PodVec_Assign((BYTE**)d, 0, (BYTE* const*)(d - 12));
         unsigned m = v[1] - v[0];
         if (m > (unsigned)(f[2] - f[0])) {
             char* p = CallThis<char*>(FUN_458cf0, f, m, v[0], v[1]);
             if (f[2] - f[0])
-                CallC(FUN_44b4a0, f[0], f[2] - f[0]);
+                Ai_PoolFree(f[0], f[2] - f[0]);
             f[0] = p;
             f[2] = p + m;
             f[1] = p + m;
@@ -2819,11 +2821,11 @@ extern "C" void __cdecl Names_LinearInsert(BYTE* first, BYTE* last, int, int cmp
         }
     } else {
         Name12 c;
-        CallThis(FUN_44dd90, &c, v);
+        VecChar_Copy((BYTE**)&c, 0, (BYTE* const*)v);
         CallC(FUN_469850, last, c, cmp);
     }
     if (v[2] - v[0])
-        CallC(FUN_44b4a0, v[0], v[2] - v[0]);
+        Ai_PoolFree(v[0], v[2] - v[0]);
 }
 
 // === uninitialized copy of 144-byte orders (FUN_467000 with its tails $L_46713e, $L_467163)
@@ -2845,7 +2847,7 @@ BYTE* __cdecl Orders144_UninitCopy(const BYTE* first, const BYTE* last, BYTE* de
         Vec* v = (Vec*)(dest + 120);
         unsigned n = (unsigned)((F(BYTE*, first, 124) - F(BYTE*, first, 120)) >> 4);
         Vec16_Reserve(v, 0, n, 0);
-        F(BYTE*, dest, 124) = CallC<BYTE*>(FUN_466300, F(BYTE*, first, 120), F(BYTE*, first, 124), v->begin, dest);
+        F(BYTE*, dest, 124) = Rec16_UninitCopy(F(BYTE*, first, 120), F(BYTE*, first, 124), v->begin, dest);
         F(int, dest, 132) = F(int, first, 132);
         F(int, dest, 136) = F(int, first, 136);
     }
@@ -2856,7 +2858,7 @@ BYTE* __cdecl Orders144_UninitCopy(const BYTE* first, const BYTE* last, BYTE* de
 
 // === uninitialized copy of 192-byte order infos (FUN_467580 with its tails $L_467728, $L_46776a)
 
-extern "C" void Oi_FirstNonEmpty(); KING_ALIAS("_Oi_FirstNonEmpty", "@Rec_FirstNonEmpty@8")
+extern "C" void __fastcall Rec_FirstNonEmpty(void* s, void*);
 
 extern "C" {
 
@@ -2874,11 +2876,11 @@ BYTE* __cdecl OrderInfos_UninitCopy(const BYTE* first, const BYTE* last, BYTE* d
         memcpy(dest + 16, first + 16, 32);
         F(int, dest, 48) = F(int, first, 48);
         for (int k = 52; k <= 88; k += 12)
-            CallThis(FUN_44dd90, dest + k, first + k);
+            VecChar_Copy((BYTE**)(dest + k), 0, (BYTE* const*)(first + k));
         memcpy(dest + 100, first + 100, 16);
         memcpy(dest + 120, first + 120, 64);
         F(BYTE, dest, 184) = F(BYTE, first, 184);
-        CallThis(Oi_FirstNonEmpty, dest);
+        Rec_FirstNonEmpty(dest, 0);
     }
     return dest;
 }
@@ -2888,9 +2890,8 @@ BYTE* __cdecl OrderInfos_UninitCopy(const BYTE* first, const BYTE* last, BYTE* d
 // ---------------------------------------------------------------------------
 // Batch 33: uninitialized copies of records with a shared head
 
-extern "C" void Uc33_Allocate(); KING_ALIAS("_Uc33_Allocate", "_Stl_Allocate")
 extern "C" void Uc33_Reserve1(); KING_ALIAS("_Uc33_Reserve1", "@Vec1_Reserve@16")
-extern "C" void Uc33_Copy1(); KING_ALIAS("_Uc33_Copy1", "_Copy1")
+extern "C" BYTE* __cdecl Copy1(const BYTE* first, const BYTE* last, BYTE* dest);
 ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // uninitialized copy of 24-byte items (first, last, dest, -)
 
 // the shared head (object +0 with its count at +4, value +4, flags +8; flag 0x10000 means a plain value)
@@ -2929,11 +2930,11 @@ BYTE* __cdecl Recs24_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest,
         v[0] = 0;
         v[1] = 0;
         v[2] = 0;
-        BYTE* p = n ? CallC<BYTE*>(Uc33_Allocate, n * 24) : 0;
+        BYTE* p = n ? (BYTE*)Stl_Allocate(n * 24) : 0;
         v[0] = p;
         v[1] = p;
         v[2] = p + n * 24;
-        v[1] = CallC<BYTE*>(FUN_466200, F(BYTE*, first, 12), F(BYTE*, first, 16), p, dest0);
+        v[1] = Rec24_UninitCopy(F(BYTE*, first, 12), F(BYTE*, first, 16), p, dest0);
     }
     return dest;
 }
@@ -2952,7 +2953,7 @@ BYTE* __cdecl Recs104_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest
         F(DWORD, dest, 84) = F(DWORD, first, 84);
         BYTE alloc;
         CallThis(Uc33_Reserve1, dest + 88, (int)(F(BYTE*, first, 92) - F(BYTE*, first, 88)), &alloc);
-        F(BYTE*, dest, 92) = CallC<BYTE*>(Uc33_Copy1, F(BYTE*, first, 88), F(BYTE*, first, 92), F(BYTE*, dest, 88));
+        F(BYTE*, dest, 92) = Copy1(F(BYTE*, first, 88), F(BYTE*, first, 92), F(BYTE*, dest, 88));
     }
     return dest;
 }
@@ -2978,11 +2979,11 @@ BYTE* __cdecl Recs36_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest,
         b[1] = 0;
         b[2] = 0;
         int n = (int)(F(BYTE*, first, 16) - F(BYTE*, first, 12));
-        BYTE* p = n ? CallC<BYTE*>(Uc33_Allocate, n) : 0;
+        BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
         b[0] = p;
         b[1] = p;
         b[2] = p + n;
-        b[1] = CallC<BYTE*>(Uc33_Copy1, F(BYTE*, first, 12), F(BYTE*, first, 16), p);
+        b[1] = Copy1(F(BYTE*, first, 12), F(BYTE*, first, 16), p);
         BYTE alloc;
         CallThis(Uc33_Reserve4, dest + 24, (int)(F(BYTE*, first, 28) - F(BYTE*, first, 24)) >> 2, &alloc);
         F(BYTE*, dest, 28) = CallC<BYTE*>(Uc33_CopyDwords, F(BYTE*, first, 24), F(BYTE*, first, 28),
@@ -3000,6 +3001,7 @@ struct Is33_Pt { DWORD d[6]; };    // the point (3 doubles), passed by value
 extern "C" void Is33_Middle(); KING_ALIAS("_Is33_Middle", "_Road_MiddleOfThree")
 extern "C" void Is33_Partition(); KING_ALIAS("_Is33_Partition", "_Holders_PartitionByDistance")
 extern "C" void Is33_MakeHeap(); KING_ALIAS("_Is33_MakeHeap", "_MakeHeap4A")
+extern "C" void __cdecl Holders_SortHeap469bc0(BYTE** first, BYTE** last, Is33_Pt pt);
 ASM_FUNC(FUN_469bc0, _Holders_SortHeap469bc0)    // sort_heap by distance (first, last, point)
 
 extern "C" {
@@ -3011,7 +3013,7 @@ void __cdecl Holders_IntrosortByDistance(BYTE** first, BYTE** last, int, int dep
     while (((BYTE*)last - (BYTE*)first & ~3) > 64) {
         if (!depth) {
             CallC(Is33_MakeHeap, first, last, pt, 0, 0);
-            CallC(FUN_469bc0, first, last, pt);
+            Holders_SortHeap469bc0(first, last, pt);
             return;
         }
         depth--;
@@ -3040,7 +3042,7 @@ BYTE* __cdecl Recs56_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest,
         b[0] = 0;
         b[1] = 0;
         b[2] = 0;
-        BYTE* p = n ? CallC<BYTE*>(Uc33_Allocate, n) : 0;
+        BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
         b[0] = p;
         b[1] = p;
         b[2] = p + n;
@@ -3058,7 +3060,6 @@ BYTE* __cdecl Recs56_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest,
 
 // Uninitialized copies (exceptions are fatal here, so the original's
 // unwinding of a partial copy is left out)
-extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
 static void Ac_CopyCharVec(BYTE* d, const BYTE* s)     // vector<char> at d from s (begin, end, capacity)
 {
     BYTE* b = F(BYTE*, s, 0);

@@ -9,10 +9,13 @@
 typedef char AsmLabel[1];
 extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
 
+extern "C" const char* __cdecl Dd_ErrorText(DWORD hr, const char* where);
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
-extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 extern "C" void FUN_5d79d0(); KING_ALIAS("_FUN_5d79d0", "_Dd_CopySprite")
+extern "C" void __cdecl Dd_Release();
 extern "C" void FUN_5d8260(); KING_ALIAS("_FUN_5d8260", "_Dd_Release")
+extern "C" int __cdecl Dd_CreateDevices(DWORD flags);
 extern "C" void FUN_5d75a0(); KING_ALIAS("_FUN_5d75a0", "_Dd_CreateDevices")
 
 KING_VAR(int, g_bitDepth, 720890)
@@ -73,7 +76,7 @@ void __cdecl Dd_CheckPixelFormat(BYTE* surface)
     desc[0] = 124;
     int hr = Com(surface, 88, desc);
     if (hr)
-        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, (const char*)s_checkPf), 0);
+        Sys_Log(Dd_ErrorText(hr, (const char*)s_checkPf), 0);
     if (!(desc[19] & 64) || desc[21] != 16)
         return;
     if (desc[24] == 31 && desc[23] == 2016 && desc[22] == 63488) {
@@ -173,8 +176,8 @@ void __cdecl Dd_RequestMode(int w, int h, int bits, int flags)
         m = 2;
     if (mode == m && g_ddWindowed == ((flags >> 12) & 1))
         return;
-    CallC(FUN_5d8260);
-    CallC(FUN_5d75a0, flags);
+    Dd_Release();
+    Dd_CreateDevices(flags);
 }
 
 // [FUN_5d8350]
@@ -231,6 +234,7 @@ void __cdecl Dd_Release()
 }
 
 // ---------------------------------------------------------------------------
+extern "C" void __cdecl Dd_ChooseTextureFormat(int kind, int b);
 extern "C" void FUN_5d8460(); KING_ALIAS("_FUN_5d8460", "_Dd_ChooseTextureFormat")
 KING_VAR(int, g_7208b8, 7208b8)
 KING_VAR(int, g_72092c, 72092c)
@@ -261,7 +265,7 @@ extern "C" BYTE* __cdecl Dd_LockBack(int* pitch)
         {
             char text[256];
             strcpy(text, s_67fdc0);
-            strcat(text, CallC<const char*>(FUN_5d4c10, hr, 0));
+            strcat(text, Dd_ErrorText(hr, 0));
             Sys_Fatal(text, 0);
         }
     }
@@ -269,7 +273,7 @@ extern "C" BYTE* __cdecl Dd_LockBack(int* pitch)
     desc[1] = 8387054;
     long failed = Dd_ComCall(g_directDraw, 100, (void*)0, desc, 1, (void*)0) != 0;
     if (failed)
-        Sys_Fatal(CallC<const char*>(FUN_5d4c10, failed, (const char*)s_67fdb8), 0);
+        Sys_Fatal(Dd_ErrorText(failed, (const char*)s_67fdb8), 0);
     *pitch = desc[4];
     return (BYTE*)desc[9];
 }
@@ -292,7 +296,7 @@ extern "C" int __cdecl Dd_CreateDevices(DWORD flags)
     g_72092c = g_deviceIndex;
     CallStd((void (*)())g_impDirectDrawEnumerateA, (void*)Dd_EnumDevice, s);
     if (s[51])
-        Sys_Fatal(CallC<const char*>(FUN_5d4c10, s[51], (char*)&s[31]), 0);
+        Sys_Fatal(Dd_ErrorText(s[51], (char*)&s[31]), 0);
     g_dd = (BYTE*)s[10];
     g_d3d = (BYTE*)s[11];
     g_ddFront = (BYTE*)s[14];
@@ -306,7 +310,7 @@ extern "C" int __cdecl Dd_CreateDevices(DWORD flags)
     if (flags & 0x1000)
     {
         g_ddWindowed = 1;
-        CallC(FUN_5d8460, g_bitDepth2, -1);
+        Dd_ChooseTextureFormat(g_bitDepth2, -1);
     }
     else
         g_ddWindowed = 0;
@@ -316,13 +320,13 @@ extern "C" int __cdecl Dd_CreateDevices(DWORD flags)
 }
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
-extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
+extern "C" DWORD* __fastcall Window_GetRect(BYTE* self, void*, DWORD* r);
+extern "C" BYTE* __fastcall Windows_SetActive(BYTE* self, void*, BYTE* w);
 
 // [FUN_5d85f0] the rect of the window at +12 into out
 extern "C" void* __fastcall Win_GetRect(BYTE* self, void*, void* out)
 {
-    CallThis(FUN_5b6710, F(BYTE*, self, 12), out);
+    Window_GetRect(F(BYTE*, self, 12), 0, (DWORD*)out);
     return out;
 }
 
@@ -330,7 +334,7 @@ extern "C" void* __fastcall Win_GetRect(BYTE* self, void*, void* out)
 extern "C" int __fastcall Win_Activate(BYTE* self, void*)
 {
     F(DWORD, self, 16) |= 3;
-    return CallThis<int>(FUN_5e4250, g_pApp, self);
+    return (int)Windows_SetActive((BYTE*)g_pApp, 0, self);
 }
 
 
@@ -394,7 +398,7 @@ extern "C" void __cdecl Dd_FillRect(int x0, int y0, unsigned x1, unsigned y1, DW
     RECT r = {x0, y0, (LONG)x1, (LONG)y1};
     long hr = Dd_ComCall(g_ddPrimary2, 20, &r, (void*)0, (void*)0, 16778240, fx);
     if (hr)
-        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, (char*)s_dd67fdf0), 0);
+        Sys_Log(Dd_ErrorText(hr, (char*)s_dd67fdf0), 0);
     DWORD desc[31];
     desc[0] = 124;
     desc[1] = 8387054;
@@ -437,7 +441,6 @@ extern "C" int __stdcall Dd_MatchMode(BYTE* m, int* r)
 // ---------------------------------------------------------------------------
 // The window frame size.
 
-extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
 KING_VAR(AsmLabel, s_q56_682a30, 682a30)
 // [FUN_5d8540] the frame size added by the overlapped window style: 2 the width, 4 the height, else 0
 extern "C" int __cdecl Wnd_FrameExtra(int edge)
@@ -445,7 +448,7 @@ extern "C" int __cdecl Wnd_FrameExtra(int edge)
     RECT r = {100, 100, 200, 200};
     BOOL ok = AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, FALSE);
     if (!ok)
-        CallC(FUN_5d2e70, (const char*)s_q56_682a30, ok);
+        Sys_Fatal((const char*)s_q56_682a30, (const char*)ok);
     if (edge == 2)
         return 100 - 200 - r.left + r.right;
     if (edge == 4)
@@ -1157,7 +1160,7 @@ BYTE* __cdecl Dd_SurfaceFromPixels(unsigned w, unsigned h, const BYTE* src)
         const char* m = hr == (int)0x88760064 ? s_ts6829b4 : hr == (int)0x80070057 ? s_ts6829ac
                       : hr == (int)0x88760091 ? s_ts6829a4 : hr == (int)0x8876005F ? s_ts68299c : 0;
         if (m)
-            CallC(FUN_5d2ba0, m, 0);
+            Sys_Log(m, 0);
         return 0;
     }
     if (!s)
@@ -1218,7 +1221,7 @@ void __cdecl Dd_CopySprite(int sx, int sy, int dx, int dy, int w, int h, BYTE* s
         hr = Com(g_directDraw, 20, &d, src, &r, 0x1020000, fx);
     }
     if (hr)
-        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
+        Sys_Log(Dd_ErrorText(hr, 0), 0);
     if (g_ddWindowed || g_bs7208b8)
         return;
     DWORD sd[31];
@@ -1285,7 +1288,7 @@ extern "C" BOOL __cdecl Dd_TestMode(int w, int h, int bytes, DWORD flags, int* r
             Com(tm_720910, 80, tm_720920, 8);
         CallStd((void (*)())g_impDirectDrawEnumerateA, (void*)Dd_EnumDevice, c);
         if (F(int, c, 204)) {
-            CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, F(int, c, 204), (char*)c + 124), 0);
+            Sys_Log(Dd_ErrorText(F(int, c, 204), (char*)c + 124), 0);
             if (result)
                 *result = 3;
             ok = FALSE;
@@ -1304,11 +1307,11 @@ extern "C" BOOL __cdecl Dd_TestMode(int w, int h, int bytes, DWORD flags, int* r
             }
         }
         if (!F(BYTE*, c, 40)) {
-            CallC(FUN_5d2ba0, &tm_s6829ec, 0);
+            Sys_Log(&tm_s6829ec, 0);
             return FALSE;
         }
         if (!F(BYTE*, c, 44)) {
-            CallC(FUN_5d2ba0, &tm_s6829d4, 0);
+            Sys_Log(&tm_s6829d4, 0);
             return FALSE;
         }
         Com(F(BYTE*, c, 40), 80, tm_720920, 8);
@@ -1326,7 +1329,7 @@ extern "C" BOOL __cdecl Dd_TestMode(int w, int h, int bytes, DWORD flags, int* r
         tm_72092c = tm_7208e4;
         CallStd((void (*)())g_impDirectDrawEnumerateA, (void*)Dd_EnumDevice, c);
         if (!F(BYTE*, c, 40)) {
-            CallC(FUN_5d2ba0, &tm_s6829ec, 0);
+            Sys_Log(&tm_s6829ec, 0);
             return FALSE;
         }
         Com(F(BYTE*, c, 40), 80, tm_720920, 8);
@@ -1344,13 +1347,13 @@ extern "C" BOOL __cdecl Dd_TestMode(int w, int h, int bytes, DWORD flags, int* r
     Com(dd, 44, c + 208, c + 588);
     if (!(c[212] & 64) && !(c[592] & 64)) {
         Com(dd, 8);
-        CallC(FUN_5d2ba0, &tm_s6829cc, 0);
+        Sys_Log(&tm_s6829cc, 0);
         if (result)
             *result = 2;
         return FALSE;
     }
     if (Com(dd, 32, 0, 0, c, (void*)Dd_MatchMode))
-        CallC(FUN_5d2ba0, &tm_s6829c0, 0);
+        Sys_Log(&tm_s6829c0, 0);
     {
         int found = F(int, c, 24);
         if (result && !found)

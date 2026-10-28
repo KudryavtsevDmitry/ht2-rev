@@ -8,7 +8,9 @@
 
 typedef char AsmLabel[1];
 
+extern "C" int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags);
 extern "C" void FUN_589640(); KING_ALIAS("_FUN_589640", "_Item_SweepPoints")
+extern "C" void __cdecl Mb_Fatal(const char* text);
 extern "C" void FUN_592cc0(); KING_ALIAS("_FUN_592cc0", "_Mb_Fatal")    // fatal error with a message
 
 KING_VAR(AsmLabel, g_vtbl65089c, 65089c)
@@ -55,12 +57,12 @@ extern "C" void __fastcall Progress_Advance(BYTE* self, void*, float dt)
 // [FUN_589640] without flag 0x200, and with it and the identity matrix
 extern "C" int __cdecl Movingb_589e70(int a, int b, int c, unsigned flags)
 {
-    return CallC<int>(FUN_589640, a, b, c, flags & ~0x200u);
+    return Item_SweepPoints((BYTE*)a, (const Matrix*)b, (BYTE*)c, flags & ~0x200u);
 }
 
 extern "C" int __cdecl Movingb_589e90(int a, int b, unsigned flags)
 {
-    return CallC<int>(FUN_589640, a, &g_identity, b, flags | 0x200);
+    return Item_SweepPoints((BYTE*)a, &g_identity, (BYTE*)b, flags | 0x200);
 }
 
 extern "C" BYTE* __fastcall TwoVec_Construct(BYTE* self, void*)
@@ -286,7 +288,7 @@ extern "C" BYTE* __fastcall ListItem_PutOnHead(BYTE* self, void*, BYTE* item)
     if (!item)
         return self;
     if (!self || F(BYTE*, self, 4) || F(BYTE*, self, 0))
-        CallC(FUN_592cc0, (const char*)g_strPutOnHead);
+        Mb_Fatal((const char*)g_strPutOnHead);
     while (F(BYTE*, item, 0))
         item = F(BYTE*, item, 0);
     F(BYTE*, item, 0) = self;
@@ -299,7 +301,7 @@ extern "C" BYTE* __fastcall ListItem_PutOnTail(BYTE* self, void*, BYTE* item)
     if (!item)
         return self;
     if (!self || F(BYTE*, self, 4) || F(BYTE*, self, 0))
-        CallC(FUN_592cc0, (const char*)g_strPutOnTail);
+        Mb_Fatal((const char*)g_strPutOnTail);
     while (F(BYTE*, item, 4))
         item = F(BYTE*, item, 4);
     F(BYTE*, item, 4) = self;
@@ -385,7 +387,9 @@ extern "C" BYTE** __fastcall FreeList_Take(BYTE* self, void*)
     return p;
 }
 
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, int n);
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
+extern "C" void __fastcall Node5f1a70_Destroy(BYTE* s);
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 KING_VAR(char, g_vtbl6508a8, 6508a8)
 
@@ -394,7 +398,7 @@ extern "C" {
 // [FUN_593040] constructor: a node with an 8000-byte buffer
 BYTE* __fastcall Body593040_Construct(BYTE* self, void*, int name)
 {
-    CallThis(FUN_5f19b0, self, name, 11, 1);
+    NodeN_Construct(self, 0, (const char*)name, 11, 1);
     F(void*, self, 0) = &g_vtbl6508a8;
     F(void*, self, 56) = operator new(8000);
     return self;
@@ -406,13 +410,15 @@ void __fastcall Body593040_Destroy(BYTE* self, void*)
     F(void*, self, 0) = &g_vtbl6508a8;
     if (F(void*, self, 56))
         operator delete(F(void*, self, 56));
-    CallThis(FUN_5f1a70, self);
+    Node5f1a70_Destroy(self);
 }
 
 }
 
+extern "C" int __cdecl Bodies_Overlap(BYTE* a, const float* ma, const float* pa, BYTE* b, const float* mb, const float* pb, float* out);
 extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_592350(); KING_ALIAS("_FUN_592350", "_Bodies_Touch")
+extern "C" int __cdecl Bodies_TouchTest(BYTE* a, const float* ma, const float* pa, BYTE* b, const float* mb, int unused, float* out);
 extern "C" void FUN_5924d0(); KING_ALIAS("_FUN_5924d0", "_Bodies_TouchTest")
 
 extern "C" {
@@ -425,23 +431,26 @@ int __cdecl Bodies_Pair(BYTE* a, int a1, int a2, BYTE* b, int b1, int b2, int x)
         return 0;
     int ka = F(int, a, 392), kb = F(int, b, 392);
     if (ka == 2 && kb == 2)
-        return CallC<int>(FUN_591c30, a, a1, a2, b, b1, b2, x);
+        return Bodies_Overlap(a, (const float*)a1, (const float*)a2, b, (const float*)b1, (const float*)b2, (float*)x);
     if (ka == 1 && kb == 1)
         return CallC<int>(FUN_592350, a, a1, a2, b, b1, b2, x);
     if (ka == 2 && kb == 1)
-        return CallC<int>(FUN_5924d0, a, a1, a2, b, b1, b2, x);
+        return Bodies_TouchTest(a, (const float*)a1, (const float*)a2, b, (const float*)b1, b2, (float*)x);
     if (kb == 2 && ka == 1)
-        return CallC<int>(FUN_5924d0, b, b1, b2, a, a1, a2, x);
+        return Bodies_TouchTest(b, (const float*)b1, (const float*)b2, a, (const float*)a1, a2, (float*)x);
     return 0;
 }
 
 }
 
+extern "C" BYTE* __fastcall MovingObj_ConstructListed(BYTE* s, void*, BYTE* w, BYTE* a2, int a3, const BYTE* m, const BYTE* m5, int a6, int a7, int a8, int a9);
 extern "C" void FUN_57cb70(); KING_ALIAS("_FUN_57cb70", "@MovingObj_ConstructListed@44")
+extern "C" BYTE* __fastcall MovingObj_Construct(BYTE* s, void*, BYTE* w, BYTE* a2, int a3, const BYTE* m, const BYTE* m5, int a6, int a7, int a8, int a9);
 extern "C" void FUN_57d060(); KING_ALIAS("_FUN_57d060", "@MovingObj_Construct@44")
-extern "C" void FUN_58b4f0(); KING_ALIAS("_FUN_58b4f0", "@TwoVec_Construct@8")
+extern "C" BYTE* __fastcall TwoVec_Construct(BYTE* self, void*);
+extern "C" int __fastcall Body_Reset(BYTE* s, void*, int a, int b);
 extern "C" void FUN_58b8c0(); KING_ALIAS("_FUN_58b8c0", "@Body_Reset@16")
-extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" BYTE* __fastcall Node_Init(BYTE* self, void*);
 KING_VAR(char, g_vtbl650718, 650718)
 KING_VAR(char, g_vtbl6506cc, 6506cc)
 KING_VAR(char, g_vtbl6506c8, 6506c8)
@@ -453,17 +462,17 @@ static BYTE* Body_Init(BYTE* self, int a8, int a9)
     for (int i = 0; i < 4 * 3; i++)
         F(int, self, 3832 + i * 4) = 0;
     for (int i = 0; i < 20; i++)
-        CallThis(FUN_58b4f0, self + 3988 + i * 28);
+        TwoVec_Construct(self + 3988 + i * 28, 0);
     for (int i = 0; i < 20; i++)
-        CallThis(FUN_58b4f0, self + 4548 + i * 28);
+        TwoVec_Construct(self + 4548 + i * 28, 0);
     for (int i = 0; i < 9; i++)
         F(int, self, 5152 + i * 4) = 0;
     for (int i = 0; i < 20; i++)
-        CallThis(FUN_5ef5c0, self + 5352 + i * 208);
+        Node_Init(self + 5352 + i * 208, 0);
     F(void*, self, 0) = &g_vtbl650718;
     F(void*, self, 256) = &g_vtbl6506cc;
     F(void*, self, 376) = &g_vtbl6506c8;
-    CallThis(FUN_58b8c0, self, a8, a9);
+    Body_Reset(self, 0, a8, a9);
     return self;
 }
 
@@ -473,7 +482,7 @@ extern "C" {
 BYTE* __fastcall Body58b5b0_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6,
                                       int a7, int a8, int a9, int a10, int a11)
 {
-    CallThis(FUN_57cb70, self, a1, a2, a3, a4, a5, a6, a7, a10, a11);
+    MovingObj_ConstructListed(self, 0, (BYTE*)a1, (BYTE*)a2, a3, (const BYTE*)a4, (const BYTE*)a5, a6, a7, a10, a11);
     return Body_Init(self, a8, a9);
 }
 
@@ -481,23 +490,23 @@ BYTE* __fastcall Body58b5b0_Construct(BYTE* self, void*, int a1, int a2, int a3,
 BYTE* __fastcall Body58b720_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6,
                                       int a7, int a8, int a9, int a10, int a11)
 {
-    CallThis(FUN_57d060, self, a1, a2, a3, a4, a5, a6, a7, a10, a11);
+    MovingObj_Construct(self, 0, (BYTE*)a1, (BYTE*)a2, a3, (const BYTE*)a4, (const BYTE*)a5, a6, a7, a10, a11);
     return Body_Init(self, a8, a9);
 }
 
 }
 
 #include <string.h>
-extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
-extern "C" void FUN_587c80(); KING_ALIAS("_FUN_587c80", "@Track587c80_Construct@4")
+extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);
+extern "C" BYTE* __fastcall Track587c80_Construct(BYTE* s);
 
 // [FUN_592a20] the deepest flagged contact of a body: its points, normal and plane into out, its depth to *depth
 extern "C" int __cdecl Body_DeepestContact(BYTE* obj, BYTE* out, float* depth)
 {
     BYTE m[48];
-    CallThis(FUN_57de90, obj, m);
+    SceneObj_Matrix1(obj, 0, (Matrix*)m);
     static BYTE c[6404];
-    CallThis(FUN_587c80, c);
+    Track587c80_Construct(c);
     if (!Movingb_589e90((int)obj, (int)c, 512))
         return 0;
     float best = 0.0f;
@@ -530,7 +539,7 @@ extern "C" BYTE* __fastcall Body_AttachedInReach(BYTE* self, void*)
         if (!o)
             return 0;
         BYTE mb[48];
-        const float* m = (const float*)CallThis<BYTE*>(FUN_57de90, o, mb);
+        const float* m = (const float*)(BYTE*)SceneObj_Matrix1(o, 0, (Matrix*)mb);
         float ox = F(float, o, 3436), oy = F(float, o, 3440), oz = F(float, o, 3444);
         double wx = ((double)m[6] * oz + (double)m[3] * oy) + (double)ox * m[0] + m[9];
         float wy = (float)(((double)m[1] * ox + (double)m[7] * oz) + (double)m[4] * oy + m[10]);
@@ -566,13 +575,14 @@ extern "C" int __fastcall Body_ContainsPoint(BYTE* s, void*, const float* p)
     return 1;
 }
 
+extern "C" Matrix* __fastcall SceneObj_Matrix2(BYTE* self, void*, Matrix* out);
 extern "C" void FUN_57dec0(); KING_ALIAS("_FUN_57dec0", "@SceneObj_Matrix2@12")
 
 // [FUN_589eb0] whether the segment a-b (body space) can touch the body's box in x/y (0.01 margin)
 extern "C" int __fastcall Body_SegmentNearBox(BYTE* s, void*, const float* a, const float* b)
 {
     float m[12];
-    CallThis(FUN_57dec0, s, m);
+    SceneObj_Matrix2(s, 0, (Matrix*)m);
     float ax = (float)(((double)m[0] * a[0] + (double)m[6] * a[2]) + (double)m[3] * a[1] + m[9]);
     double ay = ((double)m[1] * a[0] + (double)m[7] * a[2]) + (double)m[4] * a[1] + m[10];
     float bx = (float)(((double)m[6] * b[2] + (double)m[3] * b[1]) + (double)m[0] * b[0] + m[9]);
@@ -615,6 +625,7 @@ extern "C" int __cdecl Bodies_Touch(BYTE* d, const float* n, int, BYTE* c, const
 
 KING_VAR(Vec3, g_gravity702650, 702650)
 KING_VAR(Vec3, g_axis702630, 702630)
+extern "C" int __fastcall Body_Clear9516(BYTE* self, int);
 extern "C" void FUN_58ba90(); KING_ALIAS("_FUN_58ba90", "@Body_Clear9516@8")
 
 // [FUN_58b8c0] resets a body's state: flags, contacts, the 20 contact records, the half size
@@ -657,7 +668,7 @@ extern "C" int __fastcall Body_Reset(BYTE* s, void*, int a, int b)
     F(float, s, 3276) = h;
     F(float, s, 3280) = h;
     F(float, s, 3284) = h;
-    return CallThis<int>(FUN_58ba90, s);
+    return Body_Clear9516(s, 0);
 }
 
 extern "C" int __cdecl Query_4e7168(int a, BYTE* skip, float dist, const float* p, const float* d, BYTE* q);
@@ -669,7 +680,7 @@ extern "C" void __fastcall Body_ProbeGround(BYTE* s, void*, int a)
     if (!F(int, s, 5132))
         return;
     BYTE node[208];
-    CallThis(FUN_5ef5c0, node);
+    Node_Init(node, 0);
     const Vec3& g = g_down702630;
     double x5 = (double)g.x * 5.0f;
     float y5 = (float)((double)g.y * 5.0f);
@@ -766,7 +777,7 @@ extern "C" void __fastcall Body_SetContactMode(BYTE* s, void*, int mode)
         return;
     }
     BYTE node[208];
-    CallThis(FUN_5ef5c0, node);
+    Node_Init(node, 0);
     Matrix m0 = F(Matrix, s, 500);
     int room = F(int, s, 800);
     int i;
@@ -820,12 +831,13 @@ extern "C" int __cdecl Body_SegmentContact(const Vec3* a, const Vec3* b, int c, 
     return r;
 }
 
+extern "C" BYTE* __cdecl Moving_Of(BYTE* o);
 extern "C" void FUN_57c9e0(); KING_ALIAS("_FUN_57c9e0", "_Moving_Of")
 
 // [FUN_5893d0] forwards to FUN_57c9e0
 extern "C" int __cdecl Body_5893d0(int a)
 {
-    return CallC<int>(FUN_57c9e0, a);
+    return (int)Moving_Of((BYTE*)a);
 }
 
 // [FUN_58ba90] clears +9516 and +9520, returns 0
@@ -839,7 +851,7 @@ extern "C" int __fastcall Body_Clear9516(BYTE* self, int)
 KING_VAR(char, vt_650718, 650718)
 KING_VAR(char, vt_6506cc, 6506cc)
 KING_VAR(char, vt_6506c8, 6506c8)
-extern "C" void FUN_57d490(); KING_ALIAS("_FUN_57d490", "@MovingItem_Destroy@4")
+extern "C" void __fastcall MovingItem_Destroy(BYTE* s);
 
 // [FUN_58b870] destructor: frees the owned buffer at +9520
 extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int)
@@ -850,16 +862,17 @@ extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int)
     *(void**)(self + 376) = &vt_6506c8;
     if (p && *(int*)(self + 9516))
         operator delete(p);
-    CallThis(FUN_57d490, self);
+    MovingItem_Destroy(self);
 }
 
 KING_VAR(char, vt_65094c, 65094c)
 KING_VAR(char, vt_650900, 650900)
+extern "C" int __fastcall Node_Remove(BYTE* self, void*);
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
-extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
-extern "C" void FUN_594d70(); KING_ALIAS("_FUN_594d70", "_Faders_DeleteAll")    // deletes all faders
+extern "C" void __fastcall Handle_Release(BYTE* self, void*);
+extern "C" void __cdecl Faders_DeleteAll();
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
-extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
+extern "C" void __fastcall Object_Destroy(BYTE* s);
 
 // [FUN_593670] destructor of a fading body (vtables 65094c, 650900 at +32)
 extern "C" void __fastcall FadeBody_Destroy(BYTE* self, int)
@@ -872,11 +885,11 @@ extern "C" void __fastcall FadeBody_Destroy(BYTE* self, int)
     // the element destructor (FUN_50d190) does nothing
     if (a)
         operator delete(a - 4);
-    CallThis(FUN_5ef780, sub);
-    CallThis(FUN_5d33b0, self);
-    CallC(FUN_594d70);
-    CallThis(FUN_5f1a70, self ? sub : 0);
-    CallThis(FUN_5d3290, self);
+    Node_Remove(sub, 0);
+    Handle_Release(self, 0);
+    Faders_DeleteAll();
+    Node5f1a70_Destroy(self ? sub : 0);
+    Object_Destroy(self);
 }
 
 // ---------------------------------------------------------------------------
@@ -917,9 +930,9 @@ extern "C" void __cdecl Mb_Fatal(const char* text)
 
 
 // ---------------------------------------------------------------------------
-extern "C" void FUN_592d70(); KING_ALIAS("_FUN_592d70", "@ListNode_Construct@8")
-extern "C" void FUN_592d80(); KING_ALIAS("_FUN_592d80", "@ListItem_PutOnHead@12")
-extern "C" void FUN_592dd0(); KING_ALIAS("_FUN_592dd0", "@ListItem_PutOnTail@12")
+extern "C" BYTE* __fastcall ListNode_Construct(BYTE* self, void*);
+extern "C" BYTE* __fastcall ListItem_PutOnHead(BYTE* self, void*, BYTE* item);
+extern "C" BYTE* __fastcall ListItem_PutOnTail(BYTE* self, void*, BYTE* item);
 KING_VAR(AsmLabel, g_vt65089c, 65089c)
 KING_VAR(AsmLabel, s_mb67e068, 67e068)
 
@@ -927,16 +940,16 @@ KING_VAR(AsmLabel, s_mb67e068, 67e068)
 extern "C" BYTE* __fastcall Holder_Construct(BYTE* self, void*, BYTE** p, int after)
 {
     BYTE* link = self + 4;
-    CallThis(FUN_592d70, link);
+    ListNode_Construct(link, 0);
     F(void*, self, 0) = g_vt65089c;
     if (!p)
         Mb_Fatal(s_mb67e068);
     if (*p)
     {
         if (!after)
-            *p = CallThis<BYTE*>(FUN_592d80, link, *p);
+            *p = ListItem_PutOnHead(link, 0, *p);
         else
-            CallThis(FUN_592dd0, link, *p);
+            ListItem_PutOnTail(link, 0, *p);
     }
     else
         *p = self ? link : 0;
@@ -1006,12 +1019,12 @@ extern "C" void __cdecl MovbodInit_593330() { g_movbod6f6678 = 0x0; g_movbod6f66
 // [$L_593370]
 extern "C" void __cdecl MovbodInit_593370() { g_movbod6f6698 = 0x3f800000; g_movbod6f669c = 0x3f800000; g_movbod6f66a0 = 0x3f800000; g_movbod6f66a4 = 0x3f800000; }
 
-extern "C" void FUN_5f1cc0(); KING_ALIAS("_FUN_5f1cc0", "@Buckets_Push@16")
-extern "C" void FUN_581ba0(); KING_ALIAS("_FUN_581ba0", "@Item_Apply84@16")
-extern "C" void FUN_582960(); KING_ALIAS("_FUN_582960", "@Item_GroundNormal@12")
+extern "C" int __fastcall Buckets_Push(BYTE* self, void*, int i, BYTE* n);
+extern "C" int __fastcall Item_Apply84(BYTE* self, void*, int a, int b);
+extern "C" Vec3* __fastcall Item_GroundNormal(BYTE* s, void*, Vec3* out);
 extern "C" void FUN_585da0(); KING_ALIAS("_FUN_585da0", "@Item_SendContact@20")
 extern "C" void FUN_592e70(); KING_ALIAS("_FUN_592e70", "@ListNode_CutNext@8")
-extern "C" void FUN_592e90(); KING_ALIAS("_FUN_592e90", "@ListNode_592e90@12")
+extern "C" BYTE* __fastcall ListNode_592e90(BYTE* self, void*, BYTE* node);
 KING_VAR(float, g_movbod650890, 650890)
 KING_VAR(float, g_movbod650894, 650894)
 KING_VAR(float, g_movbod650898, 650898)
@@ -1019,15 +1032,15 @@ KING_VAR(float, g_movbod6f662c, 6f662c)
 KING_VAR(float, g_movbod6f6628, 6f6628)
 
 // [$L_593270]
-extern "C" int __fastcall Movbod_593270(BYTE* s, void*, int, int b) { return CallThis<int>(FUN_5f1cc0, s, 0, b); }
+extern "C" int __fastcall Movbod_593270(BYTE* s, void*, int, int b) { return Buckets_Push(s, 0, 0, (BYTE*)b); }
 // [$L_58fba0]
-extern "C" int __fastcall Movbod_58fba0(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_581ba0, s, a, b); }
+extern "C" int __fastcall Movbod_58fba0(BYTE* s, void*, int a, int b) { return Item_Apply84(s, 0, a, b); }
 // [$L_58e270]
 extern "C" int __fastcall Movbod_58e270(BYTE* s, void*, int a, int b, int c) { return CallThis<int>(FUN_585da0, s, a, b, c); }
 // [$L_58fb80]
 extern "C" BYTE* __fastcall Movbod_58fb80(BYTE* s, void*, BYTE* p)
 {
-    CallThis(FUN_582960, s, p);
+    Item_GroundNormal(s, 0, (Vec3*)p);
     return p;
 }
 
@@ -1049,7 +1062,7 @@ extern "C" void __fastcall Movbod_ListAppend(BYTE* s, void*, BYTE* n)
     if (!F(BYTE*, s, 4))
         F(BYTE*, s, 4) = n;
     else
-        CallThis(FUN_592e90, F(BYTE*, s, 8), n);
+        ListNode_592e90(F(BYTE*, s, 8), 0, n);
     BYTE* t = n;
     while (F(BYTE*, t, 4))
         t = F(BYTE*, t, 4);
@@ -1064,6 +1077,7 @@ extern "C" void __cdecl MovbodInit_592bc0() { g_movbod6f6628 = (float)x87_atan2(
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
+extern "C" void __cdecl Switch_Select(BYTE* node, int i);
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 KING_VAR(float, g_movbod702620, 702620)
 KING_VAR(float, g_movbod702624, 702624)
@@ -1092,18 +1106,18 @@ extern "C" void __fastcall Movbod_590ce0(BYTE* s)
 {
     for (int i = 0; i < F(int, s, 9516); i++) {
         BYTE* r = F(BYTE*, s, 9520) + i * 20;
-        CallC(FUN_5e1a10, F(int, r, 0), F(int, r, 4));
+        Switch_Select((BYTE*)(F(int, r, 0)), F(int, r, 4));
     }
 }
 
 // ---------------------------------------------------------------------------
 // More virtual methods.
 
-extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
-extern "C" void FUN_593230(); KING_ALIAS("_FUN_593230", "_Vec3_TransformByObject")
+extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int);
+extern "C" void __cdecl Vec3_TransformByObject(Vec3* v, const BYTE* obj);
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
-extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
-extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
+extern "C" void __fastcall Slots_Call48(BYTE* self, void*, int i, int a, int b);
 extern "C" void Movbod_qsort(); KING_ALIAS("_Movbod_qsort", "_qsort")
 ASM_VAR(AsmLabel, g_movbodCmp592fe0, _Rec_CompareF4)
 
@@ -1111,7 +1125,7 @@ ASM_VAR(AsmLabel, g_movbodCmp592fe0, _Rec_CompareF4)
 // pairs of node and depth) and linked back in order, then slot 0 is drawn
 extern "C" int __fastcall Movbod_SortChildren(BYTE* s, void*, int a, int b)
 {
-    int r = CallThis<int>(FUN_5ef800, s, a, b);
+    int r = Scene_TestInfo(s, 0, a, b);
     if (!r)
         return r;
     if (!*F(BYTE**, s, 48))
@@ -1122,31 +1136,31 @@ extern "C" int __fastcall Movbod_SortChildren(BYTE* s, void*, int a, int b)
         BYTE** pair = (BYTE**)(F(BYTE*, s, 56) + n * 8);
         pair[0] = o;
         CallVirt(pair[0], 40, v);
-        CallC(FUN_593230, v, b);
+        Vec3_TransformByObject((Vec3*)v, (const BYTE*)b);
         *(float*)(F(BYTE*, s, 56) + n * 8 + 4) = v[1];
-        CallThis(FUN_5ef780, *(BYTE**)(F(BYTE*, s, 56) + n * 8));
+        Node_Remove(*(BYTE**)(F(BYTE*, s, 56) + n * 8), 0);
     }
     CallC(Movbod_qsort, F(BYTE*, s, 56), n, 8, (BYTE*)g_movbodCmp592fe0);
-    CallThis(FUN_5f1cc0, s, 0, *F(BYTE**, s, 56));
+    Buckets_Push(s, 0, 0, *F(BYTE**, s, 56));
     for (unsigned i = 1; i < n; i++) {
         BYTE* prev = *(BYTE**)(F(BYTE*, s, 56) + i * 8 - 8);
         BYTE* cur = *(BYTE**)(F(BYTE*, s, 56) + i * 8);
         F(int, cur, 44) = F(int, prev, 44);
-        CallThis(FUN_5d2190, cur, prev);
+        Node_Link(cur, 0, prev);
         F(int, cur, 36) = F(int, prev, 36);
     }
-    CallThis(FUN_5f2080, s, 0, a, b);
+    Slots_Call48(s, 0, 0, a, b);
     return 1;
 }
 
 // ---------------------------------------------------------------------------
 // Constructors and surfaces (exception frames dropped).
 
-extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const char* name);
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
-extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
-extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
-extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node);
+extern "C" int __fastcall Queue_PostEvent2(BYTE* self, void*, int arg);
+extern "C" BYTE* __fastcall Scenes_Find(BYTE* self, void*, const char* name);
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 #include <string.h>
 extern "C" void Movbod_VecCtor(); KING_ALIAS("_Movbod_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
@@ -1162,8 +1176,8 @@ KING_VAR(AsmLabel, s_q20_67c178, 67c178)
 // a free list of 256 items of 124 bytes (+100, head +104), the room list entry 67c178 (+116)
 extern "C" BYTE* __fastcall MovBodies_Construct(BYTE* s, void*, BYTE* w)
 {
-    CallThis(FUN_5d31e0, s, 98, (const char*)s_q20_67e100);
-    CallThis(FUN_5f19b0, s + 32, (const char*)s_q20_67e100, 5, 1);
+    Object_ConstructKind(s, 0, 98, (const char*)s_q20_67e100);
+    NodeN_Construct(s + 32, 0, (const char*)s_q20_67e100, 5, 1);
     F(void*, s, 32) = g_q20_64c26c;
     F(int, s, 88) = 0;
     F(int, s, 92) = 0;
@@ -1194,7 +1208,7 @@ extern "C" BYTE* __fastcall MovBodies_Construct(BYTE* s, void*, BYTE* w)
     BYTE* o = F(BYTE*, w, 524);
     if (o)
         CallVirt(o, 20, 0, s ? s + 32 : 0);
-    BYTE* l = CallThis<BYTE*>(FUN_5d9290, w, (const char*)s_q20_672688);
+    BYTE* l = Scenes_Find(w, 0, (const char*)s_q20_672688);
     F(int, s, 116) = 0;
     unsigned n = F(unsigned, l, 72);
     for (unsigned i = 0; i < n; i++)
@@ -1203,29 +1217,31 @@ extern "C" BYTE* __fastcall MovBodies_Construct(BYTE* s, void*, BYTE* w)
             break;
         }
     F(BYTE*, s, 96) = w;
-    CallThis(FUN_5d3570, w + 2992, s);
-    CallThis(FUN_5d33d0, s, 1);
+    Owner_Attach(w + 2992, 0, s);
+    Queue_PostEvent2(s, 0, 1);
     return s;
 }
 
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
+extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int);
 extern "C" void FUN_58b870(); KING_ALIAS("_FUN_58b870", "@Body58b870_Destroy@8")
 // [$L_58b700]
 extern "C" BYTE* __fastcall Dtor58b700_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_58b870, s);
+    Body58b870_Destroy(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
 }
 
+extern "C" void __fastcall FadeBody_Destroy(BYTE* self, int);
 extern "C" void FUN_593670(); KING_ALIAS("_FUN_593670", "@FadeBody_Destroy@8")
 // [$L_593650]
 extern "C" BYTE* __fastcall Dtor593650_DeletingDestructor(BYTE* s, void*, int flags)
 {
-    CallThis(FUN_593670, s);
+    FadeBody_Destroy(s, 0);
     if (flags & 1)
         operator delete(s);
     return s;
@@ -1234,7 +1250,7 @@ extern "C" BYTE* __fastcall Dtor593650_DeletingDestructor(BYTE* s, void*, int fl
 // ---------------------------------------------------------------------------
 // Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
 
-extern "C" void FUN_592e40(); KING_ALIAS("_FUN_592e40", "@ListNode_Unlink@8")
+extern "C" void __fastcall ListNode_Unlink(BYTE* self, void*);
 KING_VAR(AsmLabel, g_q52_65089c, 65089c)
 // [FUN_592cf0] destructor: the 65089c vtable; when the owner's head (+12) is this node (+4), moves it to the next
 // (+4) or the previous (+8), then unlinks the node
@@ -1247,7 +1263,7 @@ extern "C" void __fastcall Linked592cf0_Destruct(BYTE* s, void*)
         BYTE* n = F(BYTE*, s, 4);
         *head = n ? n : F(BYTE*, s, 8);
     }
-    CallThis(FUN_592e40, s + 4);
+    ListNode_Unlink(s + 4, 0);
 }
 
 // [$L_593610] constructor: +4..+63 cleared
@@ -1257,8 +1273,8 @@ extern "C" BYTE* __fastcall Rec593610_Construct(BYTE* s)
     return s;
 }
 
-extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
-extern "C" void FUN_5ab400(); KING_ALIAS("_FUN_5ab400", "_Vec3_Normalized")
+extern "C" double __cdecl Vec3_Length(const Vec3* v);
+extern "C" Vec3* __cdecl Vec3_Normalized(Vec3* out, const Vec3* v);
 KING_VAR(float, g_q173_64c40c, 64c40c)
 // [$L_5916e0] a hit on body s at p with speed v: for a fast enough hit (|v| / +396 at least 64c40c) of a body
 // with +9516/+9520 set and +372 clear, the hit point in body space is computed and normalised (the result is not
@@ -1268,14 +1284,14 @@ extern "C" void __fastcall Body_HitAt(BYTE* s, void*, const float* p, const floa
     if (F(int, s, 372) || !F(int, s, 9520) || !F(int, s, 9516))
         return;
     float c[3] = {v[0], v[1], v[2]};
-    if (!(CallC<double>(FUN_5ab4d0, c) / F(float, s, 396) >= g_q173_64c40c))
+    if (!(Vec3_Length((const Vec3*)c) / F(float, s, 396) >= g_q173_64c40c))
         return;
     const float* m = (const float*)(s + 596);
     float q[3], out[3];
     q[0] = (float)(m[3] * p[1] + m[6] * p[2] + p[0] * m[0] + m[9]);
     q[1] = (float)(m[1] * p[0] + m[4] * p[1] + m[7] * p[2] + m[10]);
     q[2] = (float)(m[2] * p[0] + m[5] * p[1] + m[8] * p[2] + m[11]);
-    CallC(FUN_5ab400, out, q);
+    Vec3_Normalized((Vec3*)out, (const Vec3*)q);
 }
 
 // ---------------------------------------------------------------------------
@@ -1303,10 +1319,12 @@ extern "C" int __fastcall Thunk592ed0(BYTE* s, void* d)
 
 // === a body's contacts with its neighbours (FUN_58ae30)
 
+extern "C" Matrix* __cdecl Matrix_Multiply(Matrix* out, const Matrix* a, const Matrix* b);
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
-extern "C" void FUN_57c9a0(); KING_ALIAS("_FUN_57c9a0", "_Id_Same")
+extern "C" int __cdecl Id_Same(int x);
 extern "C" void FUN_584c70(); KING_ALIAS("_FUN_584c70", "_Item_SphereContact")    // sphere contacts (centre, other centre, radius, contacts, body, sign)
+extern "C" int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int sign);
 extern "C" void FUN_58a020(); KING_ALIAS("_FUN_58a020", "_Box_PointContacts")    // box contacts (body, matrix, contacts, other, sign)
 KING_VAR(AsmLabel, g_bc7025f0, 7025f0)
 
@@ -1337,24 +1355,24 @@ int __cdecl Body_NeighbourContacts(BYTE* b, BYTE* m, BYTE* c)
         int type = F(int, o, 392);
         if (type == 1 || type == 2) {
             if (!i) {
-                CallThis(FUN_57de90, b, t1);
+                SceneObj_Matrix1(b, 0, (Matrix*)t1);
                 memcpy(A, CallThis<BYTE*>(FUN_57dec0, b, t2), 48);
                 memcpy(B, CallC<BYTE*>(FUN_5aba40, t3, A, m), 48);
                 memcpy(C, CallC<BYTE*>(FUN_5ac2e0, t1, B), 48);
             }
-            CallThis(FUN_57de90, o, Mo);
-            CallC(FUN_5aba40, R, Mo, C);
+            SceneObj_Matrix1(o, 0, (Matrix*)Mo);
+            Matrix_Multiply((Matrix*)R, (const Matrix*)Mo, (const Matrix*)C);
             int first = F(int, c, 2816);
             if (type == 2)
-                total += CallC<int>(FUN_58a020, o, R, c, b, -1);
+                total += Box_PointContacts(o, (const Matrix*)R, c, b, -1);
             else if (int k = CallC<int>(FUN_584c70, Mo + 9, R + 9, F(DWORD, o, 3272), c, b, -1)) {
                 total += k;
-                F(int, c, 1532 + F(int, c, 2816) * 4) = CallC<int>(FUN_57c9a0, o);
+                F(int, c, 1532 + F(int, c, 2816) * 4) = Id_Same((int)o);
             }
             for (int k = first; k < F(int, c, 2816); k++)
                 memcpy(c + 3332 + k * 48, C, 48);
         }
-        total += CallC<int>(FUN_58a020, b, m, c, o, 1);
+        total += Box_PointContacts(b, (const Matrix*)m, c, o, 1);
     }
     return total;
 }
@@ -1364,11 +1382,11 @@ int __cdecl Body_NeighbourContacts(BYTE* b, BYTE* m, BYTE* c)
 // === placing a body by its position and direction ($L_58fbc0)
 
 extern "C" void FUN_4e3132(); KING_ALIAS("_FUN_4e3132", "_Vec3_DivComponents")
-extern "C" void FUN_4e5bf5(); KING_ALIAS("_FUN_4e5bf5", "_Obj_Lookup4e5b22")
-extern "C" void FUN_57e070(); KING_ALIAS("_FUN_57e070", "@Vehicle_MakeOut@8")
-extern "C" void FUN_581c80(); KING_ALIAS("_FUN_581c80", "@Item_ResetFlags@16")
-extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
-extern "C" void FUN_5abc90(); KING_ALIAS("_FUN_5abc90", "_Matrix_LookAt")
+extern "C" int __cdecl Obj_Lookup4e5b22(int a, int b, int c, char* out);
+extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
+extern "C" int __fastcall Item_ResetFlags(BYTE* self, void*, int, int);
+extern "C" Matrix* __cdecl Matrix_Translation(Matrix* out, Vec3 t);
+extern "C" Matrix* __cdecl Matrix_LookAt(Matrix* out, Vec3 pos, Vec3 dir, float roll);
 KING_VAR(int, g_bp6f6568, 6f6568)
 
 extern "C" {
@@ -1379,7 +1397,7 @@ extern "C" {
 int __fastcall Body_Place(BYTE* s, void*, int a, DWORD* flags)
 {
     g_bp6f6568 = 0;
-    CallThis(FUN_581c80, s, a, flags);
+    Item_ResetFlags(s, 0, a, (int)flags);
     if (F(int, s, 3976)) {
         if (F(int, s, 3976) == 2)
             *flags |= 2;
@@ -1389,10 +1407,10 @@ int __fastcall Body_Place(BYTE* s, void*, int a, DWORD* flags)
     }
     BYTE t1[48], t2[48], t3[48], t4[48], t5[48];
     Vec3 p = F(Vec3, s, 3148), d = F(Vec3, s, 3160);
-    BYTE* tr = CallC<BYTE*>(FUN_5abc40, t1, p);
-    float len = (float)CallC<double>(FUN_5ab4d0, s + 3160);
-    BYTE* look = CallC<BYTE*>(FUN_5abc90, t2, g_gravity702650, d, len);
-    BYTE* m = CallC<BYTE*>(FUN_5aba40, t4, CallC<BYTE*>(FUN_5aba40, t3, look, s + 548), tr);
+    BYTE* tr = (BYTE*)Matrix_Translation((Matrix*)t1, p);
+    float len = (float)Vec3_Length((const Vec3*)(s + 3160));
+    BYTE* look = (BYTE*)Matrix_LookAt((Matrix*)t2, g_gravity702650, d, len);
+    BYTE* m = CallC<BYTE*>(FUN_5aba40, t4, (BYTE*)Matrix_Multiply((Matrix*)t3, (const Matrix*)look, (const Matrix*)(s + 548)), tr);
     memcpy(s + 500, m, 48);
     memcpy(s + 596, CallC<BYTE*>(FUN_5ac2e0, t5, s + 500), 48);
     const float* q = (const float*)(s + 596);
@@ -1403,12 +1421,12 @@ int __fastcall Body_Place(BYTE* s, void*, int a, DWORD* flags)
     w[2] = (float)((double)q[5] * vy + (double)q[8] * vz + (double)q[2] * vx);
     float r[3];
     memcpy(s + 428, CallC<BYTE*>(FUN_4e3132, r, w, s + 404), 12);
-    F(int, s, 800) = CallC<int>(FUN_4e5bf5, F(int, s, 804), s + 584, s + 536, s + 1132);
+    F(int, s, 800) = Obj_Lookup4e5b22(F(int, s, 804), (int)(s + 584), (int)(s + 536), (char*)(s + 1132));
     if (!F(int, s, 800)) {
         F(int, s, 800) = F(int, s, 804);
         CallVirt(s, 28, 1);
     }
-    CallThis(FUN_57e070, s);
+    Vehicle_MakeOut(s, 0);
     return 0;
 }
 
@@ -1416,7 +1434,7 @@ int __fastcall Body_Place(BYTE* s, void*, int a, DWORD* flags)
 
 // === spawning sparks (FUN_5940f0)
 
-extern "C" void FUN_5940d0(); KING_ALIAS("_FUN_5940d0", "@FreeList_Take@8")
+extern "C" BYTE** __fastcall FreeList_Take(BYTE* self, void*);
 extern "C" int __cdecl rand(void);
 KING_VAR(Vec3, g_sp702620, 702620)
 KING_VAR(Vec3, g_sp702640, 702640)
@@ -1446,7 +1464,7 @@ void __fastcall Sparks_Spawn(BYTE* s, void*, const BYTE* src, unsigned n)
     if (!F(int, s, 104))
         return;
     for (unsigned i = 0; i < n; i++) {
-        BYTE* p = CallThis<BYTE*>(FUN_5940d0, s);
+        BYTE* p = (BYTE*)FreeList_Take(s, 0);
         if (!p)
             return;
         float a = (float)Sp_Rand();
@@ -1485,13 +1503,14 @@ void __fastcall Sparks_Spawn(BYTE* s, void*, const BYTE* src, unsigned n)
 
 // === a body's collision by kind (58dff0)
 
-extern "C" void Bc_WarnOpen(); KING_ALIAS("_Bc_WarnOpen", "_WarnLog_Open")
-extern "C" void Bc_WarnClose(); KING_ALIAS("_Bc_WarnClose", "_WarnLog_Close")
-extern "C" void Bc_Log(); KING_ALIAS("_Bc_Log", "_VehLog_Value2")
+extern "C" void __cdecl WarnLog_Open();
+extern "C" void __cdecl WarnLog_Close();
+extern "C" void __cdecl VehLog_Value2(int v);
 extern "C" void Bc_sprintf(); KING_ALIAS("_Bc_sprintf", "_sprintf")
-extern "C" void Bc_ActivateAll(); KING_ALIAS("_Bc_ActivateAll", "@Points_ActivateAll@8")
-extern "C" void FUN_5843c0(); KING_ALIAS("_FUN_5843c0", "_Item_MoveFraction")    // a body's collision with the ground
-extern "C" void FUN_5855a0(); KING_ALIAS("_FUN_5855a0", "_Item_BodyContact")    // with another body
+extern "C" void __fastcall Points_ActivateAll(BYTE* self, void*);
+extern "C" int __cdecl Item_MoveFraction(BYTE* o, const BYTE* t, float* scale, float* dist, BYTE* h);
+extern "C" int __cdecl Item_BodyContact(BYTE* s, const Matrix* m, float* scale, float* depth, BYTE* q, int flags);
+extern "C" int __cdecl Body_NearestContact(BYTE* b, BYTE* m, float* scale, float* value, BYTE* out, int a6);
 extern "C" void FUN_58b120(); KING_ALIAS("_FUN_58b120", "_Body_NearestContact")    // with a moving object
 KING_VAR(int, g_bc6f6620, 6f6620)
 KING_VAR(AsmLabel, s_bc67dd8c, 67dd8c)
@@ -1514,7 +1533,7 @@ extern "C" {
 int __fastcall Body_Collide(BYTE* s, void*, int a, int b, int c, BYTE* k, unsigned flags)
 {
     if (flags & 4) {
-        int r = CallC<int>(FUN_5843c0, s, a, b, c, k);
+        int r = Item_MoveFraction(s, (const BYTE*)a, (float*)b, (float*)c, k);
         if (g_bc6f6620 && (r & 1) && !F(int, k, 116)) {
             char b1[100], b2[100], b3[100], b4[100], b5[100], b6[490];
             CallC(Bc_sprintf, b1, (const char*)s_bc67dd8c, F(const char*, F(BYTE*, s, 800), 12));
@@ -1523,17 +1542,17 @@ int __fastcall Body_Collide(BYTE* s, void*, int a, int b, int c, BYTE* k, unsign
             Bc_Fmt3(b4, s_bc67dd38, (const float*)(k + 52));
             Bc_Fmt3(b5, s_bc67dd1c, (const float*)(k + 64));
             CallC(Bc_sprintf, b6, (const char*)s_bc67dd10, b1, b2, b3, b4, b5);
-            CallC(Bc_WarnOpen);
-            CallC(Bc_Log, b6);
-            CallC(Bc_WarnClose);
+            WarnLog_Open();
+            VehLog_Value2((int)b6);
+            WarnLog_Close();
         }
         return r;
     }
     if (flags & 2)
-        return CallC<int>(FUN_5855a0, s, a, b, c, k, flags);
-    int r = CallC<int>(FUN_58b120, s, a, b, c, k, flags);
+        return Item_BodyContact(s, (const Matrix*)a, (float*)b, (float*)c, k, flags);
+    int r = Body_NearestContact(s, (BYTE*)a, (float*)b, (float*)c, k, flags);
     if (r)
-        CallThis(Bc_ActivateAll, s);
+        Points_ActivateAll(s, 0);
     return r;
 }
 
@@ -1541,11 +1560,10 @@ int __fastcall Body_Collide(BYTE* s, void*, int a, int b, int c, BYTE* k, unsign
 
 // === a body's nearest contact (FUN_58b120)
 
-extern "C" void FUN_585150(); KING_ALIAS("_FUN_585150", "_Item_PointContacts")
-extern "C" void Nc_Ground(); KING_ALIAS("_Nc_Ground", "_Movingb_589e70")
-extern "C" void Nc_Neighbours(); KING_ALIAS("_Nc_Neighbours", "_Body_NeighbourContacts")
+extern "C" int __cdecl Item_PointContacts(BYTE* s, const float* m, BYTE* w);
+extern "C" int __cdecl Movingb_589e70(int a, int b, int c, unsigned flags);
+extern "C" int __cdecl Body_NeighbourContacts(BYTE* b, BYTE* m, BYTE* c);
 extern "C" void Nc_DivAssign(); KING_ALIAS("_Nc_DivAssign", "@Vec3_DivAssign@16")
-extern "C" void Nc_AddAssign(); KING_ALIAS("_Nc_AddAssign", "@Vec3_AddAssign@16")
 KING_VAR(float, g_nc64c2f8, 64c2f8)
 KING_VAR(double, g_nc6506c0, 6506c0)
 KING_VAR(double, g_nc64d918, 64d918)
@@ -1560,11 +1578,11 @@ extern "C" {
 int __cdecl Body_NearestContact(BYTE* b, BYTE* m, float* scale, float* value, BYTE* out, int a6)
 {
     BYTE t[6404];
-    CallThis(FUN_587c80, t);
+    Track587c80_Construct(t);
     F(int, t, 2816) = 0;
-    int ground = CallC<int>(Nc_Ground, b, m, t, a6);
-    int nb = CallC<int>(Nc_Neighbours, b, m, t);
-    int other = CallC<int>(FUN_585150, b, m, t);
+    int ground = Movingb_589e70((int)b, (int)m, (int)t, a6);
+    int nb = Body_NeighbourContacts(b, m, t);
+    int other = Item_PointContacts(b, (const float*)m, t);
     if (!ground && !nb && !other)
         return 0;
     int n = F(int, t, 2816);
@@ -1593,13 +1611,13 @@ int __cdecl Body_NearestContact(BYTE* b, BYTE* m, float* scale, float* value, BY
                 continue;
             float w = (float)(g_nc64d918 - dist[j]);
             Vec3 v = {(pts[j].x - p.x) * w, (pts[j].y - p.y) * w, (pts[j].z - p.z) * w};
-            CallThis(Nc_AddAssign, &acc, &tmp, &v);
+            Vec3_AddAssign(&acc, 0, &tmp, &v);
             wsum = (float)(g_nc64d918 - dist[j] + wsum);
         }
         CallThis(Nc_DivAssign, &acc, &tmp, *(DWORD*)&wsum);
-        CallThis(Nc_AddAssign, &acc, &tmp, &p);
+        Vec3_AddAssign(&acc, 0, &tmp, &p);
         F(Vec3, out, 52) = acc;
-        F(Vec3, out, 64) = *CallC<Vec3*>(FUN_5ab400, &tmp, &nb0);
+        F(Vec3, out, 64) = *Vec3_Normalized(&tmp, &nb0);
     } else {
         F(Vec3, out, 52) = pts[best];
         F(Vec3, out, 64) = nrm[best];
@@ -1632,7 +1650,6 @@ int __cdecl Body_NearestContact(BYTE* b, BYTE* m, float* scale, float* value, BY
 
 // === a body's nearest neighbours (a method at $L_5914c0)
 
-extern "C" void Nn_Matrix1(); KING_ALIAS("_Nn_Matrix1", "@SceneObj_Matrix1@12")
 KING_VAR(BYTE*, g_nn6f653c, 6f653c)
 
 extern "C" {
@@ -1655,7 +1672,7 @@ void __fastcall Body_FindNeighbours(BYTE* s)
         if (o == s || o == F(BYTE*, s, 9512))
             continue;
         BYTE m[48];
-        const float* M = CallThis<const float*>(Nn_Matrix1, o, m);
+        const float* M = (const float*)SceneObj_Matrix1(o, 0, (Matrix*)m);
         const float* c = (const float*)(o + 3436);
         double wx = (double)M[3] * c[1] + (double)M[6] * c[2] + (double)c[0] * M[0] + M[9];
         float wy = (float)((double)M[4] * c[1] + (double)M[7] * c[2] + (double)M[1] * c[0] + M[10]);
@@ -1684,11 +1701,11 @@ void __fastcall Body_FindNeighbours(BYTE* s)
 // === whether two bodies touch (FUN_5924d0)
 
 extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
-extern "C" void Bt_MulMatrix(); KING_ALIAS("_Bt_MulMatrix", "_Vec3_MulMatrix")
-extern "C" void Bt_Sub(); KING_ALIAS("_Bt_Sub", "_Vec3_Sub")
-extern "C" void Bt_Dot(); KING_ALIAS("_Bt_Dot", "_Vec3_Dot")
-extern "C" void Bt_PointsFirst(); KING_ALIAS("_Bt_PointsFirst", "@Points_NextFirst@12")
-extern "C" void Bt_RecordsNext(); KING_ALIAS("_Bt_RecordsNext", "@Records_Next@12")
+extern "C" Vec3* __cdecl Vec3_MulMatrix(Vec3* out, const Vec3* p, const Matrix* m);
+extern "C" Vec3* __cdecl Vec3_Sub(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" double __cdecl Vec3_Dot(const Vec3* a, const Vec3* b);
+extern "C" int __fastcall Points_NextFirst(BYTE* self, void*, Vec3Bits* out);
+extern "C" int __fastcall Records_Next(BYTE* self, void*, Record28* out);
 
 extern "C" {
 
@@ -1726,24 +1743,24 @@ int __cdecl Bodies_TouchTest(BYTE* a, const float* ma, const float* pa, BYTE* b,
     float rr2 = rr * rr;
     Vec3 pt = {0, 0, 0}, w, e, t;
     int hit = 0;
-    if (CallThis<int>(Bt_PointsFirst, a, &pt)) {
+    if (Points_NextFirst(a, 0, (Vec3Bits*)&pt)) {
         do {
-            w = *CallC<Vec3*>(Bt_MulMatrix, &t, &pt, ma);
+            w = *Vec3_MulMatrix(&t, &pt, (const Matrix*)ma);
             Vec3_SetThis(&e, 0, w.x - q.x, w.y - q.y, w.z - q.z);
-            if (CallC<double>(Bt_Dot, &e, &e) < rr2)
+            if (Vec3_Dot(&e, &e) < rr2)
                 hit = 1;
-        } while (CallThis<int>(Bt_PointsFirst, a, &pt));
+        } while (Points_NextFirst(a, 0, (Vec3Bits*)&pt));
         if (hit)
             return hit;
     }
     BYTE rec[28];
-    CallThis(FUN_58b4f0, rec);
-    Vec3 w2 = *CallC<Vec3*>(Bt_MulMatrix, &t, &q, pa);
+    TwoVec_Construct(rec, 0);
+    Vec3 w2 = *Vec3_MulMatrix(&t, &q, (const Matrix*)pa);
     int all = 1;
-    while (CallThis<int>(Bt_RecordsNext, a, rec)) {
+    while (Records_Next(a, 0, (Record28*)rec)) {
         Vec3 df;
-        CallC(Bt_Sub, &df, &w2, rec + 16);
-        if (rr < CallC<double>(Bt_Dot, &df, rec))
+        Vec3_Sub(&df, &w2, (const Vec3*)(rec + 16));
+        if (rr < Vec3_Dot(&df, (const Vec3*)rec))
             all = 0;
     }
     if (all)
@@ -1755,7 +1772,6 @@ int __cdecl Bodies_TouchTest(BYTE* a, const float* ma, const float* pa, BYTE* b,
 
 // === a burst of sparks off a surface (FUN_593720)
 
-extern "C" void Sb_Normalized(); KING_ALIAS("_Sb_Normalized", "_Vec3_Normalized")
 KING_VAR(Vec3, g_sb702630, 702630)
 KING_VAR(Vec3, g_sb702650, 702650)
 extern "C" void __cdecl Fader_Start(int a0, int a1, float strength, int a3, int a4);
@@ -1819,16 +1835,16 @@ void __fastcall Sparks_Burst(BYTE* s, void*, const float* pos, const float* nm, 
         a[1] = g_sb702630.x * nm[2] - g_sb702630.z * nm[0];
         a[2] = g_sb702630.y * nm[0] - g_sb702630.x * nm[1];
     }
-    const float* r = CallC<const float*>(Sb_Normalized, t, a);
+    const float* r = (const float*)Vec3_Normalized((Vec3*)t, (const Vec3*)a);
     float u[3] = {r[0], r[1], r[2]};
     float b[3] = {u[2] * nm[1] - u[1] * nm[2], u[0] * nm[2] - u[2] * nm[0], u[1] * nm[0] - u[0] * nm[1]}, t2[3];
-    r = CallC<const float*>(Sb_Normalized, t2, b);
+    r = (const float*)Vec3_Normalized((Vec3*)t2, (const Vec3*)b);
     float v[3] = {r[0], r[1], r[2]};
     float nn[3] = {nm[0], nm[1], nm[2]};
     float cnt = (float)(__int64)n;
     float half = cnt * g_sb64c260;
     for (int i = 0; (float)(__int64)i < half; i++) {
-        BYTE* p = CallThis<BYTE*>(FUN_5940d0, s);
+        BYTE* p = (BYTE*)FreeList_Take(s, 0);
         if (!p)
             break;
         float x1 = (float)(Sp_Rand() * g_sb64c408);
@@ -1847,7 +1863,7 @@ void __fastcall Sparks_Burst(BYTE* s, void*, const float* pos, const float* nm, 
     float spread = cnt * g_sb64ed88 + g_sb64c250;
     float lim = cnt * g_sb64c25c;
     for (int i = 0; (float)(__int64)i < lim; i++) {
-        BYTE* p = CallThis<BYTE*>(FUN_5940d0, s);
+        BYTE* p = (BYTE*)FreeList_Take(s, 0);
         if (!p)
             break;
         float x1 = (float)(Sp_Rand() * spread);
@@ -1879,10 +1895,10 @@ KING_VAR(float, g_bd64c264, 64c264)
 // distance less radius r
 static void Bd_Planes(BYTE* o, BYTE* rec, const Vec3* q, int points, float r, float* out, float* best, int* inside)
 {
-    while (CallThis<int>(Bt_RecordsNext, o, rec)) {
+    while (Records_Next(o, 0, (Record28*)rec)) {
         Vec3 df;
-        CallC(Bt_Sub, &df, q, rec + 16);
-        float d = (float)CallC<double>(Bt_Dot, &df, rec);
+        Vec3_Sub(&df, q, (const Vec3*)(rec + 16));
+        float d = (float)Vec3_Dot(&df, (const Vec3*)rec);
         if (!points) {
             if (d > g_bd64c264)
                 *inside = 0;
@@ -1928,11 +1944,11 @@ int __cdecl Bodies_Overlap(BYTE* a, const float* ma, const float* pa, BYTE* b, c
         return 1;
     Vec3 pt = {0, 0, 0}, q = {0, 0, 0}, t;
     BYTE rec[28];
-    CallThis(FUN_58b4f0, rec);
+    TwoVec_Construct(rec, 0);
     int found = 0, more = 1, step = 1;
     for (;;) {
         if (step) {
-            step = CallThis<int>(Bt_PointsFirst, a, &pt);
+            step = Points_NextFirst(a, 0, (Vec3Bits*)&pt);
             double wx = (double)pt.x * ma[0] + (double)pt.z * ma[6] + (double)pt.y * ma[3] + ma[9];
             double wy = (double)pt.x * ma[1] + (double)pt.z * ma[7] + (double)pt.y * ma[4] + ma[10];
             double wz = (double)pt.z * ma[8] + (double)pt.y * ma[5] + (double)pt.x * ma[2] + ma[11];
@@ -1962,12 +1978,12 @@ int __cdecl Bodies_Overlap(BYTE* a, const float* ma, const float* pa, BYTE* b, c
     for (;;) {
         Vec3 w;
         if (step) {
-            step = CallThis<int>(Bt_PointsFirst, b, &pt);
-            Vec3* m = CallC<Vec3*>(Bt_MulMatrix, &t, &pt, mb);
-            w = *CallC<Vec3*>(Bt_MulMatrix, &q, m, pa);
+            step = Points_NextFirst(b, 0, (Vec3Bits*)&pt);
+            Vec3* m = Vec3_MulMatrix(&t, &pt, (const Matrix*)mb);
+            w = *Vec3_MulMatrix(&q, m, (const Matrix*)pa);
         } else {
             more = 0;
-            w = *CallC<Vec3*>(Bt_MulMatrix, (Vec3*)A, (const Vec3*)B, pa);
+            w = *Vec3_MulMatrix((Vec3*)A, (const Vec3*)B, (const Matrix*)pa);
         }
         q = w;
         int inside = 1;
@@ -1989,11 +2005,9 @@ int __cdecl Bodies_Overlap(BYTE* a, const float* ma, const float* pa, BYTE* b, c
 
 // === sparks drawn as lines (a method at $L_594650)
 
-extern "C" void Sl_Normalized(); KING_ALIAS("_Sl_Normalized", "_Vec3_Normalized")
-extern "C" void Sl_Length(); KING_ALIAS("_Sl_Length", "_Vec3_Length")
 extern "C" void Sl_MulAssign(); KING_ALIAS("_Sl_MulAssign", "@Vec3_MulAssign@16")
-extern "C" void Sl_Material(); KING_ALIAS("_Sl_Material", "@Material_Select@24")
-extern "C" void Sl_DrawTested(); KING_ALIAS("_Sl_DrawTested", "@Obj_DrawTested@16")
+extern "C" void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n);
+extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b);
 KING_VAR(BYTE*, g_sl720908, 720908)
 KING_VAR(float, g_sl64c334, 64c334)
 KING_VAR(float, g_sl64c250, 64c250)
@@ -2040,7 +2054,7 @@ extern "C" {
 // age (+116) at both ends; 1 when drawn, 0 when not visible
 int __fastcall Sparks_DrawLines(BYTE* s, void*, int a, BYTE* r)
 {
-    if (!CallThis<int>(Sl_DrawTested, s, a, r))
+    if (!Obj_DrawTested(s, 0, a, r))
         return 0;
     int n = 0;
     unsigned off = 0;
@@ -2048,8 +2062,8 @@ int __fastcall Sparks_DrawLines(BYTE* s, void*, int a, BYTE* r)
         float pos[3] = {F(float, p, 28), F(float, p, 32), F(float, p, 36)};
         float v[3] = {F(float, p, 4), F(float, p, 8), F(float, p, 12)}, t[3];
         CallThis(Sl_MulAssign, v, t, 0xBD23D70Au);
-        if (CallC<double>(Sl_Length, v) > g_sl64c334) {
-            const float* nv = CallC<const float*>(Sl_Normalized, t, v);
+        if (Vec3_Length((const Vec3*)v) > g_sl64c334) {
+            const float* nv = (const float*)Vec3_Normalized((Vec3*)t, (const Vec3*)v);
             v[0] = nv[0] * g_sl64c334, v[1] = nv[1] * g_sl64c334, v[2] = nv[2] * g_sl64c334;
         }
         float c1[4], c2[4];
@@ -2068,7 +2082,7 @@ int __fastcall Sparks_DrawLines(BYTE* s, void*, int a, BYTE* r)
             break;
     }
     if (n) {
-        CallThis(Sl_Material, r, F(int, s, 84), 0, 0, 0);
+        Material_Select(r, 0, (BYTE*)(F(int, s, 84)), 0, 0, 0);
         Sl_Com(g_sl720908, 80, 136, 1);
         Sl_Com(g_sl720908, 100, 2, 66, F(BYTE*, s, 80), n, 0);
     }
@@ -2079,12 +2093,10 @@ int __fastcall Sparks_DrawLines(BYTE* s, void*, int a, BYTE* r)
 
 // === a moving body's step against the ground (FUN_58c1e0)
 
-extern "C" void Mg_FrameTime(); KING_ALIAS("_Mg_FrameTime", "_Game_FrameTime")
-extern "C" void Mg_PointsNext(); KING_ALIAS("_Mg_PointsNext", "@Points_Next@12")
-extern "C" void Mg_CheckPoint(); KING_ALIAS("_Mg_CheckPoint", "_World_CheckPoint")
-extern "C" void Mg_AddAssign(); KING_ALIAS("_Mg_AddAssign", "@Vec3_AddAssign@16")
+extern "C" int __fastcall Points_Next(BYTE* self, void*, Vec3Bits* out);
+extern "C" void __cdecl World_CheckPoint(float* v, const char* name, float lim);
 extern "C" void FUN_58baa0(); KING_ALIAS("_FUN_58baa0", "_Body_Bounce")
-ASM_FUNC(FUN_4e7889, _Quadratic_Roots)
+extern "C" int __cdecl Quadratic_Roots(float a, float b, float c, float* r1, float* r2);
 KING_VAR(float, g_mg64c264, 64c264)
 KING_VAR(double, g_mg64b6d0, 64b6d0)
 KING_VAR(double, g_mg64d0f0, 64d0f0)
@@ -2141,7 +2153,7 @@ extern "C" {
 // its height (4e7889, mixed by k), with impulses when it moved too far; +3148 gets the step
 void __fastcall Body_GroundStep(BYTE* s, void*, float k)
 {
-    float dt = (float)CallC<double>(Mg_FrameTime);
+    float dt = (float)Game_FrameTime();
     Vec3* P = (Vec3*)(s + 416);
     float d[4] = {100.0f, 100.0f, 100.0f, 100.0f};
     Vec3 prev = *P;
@@ -2150,7 +2162,7 @@ void __fastcall Body_GroundStep(BYTE* s, void*, float k)
     if ((double)dt * F(float, s, 796) + P->z < g_mg64c264)
     {
         Vec3 pt = {0, 0, 0}, best = {0, 0, 0}, bestN = {0, 0, 0};
-        for (int i = CallThis<int>(Mg_PointsNext, s, &pt); i; i = CallThis<int>(Mg_PointsNext, s, &pt))
+        for (int i = Points_Next(s, 0, (Vec3Bits*)&pt); i; i = Points_Next(s, 0, (Vec3Bits*)&pt))
         {
             double x = (double)pt.z * R[6] + (double)pt.y * R[3] + (double)pt.x * R[0] + R[9];
             float y = (float)((double)pt.x * R[1] + (double)pt.y * R[4] + (double)pt.z * R[7] + R[10]);
@@ -2178,8 +2190,8 @@ void __fastcall Body_GroundStep(BYTE* s, void*, float k)
             {
                 F(Vec3, s, 488) = Mg_Set((double)b.x * dt, (double)b.y * dt, (double)b.z * dt);
                 F(Vec3, s, 476) = Mg_Set((double)a.x * dt, (double)a.y * dt, (double)a.z * dt);
-                CallThis(Mg_AddAssign, P, &tmp, s + 476);
-                CallThis(Mg_AddAssign, s + 428, &tmp, s + 488);
+                Vec3_AddAssign(P, 0, &tmp, (const Vec3*)(s + 476));
+                Vec3_AddAssign((Vec3*)(s + 428), 0, &tmp, (const Vec3*)(s + 488));
                 Vec3 m;
                 Vec3_MulComponents(&m, (const Vec3*)(s + 428), (const Vec3*)(s + 404));
                 F(Vec3, s, 440) = Mg_Set((double)R[3] * m.y + (double)R[6] * m.z + (double)m.x * R[0],
@@ -2219,14 +2231,13 @@ void __fastcall Body_GroundStep(BYTE* s, void*, float k)
             float c2 = (float)((double)N[2] * P->x - (double)N[0] * P->z);
             float c3 = (float)((double)N[0] * P->y - (double)P->x * N[1]);
             np = Mg_Set((double)c2 * N[2] - (double)c3 * N[1], (double)c3 * N[0] - c1 * N[2], c1 * N[1] - (double)c2 * N[0]);
-            CallC(Mg_CheckPoint, &np, &s_mg67dcf4, 150.0f);
+            World_CheckPoint((float*)&np, &s_mg67dcf4, 150.0f);
             *P = np;
             F(Vec3, s, 3148) = Mg_Set((double)dt * P->x, (double)dt * P->y, (double)dt * P->z);
             return;
         }
         float t1, t2;
-        if (CallC<int>(FUN_4e7889, (float)((double)F(float, s, 796) * g_mg64c878), (float)-(double)F(float, s, 424),
-                       (float)-hh, &t1, &t2))
+        if (Quadratic_Roots((float)((double)F(float, s, 796) * g_mg64c878), (float)-(double)F(float, s, 424), (float)-hh, &t1, &t2))
         {
             float r;
             const char* tag;
@@ -2246,7 +2257,7 @@ void __fastcall Body_GroundStep(BYTE* s, void*, float k)
             Vec3* v = (Vec3*)(s + 476);
             *v = Mg_Set(f * F(float, s, 788), f * F(float, s, 792), f * F(float, s, 796));
             np = Mg_Set((double)v->x + P->x, (double)P->y + v->y, (double)P->z + v->z);
-            CallC(Mg_CheckPoint, &np, tag, 150.0f);
+            World_CheckPoint((float*)&np, tag, 150.0f);
             *P = np;
         }
         else
@@ -2265,7 +2276,7 @@ void __fastcall Body_GroundStep(BYTE* s, void*, float k)
         CallVirt(s, 144, Vec3_Scaled(&h, P, 0.5f), 0);
         CallVirt(s, 152, Vec3_Scaled(&h, (const Vec3*)(s + 440), 0.5f), 0);
     }
-    CallC(Mg_CheckPoint, P, &s_mg67dca0, 150.0f);
+    World_CheckPoint((float*)P, &s_mg67dca0, 150.0f);
     Vec3_Scaled((Vec3*)(s + 3148), P, dt);
 }
 
@@ -2273,10 +2284,9 @@ void __fastcall Body_GroundStep(BYTE* s, void*, float k)
 
 // === drawing a body, with its debug marks (FUN_590d20)
 
-extern "C" void Bd_DrawMarked(); KING_ALIAS("_Bd_DrawMarked", "@Item_DrawMarked@16")
-extern "C" void Bd_PointsNext(); KING_ALIAS("_Bd_PointsNext", "@Points_Next@12")
-extern "C" void Bd_CameraGet(); KING_ALIAS("_Bd_CameraGet", "@Camera_Get@12")
-extern "C" void Bd_DrawLine(); KING_ALIAS("_Bd_DrawLine", "_Window_DrawLine")
+extern "C" int __fastcall Item_DrawMarked(BYTE* s, void*, int a, int b);
+extern "C" void* __fastcall Camera_Get(BYTE* self, void*, void* out);
+extern "C" void __cdecl Window_DrawLine(BYTE* w, int x0, int y0, int x1, int y1, DWORD c, int rgb);
 KING_VAR(int, g_bd696be4, 696be4)
 KING_VAR(BYTE*, g_bd6ef1fc, 6ef1fc)
 KING_VAR(float, g_bd64c250, 64c250)
@@ -2295,10 +2305,10 @@ static void Bd_Mark(const float* v, int c)
     int ww = F(WORD, w, 0), wh = F(WORD, w, 2);
     int sx = (int)(v[0] / (double)v[1] * ww * g_bd64c258 + ww / 2);
     int sy = (int)(wh / 2 - v[2] / (double)v[1] * wh * g_bd64c258);
-    CallC(Bd_DrawLine, w, sx - 2, sy - 2, sx + 2, sy + 2, c, 0);
-    CallC(Bd_DrawLine, Bd_Window(), sx + 2, sy - 2, sx - 2, sy + 2, c, 0);
-    CallC(Bd_DrawLine, Bd_Window(), sx, sy - 3, sx, sy + 3, 0, 0);
-    CallC(Bd_DrawLine, Bd_Window(), sx - 3, sy, sx + 3, sy, 0, 0);
+    Window_DrawLine(w, sx - 2, sy - 2, sx + 2, sy + 2, c, 0);
+    Window_DrawLine(Bd_Window(), sx + 2, sy - 2, sx - 2, sy + 2, c, 0);
+    Window_DrawLine(Bd_Window(), sx, sy - 3, sx, sy + 3, 0, 0);
+    Window_DrawLine(Bd_Window(), sx - 3, sy, sx + 3, sy, 0, 0);
 }
 
 extern "C" {
@@ -2309,7 +2319,7 @@ int __fastcall Item_DrawBody(BYTE* s, void*, int a, BYTE* ctx)
 {
     BYTE* owner = s - 256;
     CallVirt(owner, 232);
-    int ret = CallThis<int>(Bd_DrawMarked, s, a, ctx);
+    int ret = Item_DrawMarked(s, 0, a, (int)ctx);
     if (g_bd696be4 <= 1 || g_bd696be4 != 2)
         return ret;
     BYTE* W = F(BYTE*, g_bd6ef1fc, 464);
@@ -2318,7 +2328,7 @@ int __fastcall Item_DrawBody(BYTE* s, void*, int a, BYTE* ctx)
     float pt[3] = {0, 0, 0};
     if (F(int, s, 3720) == 3)
     {
-        for (int i = CallThis<int>(Bd_PointsNext, owner, pt); i; i = CallThis<int>(Bd_PointsNext, owner, pt))
+        for (int i = Points_Next(owner, 0, (Vec3Bits*)pt); i; i = Points_Next(owner, 0, (Vec3Bits*)pt))
         {
             double a0 = (double)pt[0] * F(float, s, 244) + (double)pt[2] * F(float, s, 268) + (double)pt[1] * F(float, s, 256) + F(float, s, 280);
             double b0 = (double)pt[2] * F(float, s, 272) + (double)pt[1] * F(float, s, 260) + (double)pt[0] * F(float, s, 248) + F(float, s, 284);
@@ -2333,7 +2343,7 @@ int __fastcall Item_DrawBody(BYTE* s, void*, int a, BYTE* ctx)
     if (F(int, s, 3720) != 2)
         return ret;
     BYTE cm[48];
-    const float* cam = CallThis<const float*>(Bd_CameraGet, g_bd6ef1fc, cm);
+    const float* cam = (const float*)Camera_Get(g_bd6ef1fc, 0, cm);
     float d[3];
     d[0] = (float)((double)F(float, s, 280) - cam[9]);
     d[1] = (float)((double)F(float, s, 284) - cam[10]);
@@ -2527,7 +2537,7 @@ void __fastcall Body_UpdatePlanes(BYTE* s, void*)
 
 // === the body a body's points run into (FUN_58f560)
 
-extern "C" void Ob_SubAssign(); KING_ALIAS("_Ob_SubAssign", "@Vec3_SubAssign@16")
+extern "C" Vec3* __fastcall Vec3_SubAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
 
 // point p of body s (frame +500) in the world
 static Vec3 Ob_World(BYTE* s, const Vec3& p)
@@ -2571,7 +2581,7 @@ BYTE* __fastcall Body_FindOverlap(BYTE* s, void*)
                         continue;
                     Vec3 w = Ob_World(s, pt);
                     Matrix m;
-                    const float* R = CallThis<const float*>(FUN_57dec0, o, &m);
+                    const float* R = (const float*)SceneObj_Matrix2(o, 0, &m);
                     pt.x = (float)((double)w.z * R[6] + (double)w.y * R[3] + (double)w.x * R[0]);
                     pt.y = (float)((double)w.z * R[7] + (double)w.y * R[4] + (double)w.x * R[1]);
                     pt.z = (float)((double)w.z * R[8] + (double)w.y * R[5] + (double)w.x * R[2]);
@@ -2584,7 +2594,7 @@ BYTE* __fastcall Body_FindOverlap(BYTE* s, void*)
             else if (k == 2)
             {
                 Matrix m1;
-                const float* R = CallThis<const float*>(FUN_57de90, o, &m1);
+                const float* R = (const float*)SceneObj_Matrix1(o, 0, &m1);
                 const float* q = (const float*)(o + 3436);
                 c.x = (float)((double)R[6] * q[2] + (double)R[3] * q[1] + (double)q[0] * R[0] + R[9]);
                 c.y = (float)((double)R[7] * q[2] + (double)R[1] * q[0] + (double)R[4] * q[1] + R[10]);
@@ -2598,7 +2608,7 @@ BYTE* __fastcall Body_FindOverlap(BYTE* s, void*)
                     if (found)
                         continue;
                     pt = Ob_World(s, pt);
-                    CallThis(Ob_SubAssign, &pt, &tmp, &c);
+                    Vec3_SubAssign(&pt, 0, &tmp, &c);
                     if ((double)pt.x * pt.x + (double)pt.y * pt.y + (double)pt.z * pt.z < r2)
                         found = true;
                 } while (Ob_Next(s, &pt));
@@ -2613,7 +2623,7 @@ BYTE* __fastcall Body_FindOverlap(BYTE* s, void*)
                         continue;
                     Vec3 w = Ob_World(s, pt);
                     Matrix m2;
-                    const Matrix* R2 = CallThis<const Matrix*>(FUN_57dec0, o, &m2);
+                    const Matrix* R2 = (const Matrix*)SceneObj_Matrix2(o, 0, &m2);
                     pt = *Vec3_RotateBy(&tmp, &w, R2);
                     if (Body_ContainsPoint(o, 0, &pt.x))
                         found = true;
@@ -2625,7 +2635,7 @@ BYTE* __fastcall Body_FindOverlap(BYTE* s, void*)
         else if (type == 1)
         {
             Matrix m1;
-            const Matrix* R = CallThis<const Matrix*>(FUN_57de90, o, &m1);
+            const Matrix* R = (const Matrix*)SceneObj_Matrix1(o, 0, &m1);
             c = *Vec3_MulMatrix(&tmp, (const Vec3*)(o + 3436), R);
             float r2 = (float)((double)F(float, o, 3272) * F(float, o, 3272));
             if (!Ob_Next(s, &pt))
@@ -2633,7 +2643,7 @@ BYTE* __fastcall Body_FindOverlap(BYTE* s, void*)
             do
             {
                 pt = *Vec3_MulMatrix(&tmp, &pt, (const Matrix*)(s + 500));
-                CallThis(Ob_SubAssign, &pt, &tmp, &c);
+                Vec3_SubAssign(&pt, 0, &tmp, &c);
                 if (Vec3_Dot(&pt, &pt) < r2)
                     return o;
             } while (Ob_Next(s, &pt));
@@ -2681,7 +2691,6 @@ int __cdecl Rec_CompareF4(const BYTE* a, const BYTE* b)
 
 // === settling a body's frame onto a plane (a method at $L_58d770)
 
-extern "C" void St_AddAssign(); KING_ALIAS("_St_AddAssign", "@Vec3_AddAssign@16")
 KING_VAR(double, g_st64b5a0, 64b5a0)
 KING_VAR(double, g_st650808, 650808)
 KING_VAR(double, g_st64b658, 64b658)
@@ -2765,7 +2774,7 @@ void __fastcall Body_SettleOnPlane(BYTE* s, void*, float* out, const float* f, c
         {
             double k = g_st64b5a0 - best;
             Vec3 up = St_Set(k * N[0], k * N[1], k * N[2]);
-            CallThis(St_AddAssign, &M[0][9], &tmp, &up);
+            Vec3_AddAssign((Vec3*)&M[0][9], 0, &tmp, &up);
         }
         memcpy(out, M[0], 48);
         return;
@@ -2832,7 +2841,7 @@ void __fastcall Body_SettleOnPlane(BYTE* s, void*, float* out, const float* f, c
     {
         Vec3 up;
         Vec3_Scaled(&up, n, (float)(g_st64b5a0 - best));
-        CallThis(St_AddAssign, &M[3][9], &tmp, &up);
+        Vec3_AddAssign((Vec3*)&M[3][9], 0, &tmp, &up);
         memcpy(out, M[3], 48);
     }
     else
@@ -2843,15 +2852,11 @@ void __fastcall Body_SettleOnPlane(BYTE* s, void*, float* out, const float* f, c
 
 // === an item's points against the scene (FUN_589640)
 
-extern "C" void Pb_NodeInit(); KING_ALIAS("_Pb_NodeInit", "@Node_Init@8")
-extern "C" void Pb_Get800(); KING_ALIAS("_Pb_Get800", "@SceneObj_Get800@8")
-extern "C" void Pb_Matrix1(); KING_ALIAS("_Pb_Matrix1", "@SceneObj_Matrix1@12")
-extern "C" void Pb_PointsNext(); KING_ALIAS("_Pb_PointsNext", "@Points_Next@12")
-extern "C" void Pb_PointsFirst(); KING_ALIAS("_Pb_PointsFirst", "@Points_NextFirst@12")
+extern "C" int __fastcall SceneObj_Get800(BYTE* self, void*);
 extern "C" void Pb_HitObject(); KING_ALIAS("_Pb_HitObject", "_Query_HitObject")
-extern "C" void Pb_Query1(); KING_ALIAS("_Pb_Query1", "_Query_4e67d1")
-extern "C" void Pb_Query2(); KING_ALIAS("_Pb_Query2", "_Query_4e6ac4")
-extern "C" void Pb_MulAssign(); KING_ALIAS("_Pb_MulAssign", "@Vec3_MulAssign@16")
+extern "C" int __cdecl Query_4e67d1(int a, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
+extern "C" int __cdecl Query_4e6ac4(int a, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
+extern "C" Vec3* __fastcall Vec3_MulAssign(Vec3* self, void*, Vec3* ret, float s);
 KING_VAR(float, g_pb64c258, 64c258)
 KING_VAR(double, g_pb64b678, 64b678)
 KING_VAR(double, g_pb6506b0, 6506b0)
@@ -2893,18 +2898,18 @@ extern "C" {
 int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
 {
     BYTE nd[208];
-    CallThis(Pb_NodeInit, nd);
-    BYTE* obj = CallThis<BYTE*>(Pb_Get800, it);
+    Node_Init(nd, 0);
+    BYTE* obj = (BYTE*)SceneObj_Get800(it, 0);
     Vec3 pt;
     pt.x = pt.y = pt.z = 0;
     Matrix Wm;
-    CallThis(Pb_Matrix1, it, &Wm);
+    SceneObj_Matrix1(it, 0, &Wm);
     const float* W = Wm.m;
     const float* M = Mx->m;
     int hits = 0;
     for (;;)
     {
-        int i = (flags & 512) ? CallThis<int>(Pb_PointsFirst, it, &pt) : CallThis<int>(Pb_PointsNext, it, &pt);
+        int i = (flags & 512) ? Points_NextFirst(it, 0, (Vec3Bits*)&pt) : Points_Next(it, 0, (Vec3Bits*)&pt);
         if (!i)
             return hits;
         Vec3 a, b;
@@ -2928,7 +2933,7 @@ int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
             hit = obj;
             CallThis((void (*)())F(void**, it, 0)[7], it, 1);
         }
-        int r = CallC<int>(Pb_Query1, hit, &a, &b, nd);
+        int r = Query_4e67d1((int)hit, (const Vec3Bits*)&a, (const Vec3Bits*)&b, nd);
         if (!r)
         {
             bool skip = false;
@@ -2959,7 +2964,7 @@ int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
                     c.y = (float)((double)v[2] * u[0] - (double)u[2] * v[0]);
                     c.z = (float)((double)u[1] * v[0] - (double)v[1] * u[0]);
                     if ((double)c.z * g_axisZ.z + (double)c.y * g_axisZ.y + (double)c.x * g_axisZ.x < g_pb64b678)
-                        CallThis(Pb_MulAssign, &c, &tmp, -1.0f);
+                        Vec3_MulAssign(&c, 0, &tmp, -1.0f);
                     double x = (double)b.x - F(float, it, 5152), y = (double)b.y - F(float, it, 5156);
                     double z = (double)b.z - F(float, it, 5160);
                     if (x * c.x + z * c.z + y * c.y > F(float, it, 5148))
@@ -2967,12 +2972,12 @@ int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
                 }
             }
             if (!skip)
-                r = CallC<int>(Pb_Query2, hit, &a, &b, nd);
+                r = Query_4e6ac4((int)hit, (const Vec3Bits*)&a, (const Vec3Bits*)&b, nd);
         }
         int k = F(int, out, 2816);
         if (k >= 63)
         {
-            while (CallThis<int>(Pb_PointsNext, it, &pt))
+            while (Points_Next(it, 0, (Vec3Bits*)&pt))
                 ;
             return hits;
         }
@@ -3012,7 +3017,7 @@ int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
 
 // === a body's points reset onto its plane (a method at $L_58e290)
 
-extern "C" void Bp_ActivateAll(); KING_ALIAS("_Bp_ActivateAll", "@Points_ActivateAll@8")
+extern "C" void __fastcall MovingItem_CheckFrame(BYTE* s, void*, const float* m, const char* what, int code);
 extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 KING_VAR(char, g_bp67dda8, 67dda8)
 KING_VAR(double, g_bp64b5a0, 64b5a0)
@@ -3055,7 +3060,7 @@ void __fastcall Body_ResetPoints(BYTE* s, void*, DWORD flags)
 {
     if (F(int, s, 1432) > 0)
     {
-        CallThis(Bp_ActivateAll, s);
+        Points_ActivateAll(s, 0);
         if (flags & 6)
         {
             switch (F(int, s, 1672))
@@ -3100,7 +3105,7 @@ void __fastcall Body_ResetPoints(BYTE* s, void*, DWORD flags)
     F(int, s, 1692) = 0;
     F(int, s, 1208) = 0;
     memset(s + 1212, 0, 200);
-    CallThis(FUN_58e7f0, s, s + 1696, &g_bp67dda8, F(int, s, 1432));
+    MovingItem_CheckFrame(s, 0, (const float*)(s + 1696), &g_bp67dda8, F(int, s, 1432));
     F(int, s, 1672) = CallThis<int>((void (*)())F(void**, s, 0)[17], s, s + 1696, s + 1456, s + 1460, s + 1464, flags);
 }
 
@@ -3110,7 +3115,6 @@ void __fastcall Body_ResetPoints(BYTE* s, void*, DWORD flags)
 
 extern "C" void Bn_Decompose(); KING_ALIAS("_Bn_Decompose", "_Matrix_Decompose6FArray")
 extern "C" void Bn_FromPose(); KING_ALIAS("_Bn_FromPose", "_Matrix_FromPose")
-extern "C" void Bn_Lookup(); KING_ALIAS("_Bn_Lookup", "_Obj_Lookup4e5b22")
 KING_VAR(Vec3, g_bnAhead, 702620)
 KING_VAR(double, g_bn64b7a8, 64b7a8)
 KING_VAR(float, g_bn64c300, 64c300)
@@ -3169,7 +3173,7 @@ void __fastcall Body_OntoPlane(BYTE* b, void*, const Vec3* p, const Vec3* n, int
     Matrix_Inverse(&I, &M);
     BYTE out[48];
     CallVirt(b, 72, out, &M, &I, n, &q);
-    BYTE* o = CallC<BYTE*>(Bn_Lookup, F(BYTE*, b, 800), b + 536, out + 36, b + 1132);
+    BYTE* o = (BYTE*)Obj_Lookup4e5b22((int)(F(BYTE*, b, 800)), (int)(b + 536), (int)(out + 36), (char*)(b + 1132));
     if (!o)
     {
         o = F(BYTE*, b, 800);
@@ -3182,10 +3186,10 @@ void __fastcall Body_OntoPlane(BYTE* b, void*, const Vec3* p, const Vec3* n, int
 
 // === the sparks' frame (a method at $L_594400)
 
-extern "C" void Sk_Spawn(); KING_ALIAS("_Sk_Spawn", "@Sparks_Spawn@16")
-extern "C" void Sk_Put(); KING_ALIAS("_Sk_Put", "@FreeList_Put@16")
+extern "C" void __fastcall Sparks_Spawn(BYTE* s, void*, const BYTE* src, unsigned n);
+extern "C" void __fastcall FreeList_Put(BYTE* self, void*, BYTE** item, BYTE** prevNext);
 extern "C" void Sk_Faders(); KING_ALIAS("_Sk_Faders", "_Faders_Step")
-extern "C" void Sk_Post(); KING_ALIAS("_Sk_Post", "@Queue_PostEvent@12")
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg);
 KING_VAR(Vec3, g_skGravity, 6f6638)
 KING_VAR(float, g_sk6508fc, 6508fc)
 KING_VAR(float, g_sk6508f8, 6508f8)
@@ -3214,8 +3218,8 @@ void __fastcall Sparks_Frame(BYTE* s, void*)
             BYTE* q = p;
             p = F(BYTE*, p, 0);
             if (!F(int, q, 120) && rand() * (double)g_sk65096c > g_sk64f338)
-                CallThis(Sk_Spawn, s, q, (int)(rand() * (double)g_sk64c624));
-            CallThis(Sk_Put, s, q, prev);
+                Sparks_Spawn(s, 0, q, (int)(rand() * (double)g_sk64c624));
+            FreeList_Put(s, 0, (BYTE**)q, (BYTE**)prev);
         }
         else
         {
@@ -3251,14 +3255,13 @@ void __fastcall Sparks_Frame(BYTE* s, void*)
     }
     float now = (float)F(double, F(BYTE*, s, 96), 2968);
     CallC(Sk_Faders, now);
-    CallThis(Sk_Post, s, 1);
+    Queue_PostEvent(s, 0, 1);
 }
 
 } // extern "C"
 
 // === a point's contact with a moving body's planes (FUN_5917f0 with its tail $L_59199f)
 
-extern "C" void Pc_Fatal(); KING_ALIAS("_Pc_Fatal", "_World_Fatal")
 extern "C" void Pc_RotBy(); KING_ALIAS("_Pc_RotBy", "_Vec3_RotateBy")
 extern "C" float* __cdecl Vec3_RejectFrom(float* out, float* a, float* b, float* c);
 
@@ -3272,7 +3275,7 @@ int __cdecl Body_PointContact(const float* p, BYTE* b, BYTE* contact, float r)
     Record28 rec;
     TwoVec_Construct((BYTE*)&rec, 0);
     float M[12];
-    CallThis(FUN_57dec0, b, M);
+    SceneObj_Matrix2(b, 0, (Matrix*)M);
     float q[3];
     q[0] = (float)((double)M[0] * p[0] + (double)M[6] * p[2] + (double)M[3] * p[1] + M[9]);
     q[1] = (float)((double)M[1] * p[0] + (double)M[7] * p[2] + (double)M[4] * p[1] + M[10]);
@@ -3301,7 +3304,7 @@ int __cdecl Body_PointContact(const float* p, BYTE* b, BYTE* contact, float r)
             return 0;
     }
     if (!Records_Get(b, 0, &rec, idx))
-        CallC(Pc_Fatal, "checkPMBintersection:: mb->get_col_plane(num) == 0");
+        World_Fatal("checkPMBintersection:: mb->get_col_plane(num) == 0");
     float ty = (float)((double)n[1] * r), tz = (float)((double)n[2] * r);
     float S[3];
     S[0] = (float)((double)n[0] * r + n[4]);
@@ -3315,7 +3318,7 @@ int __cdecl Body_PointContact(const float* p, BYTE* b, BYTE* contact, float r)
     memcpy(c52, o, 12);
     memcpy(c64, nn, 12);
     float W[12];
-    CallThis(FUN_57de90, b, W);
+    SceneObj_Matrix1(b, 0, (Matrix*)W);
     Vec3 w;
     Vec3_SetThis(&w, 0, (float)((double)W[0] * c52[0] + (double)W[6] * c52[2] + (double)W[3] * c52[1] + W[9]),
                  (float)((double)W[1] * c52[0] + (double)W[7] * c52[2] + (double)W[4] * c52[1] + W[10]),
@@ -3334,10 +3337,8 @@ int __cdecl Body_PointContact(const float* p, BYTE* b, BYTE* contact, float r)
 
 // === a moving box's points against another body (FUN_58a020 with its tail $L_58a9fe)
 
-extern "C" void Bx_Get800(); KING_ALIAS("_Bx_Get800", "@SceneObj_Get800@8")
-extern "C" void Bx_Query(); KING_ALIAS("_Bx_Query", "_Query_4e52fc")
-extern "C" void Bx_Out(); KING_ALIAS("_Bx_Out", "_Vec3_OutOfBox")
-extern "C" void Bx_Fatal(); KING_ALIAS("_Bx_Fatal", "_World_Fatal")
+extern "C" int __cdecl Query_4e52fc(void* obj, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
+extern "C" int __cdecl Vec3_OutOfBox(const float* v, float lim);
 KING_VAR(double, g_bx6506b8, 6506b8)
 KING_VAR(double, g_bx64b670, 64b670)
 KING_VAR(double, g_bx64b5a0, 64b5a0)
@@ -3387,11 +3388,11 @@ extern "C" {
 int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int sign)
 {
     __declspec(align(8)) BYTE node[208];
-    CallThis(FUN_5ef5c0, node);
+    Node_Init(node, 0);
     float Wb[12], Mi[12];
-    CallThis(FUN_57de90, b, Wb);
+    SceneObj_Matrix1(b, 0, (Matrix*)Wb);
     Matrix_Inverse((Matrix*)Mi, m);
-    CallThis(Bx_Get800, b);
+    SceneObj_Get800(b, 0);
     float pt[3] = {0, 0, 0};
     int count = 0;
     int r = Points_Next(b, 0, (Vec3Bits*)pt);
@@ -3417,13 +3418,13 @@ int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int si
         {
             float A[12], M1o[12], C[12], Ci[12];
             memcpy(A, o + 692, 48);
-            CallThis(FUN_57de90, o, M1o);
+            SceneObj_Matrix1(o, 0, (Matrix*)M1o);
             Matrix_Multiply((Matrix*)C, (const Matrix*)A, (const Matrix*)M1o);
             Matrix_Inverse((Matrix*)Ci, (const Matrix*)C);
             float lp[3], lq[3];
             Bx_Frame(Ci, p, lp);
             Bx_Frame(Ci, q, lq);
-            int res = CallC<int>(Bx_Query, F(void*, o, 320), lp, lq, node);
+            int res = Query_4e52fc(F(void*, o, 320), (const Vec3Bits*)lp, (const Vec3Bits*)lq, node);
             flag = res;
             int hit = res & 1;
             if (hit)
@@ -3435,22 +3436,22 @@ int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int si
                 Wn[0] = (float)((double)C[3] * nn[1] + (double)C[6] * nn[2] + (double)C[0] * nn[0]);
                 Wn[1] = (float)((double)C[1] * nn[0] + (double)C[4] * nn[1] + (double)C[7] * nn[2]);
                 Wn[2] = (float)((double)C[2] * nn[0] + (double)C[5] * nn[1] + (double)C[8] * nn[2]);
-                if (CallC<int>(Bx_Out, Wp, 10000.0f) || CallC<int>(Bx_Out, nn, 2.0f))
+                if (Vec3_OutOfBox(Wp, 10000.0f) || Vec3_OutOfBox(nn, 2.0f))
                 {
                     float M1b[12], M1o2[12];
-                    CallThis(FUN_57de90, b, M1b);
-                    CallThis(FUN_57de90, o, M1o2);
+                    SceneObj_Matrix1(b, 0, (Matrix*)M1b);
+                    SceneObj_Matrix1(o, 0, (Matrix*)M1o2);
                     char col[1000], d1[1000], d2[2000], all[3000];
                     sprintf(col, &g_bxColFmt, (double)Wp[0], (double)Wp[1], (double)Wp[2], (double)nn[0],
                             (double)nn[1], (double)nn[2], (double)F(float, b, 3268), (double)F(float, o, 3268));
                     Bx_Dump(d1, &g_bx1Fmt, b, &F(float, b, 416), &F(float, b, 428), M1b, 0);
                     Bx_Dump(d2, &g_bx2Fmt, o, &F(float, o, 416), &F(float, o, 428), M1o2, C);
                     sprintf(all, &g_bxAllFmt, col, d1, d2);
-                    CallC(Bx_Fatal, all);
+                    World_Fatal(all);
                 }
                 memcpy(node + 52, Wp, 12);
                 memcpy(node + 64, Wn, 12);
-                id = CallC<int>(FUN_57c9a0, sign > 0 ? o : b);
+                id = Id_Same((int)(sign > 0 ? o : b));
                 F(int, node, 116) = id;
             }
             else if (F(int, o, 392) == 2 && Body_SegmentContact((const Vec3*)p, (const Vec3*)q, (int)o, node,
@@ -3481,7 +3482,7 @@ int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int si
                 memcpy(b + 5144 + r * 208, node, 208);
             }
             else
-                F(int, c, 1536 + 4 * n) = CallC<int>(FUN_57c9a0, b);
+                F(int, c, 1536 + 4 * n) = Id_Same((int)b);
             F(int, c, 3076 + 4 * n) = r - 1;
             const float* e = &F(float, node, 88);
             double ax = (double)e[0] - p[0], ay = (double)e[1] - p[1], az = (double)e[2] - p[2];
@@ -3517,8 +3518,8 @@ int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int si
 
 // === a body's switch between lying and standing (FUN_590520 with its tails $L_590786, $L_590791)
 
-extern "C" void Ls_Mode(); KING_ALIAS("_Ls_Mode", "@Body_SetContactMode@12")
-extern "C" void Ls_Reach(); KING_ALIAS("_Ls_Reach", "@Body_AttachedInReach@8")
+extern "C" void __fastcall Body_SetContactMode(BYTE* s, void*, int mode);
+extern "C" BYTE* __fastcall Body_AttachedInReach(BYTE* self, void*);
 KING_VAR(float, g_ls6969a0, 6969a0)
 KING_VAR(float, g_ls64f768, 64f768)
 KING_VAR(float, g_ls64f730, 64f730)
@@ -3578,11 +3579,11 @@ void __fastcall Body_UpdateLying(BYTE* s)
     if (e == 3)
     {
         F(int, s, 3588) = 1;
-        CallThis(Ls_Mode, s, 0);
+        Body_SetContactMode(s, 0, 0);
         ok = !F(int, s, 3588);
     }
     else
-        ok = !CallThis<int>(Ls_Reach, s);
+        ok = !(int)Body_AttachedInReach(s, 0);
     if (!ok)
         return;
     e = F(int, s, 3980);
@@ -3605,7 +3606,6 @@ extern "C" int __cdecl St_Query(BYTE* skip, void* obj, const void* p, const void
 extern "C" int __fastcall St_PointsNext(BYTE* self, void*, void* out); KING_ALIAS("@St_PointsNext@12", "@Points_Next@12")
 extern "C" BYTE* __cdecl St_MovingOf(BYTE* o); KING_ALIAS("_St_MovingOf", "_Moving_Of")
 extern "C" double __cdecl St_FrameTime(); KING_ALIAS("_St_FrameTime", "_Game_FrameTime")
-extern "C" void St_MulA(); KING_ALIAS("_St_MulA", "@Vec3_MulAssign@16")
 KING_VAR(double, g_st64d318, 64d318)
 KING_VAR(double, g_st64b958, 64b958)
 KING_VAR(double, g_st650810, 650810)
@@ -3761,7 +3761,7 @@ void __fastcall MovingBody_Settle(BYTE* s, void*, int)
             V(40) = (float)x87_pow(*(double*)bits, t + t);
             if (V(96) < g_st64c250)
             {
-                CallThis(St_MulA, s + 416, fr + 72, V(40));
+                Vec3_MulAssign((Vec3*)(s + 416), 0, (Vec3*)(fr + 72), V(40));
                 CallVirt(s, 144, s + 416, &g_st67df24);
             }
         }

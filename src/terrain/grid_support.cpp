@@ -12,20 +12,25 @@
 typedef char AsmLabel[1];
 typedef float Floats[1];
 
-extern "C" void FUN_606750(); KING_ALIAS("_FUN_606750", "@GridEdge_Destruct@8")
+extern "C" void __fastcall GridEdge_Destruct(BYTE* self,void*);
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report (code, format, file, line, date)
+extern "C" int __cdecl Grd_DxErrorName(DWORD hr, char* buf, unsigned size);
 extern "C" void FUN_60ab70(); KING_ALIAS("_FUN_60ab70", "_Grd_DxErrorName")
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
+extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE* self, void*, BYTE* node);
 extern "C" void FUN_60f690(); KING_ALIAS("_FUN_60f690", "@MarineQueue_RemoveNode@12")
+extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE* self,void*,BYTE* node);
 extern "C" void FUN_6136f0(); KING_ALIAS("_FUN_6136f0", "@MarineQueue_RemoveLink@12")
-extern "C" void FUN_608c70(); KING_ALIAS("_FUN_608c70", "@TGrid_MakeNode@16")
-extern "C" void FUN_613500(); KING_ALIAS("_FUN_613500", "@MarineQueue_Init@8")
+extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, const DWORD* xy);
+extern "C" BYTE* __fastcall MarineQueue_Init(BYTE* self, void*);
+extern "C" BYTE* __fastcall GridMesh_CreateEdge(BYTE* self,void*,BYTE* first,BYTE* second);
 extern "C" void FUN_6064c0(); KING_ALIAS("_FUN_6064c0", "@GridMesh_CreateEdge@16")
 KING_VAR(AsmLabel, s_684a84, 684a84)
 KING_VAR(AsmLabel, s_66d9c4, 66d9c4)
 KING_VAR(AsmLabel, s_6849fc, 6849fc)
-extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
-extern "C" void FUN_613790(); KING_ALIAS("_FUN_613790", "@MarineQueue_TopWorkItem@8")
+extern "C" void __fastcall Shell_Nop(void*, int);
+extern "C" BYTE* __fastcall MarineQueue_TopWorkItem(BYTE* self,void*);
+extern "C" void __cdecl GridTree_RemoveEdge(BYTE* e, BYTE* g);
 extern "C" void FUN_609de0(); KING_ALIAS("_FUN_609de0", "_GridTree_RemoveEdge")
 
 KING_VAR(AsmLabel, g_vtbl652ef4, 652ef4)
@@ -48,7 +53,7 @@ int __fastcall Stack_Top(BYTE* self, void*)
 // [FUN_606730]
 BYTE* __fastcall Grid606750_Delete(BYTE* self, void*, int flags)
 {
-    CallThis(FUN_606750, self);
+    GridEdge_Destruct(self, 0);
     if (flags & 1)
         operator delete(self);
     return self;
@@ -256,7 +261,7 @@ void __fastcall GridTask_Free(BYTE* self, void*)
     }
     BYTE* o = F(BYTE*, self, 16);
     if (o) {
-        CallThis(FUN_50d190, o);
+        Shell_Nop(o, 0);
         operator delete(o);
         F(void*, self, 16) = 0;
     }
@@ -266,8 +271,8 @@ void __fastcall GridTask_Free(BYTE* self, void*)
 void __fastcall Grid_DrainQueue(BYTE* self, void*)
 {
     BYTE* n;
-    while ((n = CallThis<BYTE*>(FUN_613790, F(BYTE*, self, 32))) != 0)
-        CallC(FUN_609de0, n, self);
+    while ((n = MarineQueue_TopWorkItem(F(BYTE*, self, 32), 0)) != 0)
+        GridTree_RemoveEdge(n, self);
 }
 
 }
@@ -300,7 +305,7 @@ void __cdecl Grd_ReportError(int hr, const char* fmt, ...)
     if (!hr)
         return;
     err[0] = 0;
-    CallC(FUN_60ab70, hr, err, 255);
+    Grd_DxErrorName(hr, err, 255);
     wsprintfA(buf, (const char*)s_684a84, err);
     va_list ap;
     va_start(ap, fmt);
@@ -321,7 +326,7 @@ void __fastcall Grid_RemoveNodeA(BYTE* self, void*, BYTE* node)
     if (node == F(BYTE*, self, 52))
         F(BYTE*, self, 52) = Ring_After(F(BYTE**, self, 36), node);
     F(short, self, 42)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 36), node);
+    MarineQueue_RemoveNode(F(BYTE*, self, 36), 0, node);
 }
 
 // [FUN_608f20] removes the edge e from the ring at +32, keeping the cursor (+56)
@@ -348,7 +353,7 @@ void __fastcall Grid_RemoveEdge(BYTE* self, void*, BYTE* e)
         F(int, F(BYTE*, F(BYTE*, b, 0), 12), 72) = 0;
         F(int, F(BYTE*, F(BYTE*, b, 4), 12), 72) = 0;
     }
-    CallThis(FUN_6136f0, F(BYTE*, self, 32), e);
+    MarineQueue_RemoveLink(F(BYTE*, self, 32), 0, e);
 }
 
 // [FUN_609d60] adds a vertex for the point p (two words): its 40-byte record
@@ -356,7 +361,7 @@ void __fastcall Grid_RemoveEdge(BYTE* self, void*, BYTE* e)
 WORD* __fastcall Grid_AddVertex(BYTE* self, void*, const DWORD* p)
 {
     BYTE local[40];
-    const BYTE* rec = CallThis<const BYTE*>(FUN_608c70, F(BYTE*, self, 4), local, p);
+    const BYTE* rec = (const BYTE*)TGrid_MakeNode(F(BYTE*, self, 4), 0, (float*)local, p);
     WORD n = F(WORD, self, 40);
     memcpy(F(BYTE*, self, 16) + n * 40, rec, 40);
     BYTE* slot = F(BYTE*, self, 12) + n * 16;
@@ -381,9 +386,9 @@ void __fastcall Grid_Reset(BYTE* self, void*, int n, int m)
     F(int, self, 24) = 0;
     F(int, self, 28) = 0;
     BYTE* o = (BYTE*)operator new(12);
-    F(BYTE*, self, 36) = o ? CallThis<BYTE*>(FUN_613500, o) : 0;
+    F(BYTE*, self, 36) = o ? MarineQueue_Init(o, 0) : 0;
     o = (BYTE*)operator new(12);
-    BYTE* r = o ? CallThis<BYTE*>(FUN_613500, o) : 0;
+    BYTE* r = o ? MarineQueue_Init(o, 0) : 0;
     F(WORD, self, 40) = 0;
     F(WORD, self, 42) = 0;
     F(BYTE*, self, 32) = r;
@@ -515,9 +520,12 @@ void __stdcall Grd_JoinBranches(BYTE* a)
 }
 
 extern "C" void FUN_60f690(); KING_ALIAS("_FUN_60f690", "@MarineQueue_RemoveNode@12")    // ring list: remove (item)
+extern "C" BYTE* __fastcall GridMesh_CreateTriangle(BYTE* self,void*,DWORD a,DWORD b,DWORD c,DWORD depth);
 extern "C" void FUN_606330(); KING_ALIAS("_FUN_606330", "@GridMesh_CreateTriangle@24")    // grid: new triangle
 extern "C" void FUN_6136f0(); KING_ALIAS("_FUN_6136f0", "@MarineQueue_RemoveLink@12")
+extern "C" void __fastcall Grid_ResetVtables(BYTE* self, void*);
 extern "C" void FUN_609980(); KING_ALIAS("_FUN_609980", "@Grid_ResetVtables@8")
+extern "C" BYTE* __fastcall Btr_Delete(BYTE* self, void*, int flags);
 extern "C" void FUN_60bda0(); KING_ALIAS("_FUN_60bda0", "@Btr_Delete@12")    // tree node: deleting destructor (flag)
 
 // the item after x in the ring list l (0 at the end)
@@ -553,12 +561,12 @@ void __fastcall Grid_MergeTriangles(BYTE* self, void*, BYTE* a, BYTE* b, BYTE** 
     if (a == F(BYTE*, self, 40))
         F(BYTE*, self, 40) = Ring_Next(F(BYTE**, self, 32), a);
     F(WORD, self, 38)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 32), a);
+    MarineQueue_RemoveNode(F(BYTE*, self, 32), 0, a);
     if (b == F(BYTE*, self, 40))
         F(BYTE*, self, 40) = Ring_Next(F(BYTE**, self, 32), b);
     F(WORD, self, 38)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 32), b);
-    BYTE* n = CallThis<BYTE*>(FUN_606330, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
+    MarineQueue_RemoveNode(F(BYTE*, self, 32), 0, b);
+    BYTE* n = GridMesh_CreateTriangle(self, 0, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
     F(BYTE*, n, 44) = F(BYTE*, a, 52);
     F(BYTE*, n, 48) = F(BYTE*, a, 44);
     F(BYTE*, n, 52) = F(BYTE*, b, 44);
@@ -605,7 +613,7 @@ void __fastcall Grid_RemoveCell(BYTE* self, void*, BYTE* s)
     if (s == F(BYTE*, self, 52))
         F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), s);
     F(WORD, self, 42)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 36), s);
+    MarineQueue_RemoveNode(F(BYTE*, self, 36), 0, s);
     BYTE* x = F(BYTE*, s, 60);
     if (x) {
         if (F(BYTE*, x, 60) == s)
@@ -651,10 +659,10 @@ void __fastcall Grid_RemoveCell(BYTE* self, void*, BYTE* s)
             F(int, F(BYTE*, q[0], 12), 72) = 0;
             F(int, F(BYTE*, F(BYTE**, e, 12)[1], 12), 72) = 0;
         }
-        CallThis(FUN_6136f0, F(BYTE*, self, 32), e);
+        MarineQueue_RemoveLink(F(BYTE*, self, 32), 0, e);
         BYTE* e2 = F(BYTE*, s, 72);
         if (e2) {
-            CallThis(FUN_609980, e2);
+            Grid_ResetVtables(e2, 0);
             operator delete(e2);
         }
     }
@@ -676,18 +684,20 @@ void __fastcall Grid_RemoveCell(BYTE* self, void*, BYTE* s)
         Grd_ReportError((int)2289444626u, " File = %s, Line = #%ld, Date = %s ",
                         "C:\\Nek\\VRAPPLVS\\terrain\\btr.h", 35, "Jan 16 2003");
     if (F(BYTE*, parent, 0))
-        CallThis(FUN_60bda0, F(BYTE*, parent, 0), 1);
+        Btr_Delete(F(BYTE*, parent, 0), 0, 1);
     if (F(BYTE*, parent, 4))
-        CallThis(FUN_60bda0, F(BYTE*, parent, 4), 1);
+        Btr_Delete(F(BYTE*, parent, 4), 0, 1);
     operator delete(parent);
 }
 
 }
 
+extern "C" BYTE* __fastcall Grid_NewCell(BYTE* s, void*, WORD* a, WORD* b, WORD* c, unsigned level);
 extern "C" void FUN_608530(); KING_ALIAS("_FUN_608530", "@Grid_NewCell@24")    // grid: new cell (4 arguments)
+extern "C" void __cdecl Ring_Unlink(BYTE** node);
 extern "C" void FUN_60a440(); KING_ALIAS("_FUN_60a440", "_Ring_Unlink")    // ring list: unlink
-extern "C" void FUN_60f1b0(); KING_ALIAS("_FUN_60f1b0", "@MarineTask_ClearRegistration@8")
-extern "C" void FUN_60cd90(); KING_ALIAS("_FUN_60cd90", "@MarineVertex_Delete@12")    // grid point: deleting destructor (flag)
+extern "C" BYTE* __fastcall MarineTask_ClearRegistration(BYTE* self, void*);
+extern "C" BYTE* __fastcall MarineVertex_Delete(BYTE* self, void*, DWORD flags);
 extern "C" void* __cdecl memcpy(void* d, const void* s, size_t n);
 extern "C" void* __cdecl malloc(size_t n);
 typedef BYTE* FreeRing;
@@ -713,11 +723,11 @@ static void Grid_RemovePoint(BYTE* self, WORD k)
         } else {
             if ((BYTE*)l == e)
                 F(BYTE*, self, 44) = F(BYTE*, e, 0);
-            CallC(FUN_60a440, e);
+            Ring_Unlink((BYTE**)e);
         }
         BYTE* e2 = F(BYTE*, F(BYTE*, self, 12) + k * 16, 4);
         if (e2) {
-            CallThis(FUN_60f1b0, e2);
+            MarineTask_ClearRegistration(e2, 0);
             operator delete(e2);
         }
     }
@@ -743,12 +753,12 @@ void __fastcall Grid_MergeCells(BYTE* self, void*, BYTE* a, BYTE* b, BYTE** out)
     if (a == F(BYTE*, self, 52))
         F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), a);
     F(WORD, self, 42)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 36), a);
+    MarineQueue_RemoveNode(F(BYTE*, self, 36), 0, a);
     if (b == F(BYTE*, self, 52))
         F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), b);
     F(WORD, self, 42)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 36), b);
-    BYTE* n = CallThis<BYTE*>(FUN_608530, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
+    MarineQueue_RemoveNode(F(BYTE*, self, 36), 0, b);
+    BYTE* n = Grid_NewCell(self, 0, (WORD*)(F(int, a, 24)), (WORD*)(F(int, a, 16)), (WORD*)(F(int, b, 16)), F(int, a, 36) - 1);
     F(BYTE*, n, 60) = F(BYTE*, a, 68);
     F(BYTE*, n, 64) = F(BYTE*, a, 60);
     F(BYTE*, n, 68) = F(BYTE*, b, 60);
@@ -832,7 +842,7 @@ void __fastcall Grid_RemoveUnusedPoints(BYTE* self, void*)
         F(WORD, self, 40)--;
         Grid_RemovePoint(self, k);
         if (pt)
-            CallThis(FUN_60cd90, pt, 1);
+            MarineVertex_Delete(pt, 0, 1);
         BYTE** head = (BYTE**)g_unusedPoints;
         if (head) {
             g_unusedCount--;
@@ -957,7 +967,9 @@ extern "C" BYTE* __fastcall Gsp608010_DeletingDestructor(BYTE* s, void*, int fla
 // ---------------------------------------------------------------------------
 // Small static setup and teardown procs, destructors and thunks.
 
+extern "C" void __cdecl Tables_InitSin();
 extern "C" void FUN_60ba20(); KING_ALIAS("_FUN_60ba20", "_Tables_InitSin")
+extern "C" void __cdecl Tables_InitCos();
 extern "C" void FUN_60bab0(); KING_ALIAS("_FUN_60bab0", "_Tables_InitCos")
 KING_VAR(float, g_q47_64c264, 64c264)
 KING_VAR(float, g_q47_652f24, 652f24)
@@ -976,8 +988,8 @@ extern "C" void __cdecl Tables_InitLinear(void)
 // [FUN_60bb20] fills the sine, cosine and linear tables
 extern "C" void __cdecl Tables_InitAll(void)
 {
-    CallC(FUN_60ba20);
-    CallC(FUN_60bab0);
+    Tables_InitSin();
+    Tables_InitCos();
     Tables_InitLinear();
 }
 
@@ -1363,15 +1375,16 @@ int __cdecl Grd_DxErrorName(DWORD hr, char* buf, unsigned size)
 KING_VAR(int, g_gsDepth7241b8, 7241b8)       // the count of the triangle stack
 KING_VAR(AsmLabel, g_gsStack7241bc, 7241bc)   // the stack, from index 1
 KING_VAR(float, g_gsHalf64c258, 64c258)
-extern "C" void FUN_60f4f0(); KING_ALIAS("_FUN_60f4f0", "@MarineQueue_SetNodePriority@16")
+extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE* self, void*, BYTE* node, DWORD priorityBits);
 extern "C" void FUN_606440(); KING_ALIAS("_FUN_606440", "@GridMesh_RemoveEdge@12")
+extern "C" BYTE* __fastcall Grid606750_Delete(BYTE* self, void*, int flags);
 extern "C" void FUN_606730(); KING_ALIAS("_FUN_606730", "@Grid606750_Delete@12")
-extern "C" void FUN_6062c0(); KING_ALIAS("_FUN_6062c0", "@GridMesh_RemoveTriangle@12")
-extern "C" void FUN_606400(); KING_ALIAS("_FUN_606400", "@GridMesh_CreatePoint@12")
+extern "C" BYTE* __fastcall GridMesh_RemoveTriangle(BYTE* self,void*,BYTE* triangle);
+extern "C" BYTE* __fastcall GridMesh_CreatePoint(BYTE* self,void*,const DWORD* point);
 extern "C" void FUN_606330(); KING_ALIAS("_FUN_606330", "@GridMesh_CreateTriangle@24")
-extern "C" void FUN_606100(); KING_ALIAS("_FUN_606100", "@GridEdge_Construct@8")
-extern "C" void FUN_606170(); KING_ALIAS("_FUN_606170", "@GridEdge_SetPairs@16")
-extern "C" void FUN_60f900(); KING_ALIAS("_FUN_60f900", "@MarineQueue_InsertEdge@12")
+extern "C" BYTE* __fastcall GridEdge_Construct(BYTE* self,void*);
+extern "C" DWORD __fastcall GridEdge_SetPairs(BYTE* self,void*,BYTE* first,BYTE* second);
+extern "C" DWORD __fastcall MarineQueue_InsertEdge(BYTE* self, void*, BYTE* edge);
 extern "C" void FUN_6064c0(); KING_ALIAS("_FUN_6064c0", "@GridMesh_CreateEdge@16")
 
 static BYTE** Gs_Stack()
@@ -1405,14 +1418,14 @@ static void Gs_DropEdge(BYTE* mesh, BYTE* e, bool checked)
             F(BYTE*, F(BYTE*, q[1], 12), 56) = 0;
     }
     CallThis(FUN_606440, mesh, e);
-    CallThis(FUN_606730, e, 1);
+    Grid606750_Delete(e, 0, 1);
 }
 
 // the two halves of triangle t at point p: (+20, p, +16) and (+24, p, +20), one level deeper
 static void Gs_Halves(BYTE* mesh, BYTE* t, BYTE* p, BYTE** a, BYTE** b)
 {
-    *a = CallThis<BYTE*>(FUN_606330, mesh, F(BYTE*, t, 20), p, F(BYTE*, t, 16), F(int, t, 36) + 1);
-    *b = CallThis<BYTE*>(FUN_606330, mesh, F(BYTE*, t, 24), p, F(BYTE*, t, 20), F(int, t, 36) + 1);
+    *a = GridMesh_CreateTriangle(mesh, 0, (DWORD)(F(BYTE*, t, 20)), (DWORD)p, (DWORD)(F(BYTE*, t, 16)), F(int, t, 36) + 1);
+    *b = GridMesh_CreateTriangle(mesh, 0, (DWORD)(F(BYTE*, t, 24)), (DWORD)p, (DWORD)(F(BYTE*, t, 20)), F(int, t, 36) + 1);
 }
 
 // the neighbor n of old (if any) now has neighbor nu instead (at +44, else at off)
@@ -1463,7 +1476,7 @@ extern "C" {
 void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
 {
     if (F(DWORD, e, 16) >= CallVirt<DWORD>(F(BYTE*, mesh, 4), 16)) {
-        CallThis(FUN_60f4f0, F(BYTE*, mesh, 32), F(BYTE*, e, 12), 0);
+        MarineQueue_SetNodePriority(F(BYTE*, mesh, 32), 0, F(BYTE*, e, 12), 0);
         return;
     }
     BYTE* t = F(BYTE*, e, 12);
@@ -1489,13 +1502,13 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
             pt[1] = Gs_Mid(F(DWORD, F(BYTE*, t1, 16), 4), F(DWORD, F(BYTE*, t1, 24), 4));
             if (BYTE* e1 = F(BYTE*, t1, 56))
                 Gs_DropEdge(mesh, e1, false);
-            CallThis(FUN_6062c0, mesh, t1);
-            BYTE* p = CallThis<BYTE*>(FUN_606400, mesh, pt);
+            GridMesh_RemoveTriangle(mesh, 0, t1);
+            BYTE* p = GridMesh_CreatePoint(mesh, 0, (const DWORD*)pt);
             BYTE *a, *b, *c, *d;
             Gs_Halves(mesh, t1, p, &a, &b);
             if (BYTE* e2 = F(BYTE*, t2, 56))
                 Gs_DropEdge(mesh, e2, false);
-            CallThis(FUN_6062c0, mesh, t2);
+            GridMesh_RemoveTriangle(mesh, 0, t2);
             Gs_Halves(mesh, t2, p, &c, &d);
             F(BYTE*, a, 52) = d;
             F(BYTE*, d, 48) = a;
@@ -1524,10 +1537,10 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
                 BYTE* q2 = F(BYTE*, t2, 32);
                 BYTE* q1 = F(BYTE*, t1, 32);
                 BYTE* g = (BYTE*)operator new(108);
-                g = g ? CallThis<BYTE*>(FUN_606100, g) : 0;
-                if (!CallThis<int>(FUN_606170, g, q1, q2)) {
+                g = g ? GridEdge_Construct(g, 0) : 0;
+                if (!(int)GridEdge_SetPairs(g, 0, q1, q2)) {
                     if (g)
-                        CallThis(FUN_606730, g, 1);
+                        Grid606750_Delete(g, 0, 1);
                 } else {
                     if (q1) {
                         F(BYTE*, F(BYTE*, F(BYTE*, q1, 0), 12), 56) = g;
@@ -1546,7 +1559,7 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
                     else
                         F(float, g, 72) = (float)fn(pricer, F(int, g, 20), F(int, g, 24), F(int, g, 28), g + 16,
                                                     0, 0, 0, 0);
-                    CallThis(FUN_60f900, F(BYTE*, mesh, 28), g);
+                    MarineQueue_InsertEdge(F(BYTE*, mesh, 28), 0, g);
                     F(short, mesh, 52)++;
                 }
                 CallVirt(t1, 0, 1);
@@ -1567,8 +1580,8 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
         pt[1] = y;
         if (BYTE* e1 = F(BYTE*, s, 56))
             Gs_DropEdge(mesh, e1, true);
-        CallThis(FUN_6062c0, mesh, s);
-        BYTE* p = CallThis<BYTE*>(FUN_606400, mesh, pt);
+        GridMesh_RemoveTriangle(mesh, 0, s);
+        BYTE* p = GridMesh_CreatePoint(mesh, 0, (const DWORD*)pt);
         BYTE *a, *b;
         Gs_Halves(mesh, s, p, &a, &b);
         F(BYTE*, a, 48) = b;
@@ -1594,7 +1607,7 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
         F(BYTE*, b, 32) = n1;
         F(BYTE*, a, 32) = n0;
         if (g_gsDepth7241b8 == 0) {
-            CallThis(FUN_6064c0, mesh, F(BYTE*, s, 32), 0);
+            GridMesh_CreateEdge(mesh, 0, F(BYTE*, s, 32), 0);
             if (s)
                 CallVirt(s, 0, 1);
             return;
@@ -1611,6 +1624,7 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
 // === removing an edge from the grid mesh (FUN_606760)
 
 extern "C" void __fastcall GridBranch_Destruct(BYTE* self, void*);     // grid_topology.cpp
+extern "C" void __fastcall Grid_MergeFour(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c, BYTE* d, BYTE** n1, BYTE** n2);
 extern "C" void FUN_606d50(); KING_ALIAS("_FUN_606d50", "@Grid_MergeFour@32")    // merges the four triangles around an inner edge (a0, a1, b0, b1, &out a, &out b)
 
 // deletes the two branches of pair p and makes node its triangle
@@ -1645,19 +1659,18 @@ void __cdecl GridMesh_RemoveEdge(BYTE* e, BYTE* m)
         F(int, F(BYTE*, b[0], 12), 56) = 0;
         F(int, F(BYTE*, b[1], 12), 56) = 0;
     }
-    CallThis(FUN_6136f0, F(BYTE*, m, 28), e);
+    MarineQueue_RemoveLink(F(BYTE*, m, 28), 0, e);
     BYTE* r1 = 0;
     BYTE* r2;
     if (!b)
         Grid_MergeTriangles(m, 0, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), &r2);
     else
-        CallThis(FUN_606d50, m, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), F(BYTE*, b[0], 12), F(BYTE*, b[1], 12), &r2,
-                 &r1);
+        Grid_MergeFour(m, 0, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), F(BYTE*, b[0], 12), F(BYTE*, b[1], 12), &r2, &r1);
     Gr_ResetPair(F(BYTE**, e, 8), r2);
     if (F(BYTE**, e, 12))
         Gr_ResetPair(F(BYTE**, e, 12), r1);
     if (e) {
-        CallThis(FUN_606750, e);
+        GridEdge_Destruct(e, 0);
         operator delete(e);
     }
     BYTE* n = r2;
@@ -1696,7 +1709,7 @@ void __cdecl GridMesh_RemoveEdge(BYTE* e, BYTE* m)
                     make = true;
             }
             if (make)
-                CallThis(FUN_6064c0, m, (BYTE*)p, x);
+                GridMesh_CreateEdge(m, 0, (BYTE*)p, x);
         }
     }
     if (r1)
@@ -1707,7 +1720,9 @@ void __cdecl GridMesh_RemoveEdge(BYTE* e, BYTE* m)
 
 // === removing an edge from the grid tree (FUN_609de0)
 
+extern "C" void __fastcall Grid_MergeCells(BYTE* self, void*, BYTE* a, BYTE* b, BYTE** out);
 extern "C" void FUN_60a1c0(); KING_ALIAS("_FUN_60a1c0", "@Grid_MergeCells@20")
+extern "C" void __fastcall Grid_MergeFourCells(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c, BYTE* d, BYTE** n1, BYTE** n2);
 extern "C" void FUN_60a460(); KING_ALIAS("_FUN_60a460", "@Grid_MergeFourCells@32")    // merges the four cells around an inner edge (a0, a1, b0, b1, &out a, &out b)
 KING_VAR(AsmLabel, s_gt684a44, 684a44)
 
@@ -1743,14 +1758,13 @@ void __cdecl GridTree_RemoveEdge(BYTE* e, BYTE* g)
         F(int, F(BYTE*, b[0], 12), 72) = 0;
         F(int, F(BYTE*, b[1], 12), 72) = 0;
     }
-    CallThis(FUN_6136f0, F(BYTE*, g, 32), e);
+    MarineQueue_RemoveLink(F(BYTE*, g, 32), 0, e);
     BYTE* r1 = 0;
     BYTE* r2;
     if (!b)
-        CallThis(FUN_60a1c0, g, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), &r2);
+        Grid_MergeCells(g, 0, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), &r2);
     else
-        CallThis(FUN_60a460, g, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), F(BYTE*, b[0], 12), F(BYTE*, b[1], 12), &r2,
-                 &r1);
+        Grid_MergeFourCells(g, 0, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), F(BYTE*, b[0], 12), F(BYTE*, b[1], 12), &r2, &r1);
     Gt_ResetPair(F(BYTE**, e, 8), r2);
     if (F(BYTE**, e, 12))
         Gt_ResetPair(F(BYTE**, e, 12), r1);
@@ -1803,7 +1817,7 @@ static void Gm_Unlink(BYTE* self, BYTE* a)
     if (a == F(BYTE*, self, 40))
         F(BYTE*, self, 40) = Ring_Next(F(BYTE**, self, 32), a);
     F(WORD, self, 38)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 32), a);
+    MarineQueue_RemoveNode(F(BYTE*, self, 32), 0, a);
 }
 
 extern "C" {
@@ -1816,8 +1830,8 @@ void __fastcall Grid_MergeFour(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c, BYT
     Gm_Unlink(self, b);
     Gm_Unlink(self, c);
     Gm_Unlink(self, d);
-    BYTE* x = CallThis<BYTE*>(FUN_606330, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
-    BYTE* y = CallThis<BYTE*>(FUN_606330, self, F(int, c, 24), F(int, c, 16), F(int, d, 16), F(int, a, 36) - 1);
+    BYTE* x = GridMesh_CreateTriangle(self, 0, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
+    BYTE* y = GridMesh_CreateTriangle(self, 0, F(int, c, 24), F(int, c, 16), F(int, d, 16), F(int, a, 36) - 1);
     Relink3(F(BYTE*, a, 44), a, x);
     Relink3(F(BYTE*, b, 44), b, x);
     Relink3(F(BYTE*, c, 44), c, y);
@@ -1858,7 +1872,7 @@ void __fastcall Grid_MergeFour(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c, BYT
 
 extern "C" void FUN_6072b0(); KING_ALIAS("_FUN_6072b0", "_Grid_DeepestLevel")
 extern "C" void FUN_608460(); KING_ALIAS("_FUN_608460", "@Point_InWedge@32")
-extern "C" void FUN_6097d0(); KING_ALIAS("_FUN_6097d0", "@GridCamera_NodePriority@12")
+extern "C" double __fastcall GridCamera_NodePriority(BYTE* s,void*,BYTE* node);
 extern "C" void FUN_60c120(); KING_ALIAS("_FUN_60c120", "@Circle_Outside@16")
 extern "C" void FUN_613310(); KING_ALIAS("_FUN_613310", "@MarineQueue_SetDeferredPriority@16")
 extern "C" void FUN_6135f0(); KING_ALIAS("_FUN_6135f0", "@MarineQueue_SetWorkPriority@16")
@@ -1927,11 +1941,11 @@ void __fastcall Grid_RefreshPriorities(BYTE* s)
         BYTE* cam = F(BYTE*, s, 4);
         double pri;
         if (F(int, c, 12)) {
-            float p1 = (float)CallThis<double>(FUN_6097d0, cam, c + 16);
-            double p2 = c + 60 ? CallThis<double>(FUN_6097d0, cam, c + 60) : 0.0;
+            float p1 = (float)GridCamera_NodePriority(cam, 0, c + 16);
+            double p2 = c + 60 ? GridCamera_NodePriority(cam, 0, c + 60) : 0.0;
             pri = p1 > p2 ? p1 : p2;
         } else {
-            pri = CallThis<double>(FUN_6097d0, F(BYTE*, s, 4), c + 16);
+            pri = GridCamera_NodePriority(F(BYTE*, s, 4), 0, c + 16);
             if (!(pri > g_q47_64c264))
                 pri = g_q47_64c264;
         }
@@ -1949,9 +1963,8 @@ void __fastcall Grid_RefreshPriorities(BYTE* s)
 
 // === adding a grid point with its transition (FUN_608b40)
 
-extern "C" void Ga_MakeNode(); KING_ALIAS("_Ga_MakeNode", "@TGrid_MakeNode@16")
-extern "C" void Ga_Snapshot(); KING_ALIAS("_Ga_Snapshot", "@MarineGeometry_Snapshot@16")
-extern "C" void Ga_TransitionCreate(); KING_ALIAS("_Ga_TransitionCreate", "@MarineTransition_Create@32")
+extern "C" DWORD* __fastcall MarineGeometry_Snapshot(BYTE* self, void*, DWORD* out, BYTE* registration);
+extern "C" BYTE* __fastcall MarineTransition_Create(BYTE* self, void*, DWORD time, BYTE* registration, const DWORD* source, const DWORD* target, unsigned type, BYTE* geometry);
 
 extern "C" {
 
@@ -1960,7 +1973,7 @@ extern "C" {
 WORD* __fastcall Grid_AddPoint(BYTE* s, void*, const DWORD* xy, int a, int b)
 {
     BYTE node[40];
-    BYTE* n = CallThis<BYTE*>(Ga_MakeNode, F(BYTE*, s, 4), node, xy);
+    BYTE* n = (BYTE*)TGrid_MakeNode(F(BYTE*, s, 4), 0, (float*)node, xy);
     memcpy(F(BYTE*, s, 16) + F(WORD, s, 40) * 40, n, 40);
     WORD k = F(WORD, s, 40);
     BYTE* e = F(BYTE*, s, 12) + k * 16;
@@ -1976,8 +1989,8 @@ WORD* __fastcall Grid_AddPoint(BYTE* s, void*, const DWORD* xy, int a, int b)
     BYTE* t = (BYTE*)operator new(104);
     if (t) {
         BYTE snap[40];
-        int sn = CallThis<int>(Ga_Snapshot, s, snap, p);
-        t = CallThis<BYTE*>(Ga_TransitionCreate, t, F(int, s, 48), e, a, sn, b, s);
+        int sn = (int)MarineGeometry_Snapshot(s, 0, (DWORD*)snap, (BYTE*)p);
+        t = MarineTransition_Create(t, 0, F(int, s, 48), e, (const DWORD*)a, (const DWORD*)sn, b, s);
     }
     BYTE* r = F(BYTE*, s, 44);
     if (!r)
@@ -2001,7 +2014,7 @@ static void Gc_Unlink(BYTE* self, BYTE* a)
     if (a == F(BYTE*, self, 52))
         F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), a);
     F(WORD, self, 42)--;
-    CallThis(FUN_60f690, F(BYTE*, self, 36), a);
+    MarineQueue_RemoveNode(F(BYTE*, self, 36), 0, a);
 }
 
 // repoints the neighbour link of x that names from to to (+60, +68, else +64)
@@ -2027,8 +2040,8 @@ void __fastcall Grid_MergeFourCells(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c
     Gc_Unlink(self, b);
     Gc_Unlink(self, c);
     Gc_Unlink(self, d);
-    BYTE* x = CallThis<BYTE*>(FUN_608530, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
-    BYTE* y = CallThis<BYTE*>(FUN_608530, self, F(int, c, 24), F(int, c, 16), F(int, d, 16), F(int, a, 36) - 1);
+    BYTE* x = Grid_NewCell(self, 0, (WORD*)(F(int, a, 24)), (WORD*)(F(int, a, 16)), (WORD*)(F(int, b, 16)), F(int, a, 36) - 1);
+    BYTE* y = Grid_NewCell(self, 0, (WORD*)(F(int, c, 24)), (WORD*)(F(int, c, 16)), (WORD*)(F(int, d, 16)), F(int, a, 36) - 1);
     Gc_Relink(F(BYTE*, a, 60), a, x);
     Gc_Relink(F(BYTE*, b, 60), b, x);
     Gc_Relink(F(BYTE*, c, 60), c, y);
@@ -2131,12 +2144,10 @@ void __fastcall Mesh_Clear(BYTE* s)
 
 // === a grid split node and its priority (FUN_608fa0)
 
-extern "C" void Gn_ObjConstruct(); KING_ALIAS("_Gn_ObjConstruct", "@GridObj_Construct@8")
-extern "C" void Gn_ResetVtables(); KING_ALIAS("_Gn_ResetVtables", "@Grid_ResetVtables@8")
-extern "C" void Gn_TGridSet(); KING_ALIAS("_Gn_TGridSet", "@TGrid_Set@24")
+extern "C" BYTE* __fastcall GridObj_Construct(BYTE* self, void*);
+extern "C" int __fastcall TGrid_Set(BYTE* self, void*, int a, int b, int c, BYTE* d);
 extern "C" void Gn_InWedge(); KING_ALIAS("_Gn_InWedge", "@Point_InWedge@32")
-extern "C" void Gn_NodePriority(); KING_ALIAS("_Gn_NodePriority", "@GridCamera_NodePriority@12")
-extern "C" void Gn_Insert(); KING_ALIAS("_Gn_Insert", "@MarineQueue_InsertWorkItem@12")
+extern "C" DWORD __fastcall MarineQueue_InsertWorkItem(BYTE* self, void*, BYTE* edge);
 KING_VAR(float, g_gn64c904, 64c904)
 KING_VAR(float, g_gn64c264, 64c264)
 KING_VAR(float, g_gn652efc, 652efc)
@@ -2219,9 +2230,9 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
     {
         F(BYTE*, node, 4) = node;
         F(BYTE*, node, 0) = node;
-        CallThis(Gn_ObjConstruct, node + 16);
-        CallThis(Gn_ObjConstruct, node + 60);
-        CallThis(Gn_ObjConstruct, node + 108);
+        GridObj_Construct(node + 16, 0);
+        GridObj_Construct(node + 60, 0);
+        GridObj_Construct(node + 108, 0);
     }
     bool ok = F(int, e1, 8) && F(BYTE*, e1, 0) && F(BYTE*, e1, 4) && F(int, F(BYTE*, e1, 4), 12) && F(int, F(BYTE*, e1, 0), 12);
     if (ok)
@@ -2230,7 +2241,7 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
         Gn_Edge(e1);
         BYTE* a = F(BYTE*, F(BYTE*, e1, 0), 12);
         BYTE* b = F(BYTE*, F(BYTE*, e1, 4), 12);
-        CallThis(Gn_TGridSet, node + 16, F(int, a, 24), F(int, a, 16), F(int, b, 16), e1);
+        TGrid_Set(node + 16, 0, F(int, a, 24), F(int, a, 16), F(int, b, 16), e1);
         F(int, node, 104) = F(int, node, 32);
         F(BYTE*, node, 12) = 0;
         if (e2)
@@ -2242,7 +2253,7 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
                 Gn_Edge(e2);
                 BYTE* c = F(BYTE*, F(BYTE*, e2, 0), 12);
                 BYTE* d = F(BYTE*, F(BYTE*, e2, 4), 12);
-                CallThis(Gn_TGridSet, node + 60, F(int, d, 16), F(int, d, 24), F(int, c, 24), e2);
+                TGrid_Set(node + 60, 0, F(int, d, 16), F(int, d, 24), F(int, c, 24), e2);
                 F(float, node, 104) = !(F(float, node, 76) < F(float, node, 104)) ? F(float, node, 76) : F(float, node, 104);
             }
         }
@@ -2251,7 +2262,7 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
     {
         if (node)
         {
-            CallThis(Gn_ResetVtables, node);
+            Grid_ResetVtables(node, 0);
             operator delete(node);
         }
         return 0;
@@ -2284,7 +2295,7 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
             p = (float)(g_gn6503e0 / (double)d);
         else
             p = (float)Gn_Near(node, cam, c, F(float, cam, 4), F(float, cam, 8), d);
-        float q = (float)CallThis<double>(Gn_NodePriority, cam, node + 60);
+        float q = (float)GridCamera_NodePriority(cam, 0, node + 60);
         pr = p > q ? p : q;
     }
     else
@@ -2312,7 +2323,7 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
         }
     }
     F(float, node, 104) = (float)pr;
-    CallThis(Gn_Insert, F(BYTE*, s, 32), node);
+    MarineQueue_InsertWorkItem(F(BYTE*, s, 32), 0, node);
     F(WORD, s, 64)++;
     return node;
 }
@@ -2322,11 +2333,11 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
 // === splitting a grid edge (FUN_609990)
 
 KING_VAR(float, g_gs64c258, 64c258)
-extern "C" void Gs_Midpoint(); KING_ALIAS("_Gs_Midpoint", "_GridNode_Midpoint")
-extern "C" void Gs_PairNext(); KING_ALIAS("_Gs_PairNext", "@Pair_Next@12")
+extern "C" DWORD* __cdecl GridNode_Midpoint(DWORD* out, const float* a, const float* b);
+extern "C" int __fastcall Pair_Next(BYTE** self, void*, int* node);
 extern "C" void Gs_RingNext(); KING_ALIAS("_Gs_RingNext", "@Ring_Next@12")
-extern "C" void Gs_AddVertex(); KING_ALIAS("_Gs_AddVertex", "@Grid_AddVertex@12")
-extern "C" void Gs_InsertBefore(); KING_ALIAS("_Gs_InsertBefore", "_Ring_InsertBefore")
+extern "C" WORD* __fastcall Grid_AddVertex(BYTE* self, void*, const DWORD* p);
+extern "C" void __cdecl Ring_InsertBefore(BYTE** node, BYTE** list);
 
 extern "C" {
 
@@ -2361,7 +2372,7 @@ int __fastcall Grid_SplitEdge(BYTE* s, void*, BYTE* e, BYTE** a, BYTE** b)
                 F(int, F(BYTE*, p12[1], 12), 72) = 0;
         }
         if (f == F(BYTE*, s, 56))
-            F(int, s, 56) = CallThis<int>(Gs_PairNext, F(BYTE*, s, 32), f);
+            F(int, s, 56) = Pair_Next((BYTE**)(F(BYTE*, s, 32)), 0, (int*)f);
         F(short, s, 64)--;
         p8 = F(BYTE**, f, 8);
         F(int, F(BYTE*, p8[0], 12), 72) = 0;
@@ -2372,7 +2383,7 @@ int __fastcall Grid_SplitEdge(BYTE* s, void*, BYTE* e, BYTE** a, BYTE** b)
             F(int, F(BYTE*, p12[0], 12), 72) = 0;
             F(int, F(BYTE*, p12[1], 12), 72) = 0;
         }
-        CallThis(FUN_6136f0, F(BYTE*, s, 32), f);
+        MarineQueue_RemoveLink(F(BYTE*, s, 32), 0, f);
         F(void*, f, 108) = g_vtbl652ef4;
         F(void*, f, 60) = g_vtbl652ef4;
         F(void*, f, 16) = g_vtbl652ef4;
@@ -2381,29 +2392,29 @@ int __fastcall Grid_SplitEdge(BYTE* s, void*, BYTE* e, BYTE** a, BYTE** b)
     if (e == F(BYTE*, s, 52))
         F(BYTE*, s, 52) = CallThis<BYTE*>(Gs_RingNext, F(BYTE*, s, 36), e);
     F(short, s, 42)--;
-    CallThis(FUN_60f690, F(BYTE*, s, 36), e);
+    MarineQueue_RemoveNode(F(BYTE*, s, 36), 0, e);
     BYTE g1buf[40], g2buf[40], midbuf[40], tbuf[40];
-    void* g1 = CallThis<void*>(Ga_Snapshot, s, g1buf, F(void*, B, 0));
-    void* g2 = CallThis<void*>(Ga_Snapshot, s, g2buf, F(void*, A, 0));
-    void* mid = CallC<void*>(Gs_Midpoint, midbuf, g2, g1);
-    WORD* v = CallThis<WORD*>(Gs_AddVertex, s, rec + 1);
+    void* g1 = (void*)MarineGeometry_Snapshot(s, 0, (DWORD*)g1buf, (BYTE*)(F(void*, B, 0)));
+    void* g2 = (void*)MarineGeometry_Snapshot(s, 0, (DWORD*)g2buf, (BYTE*)(F(void*, A, 0)));
+    void* mid = (void*)GridNode_Midpoint((DWORD*)midbuf, (const float*)g2, (const float*)g1);
+    WORD* v = Grid_AddVertex(s, 0, (const DWORD*)(rec + 1));
     BYTE* V = F(BYTE*, s, 12) + *v * 16;
     BYTE* t = (BYTE*)operator new(104);
     bool made = false;
     if (t)
     {
-        void* tmp = CallThis<void*>(Ga_Snapshot, s, tbuf, v);
+        void* tmp = (void*)MarineGeometry_Snapshot(s, 0, (DWORD*)tbuf, (BYTE*)v);
         made = true;
-        t = CallThis<BYTE*>(Ga_TransitionCreate, t, F(int, s, 48), V, mid, tmp, rec[0], s);
+        t = MarineTransition_Create(t, 0, F(int, s, 48), V, (const DWORD*)mid, (const DWORD*)tmp, rec[0], s);
     }
     if (made)
-        CallThis(FUN_50d190, tbuf);
+        Shell_Nop(tbuf, 0);
     if (!F(BYTE*, s, 44))
         F(BYTE*, s, 44) = t;
     else
-        CallC(Gs_InsertBefore, t, F(BYTE*, s, 44));
-    *a = CallThis<BYTE*>(FUN_608530, s, F(int, e, 20), v, F(int, e, 16), F(int, e, 36) + 1);
-    *b = CallThis<BYTE*>(FUN_608530, s, F(int, e, 24), v, F(int, e, 20), F(int, e, 36) + 1);
+        Ring_InsertBefore((BYTE**)t, (BYTE**)(F(BYTE*, s, 44)));
+    *a = Grid_NewCell(s, 0, (WORD*)(F(int, e, 20)), v, (WORD*)(F(int, e, 16)), F(int, e, 36) + 1);
+    *b = Grid_NewCell(s, 0, (WORD*)(F(int, e, 24)), v, (WORD*)(F(int, e, 20)), F(int, e, 36) + 1);
     F(BYTE*, *a, 64) = *b;
     F(BYTE*, *b, 68) = *a;
     F(BYTE*, *a, 68) = F(BYTE*, e, 60);
@@ -2431,11 +2442,10 @@ int __fastcall Grid_SplitEdge(BYTE* s, void*, BYTE* e, BYTE** a, BYTE** b)
 
 // === a new grid cell (FUN_608530)
 
-extern "C" void Gc_ObjInit(); KING_ALIAS("_Gc_ObjInit", "@GridObj_Construct@8")
-extern "C" void Gc_Tiles(); KING_ALIAS("_Gc_Tiles", "@Tiles_Table@16")
+extern "C" BYTE* __fastcall Tiles_Table(BYTE** self, void*, DWORD x, DWORD y);
 extern "C" void Gc_Deepest(); KING_ALIAS("_Gc_Deepest", "_Grid_DeepestLevel")
-extern "C" void Gc_InWedge(); KING_ALIAS("_Gc_InWedge", "@Point_InWedge@32")
-extern "C" void Gc_Insert(); KING_ALIAS("_Gc_Insert", "@MarineQueue_InsertDeferredNode@12")
+extern "C" int __fastcall Point_InWedge(const float* s,void*,float x,float y,float a,float b,float c,float d);
+extern "C" DWORD __fastcall MarineQueue_InsertDeferredNode(BYTE* self, void*, BYTE* node);
 KING_VAR(AsmLabel, g_gc652f00, 652f00)
 KING_VAR(float, g_gc64c258, 64c258)
 KING_VAR(float, g_gc64c904, 64c904)
@@ -2450,7 +2460,7 @@ KING_VAR(float, g_gc652ef8, 652ef8)
 // the height at grid vertex (x, y) from its tile table
 static float Gc_Height(BYTE* g, unsigned x, unsigned y)
 {
-    BYTE* t = CallThis<BYTE*>(Gc_Tiles, F(BYTE*, g, 40192), x, y);
+    BYTE* t = Tiles_Table((BYTE**)(F(BYTE*, g, 40192)), 0, x, y);
     return F(float, t, ((x % 257) * 257 + y % 257) * 16);
 }
 
@@ -2466,7 +2476,7 @@ BYTE* __fastcall Grid_NewCell(BYTE* s, void*, WORD* a, WORD* b, WORD* c, unsigne
         return 0;
     F(BYTE*, n, 4) = n + 4;
     F(BYTE*, n, 8) = n + 4;
-    CallThis(Gc_ObjInit, n + 12);
+    GridObj_Construct(n + 12, 0);
     F(void*, n, 0) = &g_gc652f00;
     F(int, n, 68) = 0;
     F(int, n, 64) = 0;
@@ -2537,8 +2547,7 @@ BYTE* __fastcall Grid_NewCell(BYTE* s, void*, WORD* a, WORD* b, WORD* c, unsigne
                 else
                 {
                     float ctr[3] = {cxn, cyn, rad};
-                    if (CallThis<int>(Gc_InWedge, ctr, camx, camy, F(float, g, 76), F(float, g, 80), F(float, g, 84),
-                                      F(float, g, 88)))
+                    if (Point_InWedge(ctr, 0, camx, camy, F(float, g, 76), F(float, g, 80), F(float, g, 84), F(float, g, 88)))
                         pri = (float)(F(float, n, 32) / (double)e);
                     else
                         pri = (float)(F(float, n, 32) * (double)g_gc64c258 / e);
@@ -2547,7 +2556,7 @@ BYTE* __fastcall Grid_NewCell(BYTE* s, void*, WORD* a, WORD* b, WORD* c, unsigne
         }
     }
     F(float, n, 28) = pri;
-    CallThis(Gc_Insert, F(BYTE*, s, 36), n);
+    MarineQueue_InsertDeferredNode(F(BYTE*, s, 36), 0, n);
     return n;
 }
 

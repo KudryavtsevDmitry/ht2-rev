@@ -97,7 +97,7 @@ void __fastcall Thread_Destroy(BYTE* self, void*)
 KING_VAR(int, g_tscUncalibrated, 6843e0)       // 1 until FUN_603f30 ran
 KING_VAR(double, g_tscScale, 6843d8)           // milliseconds per tick
 KING_VAR(const double, k_2pow32, 652df0)
-extern "C" void FUN_60573b(); KING_ALIAS("_FUN_60573b", "_Cpu_ReadTsc")    // rdtsc into a 64-bit value
+extern "C" void __cdecl Cpu_ReadTsc(unsigned* t);
 extern "C" int __cdecl Tsc_Calibrate(int);
 
 // [FUN_603ec0] the time stamp counter in milliseconds (calibrated on first use)
@@ -108,7 +108,7 @@ extern "C" double __cdecl Tsc_Now()
         Tsc_Calibrate(0);
     }
     DWORD t[2];
-    CallC(FUN_60573b, t);
+    Cpu_ReadTsc((unsigned*)t);
     return ((double)(__int64)t[1] * k_2pow32 + (double)(__int64)t[0]) * g_tscScale;
 }
 

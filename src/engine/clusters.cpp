@@ -14,13 +14,16 @@ extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);            
 extern "C" void __fastcall Group_EachOwner(BYTE* self, void*);                      // scene.cpp
 extern "C" int __fastcall Hash_Lookup(BYTE* self, void*, const char* name, int* out); // core.cpp
 
+extern "C" void __fastcall Camera_Draw(BYTE* self, void*, BYTE* cam, BYTE* scene, BYTE* p, int a, BYTE* r);
 extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
-extern "C" void FUN_5acd40(); KING_ALIAS("_FUN_5acd40", "@Render_Construct@12")    // base constructor
-extern "C" void FUN_5bad60(); KING_ALIAS("_FUN_5bad60", "@Texture_Size@8")    // size of an object
-extern "C" void FUN_5bbef0(); KING_ALIAS("_FUN_5bbef0", "@Bitmap_Bytes@8")    // size of an object
+extern "C" BYTE* __fastcall Render_Construct(BYTE* s, void*, BYTE* a);
+extern "C" int __fastcall Texture_Size(BYTE* self, void*);
+extern "C" int __fastcall Bitmap_Bytes(BYTE* self, void*);
+extern "C" BYTE* __fastcall Clu5edeb0_Construct(BYTE* s, void*, int n, int b);
 extern "C" void FUN_5edeb0(); KING_ALIAS("_FUN_5edeb0", "@Clu5edeb0_Construct@16")    // base constructor (a, b)
+extern "C" void __fastcall Clu5eddf0_Destroy(BYTE* s);
 extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")    // base destructor
-extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")    // selects a palette
+extern "C" int __fastcall Window_SetSurface(BYTE* self, void*, int s);
 extern "C" int __cdecl Scene_FindCallback(BYTE* n, int* q);
 
 KING_VAR(AsmLabel, g_vtbl65274c, 65274c)
@@ -33,10 +36,12 @@ extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
 extern "C" void FUN_5adc80(); KING_ALIAS("_FUN_5adc80", "@Render_SetFog@28")
 extern "C" void FUN_5addf0(); KING_ALIAS("_FUN_5addf0", "@Render_SetAmbient@32")
+extern "C" void __fastcall CamNode_Apply(BYTE* c, void*, BYTE* r);
 extern "C" void FUN_5eb4b0(); KING_ALIAS("_FUN_5eb4b0", "@CamNode_Apply@12")
-extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
+extern "C" void __cdecl Device_SetStates(int mode);
+extern "C" void __fastcall NameHash_AddList(BYTE* h, void*, const char* name, void* v);
 extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")    // name hash: add (name, value pointer)
-extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")    // next token of a string cursor
+extern "C" char* __cdecl NextToken(char** pp);
 KING_VAR(int, g_720904, 720904)
 KING_VAR(BYTE*, g_device, 720908)
 KING_VAR(AsmLabel, g_listLine, 7228ec)
@@ -145,13 +150,13 @@ void __fastcall Palettes_Update(BYTE* self, void*, BYTE* r)
     if (F(int, t, 140) == i || F(int, t, 96) <= i)
         return;
     F(int, t, 140) = i;
-    CallThis(FUN_5b64e0, F(BYTE*, r, 1948), F(int*, F(BYTE*, self, 12), 100)[i]);
+    Window_SetSurface(F(BYTE*, r, 1948), 0, F(int*, F(BYTE*, self, 12), 100)[i]);
 }
 
 // [FUN_5eb280]
 void __fastcall Camera_Render(BYTE* self, void*, BYTE* obj, int a, int b, int c)
 {
-    CallThis(FUN_5eb310, self, obj, F(int, obj, 76), a, b, c);
+    Camera_Draw(self, 0, obj, (BYTE*)(F(int, obj, 76)), (BYTE*)a, b, (BYTE*)c);
     if (F(BYTE*, self, 136))
         Palettes_Update(F(BYTE*, self, 136), 0, (BYTE*)c);
 }
@@ -199,7 +204,7 @@ void __fastcall Room_AddNode(BYTE* self, void*, BYTE* n)
 // [FUN_5ed970]
 BYTE* __fastcall Renderer_Construct(BYTE* self, void*, int a)
 {
-    CallThis(FUN_5acd40, self, a);
+    Render_Construct(self, 0, (BYTE*)a);
     F(void*, self, 0) = g_vtbl652760;
     F(int, self, 8624) = 0;
     return self;
@@ -210,7 +215,7 @@ int __fastcall Cluster_AddA(BYTE* self, void*, BYTE* o)
 {
     if (F(int, self, 48) >= F(int, self, 44))
         return 0;
-    F(int, self, 16) += CallThis<int>(FUN_5bad60, o);
+    F(int, self, 16) += Texture_Size(o, 0);
     F(BYTE**, self, 68)[F(int, self, 48)] = o;
     F(int, self, 48) = F(int, self, 48) + 1;
     return 1;
@@ -221,7 +226,7 @@ int __fastcall Cluster_AddB(BYTE* self, void*, BYTE* o)
 {
     if (F(int, self, 56) >= F(int, self, 52))
         return 0;
-    F(int, self, 16) += CallThis<int>(FUN_5bbef0, o);
+    F(int, self, 16) += Bitmap_Bytes(o, 0);
     F(BYTE**, self, 72)[F(int, self, 56)] = o;
     F(int, self, 56) = F(int, self, 56) + 1;
     return 1;
@@ -242,7 +247,7 @@ int __fastcall Cluster_AddC(BYTE* self, void*, BYTE* o)
 // [FUN_5ee1d0]
 BYTE* __fastcall Texture_Construct(BYTE* self, void*, int a, int b)
 {
-    CallThis(FUN_5edeb0, self, a, b);
+    Clu5edeb0_Construct(self, 0, a, b);
     F(void*, self, 0) = g_vtbl6527e4;
     F(int, self, 44) = 0;
     F(int, self, 48) = 0;
@@ -258,7 +263,7 @@ void __fastcall Texture_Destroy(BYTE* self, void*)
         GlobalFree(F(HGLOBAL, self, 52));
         F(int, self, 48) = 0;
     }
-    CallThis(FUN_5eddf0, self);
+    Clu5eddf0_Destroy(self);
 }
 
 // [FUN_5ee3d0]
@@ -334,9 +339,9 @@ void __fastcall Camera_Draw(BYTE* self, void*, BYTE* cam, BYTE* scene, BYTE* p, 
     F(int, r, 8660) = F(int, p, 116);
     F(int, r, 8648) = F(int, p, 128);
     F(int, r, 8652) = F(int, p, 132);
-    CallThis(FUN_5eb4b0, cam, r);
+    CamNode_Apply(cam, 0, r);
     if (g_720904) {
-        CallC(FUN_5b0120, F(int, r, 8664) ? 1 : F(int, r, 8668) ? 2 : 0);
+        Device_SetStates(F(int, r, 8664) ? 1 : F(int, r, 8668) ? 2 : 0);
         Com(g_device, 80, 22, F(int, cam, 100) ? 3 : 2);
     }
     CallVirt(r, 8, F(int, scene, 36));
@@ -350,13 +355,13 @@ int __fastcall Cluster_ReadNames(BYTE* self, void*, FILE* f)
 {
     char buf[64];
     fread(buf, 32, 1, f);
-    CallThis(FUN_5d2650, (BYTE*)g_objectNames, buf, self + 80);
+    NameHash_AddList((BYTE*)g_objectNames, 0, buf, self + 80);
     fread(buf, 32, 1, f);
     int i = 0;
     while (buf[i] && buf[i] != ':')
         i++;
     if (!buf[i]) {
-        CallThis(FUN_5d2650, (BYTE*)g_objectNames, buf, self + 76);
+        NameHash_AddList((BYTE*)g_objectNames, 0, buf, self + 76);
     } else {
         buf[i] = 0;
         strcpy((char*)self + 12, buf);
@@ -377,7 +382,7 @@ int __cdecl FileList_ReadLine(FILE* f, char** name)
     if FILE_EOF(f)
         return 4;
     g_listCursor = g_listLine;
-    char* tok = CallC<char*>(FUN_5ab1b0, &g_listCursor);
+    char* tok = NextToken(&g_listCursor);
     g_listToken = tok;
     *name = tok;
     if (!tok)
@@ -559,11 +564,17 @@ extern "C" BYTE* __fastcall Clu5ee200_DeletingDestructor(BYTE* s, void*, int fla
 extern "C" BYTE* __fastcall Clu5ef430_DeletingDestructor(BYTE* s, void*, int flags) { return Clu_DeleteAfter(s, flags, FUN_5ef450); }
 
 extern "C" void FUN_5eb2c0(); KING_ALIAS("_FUN_5eb2c0", "@Camera_Apply@12")
+extern "C" int __fastcall Overlay_DrawOn(BYTE* self, void*, BYTE* target, BYTE* obj);
 extern "C" void FUN_5ee470(); KING_ALIAS("_FUN_5ee470", "@Overlay_DrawOn@16")
+extern "C" int __fastcall Cluster_Clear2(BYTE* self, void*);
 extern "C" void FUN_5edfe0(); KING_ALIAS("_FUN_5edfe0", "@Cluster_Clear2@8")
+extern "C" void __fastcall Texture_ReleaseSurface(BYTE* self, void*);
 extern "C" void FUN_5bac90(); KING_ALIAS("_FUN_5bac90", "@Texture_ReleaseSurface@8")
+extern "C" int __fastcall Cluster_Set2(BYTE* self, void*);
 extern "C" void FUN_5ee020(); KING_ALIAS("_FUN_5ee020", "@Cluster_Set2@8")
+extern "C" int __fastcall Texture_Create(BYTE* t, void*, unsigned flags);
 extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
+extern "C" int __fastcall List5ee300_Add(BYTE* self, void*, BYTE* o);
 extern "C" void FUN_5ee300(); KING_ALIAS("_FUN_5ee300", "@List5ee300_Add@12")
 
 // [$L_5ed9a0] FUN_5eb2c0 of a with self
@@ -583,7 +594,7 @@ extern "C" void __fastcall Clu_5ed9b0(BYTE* s, void*, int a)
     BYTE* o = F(BYTE*, s, 8624);
     if (!o || !F(BYTE*, o, 136))
         return;
-    CallThis(FUN_5ee470, F(BYTE*, o, 136), a, s);
+    Overlay_DrawOn(F(BYTE*, o, 136), 0, (BYTE*)a, s);
 }
 
 // [$L_5ee3a0] vtbl+24 (a) of each child (+32, count +28)
@@ -596,28 +607,28 @@ extern "C" void __fastcall Clu_ChildrenCall24(BYTE* s, void*, int a)
 // [$L_5edd70] after FUN_5edfe0: FUN_5bac90 of each item (+68, count +44)
 extern "C" int __fastcall Clu_5edd70(BYTE* s)
 {
-    int r = CallThis<int>(FUN_5edfe0, s);
+    int r = Cluster_Clear2(s, 0);
     if (!r)
         return r;
     for (int i = 0; i < F(int, s, 44); i++)
-        CallThis(FUN_5bac90, F(BYTE**, s, 68)[i]);
+        Texture_ReleaseSurface(F(BYTE**, s, 68)[i], 0);
     return 1;
 }
 // [$L_5eddb0] after FUN_5ee020: FUN_5bae30 (0) of each item
 extern "C" int __fastcall Clu_5eddb0(BYTE* s)
 {
-    int r = CallThis<int>(FUN_5ee020, s);
+    int r = Cluster_Set2(s, 0);
     if (!r)
         return r;
     for (int i = 0; i < F(int, s, 44); i++)
-        CallThis(FUN_5bae30, F(BYTE**, s, 68)[i], 0);
+        Texture_Create(F(BYTE**, s, 68)[i], 0, 0);
     return 1;
 }
 
 // [$L_5ee340] the larger of the two +16 when FUN_5ee300 (p) agrees
 extern "C" int __fastcall Clu_Max16(BYTE* s, void*, BYTE* p)
 {
-    int r = CallThis<int>(FUN_5ee300, s, p);
+    int r = List5ee300_Add(s, 0, p);
     if (r && F(int, p, 16) > F(int, s, 16))
         F(int, s, 16) = F(int, p, 16);
     return r;
@@ -625,7 +636,7 @@ extern "C" int __fastcall Clu_Max16(BYTE* s, void*, BYTE* p)
 // [$L_5ee370] p's +16 added when FUN_5ee300 (p) agrees
 extern "C" int __fastcall Clu_Add16(BYTE* s, void*, BYTE* p)
 {
-    int r = CallThis<int>(FUN_5ee300, s, p);
+    int r = List5ee300_Add(s, 0, p);
     if (r)
         F(int, s, 16) += F(int, p, 16);
     return r;
@@ -650,10 +661,11 @@ extern "C" void __fastcall Clu_Attach(BYTE* s, void*, BYTE* o)
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
+extern "C" int __fastcall Cluster_Clear1(BYTE* self, void*);
 extern "C" void FUN_5edf50(); KING_ALIAS("_FUN_5edf50", "@Cluster_Clear1@8")
-extern "C" void FUN_5bad10(); KING_ALIAS("_FUN_5bad10", "@Texture_Release@8")
-extern "C" void FUN_5bbe80(); KING_ALIAS("_FUN_5bbe80", "@Bitmap_Unload@8")
-extern "C" void FUN_5fd350(); KING_ALIAS("_FUN_5fd350", "@SoundFile_Unload@8")
+extern "C" void __fastcall Texture_Release(BYTE* self, void*);
+extern "C" void __fastcall Bitmap_Unload(BYTE* self, void*);
+extern "C" void __fastcall SoundFile_Unload(BYTE* self, void*);
 
 // [$L_5ee2a0] vtbl+44 of each child (+32, count +24), marks +20 and tells the owner (+40, vtbl+32)
 extern "C" void __fastcall Clu_5ee2a0(BYTE* s, void*, int a)
@@ -670,15 +682,15 @@ extern "C" void __fastcall Clu_5ee2a0(BYTE* s, void*, int a)
 // [$L_5edc70] after FUN_5edf50: the items of the three lists (+68/+44, +72/+52, +76/+60)
 extern "C" int __fastcall Clu_5edc70(BYTE* s)
 {
-    int r = CallThis<int>(FUN_5edf50, s);
+    int r = Cluster_Clear1(s, 0);
     if (!r)
         return r;
     for (int i = 0; i < F(int, s, 44); i++)
-        CallThis(FUN_5bad10, F(BYTE**, s, 68)[i]);
+        Texture_Release(F(BYTE**, s, 68)[i], 0);
     for (int i = 0; i < F(int, s, 52); i++)
-        CallThis(FUN_5bbe80, F(BYTE**, s, 72)[i]);
+        Bitmap_Unload(F(BYTE**, s, 72)[i], 0);
     for (int i = 0; i < F(int, s, 60); i++)
-        CallThis(FUN_5fd350, F(BYTE**, s, 76)[i]);
+        SoundFile_Unload(F(BYTE**, s, 76)[i], 0);
     return 1;
 }
 
@@ -686,31 +698,32 @@ extern "C" int __fastcall Clu_5edc70(BYTE* s)
 // More virtual methods and static initializers.
 
 typedef void (*CluFn)();
+extern "C" int __fastcall Cluster_Set1(BYTE* self, void*);
 extern "C" void FUN_5edf90(); KING_ALIAS("_FUN_5edf90", "@Cluster_Set1@8")
-extern "C" void FUN_5ba810(); KING_ALIAS("_FUN_5ba810", "@Image_LoadData@8")
-extern "C" void FUN_5bbe10(); KING_ALIAS("_FUN_5bbe10", "@Texture_LoadData@8")
-extern "C" void FUN_5fd2e0(); KING_ALIAS("_FUN_5fd2e0", "@SoundFile_Load@8")
+extern "C" int __fastcall Image_LoadData(BYTE* self, void*);
+extern "C" int __fastcall Texture_LoadData(BYTE* self, void*);
+extern "C" int __fastcall SoundFile_Load(BYTE* self, void*);
 
 // [$L_5edce0] after FUN_5edf90 the items of the three lists, each followed by the owner's (+12) hook +56
 extern "C" int __fastcall Clu_5edce0(BYTE* s)
 {
-    int r = CallThis<int>(FUN_5edf90, s);
+    int r = Cluster_Set1(s, 0);
     if (!r)
         return r;
     for (int i = 0; i < F(int, s, 44); i++) {
-        CallThis(FUN_5ba810, F(BYTE**, s, 68)[i]);
+        Image_LoadData(F(BYTE**, s, 68)[i], 0);
         CluFn fn = F(CluFn, F(BYTE*, s, 12), 56);
         if (fn)
             CallThis(fn, F(BYTE*, s, 12));
     }
     for (int i = 0; i < F(int, s, 52); i++) {
-        CallThis(FUN_5bbe10, F(BYTE**, s, 72)[i]);
+        Texture_LoadData(F(BYTE**, s, 72)[i], 0);
         CluFn fn = F(CluFn, F(BYTE*, s, 12), 56);
         if (fn)
             CallThis(fn, F(BYTE*, s, 12));
     }
     for (int i = 0; i < F(int, s, 60); i++) {
-        CallThis(FUN_5fd2e0, F(BYTE**, s, 76)[i]);
+        SoundFile_Load(F(BYTE**, s, 76)[i], 0);
         CluFn fn = F(CluFn, F(BYTE*, s, 12), 56);
         if (fn)
             CallThis(fn, F(BYTE*, s, 12));
@@ -744,7 +757,7 @@ extern "C" void __fastcall Clu5edb20_Destroy(BYTE* s)
     operator delete(F(void*, s, 68));
     operator delete(F(void*, s, 72));
     operator delete(F(void*, s, 76));
-    CallThis(FUN_5eddf0, s);
+    Clu5eddf0_Destroy(s);
 }
 
 // ---------------------------------------------------------------------------
@@ -836,11 +849,11 @@ extern "C" BYTE* __fastcall ClusterSet_Construct(BYTE* s, void*, int n1, int n2,
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
 KING_VAR(AsmLabel, g_q46_723978, 723978)
-extern "C" void g_q46_5ef410(); KING_ALIAS("_g_q46_5ef410", "@ListHead_Construct@8")
+extern "C" BYTE* __fastcall ListHead_Construct(BYTE* s, void*);
 // [FUN_5ef400] constructs the static 723978
 extern "C" int __cdecl Static723978_Construct(void)
 {
-    return CallThis<int>(g_q46_5ef410, (void*)g_q46_723978);
+    return (int)ListHead_Construct((BYTE*)((void*)g_q46_723978), 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -880,7 +893,6 @@ extern "C" BYTE* __fastcall Clu5ea830_Construct(BYTE* s)
 
 extern "C" int __cdecl atoi(const char* s);
 extern "C" double __cdecl atof(const char* s);
-extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
 extern "C" int __cdecl strcmp(const char* a, const char* b);
 KING_VAR(double, g_mt64dae0, 64dae0)
 KING_VAR(AsmLabel, s_mt6836bc, 6836bc)
@@ -919,7 +931,7 @@ static const struct { const char* name; DWORD flag; } k_mtFlags2[] = {
 
 static char* Mt_Next(char** p)
 {
-    return CallC<char*>(FUN_5ab1b0, p);
+    return NextToken(p);
 }
 
 // t: an index (1-based in the text) into +off unless there is no token
@@ -1070,11 +1082,11 @@ int __cdecl Material_Read(char* text, BYTE* o)
 
 // === a cluster file's destructor (FUN_5ea9b0)
 
-extern "C" void FUN_5d2430(); KING_ALIAS("_FUN_5d2430", "@NameHash_RemoveOwner@12")
-extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
-extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
-extern "C" void FUN_5bbdd0(); KING_ALIAS("_FUN_5bbdd0", "@Bitmap_Destroy@8")
-extern "C" void FUN_5e6b90(); KING_ALIAS("_FUN_5e6b90", "@Mmio_Close@8")
+extern "C" void __fastcall NameHash_RemoveOwner(BYTE* self, void*, int owner);
+extern "C" void __fastcall Node_Unlink(BYTE* self, void*);
+extern "C" void __fastcall TexSets_Free(BYTE* s);
+extern "C" void __fastcall Bitmap_Destroy(BYTE* self, void*);
+extern "C" void __fastcall Mmio_Close(BYTE* self, void*);
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" void Clu_VecDtor(); KING_ALIAS("_Clu_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 KING_VAR(AsmLabel, g_clu64d578, 64d578)
@@ -1086,7 +1098,7 @@ static void Clf_DeleteList(BYTE* l)
         return;
     while (F(BYTE*, l, 8)) {
         BYTE* n = F(BYTE*, l, 8);
-        CallThis(FUN_5d21b0, n);
+        Node_Unlink(n, 0);
         if (n)
             CallVirt(n, 0, 1);
     }
@@ -1102,7 +1114,7 @@ extern "C" {
 void __fastcall ClusterFile_Destroy(BYTE* s)
 {
     F(void*, s, 0) = g_vtbl65274c;
-    CallThis(FUN_5d2430, g_objectNames, s);
+    NameHash_RemoveOwner((BYTE*)g_objectNames, 0, (int)s);
     if (F(void*, s, 60))
         operator delete(F(void*, s, 60));
     if (BYTE* a = F(BYTE*, s, 76)) {
@@ -1121,14 +1133,14 @@ void __fastcall ClusterFile_Destroy(BYTE* s)
         operator delete(F(void*, s, 92));
     for (int i = 0; i < F(int, s, 96); i++)
         if (BYTE* p = F(BYTE**, s, 100)[i]) {
-            CallThis(FUN_5b9520, p);
+            TexSets_Free(p);
             operator delete(p);
         }
     if (F(void*, s, 100))
         operator delete(F(void*, s, 100));
     for (int i = 0; i < F(int, s, 104); i++)
         if (BYTE* p = F(BYTE**, s, 108)[i]) {
-            CallThis(FUN_5bbdd0, p);
+            Bitmap_Destroy(p, 0);
             operator delete(p);
         }
     if (F(void*, s, 108))
@@ -1159,7 +1171,7 @@ void __fastcall ClusterFile_Destroy(BYTE* s)
     if (F(FILE*, s, 36)) {
         fclose(F(FILE*, s, 36));
         if (BYTE* m = F(BYTE*, s, 52)) {
-            CallThis(FUN_5e6b90, m);
+            Mmio_Close(m, 0);
             operator delete(m);
         }
         if (F(BYTE, s, 152) & 1) {
@@ -1177,9 +1189,10 @@ void __fastcall ClusterFile_Destroy(BYTE* s)
 
 extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" void Clu_VecCtorEh(); KING_ALIAS("_Clu_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
-extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+extern "C" int __cdecl File_ReadInt(FILE* f);
 typedef void (*Cr_Progress)();
-extern "C" void FUN_5ef830(); KING_ALIAS("_FUN_5ef830", "_Scene_ReadNode")    // reads a node record (file, cluster, &kind, 0, 0, &name); the object or 0
+extern "C" BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char** name);
+extern "C" void __fastcall NameHash_Add(BYTE* h, void*, const char* name, void* v);
 extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")    // name hash: adds (name, object)
 KING_VAR(int, g_cr72006c, 72006c)
 KING_VAR(unsigned, g_cr723988, 723988)
@@ -1200,14 +1213,14 @@ int __fastcall Cluster_ReadFile(BYTE* c, void*, FILE* f)
     magic[2] = (char)fgetc(f);
     fgetc(f);
     magic[3] = 0;
-    CallC<int>(FUN_5ab140, f);
-    int names = CallC<int>(FUN_5ab140, f);
-    CallC<int>(FUN_5ab140, f);
-    int nodes = CallC<int>(FUN_5ab140, f);
-    CallC<int>(FUN_5ab140, f);
+    File_ReadInt(f);
+    int names = File_ReadInt(f);
+    File_ReadInt(f);
+    int nodes = File_ReadInt(f);
+    File_ReadInt(f);
     if (names) {
         fseek(f, names * 4, 0);
-        int n = CallC<int>(FUN_5ab140, f);
+        int n = File_ReadInt(f);
         BYTE* a = (BYTE*)operator new(n * 124 + 4);
         BYTE* items = 0;
         if (a) {
@@ -1226,10 +1239,10 @@ int __fastcall Cluster_ReadFile(BYTE* c, void*, FILE* f)
     if (!nodes)
         return 1;
     fseek(f, nodes * 4, 0);
-    if (CallC<int>(FUN_5ab140, f) != 111)
+    if (File_ReadInt(f) != 111)
         return 0;
     for (;;) {
-        int t = CallC<int>(FUN_5ab140, f);
+        int t = File_ReadInt(f);
         if (t == 444)
             continue;
         if (t == 222)
@@ -1238,7 +1251,7 @@ int __fastcall Cluster_ReadFile(BYTE* c, void*, FILE* f)
             return 0;
         int kind;
         char* name;
-        BYTE* o = CallC<BYTE*>(FUN_5ef830, f, c, &kind, 0, 0, &name);
+        BYTE* o = Scene_ReadNode(f, (int)c, &kind, 0, 0, (const char**)&name);
         if (++g_cr723988 % 5 == 0 && F(Cr_Progress, c, 56))
             F(Cr_Progress, c, 56)();
         if (o)
@@ -1262,14 +1275,14 @@ int __fastcall Cluster_ReadFile(BYTE* c, void*, FILE* f)
                 F(int, g, 100) = 0;
             }
             if (name[0])
-                CallThis(FUN_5d2540, g_objectNames, name, g);
+                NameHash_Add((BYTE*)g_objectNames, 0, name, g);
             Cluster_ReadNames(g, 0, f);
             if (F(BYTE*, c, 120))
                 Node_Link(F(BYTE*, c, 120), 0, g);
             F(BYTE*, c, 120) = g;
         } else
             return 0;
-        if (CallC<int>(FUN_5ab140, f) != 555)
+        if (File_ReadInt(f) != 555)
             return 0;
     }
 }
@@ -1278,9 +1291,9 @@ int __fastcall Cluster_ReadFile(BYTE* c, void*, FILE* f)
 
 // === a scrolling backdrop strip (FUN_5ead50)
 
-extern "C" void Bd_DrawPart(); KING_ALIAS("_Bd_DrawPart", "_Image_DrawPart")
-extern "C" void Bd_FillRect(); KING_ALIAS("_Bd_FillRect", "_Surface_FillRect")
-extern "C" void Bd_Pixel(); KING_ALIAS("_Bd_Pixel", "@Texture_Pixel@16")
+extern "C" void __cdecl Image_DrawPart(BYTE* dst, BYTE* img, int* r, int x, int y);
+extern "C" void __cdecl Surface_FillRect(BYTE* s, const int* r, DWORD color, int raw);
+extern "C" int __fastcall Texture_Pixel(BYTE* self, void*, int x, int y);
 
 extern "C" {
 
@@ -1299,29 +1312,29 @@ void __cdecl Backdrop_Draw(BYTE* dst, BYTE* t, int off, int w, int x, int bottom
         rc[2] = tw - 1;
         if (tw - 1 - rc[0] > w)
             rc[2] = rc[0] + w - 1;
-        CallC(Bd_DrawPart, dst, t, rc, x, y);
+        Image_DrawPart(dst, t, rc, x, y);
         rc[0] = 0;
         rc[2] = r + w - 1;
-        CallC(Bd_DrawPart, dst, t, rc, x - r, y);
+        Image_DrawPart(dst, t, rc, x - r, y);
     } else if (r + w > tw) {
         rc[2] = tw - 1;
-        CallC(Bd_DrawPart, dst, t, rc, x, y);
+        Image_DrawPart(dst, t, rc, x, y);
         rc[0] = 0;
         rc[2] = r - tw + w - 1;
-        CallC(Bd_DrawPart, dst, t, rc, tw - r + x, y);
+        Image_DrawPart(dst, t, rc, tw - r + x, y);
     } else {
         rc[2] = r + w - 1;
-        CallC(Bd_DrawPart, dst, t, rc, x, y);
+        Image_DrawPart(dst, t, rc, x, y);
     }
     if (top >= 0 && y - 1 >= 0) {
-        int c = top ? top : CallThis<int>(Bd_Pixel, t, 0, 0);
+        int c = top ? top : Texture_Pixel(t, 0, 0, 0);
         int f[4] = {x, 0, x + w - 1, y - 1};
-        CallC(Bd_FillRect, dst, f, c, 1);
+        Surface_FillRect(dst, f, c, 1);
     }
     if (bot >= 0 && bottom < (int)F(WORD, dst, 2)) {
-        int c = bot ? bot : CallThis<int>(Bd_Pixel, t, 0, th - 1);
+        int c = bot ? bot : Texture_Pixel(t, 0, 0, th - 1);
         int f[4] = {x, bottom, x + w - 1, F(WORD, dst, 2)};
-        CallC(Bd_FillRect, dst, f, c, 1);
+        Surface_FillRect(dst, f, c, 1);
     }
 }
 
@@ -1329,15 +1342,15 @@ void __cdecl Backdrop_Draw(BYTE* dst, BYTE* t, int off, int w, int x, int bottom
 
 // === pointing the renderer through a camera node (FUN_5eb4b0)
 
-extern "C" void Cn_World(); KING_ALIAS("_Cn_World", "@Node_GetWorld@12")
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);
 extern "C" void Cn_Inverse(); KING_ALIAS("_Cn_Inverse", "_Matrix_Inverse")
 extern "C" void Cn_RotZ(); KING_ALIAS("_Cn_RotZ", "_Matrix_RotationZ")
 extern "C" void Cn_Translation(); KING_ALIAS("_Cn_Translation", "_Matrix_Translation")
 extern "C" void Cn_Multiply(); KING_ALIAS("_Cn_Multiply", "_Matrix_Multiply")
 extern "C" void Cn_Transform2(); KING_ALIAS("_Cn_Transform2", "@Matrix_Transform2@12")
 extern "C" void Cn_Scale(); KING_ALIAS("_Cn_Scale", "_Matrix_Scale")
-extern "C" void Cn_SetCamera(); KING_ALIAS("_Cn_SetCamera", "@Render_SetCamera@16")
-extern "C" void Cn_GetRect(); KING_ALIAS("_Cn_GetRect", "@Window_GetRect@12")
+extern "C" void __fastcall Render_SetCamera(BYTE* s, void*, const BYTE* m, const BYTE* proj);
+extern "C" DWORD* __fastcall Window_GetRect(BYTE* self, void*, DWORD* r);
 KING_VAR(AsmLabel, g_cn7025f0, 7025f0)
 KING_VAR(DWORD, g_cn702e8c, 702e8c)
 KING_VAR(double, g_cn64b6e0, 64b6e0)
@@ -1355,7 +1368,7 @@ void __fastcall CamNode_Apply(BYTE* c, void*, BYTE* r)
 {
     float m[12];
     memcpy(m, g_cn7025f0, 48);
-    CallThis(Cn_World, F(BYTE*, c, 80), m);
+    Node_GetWorld(F(BYTE*, c, 80), 0, m);
     float t[12];
     memcpy(m, CallC<float*>(Cn_Inverse, t, m), 48);
     if (g_cn702e8c & 0x100) {
@@ -1376,7 +1389,7 @@ void __fastcall CamNode_Apply(BYTE* c, void*, BYTE* r)
         CallThis(Cn_Transform2, m, CallC<float*>(Cn_Multiply, pr, mv, rot));
     }
     int rc[4];
-    CallThis(Cn_GetRect, F(BYTE*, r, 1948), rc);
+    Window_GetRect(F(BYTE*, r, 1948), 0, (DWORD*)rc);
     double sx = 1.0, sy = g_cn64b670;
     if (rc[0] < 0)
         sx = (double)rc[2] / (rc[2] - rc[0]);
@@ -1388,7 +1401,7 @@ void __fastcall CamNode_Apply(BYTE* c, void*, BYTE* r)
     k.y = 1.0f;
     k.z = (float)(g_cn64b660 / (sy * F(float, c, 84)));
     float sc[12];
-    CallThis(Cn_SetCamera, r, m, CallC<float*>(Cn_Scale, sc, k));
+    Render_SetCamera(r, 0, (const BYTE*)m, (const BYTE*)(CallC<float*>(Cn_Scale, sc, k)));
 }
 
 } // extern "C"
@@ -1481,21 +1494,18 @@ void __fastcall Backdrop_Place(BYTE* s, void*, BYTE* cam, float a, float scale, 
 
 // === reading the overlay description file (FUN_5ee580)
 
-extern "C" void Ol_Token(); KING_ALIAS("_Ol_Token", "_NextToken")
-extern "C" void Ol_Line(); KING_ALIAS("_Ol_Line", "_FileList_ReadLine")
-extern "C" void Ol_Fatal(); KING_ALIAS("_Ol_Fatal", "_Sys_Fatal")
-extern "C" void Ol_Find(); KING_ALIAS("_Ol_Find", "_Objects_Find")
-extern "C" void Ol_FindScene(); KING_ALIAS("_Ol_FindScene", "_Scene_FindObject")
-extern "C" void Ol_SoundOn(); KING_ALIAS("_Ol_SoundOn", "_Sound_IsOn")
-extern "C" void Ol_Lookup(); KING_ALIAS("_Ol_Lookup", "@Hash_Lookup@16")
-extern "C" void Ol_Link(); KING_ALIAS("_Ol_Link", "@Node_Link@12")
-extern "C" void Ol_Set(); KING_ALIAS("_Ol_Set", "@ClusterSet_Construct@28")
-extern "C" void Ol_AddA(); KING_ALIAS("_Ol_AddA", "@Cluster_AddA@12")
-extern "C" void Ol_AddB(); KING_ALIAS("_Ol_AddB", "@Cluster_AddB@12")
-extern "C" void Ol_AddC(); KING_ALIAS("_Ol_AddC", "@Cluster_AddC@12")
+extern "C" int __cdecl FileList_ReadLine(FILE* f, char** name);
+extern "C" BYTE* __cdecl Objects_Find(const char* name);
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);
+extern "C" int __cdecl Sound_IsOn();
+extern "C" int __fastcall Hash_Lookup(BYTE* self, void*, const char* name, int* out);
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);
+extern "C" BYTE* __fastcall ClusterSet_Construct(BYTE* s, void*, int n1, int n2, int n3, int slots, int b);
+extern "C" int __fastcall Cluster_AddA(BYTE* self, void*, BYTE* o);
+extern "C" int __fastcall Cluster_AddB(BYTE* self, void*, BYTE* o);
+extern "C" int __fastcall Cluster_AddC(BYTE* self, void*, BYTE* o);
 extern "C" void Ol_Texture(); KING_ALIAS("_Ol_Texture", "@Texture_Construct@16")
-extern "C" void Ol_Alloc(); KING_ALIAS("_Ol_Alloc", "@Overlays_Alloc@12")
-extern "C" void Ol_AddName(); KING_ALIAS("_Ol_AddName", "@NameHash_Add@16")
+extern "C" int __fastcall Overlays_Alloc(BYTE* self, void*, int mode);
 KING_VAR(char, g_olLine, 722970)
 KING_VAR(BYTE*, g_olImages, 7229c0)
 KING_VAR(BYTE*, g_olImagesEnd, 72318c)
@@ -1512,7 +1522,7 @@ KING_VAR(AsmLabel, g_ol652818, 652818)
 static void Ol_Error(const char* fmt, const void* a = 0, const void* b = 0)
 {
     sprintf(&g_olLine, fmt, a, b);
-    CallC(Ol_Fatal, &g_olLine, 0);
+    Sys_Fatal(&g_olLine, 0);
 }
 
 static char* Ol_Copy(const char* s)
@@ -1527,7 +1537,7 @@ static void Ol_Cluster(const char* tok, BYTE** slot)
 {
     if (slot >= &g_olClustersEnd)
         Ol_Error("Too many clasters in overlay.");
-    CallThis(Ol_Lookup, &g_olNames, tok, slot);
+    Hash_Lookup((BYTE*)&g_olNames, 0, tok, (int*)slot);
     if (!*slot)
         Ol_Error("Not found %s cluster.", tok);
     if (F(int, *slot, 40))
@@ -1539,7 +1549,7 @@ static void Ol_Append(BYTE** head, BYTE* o)
     if (!*head)
         *head = o;
     else
-        CallThis(Ol_Link, o, *head);
+        Node_Link(o, 0, *head);
 }
 
 extern "C" {
@@ -1563,29 +1573,29 @@ BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int si
     for (fgets(&g_olLine, 70, f); !FILE_EOF(f); fgets(&g_olLine, 70, f))
     {
         char* p = &g_olLine;
-        char* tok = CallC<char*>(Ol_Token, &p);
+        char* tok = NextToken(&p);
         if (!tok)
             continue;
         if (!strcmp(tok, "CLUSTER"))
         {
             int clusters = 0, sounds = 0, masks = 0, images = 0;
-            tok = CallC<char*>(Ol_Token, &p);
+            tok = NextToken(&p);
             if (!tok)
-                CallC(Ol_Fatal, "Cluster have not name.", 0);
+                Sys_Fatal("Cluster have not name.", 0);
             char* nm = Ol_Copy(tok);
             BYTE** cl = &g_olClusters;
             BYTE** snd = &g_olSounds;
             BYTE** msk = &g_olMasks;
             BYTE** img = &g_olImages - 1;
             int k;
-            while ((k = CallC<int>(Ol_Line, f, &tok)) != 0)
+            while ((k = FileList_ReadLine(f, &tok)) != 0)
             {
                 switch (k)
                 {
                 case 1:
                     if (img >= &g_olImagesEnd)
                         Ol_Error("Too many images in cluster %s.", nm);
-                    *++img = CallC<BYTE*>(Ol_Find, tok);
+                    *++img = Objects_Find(tok);
                     images++;
                     if (!*img)
                         Ol_Error("Not found %s image in cluster %s.", tok, nm);
@@ -1595,17 +1605,17 @@ BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int si
                 case 2:
                     if (msk >= &g_olMasksEnd)
                         Ol_Error("Too many masks in cluster %s.", nm);
-                    *msk = CallC<BYTE*>(Ol_Find, tok);
+                    *msk = Objects_Find(tok);
                     masks++;
                     if (!*msk++)
                         Ol_Error("Not found %s mask in cluster %s.", tok, nm);
                     break;
                 case 3:
-                    if (!CallC<int>(Ol_SoundOn))
+                    if (!Sound_IsOn())
                         break;
                     if (snd >= &g_olSoundsEnd)
                         Ol_Error("Too many sounds in cluster %s.", nm);
-                    *snd = CallC<BYTE*>(Ol_Find, tok);
+                    *snd = Objects_Find(tok);
                     sounds++;
                     if (!*snd++)
                         Ol_Error("Not found %s sound in cluster %s.", tok, nm);
@@ -1624,30 +1634,30 @@ BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int si
             }
             BYTE* c = (BYTE*)operator new(80);
             if (c)
-                c = CallThis<BYTE*>(Ol_Set, c, images, masks, sounds, clusters, o);
+                c = ClusterSet_Construct(c, 0, images, masks, sounds, clusters, (int)o);
             F(char*, c, 36) = nm;
             for (int i = 0; i < images; i++)
-                CallThis(Ol_AddA, c, (&g_olImages)[i]);
+                Cluster_AddA(c, 0, (&g_olImages)[i]);
             for (int i = 0; i < masks; i++)
-                CallThis(Ol_AddB, c, (&g_olMasks)[i]);
+                Cluster_AddB(c, 0, (&g_olMasks)[i]);
             for (int i = 0; i < sounds; i++)
-                CallThis(Ol_AddC, c, (&g_olSounds)[i]);
+                Cluster_AddC(c, 0, (&g_olSounds)[i]);
             for (int i = 0; i < clusters; i++)
                 if (!CallVirt<int>(c, 20, (&g_olClusters)[i]))
                     Ol_Error("Error in using %d overlay in cluster %s.", (const void*)(INT_PTR)i, nm);
             Ol_Append(&F(BYTE*, s, 4), c);
-            CallThis(Ol_AddName, &g_olNames, nm, c);
+            NameHash_Add((BYTE*)&g_olNames, 0, nm, c);
         }
         else if (!strcmp(tok, "OVERLAY"))
         {
             int clusters = 0;
-            tok = CallC<char*>(Ol_Token, &p);
+            tok = NextToken(&p);
             if (!tok)
                 tok = (char*)"";
             char* nm = Ol_Copy(tok);
             BYTE** cl = &g_olClusters;
             int k;
-            while ((k = CallC<int>(Ol_Line, f, &tok)) != 0)
+            while ((k = FileList_ReadLine(f, &tok)) != 0)
             {
                 if (k == 5)
                     continue;
@@ -1670,46 +1680,46 @@ BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int si
             if (!strcmp(nm, ""))
                 Ol_Append(&F(BYTE*, s, 0), t);
             else
-                CallThis(Ol_AddName, &g_olNames, nm, t);
+                NameHash_Add((BYTE*)&g_olNames, 0, nm, t);
         }
         else if (!strcmp(tok, "ROOM"))
         {
             DWORD pals = 0;
-            tok = CallC<char*>(Ol_Token, &p);
+            tok = NextToken(&p);
             if (!tok)
-                CallC(Ol_Fatal, "Room have not name.", 0);
+                Sys_Fatal("Room have not name.", 0);
             char* nm = Ol_Copy(tok);
-            BYTE* room = CallC<BYTE*>(Ol_FindScene, 0, tok);
+            BYTE* room = Scene_FindObject(0, tok);
             if (!room)
             {
                 char buf[64];
                 sprintf(buf, "Not found room %s.", tok);
-                CallC(Ol_Fatal, buf, 0);
+                Sys_Fatal(buf, 0);
             }
             BYTE* cluster = 0;
             BYTE* ov = F(BYTE*, s, 12);
             BYTE* image = F(int, ov, 88) > 0 ? *F(BYTE**, ov, 92) : 0;
             int k;
-            while ((k = CallC<int>(Ol_Line, f, &tok)) != 0)
+            while ((k = FileList_ReadLine(f, &tok)) != 0)
             {
                 switch (k)
                 {
                 case 5:
                     break;
                 case 1:
-                    image = CallC<BYTE*>(Ol_Find, tok);
+                    image = Objects_Find(tok);
                     if (!image && strcmp(tok, "null.txr"))
                         Ol_Error("Not found %s image", tok);
                     break;
                 case 6:
-                    CallThis(Ol_Lookup, &g_olNames, tok, &cluster);
+                    Hash_Lookup((BYTE*)&g_olNames, 0, tok, (int*)&cluster);
                     if (!cluster)
                         Ol_Error("Not found cluster %s.", tok);
                     break;
                 case 7:
                 {
                     BYTE* pal;
-                    CallThis(Ol_Lookup, &g_olNames, tok, &pal);
+                    Hash_Lookup((BYTE*)&g_olNames, 0, tok, (int*)&pal);
                     if (!pal)
                         Ol_Error("Not found Palette %s.", tok);
                     BYTE* q = F(BYTE*, s, 12);
@@ -1752,8 +1762,8 @@ BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int si
             Ol_Append(&F(BYTE*, s, 8), r);
         }
     }
-    if (!CallThis<int>(Ol_Alloc, s, size))
-        CallC(Ol_Fatal, "Not enough memory for Overlay System.", 0);
+    if (!Overlays_Alloc(s, 0, size))
+        Sys_Fatal("Not enough memory for Overlay System.", 0);
     fclose(f);
     return s;
 }
@@ -1782,10 +1792,8 @@ BYTE* __fastcall ListHead_Construct(BYTE* s, void*)
 //     with its tail $L_5d26cb)
 
 extern "C" void Nh_Alloc(); KING_ALIAS("_Nh_Alloc", "_Pool71e830_Alloc")
-extern "C" void Nh_New(); KING_ALIAS("_Nh_New", "@Cor5d28a0_Construct@12")
-extern "C" void Nh_Fatal(); KING_ALIAS("_Nh_Fatal", "_Sys_Fatal")
-extern "C" void Nh_Hash(); KING_ALIAS("_Nh_Hash", "@Hash_Name@12")
-extern "C" void Nh_Link(); KING_ALIAS("_Nh_Link", "@Node_Link@12")
+extern "C" BYTE* __fastcall Cor5d28a0_Construct(BYTE* s, void*, const char* name);
+extern "C" unsigned __fastcall Hash_Name(BYTE* self, void*, const BYTE* s);
 KING_VAR(char, g_nhSkip, 67fb1c)
 KING_VAR(char, g_nhNoHeap, 67fae0)
 
@@ -1799,9 +1807,9 @@ static BYTE* Nh_Entry(BYTE* h, const char* name, void* v)
         return 0;
     BYTE* e = CallC<BYTE*>(Nh_Alloc, 24);
     if (e)
-        e = CallThis<BYTE*>(Nh_New, e, name);
+        e = Cor5d28a0_Construct(e, 0, name);
     if (!e)
-        CallC(Nh_Fatal, &g_nhNoHeap, 0);
+        Sys_Fatal(&g_nhNoHeap, 0);
     F(void*, e, 16) = v;
     F(int, e, 20) = F(int, h, 12);
     return e;
@@ -1812,7 +1820,7 @@ static void Nh_Put(BYTE** slot, BYTE* e)
     if (!*slot)
         *slot = e;
     else
-        CallThis(Nh_Link, e, *slot);
+        Node_Link(e, 0, *slot);
 }
 
 extern "C" {
@@ -1823,7 +1831,7 @@ void __fastcall NameHash_Add(BYTE* h, void*, const char* name, void* v)
     if (!name || !*name || !strcmp(name, &g_nhSkip))
         return;
     if (BYTE* e = Nh_Entry(h, name, v))
-        Nh_Put(F(BYTE**, h, 8) + CallThis<int>(Nh_Hash, h, name), e);
+        Nh_Put(F(BYTE**, h, 8) + (int)Hash_Name(h, 0, (const BYTE*)name), e);
 }
 
 // [FUN_5d2650..$L_5d26cb] hash h gets name (not blank) with value v in its one list (+0)
@@ -1839,8 +1847,7 @@ void __fastcall NameHash_AddList(BYTE* h, void*, const char* name, void* v)
 
 // === an empty cluster made with room for its parts (FUN_5ea690 with its tail $L_5ea6ea)
 
-extern "C" void Ce_SysFatal(); KING_ALIAS("_Ce_SysFatal", "_Sys_Fatal")
-extern "C" void Ce_Sounds(); KING_ALIAS("_Ce_Sounds", "_Sound_AllocBuffers")
+extern "C" void __cdecl Sound_AllocBuffers(int n);
 KING_VAR(AsmLabel, g_ce65274c, 65274c)
 
 extern "C" {
@@ -1859,7 +1866,7 @@ BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int 
     F(int, c, 36) = 0;
     F(int, c, 52) = 0;
     if (!pal)
-        CallC(Ce_SysFatal, "Palettes may be 1 or more!", 0);
+        Sys_Fatal("Palettes may be 1 or more!", 0);
     F(int, c, 104) = sounds;
     F(int, c, 88) = masks;
     F(int, c, 112) = nodes;
@@ -1888,7 +1895,7 @@ BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int 
     F(void*, c, 100) = operator new(pal * 4);
     F(void*, c, 108) = operator new(sounds * 4);
     F(void*, c, 116) = operator new(nodes * 4);
-    CallC(Ce_Sounds, bufs);
+    Sound_AllocBuffers(bufs);
     F(int, c, 120) = 0;
     F(int, c, 140) = 0;
     F(int, c, 136) = 0;

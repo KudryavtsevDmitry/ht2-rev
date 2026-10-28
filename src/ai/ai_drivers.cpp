@@ -65,7 +65,9 @@ extern "C" double __cdecl Player_CargoValue(BYTE* player)
 }
 
 extern "C" void FUN_4cd730(); KING_ALIAS("_FUN_4cd730", "_Vehicle_Value4cd730")    // the value of a vrId's vehicle
+extern "C" void __fastcall Player_SaveRecord(BYTE* p, void*, BYTE** v);
 extern "C" void FUN_4754d0(); KING_ALIAS("_FUN_4754d0", "@Player_SaveRecord@12")
+extern "C" int* __cdecl Player_FromId(int* io);
 ASM_FUNC(FUN_477b60, _Player_FromId)
 KING_VAR(DWORD, g_tagPLYX, 66fa60)
 KING_VAR(double, g_zero64b678, 64b678)
@@ -75,24 +77,31 @@ KING_VAR(double, g_64bc20, 64bc20)
 KING_VAR(double, g_four64b7c0, 64b7c0)
 KING_VAR(double, g_64bc28, 64bc28)
 KING_VAR(double, g_m1_64bc30, 64bc30)
-extern "C" void FUN_4777b0(); KING_ALIAS("_FUN_4777b0", "_Player_FirstGoods")
+extern "C" void* __cdecl Player_FirstGoods(BYTE* p);
 extern "C" void FUN_477350(); KING_ALIAS("_FUN_477350", "_Driver_Load")
 extern "C" void FUN_477bd0(); KING_ALIAS("_FUN_477bd0", "_Player_SetDeadline")
 extern "C" void FUN_477c30(); KING_ALIAS("_FUN_477c30", "_Player_ClearDeadline")
 extern "C" void FUN_477c60(); KING_ALIAS("_FUN_477c60", "_Driver_SetDeadline")
-extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
+extern "C" BYTE* __cdecl AI_ListData(BYTE* node);
+extern "C" void __cdecl Player_Reset477600(BYTE* p);
 extern "C" void FUN_4776b0(); KING_ALIAS("_FUN_4776b0", "_Player_Reset477600")
+extern "C" int __cdecl Player_IsHuman(BYTE* p);
 extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
 KING_VAR(BYTE*, g_68d4f4, 68d4f4)
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
+extern "C" int __cdecl Save_ParseHeader(int** cur, int* id, int** data, int* size);
 extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+extern "C" int __cdecl Save_BlockEnd(BYTE** out, BYTE* data, int size);
 extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
-extern "C" void FUN_479aa0(); KING_ALIAS("_FUN_479aa0", "_NamedRecs_Load")
+extern "C" void __cdecl NamedRecs_Load(BYTE** cur, BYTE** v);
+extern "C" int __cdecl Player_Driver(BYTE* p);
 extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")
+extern "C" void __cdecl Drivers_ListCarrying(BYTE** v, int p);
 extern "C" void FUN_471ec0(); KING_ALIAS("_FUN_471ec0", "_Drivers_ListCarrying")
+extern "C" void __cdecl KeyedList_Refill(BYTE** v);
 extern "C" void FUN_472110(); KING_ALIAS("_FUN_472110", "_KeyedList_Refill")
-extern "C" void FUN_478980(); KING_ALIAS("_FUN_478980", "@List1000_Erase@16")
+extern "C" BYTE** __fastcall List1000_Erase(void* self, void*, BYTE** out, BYTE* node);
 KING_VAR(BYTE**, g_68cf38, 68cf38)
 KING_VAR(DWORD, g_tagCGLT, 66f9d0)
 KING_VAR(DWORD, g_tagGILT, 66fa14)
@@ -343,7 +352,7 @@ struct WaypointVec {
     void Clear() { end = begin; }
 };
 
-extern "C" void FUN_479050(); KING_ALIAS("_FUN_479050", "@Vec40_Insert479050@16")    // vector<Waypoint>::insert_aux(pos, x)
+extern "C" void __fastcall Vec40_Insert479050(BYTE** v, void*, BYTE* pos, const BYTE* x);
 extern "C" void __cdecl Waypoints_Sort(Waypoint* first, Waypoint* last, int, int, int);
 KING_ALIAS("_Waypoints_Sort", "_Road40_StableSort")
 
@@ -365,7 +374,7 @@ void WaypointVec::Add(Waypoint w)
             *end = w;
         end++;
     } else
-        CallThis(FUN_479050, this, end, &w);
+        Vec40_Insert479050((BYTE**)this, 0, (BYTE*)end, (const BYTE*)&w);
     Waypoints_Sort(begin, end, 0, 0, 0);
     Waypoint* last = end;
     Waypoint* d = begin;
@@ -561,9 +570,11 @@ void __fastcall Waypoints_Clear(WaypointVec* self, void*) { self->Clear(); }    
 // ---------------------------------------------------------------------------
 // medium-sized functions: the save writers, the logo of a player
 
+extern "C" void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // vector<char>::insert(pos, first, last): the save stream
+extern "C" void __fastcall Rec471b10_Save(BYTE* self, void*, BYTE* s);
 extern "C" void FUN_471b10(); KING_ALIAS("_FUN_471b10", "@Rec471b10_Save@12")    // writes a 16-byte record (stream)
-extern "C" void FUN_470e10(); KING_ALIAS("_FUN_470e10", "@Order_Save@12")    // writes an order (stream)
+extern "C" void __fastcall Order_Save(BYTE* o, void*, BYTE** v);
 extern "C" void __cdecl PlayerRef_Resolve(int* e);
 typedef DWORD Dwords[1];
 KING_VAR(Dwords, g_playRng, 68b9c8)          // the AI's subtractive generator
@@ -574,7 +585,7 @@ KING_VAR(int, g_logoRequests, 68d18c)
 
 static void Put(BYTE* stream, const void* p, int n)
 {
-    CallThis(FUN_46e460, stream, FIELD(char*, stream, 4), p, (const char*)p + n);
+    CharVec_InsertRange((BYTE**)stream, 0, (BYTE*)(FIELD(char*, stream, 4)), (BYTE*)p, (BYTE*)((const char*)p + n));
 }
 
 static void Put4(BYTE* stream, DWORD v) { Put(stream, &v, 4); }
@@ -617,10 +628,10 @@ extern "C" void __fastcall Rec4722c0_Save(DWORD* self, void*, BYTE* stream)
     Put4(stream, self[0]);
     Put4(stream, (int)(self[5] - self[4]) >> 4);
     for (unsigned i = 0; i < (unsigned)((int)(self[5] - self[4]) >> 4); i++)
-        CallThis(FUN_471b10, (BYTE*)self[4] + i * 16, stream);
+        Rec471b10_Save((BYTE*)self[4] + i * 16, 0, stream);
     Put4(stream, (int)(self[8] - self[7]) / 144);
     for (unsigned i = 0; i < (unsigned)((int)(self[8] - self[7]) / 144); i++)
-        CallThis(FUN_470e10, (BYTE*)self[7] + i * 144, stream);
+        Order_Save((BYTE*)self[7] + i * 144, 0, (BYTE**)stream);
     Put4(stream, self[10]);
 }
 
@@ -681,6 +692,7 @@ extern "C" void __cdecl Player_Reset477600(BYTE* p)
 }
 
 // loads a road record from the save stream
+extern "C" void __fastcall Rec471e90_Load(BYTE* self, void*, BYTE** cur);
 extern "C" void FUN_471e90(); KING_ALIAS("_FUN_471e90", "@Rec471e90_Load@12")    // loads the vector at +120 (cursor)
 
 static void Get(BYTE** cur, BYTE* self, int off, int n)
@@ -697,7 +709,7 @@ extern "C" void __fastcall Rec4710a0_Load(BYTE* self, void*, BYTE** cur)
     };
     for (int i = 0; i < (int)(sizeof order / sizeof order[0]); i++)
         Get(cur, self, (unsigned char)order[i][0], order[i][1]);
-    CallThis(FUN_471e90, self + 120, cur);
+    Rec471e90_Load(self + 120, 0, cur);
     Get(cur, self, 4, 4);
     Get(cur, self, 8, 4);
 }
@@ -707,7 +719,7 @@ extern "C" void __fastcall Rec4710a0_Load(BYTE* self, void*, BYTE** cur)
 
 static void Save_Write(BYTE* s, const void* p, int n)
 {
-    CallThis(FUN_46e460, s, F(BYTE*, s, 4), (const BYTE*)p, (const BYTE*)p + n);
+    CharVec_InsertRange((BYTE**)s, 0, F(BYTE*, s, 4), (BYTE*)((const BYTE*)p), (BYTE*)((const BYTE*)p + n));
 }
 
 static void Load_Read(BYTE** cur, void* p, int n)
@@ -725,7 +737,7 @@ struct LoadChunk {
 static bool Load_Begin(LoadChunk* c, BYTE** cur, DWORD tag, int line, const char* err)
 {
     c->cur = cur;
-    CallC(FUN_490c40, cur, &c->tag, &c->a, &c->b);
+    Save_ParseHeader((int**)cur, (int*)&c->tag, (int**)&c->a, &c->b);
     if (c->tag == tag)
         return true;
     AiError(0, 100, s_playFile, s_playId, line, err, (const char*)g_68d1c0, (const char*)g_68d1c0);
@@ -734,7 +746,7 @@ static bool Load_Begin(LoadChunk* c, BYTE** cur, DWORD tag, int line, const char
 
 static void Load_End(LoadChunk* c)
 {
-    CallC(FUN_490c70, c->cur, c->a, c->b);
+    Save_BlockEnd(c->cur, (BYTE*)c->a, c->b);
 }
 
 extern "C" {
@@ -804,24 +816,24 @@ void __fastcall Rec471cf0_Load(BYTE* self, void*, BYTE** cur)
 // [FUN_471e90]
 void __fastcall Rec471e90_Load(BYTE* self, void*, BYTE** cur)
 {
-    CallC(FUN_479aa0, cur, self);
+    NamedRecs_Load(cur, (BYTE**)self);
     Load_Read(cur, self + 12, 4);
 }
 
 // [FUN_472270]
 void __cdecl Player_Call471ec0(int player)
 {
-    BYTE* p = CallC<BYTE*>(FUN_477880, player);
+    BYTE* p = (BYTE*)Player_Driver((BYTE*)player);
     if (p)
-        CallC(FUN_471ec0, p + 120, player);
+        Drivers_ListCarrying((BYTE**)(p + 120), player);
 }
 
 // [FUN_4722a0]
 void __cdecl Player_Call472110(int player)
 {
-    BYTE* p = CallC<BYTE*>(FUN_477880, player);
+    BYTE* p = (BYTE*)Player_Driver((BYTE*)player);
     if (p)
-        CallC(FUN_472110, p + 120);
+        KeyedList_Refill((BYTE**)(p + 120));
 }
 
 // [FUN_4725b0]
@@ -906,7 +918,7 @@ void __fastcall Gilt_Load(BYTE* self, void*, BYTE** cur)
 // [FUN_4734d0]
 int __cdecl Players_Call478980(int x)
 {
-    return CallThis<int>(FUN_478980, &g_players, &x, x);
+    return (int)List1000_Erase(&g_players, 0, (BYTE**)&x, (BYTE*)x);
 }
 
 // [FUN_474260] whether the player has a place with flag 1
@@ -1044,7 +1056,7 @@ int __cdecl Player_Call477350(BYTE* p)
 // [FUN_477880] the player's driver record
 int __cdecl Player_Driver(BYTE* p)
 {
-    return CallC<int>(FUN_4777b0, p + 8);
+    return (int)Player_FirstGoods(p + 8);
 }
 
 // [FUN_477c10]
@@ -1080,13 +1092,13 @@ void __cdecl Players_Each4776b0()
 {
     BYTE* head = (BYTE*)g_players;
     for (BYTE* it = *(BYTE**)head; it != (BYTE*)g_players; it = *(BYTE**)it)
-        CallC(FUN_4776b0, CallC<BYTE*>(FUN_40a9f0, it));
+        Player_Reset477600(AI_ListData(it));
 }
 
 // [FUN_477b00] selects the current player
 void __cdecl Players_SetCurrent(BYTE* p)
 {
-    if (p != (BYTE*)g_players && !CallC<bool>(FUN_417660, p)) {
+    if (p != (BYTE*)g_players && !(bool)Player_IsHuman(p)) {
         AiError(0, 1, s_playFile, s_playId, 1717, "Internal error 943", (const char*)g_68d1c0, (const char*)g_68d1c0);
         return;
     }
@@ -1130,10 +1142,10 @@ extern "C" {
 void __fastcall Player_SaveX(BYTE* self, void*, BYTE* s)
 {
     if (F(BYTE, self, 864) || F(int, self, 868) != F(int, self, 88) || F(int, self, 872) != F(int, self, 92)) {
-        CallThis(FUN_4754d0, self, s);
+        Player_SaveRecord(self, 0, (BYTE**)s);
         return;
     }
-    CallThis(FUN_46e460, s, F(BYTE*, s, 4), F(const BYTE*, self, 0), F(const BYTE*, self, 4));
+    CharVec_InsertRange((BYTE**)s, 0, F(BYTE*, s, 4), (BYTE*)(F(const BYTE*, self, 0)), (BYTE*)(F(const BYTE*, self, 4)));
     int pos;
     CallC(FUN_490c90, s, (const DWORD*)&g_tagPLYX, &pos);
     Save_Write(s, self + 88, 4);
@@ -1177,7 +1189,7 @@ double __cdecl Driver_Load(BYTE* x)
 {
     BYTE* r;
     double f = 1.0;
-    CallC(FUN_477b60, &r);
+    Player_FromId((int*)&r);
     if (r != (BYTE*)g_players)
         f = F(double, r, 768) * g_four64b7c0 + g_one64b670;
     BYTE* o = F(BYTE*, x, 508);
@@ -1200,10 +1212,14 @@ void __cdecl Driver_SetDeadline(BYTE* x, double t)
 
 }
 
+extern "C" BYTE* __fastcall Player_Construct(BYTE* self, void*, int kind);
 extern "C" void FUN_4729e0(); KING_ALIAS("_FUN_4729e0", "@Player_Construct@12")    // player constructor (kind)
+extern "C" void __fastcall Player_Destroy(BYTE* p);
 extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")    // player destructor
 extern "C" void FUN_478e50(); KING_ALIAS("_FUN_478e50", "@AiList_Insert@20")
+extern "C" int* __fastcall Int_Set(int* s, void*, int a);
 extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
+extern "C" BYTE** __fastcall SchList_End(BYTE** self, void*, BYTE** out);
 extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
 
 extern "C" {
@@ -1213,15 +1229,15 @@ extern "C" {
 BYTE* __cdecl Players_Append(int kind)
 {
     BYTE p[1000];
-    CallThis(FUN_4729e0, p, kind);
+    Player_Construct(p, 0, kind);
     void* end;
-    CallThis(FUN_4afc20, &g_players, &end);
+    SchList_End((BYTE**)&g_players, 0, (BYTE**)&end);
     void* out;
     CallThis(FUN_478e50, &g_players, &out, end, p);
-    CallThis(FUN_4731e0, p);
+    Player_Destroy(p);
     void** last = (void**)((void**)g_players)[1];
     int it;
-    int* r = CallThis<int*>(FUN_426280, &it, last);
+    int* r = Int_Set(&it, 0, (int)last);
     BYTE* node = (BYTE*)((void**)g_players)[1];
     F(int, node, 104) = *r;
     return (BYTE*)((void**)g_players)[1] + 8;
@@ -1230,13 +1246,13 @@ BYTE* __cdecl Players_Append(int kind)
 }
 
 extern "C" void FUN_4872f0(); KING_ALIAS("_FUN_4872f0", "_Player_Replan")    // re-plans a player's route to a position (player, position by value)
-extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // console: print (text, 0)
+extern "C" void __cdecl Sys_Log(const char* text, int value);
 extern "C" const char* __cdecl Rec_Name8(BYTE* p);
 
 static void PrintPosition(const PositionId* p)
 {
     sprintf(g_positionText, "(%d %g %d %d %x)", p->road, p->t, p->segment, p->object, p->m_24);
-    CallC(FUN_5d2ba0, g_positionText, 0);
+    Sys_Log(g_positionText, 0);
 }
 
 static void Replan(BYTE* p, const DWORD* to)
@@ -1264,7 +1280,7 @@ void __cdecl Player_UpdateOrders(BYTE* p)
         Replan(p, (const DWORD*)(F(BYTE*, p, 76) - 40));
     if (F(BYTE*, p, 24) != F(BYTE*, p, 28))
         return;
-    CallC(FUN_5d2ba0, Rec_Name8(p), 0);
+    Sys_Log(Rec_Name8(p), 0);
     PrintPosition((const PositionId*)(F(BYTE*, p, 76) - 40));
     PositionId here = *(const PositionId*)(p + 40);
     PrintPosition(&here);
@@ -1272,10 +1288,12 @@ void __cdecl Player_UpdateOrders(BYTE* p)
 
 }
 
+extern "C" BYTE* __stdcall Vec12b_AllocCopyA(unsigned n, const BYTE* first, const BYTE* last);
 extern "C" void FUN_4593b0(); KING_ALIAS("_FUN_4593b0", "_Vec12b_AllocCopyA@12")    // allocate n 12-byte records and copy [first, last) (stdcall)
 extern "C" void FUN_47c650(); KING_ALIAS("_FUN_47c650", "_Rec12_Copy")    // copy 12-byte records (first, last, to)
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
-extern "C" void FUN_484690(); KING_ALIAS("_FUN_484690", "_Road_OrientHops")    // orients the hops of a route
+extern "C" void __cdecl Road_OrientHops(HopVec* hops);
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 
 extern "C" {
@@ -1293,7 +1311,7 @@ void __fastcall Player_SetHops(BYTE* self, void*, BYTE* const* src)
             BYTE* p = CallThis<BYTE*>(FUN_4593b0, v, n, first, last);
             int cap = (v[2] - v[0]) / 12;
             if (cap)
-                CallC(FUN_44b4a0, v[0], cap * 12);
+                Ai_PoolFree(v[0], cap * 12);
             v[0] = p;
             v[2] = p + n * 12;
         } else if ((unsigned)((v[1] - v[0]) / 12) >= n) {
@@ -1311,13 +1329,13 @@ void __fastcall Player_SetHops(BYTE* self, void*, BYTE* const* src)
         }
         v[1] = v[0] + n * 12;
     }
-    CallC(FUN_484690, v);
+    Road_OrientHops((HopVec*)v);
     F(BYTE, self, 864) = 1;
 }
 
 }
 
-extern "C" void FUN_461b00(); KING_ALIAS("_FUN_461b00", "@Rec41ce50_DeletingDestructor@12")    // 144-byte order record: destructor (flag)
+extern "C" BYTE* __fastcall Rec41ce50_DeletingDestructor(BYTE* s, void*, int flags);
 
 // destroys the 144-byte records of the vector at +28 of r
 static void Orders144_Clear(BYTE* r)
@@ -1325,7 +1343,7 @@ static void Orders144_Clear(BYTE* r)
     BYTE* b = F(BYTE*, r, 28);
     BYTE* e = F(BYTE*, r, 32);
     for (BYTE* p = b; p != F(BYTE*, r, 32); p += 144)
-        CallThis(FUN_461b00, p, 0);
+        Rec41ce50_DeletingDestructor(p, 0, 0);
     F(BYTE*, r, 32) = F(BYTE*, r, 32) - ((e - b) / 144) * 144;
 }
 
@@ -1342,7 +1360,7 @@ void __cdecl Player_ClearOrderLists(BYTE* p)
 
 }
 
-extern "C" void FUN_479370(); KING_ALIAS("_FUN_479370", "@Vec40_Assign@12")    // vector of 40-byte records: assignment
+extern "C" BYTE** __fastcall Vec40_Assign(BYTE** self, int, BYTE* const* src);
 extern "C" void FUN_47acd0(); KING_ALIAS("_FUN_47acd0", "_Alloc40_Copy@12")    // allocate n 40-byte records and copy (stdcall)
 extern "C" void FUN_47e1a0(); KING_ALIAS("_FUN_47e1a0", "_Copy40B")    // copy 40-byte records
 extern "C" void FUN_47d330(); KING_ALIAS("_FUN_47d330", "_Stl_UninitCopy40")    // uninitialized copy of 40-byte records
@@ -1353,15 +1371,15 @@ extern "C" {
 void __cdecl Recs40_Swap(BYTE** a, BYTE** b)
 {
     BYTE* t[3] = {0, 0, 0};
-    CallThis(FUN_479370, t, a);
-    CallThis(FUN_479370, a, b);
+    Vec40_Assign(t, 0, a);
+    Vec40_Assign(a, 0, b);
     if ((BYTE**)t != b) {
         unsigned n = (t[1] - t[0]) / 40;
         if (n > (unsigned)((b[2] - b[0]) / 40)) {
             BYTE* p = CallThis<BYTE*>(FUN_47acd0, b, n, t[0], t[1]);
             int cap = (b[2] - b[0]) / 40;
             if (cap)
-                CallC(FUN_44b4a0, b[0], cap * 40);
+                Ai_PoolFree(b[0], cap * 40);
             b[0] = p;
             b[2] = p + n * 40;
         } else if ((unsigned)((b[1] - b[0]) / 40) >= n) {
@@ -1375,7 +1393,7 @@ void __cdecl Recs40_Swap(BYTE** a, BYTE** b)
     }
     int cap = (t[2] - t[0]) / 40;
     if (cap)
-        CallC(FUN_44b4a0, t[0], cap * 40);
+        Ai_PoolFree(t[0], cap * 40);
 }
 
 }
@@ -1394,6 +1412,7 @@ extern "C" bool __cdecl Player_RemoveWaypoint(BYTE* p, int id)
 // ---------------------------------------------------------------------------
 // Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
 
+extern "C" void __cdecl Players_SetCurrent(BYTE* p);
 extern "C" void FUN_477b00(); KING_ALIAS("_FUN_477b00", "_Players_SetCurrent")
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")
@@ -1402,12 +1421,12 @@ KING_VAR(BYTE*, g_q52_68b990, 68b990)
 // back to the pool)
 extern "C" void __cdecl Players_Clear(void)
 {
-    CallC(FUN_477b00, g_q52_68b990);
+    Players_SetCurrent(g_q52_68b990);
     for (BYTE* n = F(BYTE*, g_q52_68b990, 0); n != g_q52_68b990;) {
         BYTE* e = n;
         n = F(BYTE*, n, 0);
-        CallThis(FUN_4731e0, e + 8);
-        CallC(FUN_44b4a0, e, 1000);
+        Player_Destroy(e + 8);
+        Ai_PoolFree(e, 1000);
     }
     F(BYTE*, g_q52_68b990, 0) = g_q52_68b990;
     F(BYTE*, g_q52_68b990, 4) = g_q52_68b990;
@@ -1422,10 +1441,11 @@ extern "C" void __cdecl AiDri_Init68d4f4(void) { g_q112_68d4f4 = g_q112_68b990; 
 // Resolving player references: search the player list (begin/end iterators) with 4579e0.
 
 extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
+extern "C" BYTE** __fastcall SchList_Begin(BYTE** self, void*, BYTE** out);
 extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
-extern "C" void FUN_4579e0(); KING_ALIAS("_FUN_4579e0", "_Range_CallD")
+extern "C" BYTE* __cdecl Range_CallD(BYTE* out, DWORD f, DWORD l, int v);
 extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
-extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
+extern "C" void __cdecl Ai_Report(int a1, int level, int a3, int a4, int a5, int a6, int a7, int a8);
 KING_VAR(AsmLabel, s_q204_66f9d8, 66f9d8)
 KING_VAR(AsmLabel, s_q204_66f920, 66f920)
 KING_VAR(AsmLabel, s_q204_66e430, 66e430)
@@ -1434,10 +1454,10 @@ static BYTE* Aidri204_Find(int key)
 {
     void* end;
     void* begin;
-    CallThis(FUN_4afc20, &g_players, &end);
-    CallThis(FUN_4afbf0, &g_players, &begin);
+    SchList_End((BYTE**)&g_players, 0, (BYTE**)&end);
+    SchList_Begin((BYTE**)&g_players, 0, (BYTE**)&begin);
     BYTE* r;
-    CallC(FUN_4579e0, &r, begin, end, key);
+    Range_CallD((BYTE*)&r, (DWORD)begin, (DWORD)end, key);
     return r;
 }
 // [FUN_477600] resolves the player of record e (key +4): +0 becomes the player, or the list head when the record
@@ -1450,13 +1470,12 @@ extern "C" void __cdecl PlayerRef_Resolve(int* e)
     }
     BYTE* r = Aidri204_Find(e[1]);
     if (r == (BYTE*)g_players) {
-        CallC(FUN_401010, 0, 256, (const char*)s_q204_66f9d8, (const char*)s_q204_66f920, 1640,
-              (const char*)s_q204_66e430, e[1], (const char*)s_q204_68d1c0);
+        Ai_Report(0, 256, (int)((const char*)s_q204_66f9d8), (int)((const char*)s_q204_66f920), 1640, (int)((const char*)s_q204_66e430), e[1], (int)((const char*)s_q204_68d1c0));
         e[0] = (int)g_players;
         return;
     }
     int v;
-    CallThis(FUN_426280, &v, r);
+    Int_Set(&v, 0, (int)r);
     e[0] = v;
 }
 
@@ -1465,14 +1484,14 @@ extern "C" void __fastcall Vec40_FreeStorage(BYTE** v)
 {
     int n = (int)(v[2] - v[0]) / 40;
     if (n)
-        CallC(FUN_44b4a0, v[0], n * 40);
+        Ai_PoolFree(v[0], n * 40);
 }
 // [$L_472f10] returns the storage of a vector of 12-byte elements to the allocator
 extern "C" void __fastcall Vec12_FreeStorage(BYTE** v)
 {
     int n = (int)(v[2] - v[0]) / 12;
     if (n)
-        CallC(FUN_44b4a0, v[0], n * 12);
+        Ai_PoolFree(v[0], n * 12);
 }
 
 // ---------------------------------------------------------------------------
@@ -1480,16 +1499,24 @@ extern "C" void __fastcall Vec12_FreeStorage(BYTE** v)
 
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
-extern "C" void FUN_4722c0(); KING_ALIAS("_FUN_4722c0", "@Rec4722c0_Save@12")
+extern "C" void __fastcall Rec4722c0_Save(DWORD* self, void*, BYTE* stream);
+extern "C" void __fastcall Rec471bf0_Save(DWORD* self, void*, BYTE* stream);
 extern "C" void FUN_471bf0(); KING_ALIAS("_FUN_471bf0", "@Rec471bf0_Save@12")
+extern "C" void __fastcall Gilt_Save(BYTE* self, void*, BYTE* s);
 extern "C" void FUN_472780(); KING_ALIAS("_FUN_472780", "@Gilt_Save@12")
+extern "C" int __cdecl Buf_WriteDword(int unused, BYTE* v, DWORD x);
 extern "C" void FUN_603570(); KING_ALIAS("_FUN_603570", "_Buf_WriteDword")
+extern "C" void __fastcall Waypoint_Save(BYTE* self, void*, BYTE* s);
 extern "C" void FUN_4718b0(); KING_ALIAS("_FUN_4718b0", "@Waypoint_Save@12")
+extern "C" void __fastcall Pair_Save(BYTE* self, void*, BYTE* s);
 extern "C" void FUN_471ba0(); KING_ALIAS("_FUN_471ba0", "@Pair_Save@12")
+extern "C" void __fastcall Name_Save(BYTE** self, void*, BYTE* s);
 extern "C" void FUN_476890(); KING_ALIAS("_FUN_476890", "@Name_Save@12")
-extern "C" void FUN_479a30(); KING_ALIAS("_FUN_479a30", "_Bytes_AppendCounted")
-extern "C" void FUN_474490(); KING_ALIAS("_FUN_474490", "_Doubles5_Save")
+extern "C" void __cdecl Bytes_AppendCounted(BYTE** dst, BYTE** src);
+extern "C" void __cdecl Doubles5_Save(BYTE* stream, const double* d);
+extern "C" void __cdecl Matrix43_Save(BYTE* s, const BYTE* m);
 extern "C" void FUN_474650(); KING_ALIAS("_FUN_474650", "_Matrix43_Save")
+extern "C" void __cdecl Doubles3_Save(BYTE* s, const BYTE* v);
 extern "C" void FUN_4745d0(); KING_ALIAS("_FUN_4745d0", "_Doubles3_Save")
 KING_VAR(AsmLabel, s_ps66fa98, 66fa98)
 KING_VAR(AsmLabel, s_ps66fa90, 66fa90)
@@ -1501,7 +1528,7 @@ KING_VAR(int, g_ps68b990, 68b990)
 
 static void Ps_Bytes(BYTE* s, const void* p, int n)
 {
-    CallThis(FUN_46e460, s, F(BYTE*, s, 4), (const BYTE*)p, (const BYTE*)p + n);
+    CharVec_InsertRange((BYTE**)s, 0, F(BYTE*, s, 4), (BYTE*)((const BYTE*)p), (BYTE*)((const BYTE*)p + n));
 }
 static void Ps_32(BYTE* s, DWORD v) { Ps_Bytes(s, &v, 4); }
 static void Ps_64(BYTE* s, const BYTE* p) { DWORD v[2] = {F(DWORD, p, 0), F(DWORD, p, 4)}; Ps_Bytes(s, v, 8); }
@@ -1513,23 +1540,23 @@ extern "C" {
 // +512), the 40-byte records (+64), the state, and the matrices (+888, +912)
 void __fastcall Player_Save(BYTE* self, void*, BYTE* s)
 {
-    CallThis(FUN_46e460, s, F(BYTE*, s, 4), F(BYTE*, self, 0), F(BYTE*, self, 4));
+    CharVec_InsertRange((BYTE**)s, 0, F(BYTE*, s, 4), F(BYTE*, self, 0), F(BYTE*, self, 4));
     int outer, at;
     CallC(FUN_490c90, s, (const char*)s_ps66fa98, &outer);
     if (F(BYTE*, self, 508)) {
         CallC(FUN_490c90, s, (const char*)s_ps66fa90, &at);
-        CallThis(FUN_4722c0, F(BYTE*, self, 508), s);
+        Rec4722c0_Save((DWORD*)(F(BYTE*, self, 508)), 0, s);
         CallC(FUN_490ce0, s, &at);
     }
     if (F(BYTE*, self, 512)) {
         CallC(FUN_490c90, s, (const char*)s_ps66fa88, &at);
-        CallThis(FUN_4722c0, F(BYTE*, self, 512), s);
+        Rec4722c0_Save((DWORD*)(F(BYTE*, self, 512)), 0, s);
         CallC(FUN_490ce0, s, &at);
     }
     CallC(FUN_490c90, s, (const char*)s_ps66fa80, &at);
     Ps_32(s, (F(BYTE*, self, 68) - F(BYTE*, self, 64)) / 40);
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 68) - F(BYTE*, self, 64)) / 40); i++)
-        CallThis(FUN_471bf0, F(BYTE*, self, 64) + i * 40, s);
+        Rec471bf0_Save((DWORD*)(F(BYTE*, self, 64) + i * 40), 0, s);
     CallC(FUN_490ce0, s, &at);
 
     CallC(FUN_490c90, s, (const char*)s_ps66fa70, &at);
@@ -1550,7 +1577,7 @@ void __fastcall Player_Save(BYTE* self, void*, BYTE* s)
     Ps_32(s, F(DWORD, self, 120));
     Ps_32(s, F(DWORD, self, 124));
     Ps_64(s, self + 128);
-    CallThis(FUN_472780, self + 192, s);
+    Gilt_Save(self + 192, 0, s);
     Ps_32(s, F(BYTE*, self, 268) - F(BYTE*, self, 264));
     for (unsigned i = 0; i < (unsigned)(F(BYTE*, self, 268) - F(BYTE*, self, 264)); i++)
         Ps_8(s, F(BYTE*, self, 264)[i]);
@@ -1568,27 +1595,27 @@ void __fastcall Player_Save(BYTE* self, void*, BYTE* s)
     Ps_8(s, F(BYTE, self, 488));
     Ps_64(s, self + 496);
     Ps_8(s, F(BYTE, self, 504));
-    CallC(FUN_603570, 0, s, F(DWORD, self, 712));
+    Buf_WriteDword(0, s, F(DWORD, self, 712));
     Ps_32(s, F(DWORD, self, 720));
     Ps_32(s, (F(BYTE*, self, 20) - F(BYTE*, self, 16)) / 12);
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 20) - F(BYTE*, self, 16)) / 12); i++)
-        CallThis(FUN_4718b0, F(BYTE*, self, 16) + i * 12, s);
+        Waypoint_Save(F(BYTE*, self, 16) + i * 12, 0, s);
     Ps_32(s, F(DWORD, self, 716));
     Ps_64(s, self + 784);
     Ps_64(s, self + 800);
     Ps_32(s, (F(BYTE*, self, 140) - F(BYTE*, self, 136)) >> 3);
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 140) - F(BYTE*, self, 136)) >> 3); i++)
-        CallThis(FUN_471ba0, F(BYTE*, self, 136) + i * 8, s);
+        Pair_Save(F(BYTE*, self, 136) + i * 8, 0, s);
     Ps_32(s, F(DWORD, self, 148));
     Ps_32(s, (F(BYTE*, self, 156) - F(BYTE*, self, 152)) >> 4);
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 156) - F(BYTE*, self, 152)) >> 4); i++)
-        CallThis(FUN_476890, F(BYTE*, self, 152) + i * 16, s);
+        Name_Save((BYTE**)(F(BYTE*, self, 152) + i * 16), 0, s);
     if (F(int, self, 168) == g_ps68b990)
         Ps_32(s, 0);
     else
-        CallC(FUN_479a30, s, F(BYTE*, self, 168) + 8);
+        Bytes_AppendCounted((BYTE**)s, (BYTE**)(F(BYTE*, self, 168) + 8));
     Ps_64(s, self + 184);
-    CallC(FUN_474490, s, self + 368);
+    Doubles5_Save(s, (const double*)(self + 368));
     Ps_8(s, F(BYTE, self, 488));
     Ps_8(s, F(BYTE, self, 504));
     Ps_8(s, F(BYTE, self, 505));
@@ -1596,12 +1623,12 @@ void __fastcall Player_Save(BYTE* self, void*, BYTE* s)
     Ps_32(s, F(DWORD, self, 520));
     Ps_32(s, F(DWORD, self, 528));
     Ps_64(s, self + 536);
-    CallC(FUN_474650, s, self + 544);
+    Matrix43_Save(s, self + 544);
     Ps_32(s, (F(BYTE*, self, 644) - F(BYTE*, self, 640)) / 12);
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 644) - F(BYTE*, self, 640)) / 12); i++)
-        CallThis(FUN_4718b0, F(BYTE*, self, 640) + i * 12, s);
+        Waypoint_Save(F(BYTE*, self, 640) + i * 12, 0, s);
     Ps_32(s, F(DWORD, self, 652));
-    CallC(FUN_4745d0, s, self + 728);
+    Doubles3_Save(s, self + 728);
     Ps_64(s, self + 752);
     Ps_64(s, self + 760);
     Ps_8(s, F(BYTE, self, 776));
@@ -1632,45 +1659,60 @@ void __fastcall Player_Save(BYTE* self, void*, BYTE* s)
 // ---------------------------------------------------------------------------
 // Loading a player.
 
-extern "C" void FUN_4471f0(); KING_ALIAS("_FUN_4471f0", "@CharVec_Erase@16")
+extern "C" BYTE* __fastcall CharVec_Erase(void* s, void*, BYTE* first, BYTE* last);
+extern "C" void __fastcall CharVec_InsertRange44c220(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
 extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
 extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
-extern "C" void FUN_41f3d0(); KING_ALIAS("_FUN_41f3d0", "@Rec41f3d0_Destroy@8")
-extern "C" void FUN_4487a0(); KING_ALIAS("_FUN_4487a0", "@Vec16b_Construct@20")
+extern "C" void __fastcall Rec41f3d0_Destroy(BYTE* self, void*);
+extern "C" DWORD* __fastcall Vec16b_Construct(DWORD* self, void*, unsigned n, const void* v, int unused);
+extern "C" void** __fastcall Vec_Construct(void** self, void*, int);
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void __fastcall DriverRec_Load(BYTE* s, void*, DWORD** pp);
 extern "C" void FUN_472410(); KING_ALIAS("_FUN_472410", "@DriverRec_Load@12")    // loads a 48-byte record (cursor)
-extern "C" void FUN_478a00(); KING_ALIAS("_FUN_478a00", "@Vec40_Clear@8")
-extern "C" void FUN_47ac30(); KING_ALIAS("_FUN_47ac30", "@Vec40_Reserve@12")
+extern "C" void __fastcall Vec40_Clear(BYTE** self, void*);
+extern "C" void __fastcall Vec40_Reserve(BYTE** v, void*, unsigned n);
+extern "C" PositionId* __fastcall Position_InitNone(PositionId* s, void*);
 extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
+extern "C" void __fastcall Rec471cf0_Load(BYTE* self, void*, BYTE** cur);
 extern "C" void FUN_471cf0(); KING_ALIAS("_FUN_471cf0", "@Rec471cf0_Load@12")
-extern "C" void FUN_4789c0(); KING_ALIAS("_FUN_4789c0", "@Vec40_PushBack@12")
+extern "C" void __fastcall Vec40_PushBack(BYTE** self, void*, const BYTE* x);
+extern "C" void __fastcall Player_SetPosition(PlayerBase* self, void*, const PositionId* p);
 extern "C" void FUN_474290(); KING_ALIAS("_FUN_474290", "@Player_SetPosition@12")
-extern "C" void FUN_46ea00(); KING_ALIAS("_FUN_46ea00", "@Ordr_First@8")
-extern "C" void FUN_448060(); KING_ALIAS("_FUN_448060", "@Vec12_Clear@8")
+extern "C" int __fastcall Ordr_First(int** self, int);
+extern "C" void __fastcall Vec12_Clear(void* s, void*);
 extern "C" void FUN_47ab50(); KING_ALIAS("_FUN_47ab50", "@Vec12_Reserve@12")
+extern "C" BYTE* __fastcall Waypoint_Init(BYTE* self, void*);
 extern "C" void FUN_4754b0(); KING_ALIAS("_FUN_4754b0", "@Waypoint_Init@8")
+extern "C" void __fastcall Waypoint_Load(BYTE* self, void*, BYTE** cur);
 extern "C" void FUN_471940(); KING_ALIAS("_FUN_471940", "@Waypoint_Load@12")
 extern "C" void FUN_47abf0(); KING_ALIAS("_FUN_47abf0", "@Vec12_PushBack@12")
+extern "C" void __fastcall Player_SetVrId(Player* self, void*, int id);
 extern "C" void FUN_473540(); KING_ALIAS("_FUN_473540", "@Player_SetVrId@12")
+extern "C" void __fastcall Gilt_Load(BYTE* self, void*, BYTE** cur);
 extern "C" void FUN_4728c0(); KING_ALIAS("_FUN_4728c0", "@Gilt_Load@12")
-extern "C" void FUN_447230(); KING_ALIAS("_FUN_447230", "@CharVec_Clear@8")
-extern "C" void FUN_47aad0(); KING_ALIAS("_FUN_47aad0", "@Bytes_Reserve@12")
+extern "C" BYTE* __fastcall CharVec_Clear(void* s, void*);
+extern "C" void __fastcall Bytes_Reserve(BYTE** self, void*, unsigned n);
 extern "C" void FUN_47ab20(); KING_ALIAS("_FUN_47ab20", "@CharVec_PushBack@12")
-extern "C" void FUN_46e170(); KING_ALIAS("_FUN_46e170", "@Vec12_Erase@16")
-extern "C" void FUN_47b4e0(); KING_ALIAS("_FUN_47b4e0", "@Vec8_Erase@16")
-extern "C" void FUN_47afc0(); KING_ALIAS("_FUN_47afc0", "@Vec8_Reserve@12")
+extern "C" BYTE* __fastcall Vec12_Erase(BYTE* self, void*, BYTE* first, BYTE* last);
+extern "C" BYTE* __fastcall Vec8_Erase(BYTE** self, void*, BYTE* first, BYTE* last);
+extern "C" void __fastcall Vec8_Reserve(BYTE** self, void*, unsigned n);
+extern "C" void __fastcall Pair_Load(BYTE* self, void*, BYTE** cur);
 extern "C" void FUN_471bd0(); KING_ALIAS("_FUN_471bd0", "@Pair_Load@12")
-extern "C" void FUN_478de0(); KING_ALIAS("_FUN_478de0", "@Vec8_PushBackB@12")
-extern "C" void FUN_478e80(); KING_ALIAS("_FUN_478e80", "@Vec16c_Erase@16")
+extern "C" void __fastcall Vec8_PushBackB(BYTE** self, void*, const DWORD* x);
+extern "C" BYTE* __fastcall Vec16c_Erase(BYTE** self, void*, BYTE* first, BYTE* last);
 extern "C" void FUN_47af30(); KING_ALIAS("_FUN_47af30", "@Vec16_Reserve@12")
-extern "C" void FUN_448a40(); KING_ALIAS("_FUN_448a40", "@Rec_InitPlayerIter@8")
-extern "C" void FUN_479f50(); KING_ALIAS("_FUN_479f50", "_CharVec_Load")
-extern "C" void FUN_478a80(); KING_ALIAS("_FUN_478a80", "@Vec16_PushBackB@12")
+extern "C" void** __fastcall Rec_InitPlayerIter(void** s, void*);
+extern "C" void __cdecl CharVec_Load(BYTE** cur, char** v);
+extern "C" void __fastcall Vec16_PushBackB(BYTE** self, void*, const BYTE* x);
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void __cdecl Doubles5_Load(BYTE** cur, BYTE* out);
 extern "C" void FUN_474560(); KING_ALIAS("_FUN_474560", "_Doubles5_Load")
+extern "C" void __cdecl Matrix43_Load(BYTE** cur, BYTE* m);
 extern "C" void FUN_4746e0(); KING_ALIAS("_FUN_4746e0", "_Matrix43_Load")
-extern "C" void FUN_481740(); KING_ALIAS("_FUN_481740", "_Save_Read3Doubles")
+extern "C" void __cdecl Save_Read3Doubles(BYTE** cursor, DWORD* out);
+extern "C" void __fastcall Player_SetPlace(Player* self, void*, int at);
 extern "C" void FUN_474160(); KING_ALIAS("_FUN_474160", "@Player_SetPlace@12")
 KING_VAR(int, g_pl66fa98, 66fa98)
 KING_VAR(int, g_pl66fa90, 66fa90)
@@ -1692,7 +1734,7 @@ static void Pl_Record(BYTE* self, int off, BYTE** cur)
 {
     BYTE* old = F(BYTE*, self, off);
     if (old) {
-        CallThis(FUN_41f3d0, old);
+        Rec41f3d0_Destroy(old, 0);
         operator delete(old);
     }
     BYTE* p = (BYTE*)operator new(48);
@@ -1706,12 +1748,12 @@ static void Pl_Record(BYTE* self, int off, BYTE** cur)
         t[2] = 0;
         t[3] = 1072693248;
         BYTE alloc[2];
-        CallThis(FUN_4487a0, p + 16, 19, t, alloc);
-        CallThis(FUN_487730, p + 28, alloc + 1);
+        Vec16b_Construct((DWORD*)(p + 16), 0, 19, t, (int)alloc);
+        Vec_Construct((void**)(p + 28), 0, (int)(alloc + 1));
         F(DWORD, p, 40) = 0;
     }
     F(BYTE*, self, off) = p;
-    CallThis(FUN_472410, p, cur);
+    DriverRec_Load(p, 0, (DWORD**)cur);
 }
 
 // the position (+0 -1, +4 -1, ..., +28 -1) read in the save's field order, then set
@@ -1725,7 +1767,7 @@ static void Pl_Position(BYTE* self, BYTE** c)
     p[4] = Pl_32(c);
     p[5] = Pl_32(c);
     p[7] = Pl_32(c);
-    CallThis(FUN_474290, self, p);
+    Player_SetPosition((PlayerBase*)self, 0, (const PositionId*)p);
 }
 
 static void Pl_Waypoints(BYTE* self, int off, BYTE** c, bool erase)
@@ -1733,14 +1775,14 @@ static void Pl_Waypoints(BYTE* self, int off, BYTE** c, bool erase)
     BYTE* v = self + off;
     unsigned n = Pl_32(c);
     if (erase)
-        CallThis(FUN_46e170, v, F(BYTE*, v, 0), F(BYTE*, v, 4));
+        Vec12_Erase(v, 0, F(BYTE*, v, 0), F(BYTE*, v, 4));
     else
-        CallThis(FUN_448060, v);
+        Vec12_Clear(v, 0);
     CallThis(FUN_47ab50, v, n);
     for (; n; n--) {
         BYTE w[12];
-        CallThis(FUN_4754b0, w);
-        CallThis(FUN_471940, w, c);
+        Waypoint_Init(w, 0);
+        Waypoint_Load(w, 0, c);
         CallThis(FUN_47abf0, v, w);
     }
 }
@@ -1748,7 +1790,7 @@ static void Pl_Waypoints(BYTE* self, int off, BYTE** c, bool erase)
 static void Pl_OrderFirst(BYTE* self, BYTE** c)
 {
     BYTE* at = *c;
-    F(int, self, 712) = CallThis<int>(FUN_46ea00, &at);
+    F(int, self, 712) = Ordr_First((int**)&at, 0);
     *c += 4;
 }
 
@@ -1758,31 +1800,31 @@ extern "C" {
 // older formats)
 void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
 {
-    CallThis(FUN_4471f0, self, F(BYTE*, self, 0), F(BYTE*, self, 4));
+    CharVec_Erase(self, 0, F(BYTE*, self, 0), F(BYTE*, self, 4));
     BYTE* name = *cur;
-    CallThis(FUN_44c220, self, F(BYTE*, self, 4), name, name + strlen((char*)name) + 1);
+    CharVec_InsertRange44c220((BYTE**)self, 0, F(BYTE*, self, 4), name, name + strlen((char*)name) + 1);
     *cur = name + strlen((char*)name) + 1;
     int id, size;
     BYTE* data;
-    CallC(FUN_490c40, cur, &id, &data, &size);
+    Save_ParseHeader((int**)cur, &id, (int**)&data, &size);
     if (id == g_pl66fa98 && data - *cur + size) {
         do {
             int bid, bsize;
             BYTE* bdata;
-            CallC(FUN_490c40, cur, &bid, &bdata, &bsize);
+            Save_ParseHeader((int**)cur, &bid, (int**)&bdata, &bsize);
             if (bid == g_pl66fa90)
                 Pl_Record(self, 508, cur);
             else if (bid == g_pl66fa88)
                 Pl_Record(self, 512, cur);
             else if (bid == g_pl66fa80) {
                 unsigned n = Pl_32(cur);
-                CallThis(FUN_478a00, self + 64);
-                CallThis(FUN_47ac30, self + 64, n);
+                Vec40_Clear((BYTE**)(self + 64), 0);
+                Vec40_Reserve((BYTE**)(self + 64), 0, n);
                 for (; n; n--) {
                     BYTE r[40];
-                    CallThis(FUN_4133a0, r);
-                    CallThis(FUN_471cf0, r, cur);
-                    CallThis(FUN_4789c0, self + 64, r);
+                    Position_InitNone((PositionId*)r, 0);
+                    Rec471cf0_Load(r, 0, cur);
+                    Vec40_PushBack((BYTE**)(self + 64), 0, r);
                 }
             } else if (bid == g_pl66fa78) {
                 F(DWORD, self, 84) = Pl_32(cur);
@@ -1804,16 +1846,16 @@ void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
                 F(DWORD, self, 92) = Pl_32(cur);
                 Pl_64(cur, self + 104);
                 Pl_Position(self, cur);
-                CallThis(FUN_473540, self, Pl_32(cur));
+                Player_SetVrId((Player*)self, 0, Pl_32(cur));
                 F(DWORD, self, 112) = Pl_32(cur);
                 F(DWORD, self, 116) = Pl_32(cur);
                 F(DWORD, self, 120) = Pl_32(cur);
                 F(DWORD, self, 124) = Pl_32(cur);
                 Pl_64(cur, self + 128);
-                CallThis(FUN_4728c0, self + 192, cur);
+                Gilt_Load(self + 192, 0, cur);
                 unsigned n = Pl_32(cur);
-                CallThis(FUN_447230, self + 264);
-                CallThis(FUN_47aad0, self + 264, n);
+                CharVec_Clear(self + 264, 0);
+                Bytes_Reserve((BYTE**)(self + 264), 0, n);
                 for (; n; n--) {
                     char ch = (char)Pl_8(cur);
                     CallThis(FUN_47ab20, self + 264, &ch);
@@ -1831,27 +1873,27 @@ void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
                 Pl_64(cur, self + 784);
                 Pl_64(cur, self + 800);
                 n = Pl_32(cur);
-                CallThis(FUN_47b4e0, self + 136, F(BYTE*, self, 136), F(BYTE*, self, 140));
-                CallThis(FUN_47afc0, self + 136, n);
+                Vec8_Erase((BYTE**)(self + 136), 0, F(BYTE*, self, 136), F(BYTE*, self, 140));
+                Vec8_Reserve((BYTE**)(self + 136), 0, n);
                 for (; n; n--) {
                     DWORD pr[2] = {0, 0};
-                    CallThis(FUN_471bd0, pr, cur);
-                    CallThis(FUN_478de0, self + 136, pr);
+                    Pair_Load((BYTE*)pr, 0, cur);
+                    Vec8_PushBackB((BYTE**)(self + 136), 0, pr);
                 }
                 F(DWORD, self, 148) = Pl_32(cur);
                 n = Pl_32(cur);
-                CallThis(FUN_478e80, self + 152, F(BYTE*, self, 152), F(BYTE*, self, 156));
+                Vec16c_Erase((BYTE**)(self + 152), 0, F(BYTE*, self, 152), F(BYTE*, self, 156));
                 CallThis(FUN_47af30, self + 152, n);
                 for (; n; n--) {
                     BYTE r[16];
-                    CallThis(FUN_448a40, r);
-                    CallC(FUN_479f50, cur, r + 4);
-                    CallThis(FUN_478a80, self + 152, r);
-                    CallThis(FUN_404420, r + 4);
+                    Rec_InitPlayerIter((void**)r, 0);
+                    CharVec_Load(cur, (char**)(r + 4));
+                    Vec16_PushBackB((BYTE**)(self + 152), 0, r);
+                    VecB_FreeStorage((BYTE**)(r + 4), 0);
                 }
-                CallC(FUN_479f50, cur, self + 172);
+                CharVec_Load(cur, (char**)(self + 172));
                 Pl_64(cur, self + 184);
-                CallC(FUN_474560, cur, self + 368);
+                Doubles5_Load(cur, self + 368);
                 F(BYTE, self, 488) = Pl_8(cur);
                 F(BYTE, self, 504) = Pl_8(cur);
                 F(BYTE, self, 505) = Pl_8(cur);
@@ -1859,10 +1901,10 @@ void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
                 F(DWORD, self, 520) = Pl_32(cur);
                 F(DWORD, self, 528) = Pl_32(cur);
                 Pl_64(cur, self + 536);
-                CallC(FUN_4746e0, cur, self + 544);
+                Matrix43_Load(cur, self + 544);
                 Pl_Waypoints(self, 640, cur, true);
                 F(DWORD, self, 652) = Pl_32(cur);
-                CallC(FUN_481740, cur, self + 728);
+                Save_Read3Doubles(cur, (DWORD*)(self + 728));
                 Pl_64(cur, self + 752);
                 Pl_64(cur, self + 760);
                 F(BYTE, self, 776) = Pl_8(cur);
@@ -1877,13 +1919,13 @@ void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
                 F(DWORD, self, 828) = Pl_32(cur);
                 F(DWORD, self, 836) = Pl_32(cur);
                 Pl_64(cur, self + 856);
-                CallThis(FUN_474160, self, Pl_32(cur));
+                Player_SetPlace((Player*)self, 0, Pl_32(cur));
             } else if (bid == g_pl66fa68) {
                 for (int off = 888; off < 936; off += 8)
                     Pl_64(cur, self + off);
                 F(DWORD, self, 936) = Pl_32(cur);
             }
-            CallC(FUN_490c70, cur, bdata, bsize);
+            Save_BlockEnd(cur, bdata, bsize);
         } while (data - *cur + size);
     }
     if (id == g_pl66fa60) {
@@ -1901,7 +1943,7 @@ void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
         F(DWORD, self, 720) = Pl_8(cur);
         F(DWORD, self, 716) = Pl_8(cur);
     }
-    CallC(FUN_490c70, cur, data, size);
+    Save_BlockEnd(cur, data, size);
 }
 
 }  // extern "C"
@@ -1909,24 +1951,31 @@ void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
 // === swapping two players' vehicles (FUN_4738c0)
 
 KING_VAR(AsmLabel, s_sw66fa4c, 66fa4c)        // the "not enough money" message
-extern "C" void FUN_45a9b0(); KING_ALIAS("_FUN_45a9b0", "_Copy12s")    // copies 12-byte records (first, last, to)
+extern "C" BYTE* __cdecl Copy12s(const BYTE* first, const BYTE* last, BYTE* dest);
 extern "C" void FUN_4abce0(); KING_ALIAS("_FUN_4abce0", "@Vec12_Reserve@16")
-extern "C" void FUN_4736d0(); KING_ALIAS("_FUN_4736d0", "_Player_ProfitOf")
+extern "C" double __cdecl Player_ProfitOf(BYTE* p);
+extern "C" const char* __cdecl Message_Text(const char* id);
 extern "C" void FUN_40e270(); KING_ALIAS("_FUN_40e270", "_Message_Text")
+extern "C" void __cdecl Messages_Add(const char* text);
 extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
-extern "C" void FUN_4452c0(); KING_ALIAS("_FUN_4452c0", "_Ai_DropOrdersForfeit")
+extern "C" int __cdecl Ai_DropOrdersForfeit(int player);
+extern "C" void __cdecl Player_Call472110(int player);
 extern "C" void FUN_4722a0(); KING_ALIAS("_FUN_4722a0", "_Player_Call472110")
+extern "C" void __cdecl Recs40_Swap(BYTE** a, BYTE** b);
 extern "C" void FUN_4736e0(); KING_ALIAS("_FUN_4736e0", "_Recs40_Swap")
 extern "C" void FUN_474290(); KING_ALIAS("_FUN_474290", "@Player_SetPosition@12")
-extern "C" void FUN_477d60(); KING_ALIAS("_FUN_477d60", "_Player_EndDealOf")
-extern "C" void FUN_425790(); KING_ALIAS("_FUN_425790", "_Player_CheckGoods")
+extern "C" void __cdecl Player_EndDealOf(BYTE* p);
+extern "C" void __cdecl Player_CheckGoods(BYTE* p);
+extern "C" int __cdecl Ai_GoIdle(BYTE* p);
 extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")
+extern "C" void __cdecl Player_Call471ec0(int player);
 extern "C" void FUN_472270(); KING_ALIAS("_FUN_472270", "_Player_Call471ec0")
 extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
-extern "C" void FUN_56f6d0(); KING_ALIAS("_FUN_56f6d0", "_Copter_ApplyCargo")
-extern "C" void FUN_442c60(); KING_ALIAS("_FUN_442c60", "_Ai_AccountForChangeInLoadState")
+extern "C" void __cdecl Copter_ApplyCargo();
+extern "C" void __cdecl Ai_AccountForChangeInLoadState(int player);
+extern "C" void __cdecl Player_UpdateFlags(BYTE* p);
 extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")
-extern "C" void FUN_401c50(); KING_ALIAS("_FUN_401c50", "_Ai_RescheduleLoadTask")
+extern "C" void __cdecl Ai_RescheduleLoadTask();
 
 // v = src for vectors of 12-byte records
 static void Sw_Assign(BYTE** v, BYTE* const* src)
@@ -1937,17 +1986,17 @@ static void Sw_Assign(BYTE** v, BYTE* const* src)
     BYTE* last = src[1];
     unsigned n = (int)(last - first) / 12;
     if (n > (unsigned)((int)(v[2] - v[0]) / 12)) {
-        BYTE* p = CallStd<BYTE*>(FUN_4593b0, n, first, last);
+        BYTE* p = Vec12b_AllocCopyA(n, first, last);
         if (int cap = (int)(v[2] - v[0]) / 12)
-            CallC(FUN_44b4a0, v[0], cap * 12);
+            Ai_PoolFree(v[0], cap * 12);
         v[0] = p;
         v[2] = p + n * 12;
     } else {
         unsigned have = (int)(v[1] - v[0]) / 12;
         if (have >= n)
-            CallC(FUN_45a9b0, first, last, v[0]);
+            Copy12s(first, last, v[0]);
         else {
-            CallC(FUN_45a9b0, first, first + have * 12, v[0]);
+            Copy12s(first, first + have * 12, v[0]);
             CallC(FUN_47e3e0, src[0] + (int)(v[1] - v[0]) / 12 * 12, src[1], v[1], 0);
         }
     }
@@ -1970,26 +2019,26 @@ extern "C" {
 int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
 {
     if (!(flags & 1)) {
-        double pa = CallC<double>(FUN_4736d0, a);
-        double d = pa - CallC<double>(FUN_4736d0, b);
+        double pa = Player_ProfitOf(a);
+        double d = pa - Player_ProfitOf(b);
         if (d > 0) {
             if (F(int, b, 92) == 1 && d > F(double, b, 136)) {
-                CallC(FUN_56ae60, CallC<const char*>(FUN_40e270, (const char*)s_sw66fa4c));
+                Messages_Add(Message_Text((const char*)s_sw66fa4c));
                 return -2;
             }
         } else if (F(int, a, 92) == 1 && -d > F(double, a, 136)) {
-            CallC(FUN_56ae60, CallC<const char*>(FUN_40e270, (const char*)s_sw66fa4c));
+            Messages_Add(Message_Text((const char*)s_sw66fa4c));
             return -1;
         }
         F(double, b, 136) = F(double, b, 136) - d;
         F(double, a, 136) = d + F(double, a, 136);
-        CallC(FUN_4452c0, a);
-        CallC(FUN_4452c0, b);
+        Ai_DropOrdersForfeit((int)a);
+        Ai_DropOrdersForfeit((int)b);
     }
     if (F(int, a, 92) == 1)
-        CallC(FUN_4722a0, a);
+        Player_Call472110((int)a);
     if (F(int, b, 92) == 1)
-        CallC(FUN_4722a0, b);
+        Player_Call472110((int)b);
     BYTE* tmp[3];
     {
         BYTE** va = (BYTE**)(a + 24);
@@ -1999,11 +2048,11 @@ int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
     }
     Sw_Assign((BYTE**)(a + 24), (BYTE**)(b + 24));
     Sw_Assign((BYTE**)(b + 24), tmp);
-    CallC(FUN_4736e0, a + 72, b + 72);
+    Recs40_Swap((BYTE**)(a + 72), (BYTE**)(b + 72));
     PositionId posA = F(PositionId, a, 40);
     PositionId posB = F(PositionId, b, 40);
-    CallThis(FUN_474290, a + 8, &posB);
-    CallThis(FUN_474290, b + 8, &posA);
+    Player_SetPosition((PlayerBase*)(a + 8), 0, &posB);
+    Player_SetPosition((PlayerBase*)(b + 8), 0, &posA);
     Sw_Swap(a, b, 552, 96);
     Sw_Swap(a, b, 84, 4);
     Sw_Swap(a, b, 516, 4);
@@ -2015,17 +2064,17 @@ int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
     Sw_Swap(a, b, 416, 40);
     Sw_Swap(a, b, 200, 72);
     if (F(int, a, 92) != 9) {
-        CallC(FUN_477d60, a);
+        Player_EndDealOf(a);
         F(int, a, 100) = 0;
     }
     if (F(int, b, 92) != 9) {
-        CallC(FUN_477d60, b);
+        Player_EndDealOf(b);
         F(int, b, 100) = 0;
     }
-    CallC(FUN_425790, a);
-    CallC(FUN_425790, b);
-    CallC(FUN_419760, a);
-    CallC(FUN_419760, b);
+    Player_CheckGoods(a);
+    Player_CheckGoods(b);
+    Ai_GoIdle(a);
+    Ai_GoIdle(b);
     DWORD fa = F(DWORD, a, 96), fb = F(DWORD, b, 96);
     F(DWORD, a, 96) = (fa & ~1u) | (fb & 1);
     F(DWORD, b, 96) = (fb & ~1u) | (fa & 1);
@@ -2034,18 +2083,18 @@ int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
     if (F(int, b, 92) == 1)
         F(DWORD, b, 96) |= 1;
     if (F(int, a, 92) == 1)
-        CallC(FUN_472270, a);
+        Player_Call471ec0((int)a);
     if (F(int, b, 92) == 1)
-        CallC(FUN_472270, b);
-    if (CallC<bool>(FUN_417660, a) || CallC<bool>(FUN_417660, b))
-        CallC(FUN_56f6d0);
-    CallC(FUN_442c60, a);
-    CallC(FUN_442c60, b);
-    CallC(FUN_477210, a);
-    CallC(FUN_477210, b);
-    CallC(FUN_401c50);
+        Player_Call471ec0((int)b);
+    if ((bool)Player_IsHuman(a) || (bool)Player_IsHuman(b))
+        Copter_ApplyCargo();
+    Ai_AccountForChangeInLoadState((int)a);
+    Ai_AccountForChangeInLoadState((int)b);
+    Player_UpdateFlags(a);
+    Player_UpdateFlags(b);
+    Ai_RescheduleLoadTask();
     if (int n = (int)(tmp[2] - tmp[0]) / 12)
-        CallC(FUN_44b4a0, tmp[0], n * 12);
+        Ai_PoolFree(tmp[0], n * 12);
     return 0;
 }
 
@@ -2055,12 +2104,12 @@ int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
 
 KING_VAR(int, g_pcNone68b990, 68b990)
 KING_VAR(AsmLabel, s_pc66fa34, 66fa34)       // the default name (8 bytes)
-extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
+extern "C" char** __fastcall CharVec_Construct(char** self, void*, const char* s);
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
 extern "C" void FUN_488170(); KING_ALIAS("_FUN_488170", "@Filter2_Construct@8")
 extern "C" void FUN_4880b0(); KING_ALIAS("_FUN_4880b0", "@Filter1_Construct@8")
-ASM_FUNC(FUN_401000, _Ai_Clock)    // the time
+extern "C" double __cdecl Ai_Clock();
 extern "C" void FUN_4881f0(); KING_ALIAS("_FUN_4881f0", "@Filter2_SetResponse@16")
 extern "C" void FUN_4881e0(); KING_ALIAS("_FUN_4881e0", "@Filter2_Set@16")
 extern "C" void FUN_4880d0(); KING_ALIAS("_FUN_4880d0", "@Filter1_Reset@8")
@@ -2087,10 +2136,10 @@ extern "C" {
 BYTE* __fastcall Player_Construct(BYTE* self, void*, int kind)
 {
     char a;
-    CallThis(FUN_470900, self, kind);
-    CallThis(FUN_487730, self + 16, &a);
-    CallThis(FUN_4133a0, self + 32);
-    CallThis(FUN_487730, self + 64, &a);
+    CharVec_Construct((char**)self, 0, (const char*)kind);
+    Vec_Construct((void**)(self + 16), 0, (int)&a);
+    Position_InitNone((PositionId*)(self + 32), 0);
+    Vec_Construct((void**)(self + 64), 0, (int)&a);
     F(int, self, 76) = -1;
     F(int, self, 80) = 305419896;
     F(int, self, 84) = -1;
@@ -2106,7 +2155,7 @@ BYTE* __fastcall Player_Construct(BYTE* self, void*, int kind)
     F(int, self, 148) = -1;
     Pc_Zero(self, 152, 160);
     F(int, self, 168) = g_pcNone68b990;
-    CallThis(FUN_487730, self + 172, &a);
+    Vec_Construct((void**)(self + 172), 0, (int)&a);
     F(int, self, 184) = 0;
     F(int, self, 188) = 0;
     F(BYTE, self, 192) = 0;
@@ -2151,7 +2200,7 @@ BYTE* __fastcall Player_Construct(BYTE* self, void*, int kind)
     F(int, self, 876) = 4096;
     F(int, self, 880) = -1;
     F(int, self, 936) = -1;
-    F(double, self, 944) = CallC<double>(FUN_401000);
+    F(double, self, 944) = Ai_Clock();
     F(int, self, 952) = 0;
     F(DWORD, self, 956) = 1086556160;          // +952: 10000.0
     F(int, self, 960) = g_pcNone68b990;
@@ -2171,7 +2220,7 @@ BYTE* __fastcall Player_Construct(BYTE* self, void*, int kind)
     CallThis(FUN_488100, self + 728, 2.0);
     char name[8];
     memcpy(name, s_pc66fa34, 8);
-    CallThis(FUN_44c220, self + 264, F(BYTE*, self, 268), name, name + strlen(name) + 1);
+    CharVec_InsertRange44c220((BYTE**)(self + 264), 0, F(BYTE*, self, 268), (BYTE*)name, (BYTE*)(name + strlen(name) + 1));
     CallThis(FUN_4881f0, self + 664, 0.25);
     CallThis(FUN_4881e0, self + 664, 0.0);
     F(int, self, 656) = 0;
@@ -2203,7 +2252,7 @@ static void Ps_End(Ps_Block* b) { CallC(FUN_490ce0, b->v, &b->mark); }
 
 static void Ps_Put(BYTE** v, const void* p, int n)
 {
-    CallThis(FUN_46e460, v, v[1], (const BYTE*)p, (const BYTE*)p + n);
+    CharVec_InsertRange(v, 0, v[1], (BYTE*)((const BYTE*)p), (BYTE*)((const BYTE*)p + n));
 }
 
 static void Ps_Int(BYTE** v, int x) { Ps_Put(v, &x, 4); }
@@ -2220,14 +2269,14 @@ extern "C" {
 // saved car position (+868) is then reset from +88 / +92
 void __fastcall Player_SaveRecord(BYTE* p, void*, BYTE** v)
 {
-    CallThis(FUN_46e460, v, v[1], F(BYTE*, p, 0), F(BYTE*, p, 4));
+    CharVec_InsertRange(v, 0, v[1], F(BYTE*, p, 0), F(BYTE*, p, 4));
     Ps_Block b1, b2, b3;
     Ps_Begin(&b1, v, s_ps66fa98);
     Ps_Begin(&b2, v, s_ps66fa80);
     unsigned n = (unsigned)((F(BYTE*, p, 68) - F(BYTE*, p, 64)) / 40);
     Ps_Int(v, n);
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, p, 68) - F(BYTE*, p, 64)) / 40); i++)
-        CallThis(FUN_471bf0, F(BYTE*, p, 64) + i * 40, v);
+        Rec471bf0_Save((DWORD*)(F(BYTE*, p, 64) + i * 40), 0, (BYTE*)v);
     Ps_End(&b2);
     Ps_Begin(&b3, v, s_ps66fa78);
     Ps_Int(v, F(int, p, 84));
@@ -2243,11 +2292,11 @@ void __fastcall Player_SaveRecord(BYTE* p, void*, BYTE** v)
     Ps_Float(v, F(double, p, 328));
     Ps_Float(v, F(double, p, 496));
     Ps_Put(v, p + 504, 1);
-    CallC(FUN_603570, 0, v, F(int, p, 712));
+    Buf_WriteDword(0, (BYTE*)v, F(int, p, 712));
     Ps_Int(v, F(int, p, 720));
     Ps_Int(v, (int)((F(BYTE*, p, 20) - F(BYTE*, p, 16)) / 12));
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, p, 20) - F(BYTE*, p, 16)) / 12); i++)
-        CallThis(FUN_4718b0, F(BYTE*, p, 16) + i * 12, v);
+        Waypoint_Save(F(BYTE*, p, 16) + i * 12, 0, (BYTE*)v);
     Ps_Int(v, F(int, p, 716));
     Ps_Float(v, F(double, p, 784));
     Ps_Float(v, F(double, p, 800));
@@ -2269,22 +2318,24 @@ KING_VAR(AsmLabel, s_hd66facc, 66facc)
 extern "C" void FUN_40e270(); KING_ALIAS("_FUN_40e270", "_Message_Text")
 extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
 extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")
-extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
+extern "C" void __fastcall Vec1_Free(BYTE** v, int);
+extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src);
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
-extern "C" void FUN_473670(); KING_ALIAS("_FUN_473670", "_Player_CargoValueOf")
-extern "C" void FUN_476a30(); KING_ALIAS("_FUN_476a30", "_Player_AllocLogo")
+extern "C" double __cdecl Player_CargoValueOf(BYTE* p);
+extern "C" void __cdecl Player_AllocLogo(BYTE* p);
 extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")
 extern "C" void FUN_4773d0(); KING_ALIAS("_FUN_4773d0", "_Player_Call477350")
+extern "C" void __cdecl Player_PopTime(BYTE* p);
 extern "C" void FUN_4773e0(); KING_ALIAS("_FUN_4773e0", "_Player_PopTime")
-extern "C" void FUN_479520(); KING_ALIAS("_FUN_479520", "@KeyedVecs_InsertAux@16")
+extern "C" void __fastcall KeyedVecs_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x);
 extern "C" void FUN_47be20(); KING_ALIAS("_FUN_47be20", "_Find16_ByKey")
-extern "C" void FUN_47c360(); KING_ALIAS("_FUN_47c360", "_Rec47c360_Construct")
+extern "C" void __cdecl Rec47c360_Construct(BYTE** d, BYTE* const* s);
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
 
 static void Hd_Say(const AsmLabel& id)
 {
-    CallC(FUN_56ae60, CallC<const char*>(FUN_40e270, (const char*)id));
+    Messages_Add(Message_Text((const char*)id));
 }
 
 extern "C" {
@@ -2310,10 +2361,10 @@ int __cdecl Player_Hire(BYTE* a, BYTE* b)
         return -3;
     }
     F(double, b, 864) = CallC<double>(FUN_4773d0, b);
-    double v = CallC<double>(FUN_473670, b);
+    double v = Player_CargoValueOf(b);
     double x = F(double, b, 864) * g_hd64b780 + v;
     if (!(x < F(double, a, 136))) {
-        if (CallC<char>(FUN_417660, a) && F(int, a, 92) == 1)
+        if ((char)Player_IsHuman(a) && F(int, a, 92) == 1)
             Hd_Say(s_hd66facc);
         return -6;
     }
@@ -2323,30 +2374,30 @@ int __cdecl Player_Hire(BYTE* a, BYTE* b)
     BYTE alloc[2];
     DWORD r1[4];
     r1[0] = (DWORD)b;
-    CallThis(FUN_487730, r1 + 1, alloc);
+    Vec_Construct((void**)(r1 + 1), 0, (int)alloc);
     BYTE** v160 = (BYTE**)(a + 160);
     if (v160[1] != v160[2]) {
-        CallC(FUN_47c360, v160[1], r1);
+        Rec47c360_Construct((BYTE**)v160[1], (BYTE* const*)r1);
         v160[1] += 16;
     } else
-        CallThis(FUN_479520, v160, v160[1], r1);
-    CallThis(FUN_44b090, r1 + 1);
-    CallC(FUN_4773e0, a);
+        KeyedVecs_InsertAux(v160, 0, v160[1], (const BYTE*)r1);
+    Vec1_Free((BYTE**)(r1 + 1), 0);
+    Player_PopTime(a);
     DWORD r2[4];
     r2[0] = (DWORD)a;
-    CallThis(FUN_487730, r2 + 1, alloc + 1);
+    Vec_Construct((void**)(r2 + 1), 0, (int)(alloc + 1));
     F(BYTE*, b, 176) = a;
-    CallThis(FUN_44c160, b + 180, r2 + 1);
-    CallThis(FUN_44b090, r2 + 1);
+    PodVec_Assign((BYTE**)(b + 180), 0, (BYTE* const*)(r2 + 1));
+    Vec1_Free((BYTE**)(r2 + 1), 0);
     if (F(int, b, 100) == 257)
-        CallC(FUN_419760, b);
+        Ai_GoIdle(b);
     F(int, b, 544) = 0;
     F(int, b, 548) = 0;
-    CallC(FUN_477210, a);
-    CallC(FUN_477210, b);
+    Player_UpdateFlags(a);
+    Player_UpdateFlags(b);
     F(BYTE*, a, 172) = F(BYTE*, a, 160);
     if (((F(BYTE*, a, 164) - F(BYTE*, a, 160)) & ~15) == 16)
-        CallC(FUN_476a30, a);
+        Player_AllocLogo(a);
     return 0;
 }
 
@@ -2354,15 +2405,16 @@ int __cdecl Player_Hire(BYTE* a, BYTE* b)
 
 // === the player destructor (FUN_4731e0)
 
-extern "C" void FUN_478ac0(); KING_ALIAS("_FUN_478ac0", "@Orders144_Destroy@8")
-extern "C" void FUN_4488e0(); KING_ALIAS("_FUN_4488e0", "@Vec16_FreeStorage@8")
+extern "C" void __fastcall Orders144_Destroy(BYTE** self, void*);
+extern "C" void __fastcall Vec16_FreeStorage(BYTE** v, int);
+extern "C" BYTE* __fastcall Rec16_DeletingDestructor(BYTE* s, void*, int flags);
 extern "C" void FUN_461ae0(); KING_ALIAS("_FUN_461ae0", "@Rec16_DeletingDestructor@12")
 
 // returns the storage of the vector at p (+0 .. +8) of size-byte elements to the pool
 static void Pd_FreeVec(BYTE* p, int size)
 {
     if (int n = (int)(F(BYTE*, p, 8) - F(BYTE*, p, 0)) / size)
-        CallC(FUN_44b4a0, F(BYTE*, p, 0), n * size);
+        Ai_PoolFree(F(BYTE*, p, 0), n * size);
 }
 
 extern "C" {
@@ -2374,15 +2426,15 @@ void __fastcall Player_Destroy(BYTE* p)
     F(int, p, 80) = 0;
     for (int off = 508; off <= 512; off += 4)
         if (BYTE* o = F(BYTE*, p, off)) {
-            CallThis(FUN_478ac0, o + 28);
-            CallThis(FUN_4488e0, o + 16);
+            Orders144_Destroy((BYTE**)(o + 28), 0);
+            Vec16_FreeStorage((BYTE**)(o + 16), 0);
             operator delete(o);
         }
     Pd_FreeVec(p + 640, 12);
     Pd_FreeVec(p + 264, 1);
-    CallThis(FUN_44b090, p + 172);
+    Vec1_Free((BYTE**)(p + 172), 0);
     for (BYTE* e = F(BYTE*, p, 152); e != F(BYTE*, p, 156); e += 16)
-        CallThis(FUN_461ae0, e, 0);
+        Rec16_DeletingDestructor(e, 0, 0);
     Pd_FreeVec(p + 152, 16);
     Pd_FreeVec(p + 136, 8);
     Pd_FreeVec(p + 64, 40);
@@ -2395,7 +2447,7 @@ void __fastcall Player_Destroy(BYTE* p)
 // === handing a cargo to another player (FUN_476f70)
 
 extern "C" void FUN_47be20(); KING_ALIAS("_FUN_47be20", "_Find16_ByKey")
-extern "C" void FUN_47a050(); KING_ALIAS("_FUN_47a050", "_Rec16m_Copy")
+extern "C" BYTE* __cdecl Rec16m_Copy(const BYTE* f, const BYTE* l, BYTE* d);
 extern "C" void FUN_461ae0(); KING_ALIAS("_FUN_461ae0", "@Rec16_DeletingDestructor@12")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
@@ -2418,15 +2470,15 @@ int __cdecl Player_GiveBackCargo(BYTE* a, BYTE* b, int flags)
     if (it == F(BYTE*, a, 164))
         return -1;
     if (it + 16 != F(BYTE*, a, 164))
-        CallC(FUN_47a050, it + 16, F(BYTE*, a, 164), it);
+        Rec16m_Copy(it + 16, F(BYTE*, a, 164), it);
     F(BYTE*, a, 164) -= 16;
-    CallThis(FUN_461ae0, F(BYTE*, a, 164), 0);
+    Rec16_DeletingDestructor(F(BYTE*, a, 164), 0, 0);
     BYTE* v[3];
     char alloc;
-    CallThis(FUN_487730, v, &alloc);
+    Vec_Construct((void**)v, 0, (int)&alloc);
     F(BYTE*, b, 176) = (BYTE*)g_players;
-    CallThis(FUN_44c160, b + 180, v);
-    CallThis(FUN_404420, v);
+    PodVec_Assign((BYTE**)(b + 180), 0, v);
+    VecB_FreeStorage(v, 0);
     F(int, b, 544) = 0;
     F(int, b, 548) = 0;
     if (!(flags & 1)) {
@@ -2451,7 +2503,7 @@ int __cdecl Player_GiveBackCargo(BYTE* a, BYTE* b, int flags)
 // === refilling the keyed list from the ids (FUN_472110)
 
 extern "C" void Kl_Copy(); KING_ALIAS("_Kl_Copy", "_Rec16_Copy")
-extern "C" void Kl_VecCharCopy(); KING_ALIAS("_Kl_VecCharCopy", "@VecChar_Copy@12")
+extern "C" BYTE** __fastcall VecChar_Copy(BYTE** self, int, BYTE* const* src);
 KING_VAR(int, g_kl68d164, 68d164)
 KING_VAR(int*, g_kl68a980, 68a980)
 KING_VAR(int*, g_kl68a984, 68a984)
@@ -2466,20 +2518,20 @@ void __cdecl KeyedList_Refill(BYTE** v)
     BYTE* end = v[1];
     BYTE* p = CallC<BYTE*>(Kl_Copy, end, end, v[0], v[0], 0);
     for (BYTE* e = p; e != v[1]; e += 16)
-        CallThis(FUN_461ae0, e, 0);
+        Rec16_DeletingDestructor(e, 0, 0);
     v[1] -= ((end - v[0]) >> 4) << 4;
     for (int* id = g_kl68a980; id != g_kl68a984; id++) {
         DWORD r[4] = {(DWORD)*id, 0, 0, 0};
         if (v[1] != v[2]) {
             if (BYTE* e = v[1]) {
                 F(DWORD, e, 0) = r[0];
-                CallThis(Kl_VecCharCopy, e + 4, r + 1);
+                VecChar_Copy((BYTE**)(e + 4), 0, (BYTE* const*)(r + 1));
             }
             v[1] += 16;
         } else
-            CallThis(FUN_479520, v, v[1], r);
+            KeyedVecs_InsertAux(v, 0, v[1], (const BYTE*)r);
         if (int n = (int)(r[3] - r[1]))
-            CallC(FUN_44b4a0, r[1], n);
+            Ai_PoolFree((void*)r[1], n);
     }
 }
 
@@ -2487,11 +2539,11 @@ void __cdecl KeyedList_Refill(BYTE** v)
 
 // === loading a driver's record (FUN_472410)
 
-extern "C" void Dl_RecLoad(); KING_ALIAS("_Dl_RecLoad", "@Rec471b10_Load@12")
-extern "C" void Dl_OrdersLoad(); KING_ALIAS("_Dl_OrdersLoad", "_Orders_Load")
+extern "C" void __fastcall Rec471b10_Load(BYTE* self, void*, BYTE** cur);
+extern "C" void __cdecl Orders_Load(BYTE** cur, BYTE** v);
 extern "C" void Dl_AllocCopy(); KING_ALIAS("_Dl_AllocCopy", "_Alloc16_Copy@12")
-extern "C" void Dl_Insert(); KING_ALIAS("_Dl_Insert", "@Vec16_Insert47bae0@16")
-extern "C" void Dl_Copy16(); KING_ALIAS("_Dl_Copy16", "_Copy16")
+extern "C" void __fastcall Vec16_Insert47bae0(BYTE** v, void*, BYTE* pos, const BYTE* x);
+extern "C" BYTE* __cdecl Copy16(const BYTE* first, const BYTE* last, BYTE* d);
 
 // the next dword of the stream at *pp
 static DWORD Dl_Next(DWORD** pp)
@@ -2514,28 +2566,28 @@ void __fastcall DriverRec_Load(BYTE* s, void*, DWORD** pp)
     unsigned n = Dl_Next(pp);
     BYTE** v = (BYTE**)(s + 16);
     BYTE* end = v[1];
-    CallC(Dl_Copy16, end, end, v[0]);    // the entries need no destruction
+    Copy16(end, end, v[0]);    // the entries need no destruction
     v[1] -= ((end - v[0]) >> 4) << 4;
     if ((unsigned)((v[2] - v[0]) >> 4) < n) {
         int size = (int)(v[1] - v[0]) >> 4;
         BYTE* b = CallThis<BYTE*>(Dl_AllocCopy, v, n, v[0], v[1]);
         if (int c = (int)((v[2] - v[0]) >> 4))
-            CallC(FUN_44b4a0, v[0], c << 4);
+            Ai_PoolFree(v[0], c << 4);
         v[0] = b;
         v[1] = b + size * 16;
         v[2] = b + n * 16;
     }
     for (unsigned i = 0; i < n; i++) {
         DWORD r[4] = {0, 0, 0, 0x3FF00000};
-        CallThis(Dl_RecLoad, r, pp);
+        Rec471b10_Load((BYTE*)r, 0, (BYTE**)pp);
         if (v[1] != v[2]) {
             if (v[1])
                 memcpy(v[1], r, 16);
             v[1] += 16;
         } else
-            CallThis(Dl_Insert, v, v[1], r);
+            Vec16_Insert47bae0(v, 0, v[1], (const BYTE*)r);
     }
-    CallC(Dl_OrdersLoad, pp, s + 28);
+    Orders_Load((BYTE**)pp, (BYTE**)(s + 28));
     F(DWORD, s, 40) = Dl_Next(pp);
 }
 
@@ -2543,12 +2595,11 @@ void __fastcall DriverRec_Load(BYTE* s, void*, DWORD** pp)
 
 // === listing the drivers who carry a player's order (FUN_471ec0)
 
-extern "C" void Ld_IntCopy(); KING_ALIAS("_Ld_IntCopy", "@Int_Copy@12")
-extern "C" void Ld_IntSet(); KING_ALIAS("_Ld_IntSet", "@Int_Set@12")
+extern "C" int* __fastcall Int_Copy(int* s, void*, const int* src);
 extern "C" void Ld_Leave(); KING_ALIAS("_Ld_Leave", "_Player_Leave")
-extern "C" void Ld_MarkListed(); KING_ALIAS("_Ld_MarkListed", "_Player_MarkListed")
-extern "C" void Ld_OrderCopy(); KING_ALIAS("_Ld_OrderCopy", "@Order144_CopyConstruct@12")
-extern "C" void Ld_MsgFree(); KING_ALIAS("_Ld_MsgFree", "_MsgBuf_FreeThunk")
+extern "C" void __cdecl Player_MarkListed(BYTE* id);
+extern "C" BYTE* __fastcall Order144_CopyConstruct(BYTE* self, void*, const BYTE* s);
+extern "C" int __cdecl MsgBuf_FreeThunk(BYTE* p);
 extern "C" void Ld_Free(); KING_ALIAS("_Ld_Free", "_AI_Free")
 
 // erases entry e of the 16-byte vector v, destroying the last one with done
@@ -2560,8 +2611,8 @@ static void Ld_Erase(BYTE** v, BYTE* e, void (*done)(BYTE*))
     done(v[1]);
 }
 
-static void Ld_Destroy(BYTE* e) { CallThis(FUN_461ae0, e, 0); }
-static void Ld_FreeVec(BYTE* e) { CallThis(FUN_404420, e + 4); }
+static void Ld_Destroy(BYTE* e) { Rec16_DeletingDestructor(e, 0, 0); }
+static void Ld_FreeVec(BYTE* e) { VecB_FreeStorage((BYTE**)(e + 4), 0); }
 
 extern "C" {
 
@@ -2572,23 +2623,23 @@ void __cdecl Drivers_ListCarrying(BYTE** v, int p)
 {
     int head = g_q112_68b990;
     for (int it = *(int*)head; it != g_q112_68b990; it = *(int*)it) {
-        if (!CallC<int>(FUN_40a9f0, it))
+        if (!(int)AI_ListData((BYTE*)it))
             continue;
         int copy, slot;
-        CallThis(Ld_IntCopy, &copy, &it);
-        CallThis(Ld_IntSet, &slot, copy);
+        Int_Copy(&copy, 0, &it);
+        Int_Set(&slot, 0, copy);
         CallC(Ld_Leave, slot);
     }
-    BYTE* d = CallC<BYTE*>(FUN_477880, p);
+    BYTE* d = (BYTE*)Player_Driver((BYTE*)p);
     if (!d)
         return;
     BYTE ord[144];
-    CallThis(Ld_OrderCopy, ord, d);
+    Order144_CopyConstruct(ord, 0, d);
     for (BYTE* e = v[0]; e != v[1];) {
         BYTE* q = F(BYTE*, e, 0);
         if (F(int, q, 88) == 0x12345678) {
-            int* g = CallC<int*>(FUN_4777b0, q + 8);
-            if (g && (g = CallC<int*>(FUN_4777b0, F(BYTE*, e, 0) + 8), g[0] == F(int, ord, 0) && g[3] == F(int, ord, 12))) {
+            int* g = (int*)Player_FirstGoods(q + 8);
+            if (g && (g = (int*)Player_FirstGoods(F(BYTE*, e, 0) + 8), g[0] == F(int, ord, 0) && g[3] == F(int, ord, 12))) {
                 e += 16;
                 continue;
             }
@@ -2599,17 +2650,17 @@ void __cdecl Drivers_ListCarrying(BYTE** v, int p)
         e = v[0];
     }
     for (BYTE* e = v[0]; e != v[1]; e += 16)
-        CallC(Ld_MarkListed, F(int, e, 0));
+        Player_MarkListed((BYTE*)(F(int, e, 0)));
     g_kl68d164 = F(int, v, 12);
     BYTE* b = F(BYTE*, ord, 120);
     for (BYTE* e = b; e != F(BYTE*, ord, 124); e += 16)
-        CallC(Ld_MsgFree, e);
+        MsgBuf_FreeThunk(e);
     if (int n = (F(BYTE*, ord, 128) - b) >> 4) {
         unsigned bytes = n << 4;
         if (bytes > 128)
             CallC(Ld_Free, b, bytes);
         else
-            CallC(FUN_44b4a0, b, bytes);
+            Ai_PoolFree(b, bytes);
     }
 }
 
