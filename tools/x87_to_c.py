@@ -1,4 +1,4 @@
-"""Translate a naked inline-__asm procedure (as tools/asm_inline.py writes them) into C++.
+"""Translate a naked inline-__asm procedure (as tools/asm_inline.py, removed after commit 986f2e5, wrote them) into C++.
 
     py tools\\x87_to_c.py SRC.cpp ENTRYLABEL CNAME OUT.cpp
 
