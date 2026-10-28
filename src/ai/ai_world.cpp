@@ -25066,8 +25066,10 @@ extern "C" BYTE* __cdecl Rope_Balance(BYTE* r)
     return result;
 }
 
-// [$L_41f930] calls the function pointer at +40 with the caller's arguments
-extern "C" __declspec(naked) void Ai_CallAt40() { __asm jmp dword ptr [ecx + 40] }
+// [$L_41f930] a task's run method (its vtable's only slot): calls its
+// function at +40 (Task_New), which takes no arguments
+typedef void (__cdecl* TaskFn)();
+extern "C" void __fastcall Ai_CallAt40(BYTE* self) { F(TaskFn, self, 40)(); }
 
 // [$L_4013f0] [$L_401420] static initializer: the object at 68cf48, its
 // storage freed at exit ([$L_401430])
