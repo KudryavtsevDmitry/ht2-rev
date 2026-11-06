@@ -15,7 +15,7 @@
 //
 // Comments: +N is a byte offset into an object, vtbl+N a byte offset into
 // its vtable, [FUN_xxxxxx] / [$L_xxxxxx] the original procedure's label
-// (tag last-masm).
+// (its address in the original king.exe).
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN

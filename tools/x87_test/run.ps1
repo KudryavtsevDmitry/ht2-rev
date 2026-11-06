@@ -3,9 +3,11 @@
 # hitch_test.cpp:
 # regenerates the C++ from hitch_asm.cpp with branch counters, checks that src\truck\hitch_solver.cpp is the
 # same translation, and compares both on CASES random worlds (default 3000) at 53- and 24-bit FPU precision.
-# HT_TRACE=1 prints each side's callee sequence. The rdata constants come from the original king.exe
-# (old-history:king_original.exe).
-param([int]$Cases = 3000)
+# HT_TRACE=1 prints each side's callee sequence. The rdata constants come from the original king.exe.
+# The references (hitch_asm.cpp, copter_asm.cpp, small_asm.cpp: the original machine code as inline __asm) are
+# not in the repository; put them in this folder from your own copy of the game.
+# run.ps1 -GameExe C:\path\to\king.exe [-Cases N]
+param([Parameter(Mandatory)][string]$GameExe, [int]$Cases = 3000)
 $ErrorActionPreference = 'Stop'
 $repo = Resolve-Path "$PSScriptRoot\..\.."
 $out = "$env:TEMP\x87_test"
@@ -14,10 +16,10 @@ $vc = 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\M
 $sdk = 'C:\Program Files (x86)\Windows Kits\10'
 $sv = '10.0.26100.0'
 
-if (-not (Test-Path "$out\king_original.exe")) {
-    $p = Start-Process git -ArgumentList "-C `"$repo`" cat-file blob old-history:king_original.exe" -NoNewWindow -Wait -PassThru -RedirectStandardOutput "$out\king_original.exe"
-    if ($p.ExitCode) { throw 'no old-history:king_original.exe' }
+foreach ($f in 'hitch_asm.cpp', 'copter_asm.cpp', 'small_asm.cpp') {
+    if (-not (Test-Path "$PSScriptRoot\$f")) { throw "$f is missing: the reference machine code is not in the repository" }
 }
+Copy-Item $GameExe "$out\king_original.exe" -Force
 
 py "$repo\tools\x87_to_c.py" "$PSScriptRoot\hitch_asm.cpp" L_FUN_558f20 Hitch_SolveC "$out\hitch_c.cpp" --cov
 py "$repo\tools\x87_to_c.py" "$PSScriptRoot\hitch_asm.cpp" L_FUN_558f20 Hitch_Solve "$out\hitch_plain.cpp"

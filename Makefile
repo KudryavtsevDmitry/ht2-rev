@@ -3,7 +3,6 @@
 #   nmake clean           - remove build outputs except king.res
 # The first build takes the resources from the game's original king.exe:
 #   nmake "GAME_EXE=C:\path\to\king.exe"   (or set GAME_EXE in the environment)
-# The last build with king.masm and the ASM_* switches is the tag last-masm.
 
 # 32-bit compiler and linker
 VCDIR = C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.29.30133

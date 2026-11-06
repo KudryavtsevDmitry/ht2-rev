@@ -4,9 +4,13 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 
 `king.exe` is built from C++ only (`src/`); there is no assembly file left. C++ owns all the program's data. The two long x87 procedures (the helicopter step, the trailer hitch solver) are translated instruction by instruction (`tools/x87_to_c.py`) so their rounding is the original's, and `tools/x87_test` checks them against the original machine code. The statically linked MFC 4.2 is replaced by own code with the same layouts (`src/engine/mfc.cpp`), gzip 1.2.4 is C++ (`src/terrain/gzip.cpp`, `terrain_grid.cpp`; `tools/gzip_test` compares its output with an older build's), and the game runs on the modern static C runtime instead of its 1999 one (`src/engine/crt.cpp` keeps the few helpers whose results differ). The x87 helpers (`src/common/x87.cpp`) are C++ compiled with `/fp:fast`, which makes them the FPU instructions the original used. See `CONVERSION_LOG.md`.
 
-The program started as a full disassembly, `king.masm`, which assembled back into a byte-identical `king.exe` and had a switch per source file to put the original assembly back. It is deleted; the tag `last-masm` is the last commit that has it (`nmake ASM=1` there builds the original program).
+The program started as a full disassembly, `king.masm`, which assembled back into a byte-identical `king.exe` and had a switch per source file to put the original assembly back. It is deleted, and the repository history no longer contains it or any other copy of the original code (see Legal).
 
 The game is not included: building needs your own original `king.exe` (for resources), running needs an installed game.
+
+## Legal
+
+Unofficial fan project, not affiliated with SoftLab-NSK or Fulqrum Publishing. The repository contains no game assets and no original machine code; everything taken from the game is read from your own `king.exe` at build time. Buy the game on [Steam](https://store.steampowered.com/app/4487840/), [GOG](https://www.gog.com/game/hard_truck_2_king_of_the_road) or ZOOM Platform. Rights holders with concerns: please open an issue.
 
 ## Layout
 
@@ -21,7 +25,7 @@ The game is not included: building needs your own original `king.exe` (for resou
 | `units.csv` | the object files the program was linked from |
 | `symbols.csv` | library function names |
 | `extractResources.py` | copies the resources of the original `king.exe` into `king.res` |
-| `tools/` | `smoke_world.py` (world-loading smoke test), `x87_to_c.py` and `x87_test` (the hitch solver and helicopter step against the original machine code), `gzip_test` (gzip against an older build) |
+| `tools/` | `smoke_world.py` (world-loading smoke test), `x87_to_c.py` and `x87_test` (the hitch solver and helicopter step against the original machine code, which you supply: see `run.ps1`), `gzip_test` (gzip against an older build) |
 
 ## Building
 

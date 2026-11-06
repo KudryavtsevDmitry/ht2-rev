@@ -12,3 +12,7 @@ __pycache__/
 # editor settings
 .vscode/
 dumps/
+
+# reference machine code taken from the original king.exe (never commit)
+tools/x87_test/*_asm.cpp
+*.masm
